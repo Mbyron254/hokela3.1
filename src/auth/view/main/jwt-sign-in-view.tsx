@@ -18,12 +18,14 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { GQLMutation } from 'src/lib/client';
+import { USER_LOGIN } from 'src/lib/mutations/user.mutation';
+
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from '../../hooks';
 import { FormHead } from '../../components/form-head';
-import { signInWithPassword } from '../../context/main';
 
 // ----------------------------------------------------------------------
 
@@ -50,6 +52,12 @@ export function JwtSignInView() {
   const [errorMsg, setErrorMsg] = useState('');
 
   const password = useBoolean();
+  const { action: signin, loading } = GQLMutation({
+    mutation: USER_LOGIN,
+    resolver: 'login',
+    toastmsg: true,
+    callback: () => window.location.reload(),
+  });
 
   const defaultValues = {
     email: 'demo@minimals.cc',
@@ -68,8 +76,14 @@ export function JwtSignInView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await signInWithPassword({ email: data.email, password: data.password });
-      await checkUserSession?.();
+      // await signInWithPassword({ email: data.email, password: data.password });
+      // await checkUserSession?.();
+      console.log(data, 'DATA');
+      const input = {
+        keyPublic: data.email,
+        keyPrivate: data.password,
+      };
+      signin({ variables: { input } });
 
       router.refresh();
     } catch (error) {
