@@ -5,8 +5,8 @@
   "description": "Next Starter & TypeScript",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8083",
-    "start": "next start -p 8083",
+    "dev": "next dev -p 3001",
+    "start": "next start -p 3001",
     "build": "next build",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
@@ -19,13 +19,14 @@
     "dev:ts": "yarn dev & yarn ts:watch",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "yarn ts --watch",
-    "start:out": "npx serve@latest out -p 8083"
+    "start:out": "npx serve@latest out -p 3001"
   },
   "engines": {
     "node": "20.x"
   },
   "packageManager": "yarn@1.22.22",
   "dependencies": {
+    "@apollo/client": "^3.11.8",
     "@emotion/cache": "^11.13.1",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
@@ -46,6 +47,7 @@
     "axios": "^1.7.4",
     "dayjs": "^1.11.13",
     "framer-motion": "^11.3.29",
+    "graphql": "^16.9.0",
     "next": "^14.2.5",
     "nprogress": "^0.2.0",
     "react": "^18.3.1",

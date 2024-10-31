@@ -12,16 +12,18 @@ export const paths = {
   minimalStore: 'https://mui.com/store/items/minimal-dashboard/',
   // AUTH
   auth: {
+    main: {
+      signIn: `${ROOTS.AUTH}/main/sign-in`,
+      signUp: `${ROOTS.AUTH}/main/sign-up`,
+      updatePassword: `${ROOTS.AUTH}/main/update-password`,
+      resetPassword: `${ROOTS.AUTH}/main/reset-password`,
+    },
     amplify: {
       signIn: `${ROOTS.AUTH}/amplify/sign-in`,
       verify: `${ROOTS.AUTH}/amplify/verify`,
       signUp: `${ROOTS.AUTH}/amplify/sign-up`,
       updatePassword: `${ROOTS.AUTH}/amplify/update-password`,
       resetPassword: `${ROOTS.AUTH}/amplify/reset-password`,
-    },
-    jwt: {
-      signIn: `${ROOTS.AUTH}/jwt/sign-in`,
-      signUp: `${ROOTS.AUTH}/jwt/sign-up`,
     },
     firebase: {
       signIn: `${ROOTS.AUTH}/firebase/sign-in`,

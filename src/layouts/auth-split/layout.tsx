@@ -97,8 +97,8 @@ export function AuthSplitLayout({ sx, section, children, header }: AuthSplitLayo
           subtitle={section?.subtitle}
           methods={[
             {
-              label: 'Jwt',
-              path: paths.auth.jwt.signIn,
+              label: 'Main',
+              path: paths.auth.main.signIn,
               icon: `${CONFIG.assetsDir}/assets/icons/platforms/ic-jwt.svg`,
             },
             {
