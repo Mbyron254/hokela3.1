@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { varAlpha, stylesMode } from 'src/theme/styles';
 
 import type { PopoverArrow } from './types';
+import { CONFIG } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 

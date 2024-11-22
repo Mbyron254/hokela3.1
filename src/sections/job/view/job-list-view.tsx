@@ -2,7 +2,7 @@
 
 import type { IJobItem, IJobFilters } from 'src/types/job';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -14,6 +14,11 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
 import { orderBy } from 'src/utils/helper';
+
+
+import { GQLMutation } from 'src/lib/client';
+import { formatDate } from 'src/lib/helpers';
+import { M_OPEN_JOBS } from 'src/lib/mutations/campaign-run.mutation';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
@@ -37,10 +42,49 @@ import { JobFiltersResult } from '../job-filters-result';
 
 // ----------------------------------------------------------------------
 
+type TCampaignRun = {
+  index: number;
+  id: string;
+  closeAdvertOn: string;
+  campaign: {
+    id: string;
+    name: string;
+    jobDescription: string;
+    jobQualification: string;
+    clientTier2: {
+      name: string;
+      clientTier1: {
+        name: string;
+      }
+    }
+  }
+};
+
+type TJobsResponse = {
+  count: number;
+  rows: TCampaignRun[];
+};
+
 export function JobListView() {
   const openFilters = useBoolean();
 
   const [sortBy, setSortBy] = useState('latest');
+
+  const { action: getJobs, data: jobs } = GQLMutation({
+    mutation: M_OPEN_JOBS,
+    resolver: 'openJobs',
+    toastmsg: false,
+  });
+
+  const loadRunsActive = (page?: number, pageSize?: number) => {
+    getJobs({ variables: { input: { page, pageSize } } });
+  };
+
+  useEffect(() => {
+    loadRunsActive();
+  }, []);
+
+  console.log('JOBS  ', jobs);
 
   const search = useSetState<{
     query: string;
@@ -55,7 +99,29 @@ export function JobListView() {
     employmentTypes: [],
   });
 
-  const dataFiltered = applyFilter({ inputData: _jobs, filters: filters.state, sortBy });
+  const transformedJobs = jobs?.rows?.map((job: TCampaignRun) => ({
+    id: job.id,
+    title: job.campaign.name,
+    description: job.campaign.jobDescription,
+    createdAt: new Date().toISOString(),
+    experience: 'Junior',
+    role: 'Developer',
+    locations: ['Remote'],
+    employmentTypes: ['Full-time'],
+    benefits: ['Healthcare', 'Annual Leave'],
+    totalViews: 0,
+    company: {
+      name: job.campaign.clientTier2.name,
+      logo: '/assets/images/company/company_1.png',
+    },
+    salary: {
+      negotiable: true,
+      price: 0,
+    },
+    candidates: [],
+  })) || [];
+
+  const dataFiltered = applyFilter({ inputData: transformedJobs, filters: filters.state, sortBy });
 
   const canReset =
     filters.state.roles.length > 0 ||
@@ -75,7 +141,7 @@ export function JobListView() {
       search.setState({ query: inputValue });
 
       if (inputValue) {
-        const results = _jobs.filter(
+        const results = transformedJobs.filter(
           (job) => job.title.toLowerCase().indexOf(search.state.query.toLowerCase()) !== -1
         );
 
