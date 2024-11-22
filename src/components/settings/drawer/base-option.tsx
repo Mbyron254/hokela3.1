@@ -5,7 +5,6 @@ import Switch from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import ButtonBase from '@mui/material/ButtonBase';
 
-import { CONFIG } from 'src/config-global';
 import { varAlpha } from 'src/theme/styles';
 
 import { Iconify } from 'src/components/iconify';
@@ -46,7 +45,7 @@ export function BaseOption({ icon, label, tooltip, selected, ...other }: Props) 
         justifyContent="space-between"
         sx={{ width: 1, mb: 3 }}
       >
-        <SvgColor src={`${CONFIG.assetsDir}/assets/icons/settings/ic-${icon}.svg`} />
+        <SvgColor src={`src/assets/icons/settings/ic-${icon}.svg`} />
         <Switch name={label} size="small" color="default" checked={selected} sx={{ mr: -0.75 }} />
       </Box>
 

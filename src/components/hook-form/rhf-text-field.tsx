@@ -4,8 +4,6 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import TextField from '@mui/material/TextField';
 
-// ----------------------------------------------------------------------
-
 type Props = TextFieldProps & {
   name: string;
 };
@@ -24,16 +22,18 @@ export function RHFTextField({ name, helperText, type, ...other }: Props) {
           type={type}
           value={type === 'number' && field.value === 0 ? '' : field.value}
           onChange={(event) => {
+            const {value} = event.target;
             if (type === 'number') {
-              field.onChange(Number(event.target.value));
+              field.onChange(value === '' ? '' : Number(value));
             } else {
-              field.onChange(event.target.value);
+              field.onChange(value);
             }
           }}
           error={!!error}
           helperText={error?.message ?? helperText}
           inputProps={{
             autoComplete: 'off',
+            ...(type === 'number' && { min: 0, step: 1 }), // Example constraints for a number field
           }}
           {...other}
         />
