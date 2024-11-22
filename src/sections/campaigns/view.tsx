@@ -15,10 +15,11 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from 'next/link';
 import { alpha } from '@mui/material/styles';
-import { LinearProgress } from '@mui/material';
+import { Card, Grid, LinearProgress, Stack } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { paths } from 'src/routes/paths';
 import { ERole } from 'src/types/client';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -187,7 +188,6 @@ export function CampaignsView({ title = 'Blank' }: Props) {
 
   useEffect(() => loadOffers(), [session?.user?.agent?.id]);
 
-
   // Remove debug log in production
   // console.log(offers, 'offers');
 
@@ -198,6 +198,33 @@ export function CampaignsView({ title = 'Blank' }: Props) {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
     setTabValue(newValue);
   };
+
+  const statsCards = [
+    {
+      title: 'Total Campaigns',
+      total: offers?.count || 0,
+      icon: 'mdi:bullhorn',
+      color: 'primary'
+    },
+    {
+      title: 'Active Runs',
+      total:  offers?.count,
+      icon: 'mdi:play-circle-outline',
+      color: 'info'
+    },
+    {
+      title: 'Active Applications',
+      total: 0, // Replace with actual data
+      icon: 'mdi:send',
+      color: 'warning'
+    },
+    {
+      title: 'Approved Applications',
+      total: 0, // Replace with actual data
+      icon: 'mdi:check-circle-outline',
+      color: 'success'
+    },
+  ];
 
   const activeCampaigns = MOCK_CAMPAIGNS.filter(campaign => campaign.status === 'active');
   const completedCampaigns = MOCK_CAMPAIGNS.filter(campaign => campaign.status === 'completed');
@@ -573,6 +600,46 @@ export function CampaignsView({ title = 'Blank' }: Props) {
     <DashboardContent maxWidth="xl">
       <Typography variant="h4"> {title} </Typography>
 
+      {/* Overview Section */}
+      <Box sx={{ my: 5 }}>
+        <Grid container spacing={3}>
+          {statsCards.map((card) => (
+            <Grid key={card.title} item xs={12} sm={6} md={3}>
+              <Card
+                sx={{
+                  p: 3,
+                  boxShadow: (theme) => theme.customShadows.z8,
+                }}
+              >
+                <Stack direction="row" alignItems="center" spacing={2}>
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      display: 'flex',
+                      borderRadius: 1.5,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: `${card.color}.lighter`,
+                      color: `${card.color}.main`,
+                    }}
+                  >
+                    <Iconify icon={card.icon} width={24} />
+                  </Box>
+
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                      {card.title}
+                    </Typography>
+                    <Typography variant="h4">{card.total}</Typography>
+                  </Box>
+                </Stack>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
       <Box
         sx={{
           mt: 5,
@@ -669,7 +736,7 @@ export function CampaignsView({ title = 'Blank' }: Props) {
                   gap: 1,
                   py: 0.5,
                 }}>
-                  <span>Active Runs</span>
+                  <span>My Campaign Runs</span>
                   <Box
                     sx={{
                       minWidth: 24,
@@ -683,7 +750,7 @@ export function CampaignsView({ title = 'Blank' }: Props) {
                       fontWeight: 700,
                     }}
                   >
-                    {activeCampaigns.length}
+                    {offers?.rows?.length || 0}
                   </Box>
                 </Box>
               }
@@ -696,7 +763,7 @@ export function CampaignsView({ title = 'Blank' }: Props) {
                   gap: 1,
                   py: 0.5,
                 }}>
-                  <span>Completed Runs</span>
+                  <span>My Campaign Applications</span>
                   <Box
                     sx={{
                       minWidth: 24,
@@ -710,7 +777,7 @@ export function CampaignsView({ title = 'Blank' }: Props) {
                       fontWeight: 700,
                     }}
                   >
-                    {completedCampaigns.length}
+                    0
                   </Box>
                 </Box>
               }
@@ -737,21 +804,9 @@ export function CampaignsView({ title = 'Blank' }: Props) {
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <Box sx={{ p: 3 }}>
-            <Box
-              sx={{
-                display: 'grid',
-                gap: 3,
-                gridTemplateColumns: {
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)',
-                  md: 'repeat(3, 1fr)'
-                }
-              }}
-            >
-              {completedCampaigns.map((campaign) => renderCampaignCard(campaign))}
-            </Box>
-          </Box>
+          <Typography variant="body1" sx={{ textAlign: 'center', py: 4 }}>
+            No campaign applications found
+          </Typography>
         </TabPanel>
       </Box>
     </DashboardContent>

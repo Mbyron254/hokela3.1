@@ -8,6 +8,14 @@ export const USER_CREATE_SELF = gql`
   }
 `;
 
+export const USER_UPDATE_SELF = gql`
+  mutation userUpdateAccountSelf($input: InputUserAccountUpdateSelf!) {
+    userUpdateAccountSelf(input: $input) {
+      message
+    }
+  }
+`;
+
 export const USER_AC_RESET = gql`
   mutation resetPassword($input: InputPasswordReset!) {
     resetPassword(input: $input) {

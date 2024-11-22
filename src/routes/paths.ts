@@ -23,7 +23,10 @@ const v2_paths = {
     campaigns: {
       root: `${ROOTS.V2}/agent/dashboard/campaigns/runs`,
       details: (id: string) => `${ROOTS.V2}/agent/dashboard/campaigns/runs/${id}`,
-      offers: `${ROOTS.V2}/agent/dashboard/campaigns/offers`,
+      offers: {
+        root: `${ROOTS.V2}/agent/dashboard/campaigns/offers`,
+        details: (id: string) => `${ROOTS.V2}/agent/dashboard/campaigns/offers/${id}`,
+      },
     },
     jobs: {
       root: `${ROOTS.V2}/agent/dashboard/job`,

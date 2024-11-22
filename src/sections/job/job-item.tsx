@@ -27,11 +27,11 @@ import { ERole } from 'src/types/client';
   type Props = {
     job: IJobItem;
     onView: () => void;
-    onEdit: () => void;
-    onDelete: () => void;
+    // onEdit: () => void;
+    // onDelete: () => void;
   };
 
-  export function JobItem({ job, onView, onEdit, onDelete }: Props) {
+  export function JobItem({ job, onView }: Props) {
     const popover = usePopover();
     console.log(job, 'job');
 
@@ -137,7 +137,7 @@ import { ERole } from 'src/types/client';
               View
             </MenuItem>
 
-            <MenuItem
+            {/* <MenuItem
               onClick={() => {
                 popover.onClose();
                 onEdit();
@@ -156,7 +156,7 @@ import { ERole } from 'src/types/client';
             >
               <Iconify icon="solar:trash-bin-trash-bold" />
               Delete
-            </MenuItem>
+            </MenuItem> */}
           </MenuList>
         </CustomPopover>
       </>

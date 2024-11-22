@@ -51,6 +51,14 @@ export const M_CAMPAIGN_RUN = gql`
       campaign {
         id
         name
+        clientTier2 {
+          id
+          name
+          clientTier1 {
+            id
+            name
+          }
+        }
       }
       runType {
         id

@@ -54,6 +54,7 @@ export const M_CAMPAIGN_RUN_OFFER = gql`
       created
       agent {
         user {
+          id
           name
           profile {
             photo {
@@ -65,6 +66,10 @@ export const M_CAMPAIGN_RUN_OFFER = gql`
       campaignRun {
         id
         code
+        dateStart
+        dateStop
+        checkInAt
+        checkOutAt
         project {
           name
         }
@@ -74,6 +79,28 @@ export const M_CAMPAIGN_RUN_OFFER = gql`
             name
             clientTier1 {
               name
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const M_CAMPAIGN_AGENTS = gql`
+  mutation m_campaignRunOffers($input: InputCampaignRunOffers!) {
+    m_campaignRunOffers(input: $input) {
+      count
+      rows {
+        index
+        agent {
+          id
+          user {
+            name
+            profile {
+              photo {
+                fileName
+              }
             }
           }
         }

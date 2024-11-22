@@ -21,21 +21,21 @@ export function JobList({ jobs }: Props) {
 
   const handleView = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.job.details(id));
+      router.push(`/v2/agent/dashboard/job/${id}`);
     },
     [router]
   );
 
-  const handleEdit = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.job.edit(id));
-    },
-    [router]
-  );
+  // const handleEdit = useCallback(
+  //   (id: string) => {
+  //     router.push(paths.dashboard.job.edit(id));
+  //   },
+  //   [router]
+  // );
 
-  const handleDelete = useCallback((id: string) => {
-    console.info('DELETE', id);
-  }, []);
+  // const handleDelete = useCallback((id: string) => {
+  //   console.info('DELETE', id);
+  // }, []);
 
   return (
     <>
@@ -49,8 +49,8 @@ export function JobList({ jobs }: Props) {
             key={job.id}
             job={job}
             onView={() => handleView(job.id)}
-            onEdit={() => handleEdit(job.id)}
-            onDelete={() => handleDelete(job.id)}
+              // onEdit={() => handleEdit(job.id)}
+              // onDelete={() => handleDelete(job.id)}
           />
         ))}
       </Box>

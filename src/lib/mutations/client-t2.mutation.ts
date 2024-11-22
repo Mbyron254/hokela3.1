@@ -50,3 +50,14 @@ export const M_CLIENT_T2 = gql`
     }
   }
 `;
+
+export const M_CLIENT_T2_MINI = gql`
+  mutation m_tier2Clients($input: InputClientsTier2!) {
+    m_tier2Clients(input: $input) {
+      rows {
+        id
+        name
+      }
+    }
+  }
+`;

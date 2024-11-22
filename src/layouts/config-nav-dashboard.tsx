@@ -65,7 +65,7 @@ const agentNavData = [
         icon: ICONS.analytics,
         children: [
           { title: 'Runs', path: paths.v2[ERole.AGENT].campaigns.root },
-          { title: 'Offers', path: paths.v2[ERole.AGENT].campaigns.offers },
+          { title: 'Offers', path: paths.v2[ERole.AGENT].campaigns.offers.root },
         ],
       },
     ],
