@@ -1,10 +1,11 @@
+import { CONFIG } from 'src/config-global';
 
-import { CampaignOffersView } from 'src/sections/campaigns/offers/view';
+import { JobListView } from 'src/sections/job/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = { title: `Campaign Runs | Agent- Hokela 3.1` };
+export const metadata = { title: `Job list | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
-  return <CampaignOffersView offers={[]} />;
+  return <JobListView />;
 }
