@@ -5,7 +5,6 @@ import { memo } from 'react';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 
-import { CONFIG } from 'src/config-global';
 
 import { BackgroundShape } from './background-shape';
 
@@ -39,7 +38,7 @@ function ComingSoonIllustration({ hideBackground, sx, ...other }: Props) {
       {!hideBackground && <BackgroundShape />}
 
       <image
-        href={`${CONFIG.assetsDir}/assets/illustrations/characters/character-1.webp`}
+        href={`src/assets/illustrations/characters/character-1.webp`}
         height="300"
         x="320"
         y="30"

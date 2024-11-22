@@ -1,19 +1,12 @@
-'use client';
 
-import { useEffect } from 'react';
-
-import { useRouter } from 'src/routes/hooks';
-
-import { CONFIG } from 'src/config-global';
+import { HomeView } from 'src/sections/home/view';
 
 // ----------------------------------------------------------------------
 
-export default function Page() {
-  const router = useRouter();
+export const metadata = {
+  title: 'Hokela: The starting point for your next project',
+};
 
-  useEffect(() => {
-    router.push(CONFIG.auth.redirectPath);
-  }, [router]);
-
-  return null;
+export default function HomePage() {
+  return <HomeView />;
 }

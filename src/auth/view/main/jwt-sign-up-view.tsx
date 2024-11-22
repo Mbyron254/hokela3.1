@@ -18,48 +18,50 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from '../../hooks';
 import { FormHead } from '../../components/form-head';
 import { SignUpTerms } from '../../components/sign-up-terms';
 
+import { GQLMutation } from 'src/lib/client';
+import { USER_CREATE_SELF } from 'src/lib/mutations/user.mutation';
+
 // ----------------------------------------------------------------------
 
 export type SignUpSchemaType = zod.infer<typeof SignUpSchema>;
 
 export const SignUpSchema = zod.object({
-  officialName: zod.string().min(1, { message: 'First name is required!' }),
-  phoneNumber: zod.string().min(1, { message: 'Last name is required!' }),
+  officialName: zod.string().min(1, { message: 'Official name is required!' }),
+  phoneNumber: zod.string().min(1, { message: 'Phone number is required!' }),
   email: zod
     .string()
     .min(1, { message: 'Email is required!' })
     .email({ message: 'Email must be a valid email address!' }),
-  password: zod
-    .string()
-    .min(1, { message: 'Password is required!' })
-    .min(6, { message: 'Password must be at least 6 characters!' }),
 });
 
 // ----------------------------------------------------------------------
 
 export function JwtSignUpView() {
   const { checkUserSession } = useAuthContext();
-
   const router = useRouter();
-
-  const password = useBoolean();
+  
+  const { action: signup, loading } = GQLMutation({
+    mutation: USER_CREATE_SELF,
+    resolver: 'userCreateSelf',
+    toastmsg: true,
+    callback: () => {
+      router.push('/auth/main/sign-in');
+    },
+  });
 
   const [errorMsg, setErrorMsg] = useState('');
-  const [value, setValue] = useState();
+  const [phoneValue, setPhoneValue] = useState('');
 
   const defaultValues = {
     officialName: '',
     phoneNumber: '',
-
     email: '',
-    // password: '@demo1',
   };
 
   const methods = useForm<SignUpSchemaType>({
@@ -69,49 +71,71 @@ export function JwtSignUpView() {
 
   const {
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // await signUp({
-      //   email: data.email,
-      //   // password: data.password,
-      //   officialName: data.officialName,
-      //   phoneNumber: data.phoneNumber,
-      // });
-      await checkUserSession?.();
+      const input = {
+        email: data.email,
+        name: data.officialName, // Changed from officialName to name
+        phone: phoneValue, // Changed from phoneNumber to phone
+      };
 
-      router.refresh();
+      await signup({ 
+        variables: { input }
+      });
+
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
     }
   });
 
+  const handlePhoneChange = (
+    value: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (typeof value === 'string') {
+      setPhoneValue(value);
+      setValue('phoneNumber', value); // Update form value
+    }
+  };
+
   const renderForm = (
     <Box gap={3} display="flex" flexDirection="column">
-      <Box display="flex" gap={{ xs: 3, sm: 2 }} flexDirection={{ xs: 'column', sm: 'row' }}>
-        <Field.Text name="officialName" label="Official Name" InputLabelProps={{ shrink: true }} />
-      </Box>
-      <Field.Text name="email" label="Email address" InputLabelProps={{ shrink: true }} />
-      {/* <Field.Text name="phoneNumber" label="Phone Number" InputLabelProps={{ shrink: true }} /> */}
+      <Field.Text 
+        name="officialName"
+        label="Official Name"
+        InputLabelProps={{ shrink: true }}
+      />
+      
+      <Field.Text 
+        name="email"
+        label="Email Address"
+        InputLabelProps={{ shrink: true }}
+      />
+
       <MuiPhoneNumber
         name="phoneNumber"
+        label="Phone Number"
         defaultCountry="ke"
-        // @ts-ignore
-        onChange={(newValue) => setValue(newValue)}
+        variant="outlined"
+        fullWidth
+        onChange={handlePhoneChange}
+        InputLabelProps={{ shrink: true }}
       />
+
       <LoadingButton
         fullWidth
-        color="inherit"
+        color="primary"
         size="large"
         type="submit"
         variant="contained"
-        loading={isSubmitting}
-        loadingIndicator="Create account..."
+        loading={isSubmitting || loading}
+        loadingIndicator="Creating account..."
       >
-        Create account
+        Create Account
       </LoadingButton>
     </Box>
   );
@@ -119,16 +143,16 @@ export function JwtSignUpView() {
   return (
     <>
       <FormHead
-        title="Get started absolutely free"
+        title="Get Started Absolutely Free"
         description={
           <>
             {`Already have an account? `}
             <Link component={RouterLink} href={paths.auth.main.signIn} variant="subtitle2">
-              Get started
+              Sign In
             </Link>
           </>
         }
-        sx={{ textAlign: { xs: 'center', md: 'left' } }}
+        sx={{ textAlign: { xs: 'center', md: 'left' }, mb: 5 }}
       />
 
       {!!errorMsg && (

@@ -12,3 +12,10 @@ export type AuthContextValue = {
   unauthenticated: boolean;
   checkUserSession?: () => Promise<void>;
 };
+
+export type Session = {
+  user: UserType;
+  accountLabel: string;
+  isActiveAccount: boolean;
+  isLocked: boolean;
+};

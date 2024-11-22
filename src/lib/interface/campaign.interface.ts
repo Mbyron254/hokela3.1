@@ -37,3 +37,27 @@ export interface ICampaignRunUpdate {
   checkOutAt?: string;
   closeAdvertOn?: Date;
 }
+
+export interface IAgentAllocation {
+  index: number;
+  id: string;
+  quantityAllocated: number;
+  quantitySold: number;
+  product: {
+    name: string;
+    photo: string;
+    package: string;
+  };
+}
+
+export interface IAgentFreeGiveawayAllocations {
+  index: number;
+  id: string;
+  quantityAllocated: number;
+  quantityGiven: number;
+  product: {
+    name: string;
+    photo: string;
+    package: string;
+  };
+}

@@ -21,7 +21,7 @@ const getClient = () => {
     client = new ApolloClient({
       link: from([
         new HttpLink({
-          uri: 'http://localhost:3000/graphql',
+          uri: 'http://localhost:3001/graphql',
           credentials: 'include',
         }),
         onError(({ graphQLErrors, networkError }) => {

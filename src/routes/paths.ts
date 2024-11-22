@@ -1,11 +1,48 @@
-// ----------------------------------------------------------------------
+import { ERole } from '../types/client';
 
-const ROOTS = {
+
+const ROOTS = { 
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
+  V2: '/v2',
 };
 
 // ----------------------------------------------------------------------
+const v2_paths = {
+  [ERole.ADMIN]: {
+    root: `${ROOTS.V2}/admin/dashboard`,
+    users: `${ROOTS.V2}/admin/users`,
+    sessions: `${ROOTS.V2}/admin/sessions`
+  },
+  [ERole.AGENT]: {
+    root: `${ROOTS.V2}/agent/dashboard`,
+    profile: `${ROOTS.V2}/agent/profile`,
+    addProfile: `${ROOTS.V2}/agent/profile/add`,
+    settings: `${ROOTS.V2}/agent/settings`, 
+    editProfile: (id: string) => `${ROOTS.V2}/agent/profile/edit/${id}`,
+    campaigns: {
+      root: `${ROOTS.V2}/agent/dashboard/campaigns/runs`,
+      details: (id: string) => `${ROOTS.V2}/agent/dashboard/campaigns/runs/${id}`,
+      offers: `${ROOTS.V2}/agent/dashboard/campaigns/offers`,
+    },
+    jobs: {
+      root: `${ROOTS.V2}/agent/dashboard/job`,
+      applications: `${ROOTS.V2}/agent/dashboard/job/applications`,
+      },
+  },
+  [ERole.PRODUCER]: {
+    root: `${ROOTS.V2}/producer/dashboard`,
+  },
+  [ERole.DISTRIBUTOR]: {
+    root: `${ROOTS.V2}/distributor/dashboard`,
+  },
+  [ERole.RETAILER]: {
+    root: `${ROOTS.V2}/retailer/dashboard`,
+  },
+  [ERole.MARKETING_AGENCY]: {
+    root: `${ROOTS.V2}/marketing/dashboard`,
+  }
+};
 
 export const paths = {
   faqs: '/faqs',
@@ -42,15 +79,22 @@ export const paths = {
       resetPassword: `${ROOTS.AUTH}/supabase/reset-password`,
     },
   },
-  // DASHBOARD
-  dashboard: {
-    root: ROOTS.DASHBOARD,
-    two: `${ROOTS.DASHBOARD}/two`,
-    three: `${ROOTS.DASHBOARD}/three`,
-    group: {
-      root: `${ROOTS.DASHBOARD}/group`,
-      five: `${ROOTS.DASHBOARD}/group/five`,
-      six: `${ROOTS.DASHBOARD}/group/six`,
-    },
-  },
+
+  // admin:{   
+  //   dashboard: {
+  //     root: ROOTS.DASHBOARD,
+  //     admin: `${ROOTS.DASHBOARD}/admin/dashboard`,
+  //     user: `${ROOTS.DASHBOARD}/user/dashboard`,
+  //     two: `${ROOTS.DASHBOARD}/two`,
+  //     three: `${ROOTS.DASHBOARD}/three`,
+  //     group: {
+  //       root: `${ROOTS.DASHBOARD}/group`,
+  //       five: `${ROOTS.DASHBOARD}/group/five`,
+  //       six: `${ROOTS.DASHBOARD}/group/six`,
+  //     },
+  //   },
+  // },
+  v2: v2_paths
+
+
 };

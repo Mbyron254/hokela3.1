@@ -1,14 +1,10 @@
 import type { ButtonProps } from '@mui/material/Button';
 import type { Theme, SxProps } from '@mui/material/styles';
 
-import { useCallback } from 'react';
-
 import Button from '@mui/material/Button';
 
-import { useRouter } from 'src/routes/hooks';
-
-import { useAuthContext } from 'src/auth/hooks';
-import { signOut } from 'src/auth/context/main/action';
+import { GQLMutation } from 'src/lib/client';
+import { USER_LOGOUT } from 'src/lib/mutations/user.mutation';
 
 // ----------------------------------------------------------------------
 
@@ -18,24 +14,28 @@ type Props = ButtonProps & {
 };
 
 export function SignOutButton({ onClose, ...other }: Props) {
-  const router = useRouter();
-
-  const { checkUserSession } = useAuthContext();
-
-  const handleLogout = useCallback(async () => {
-    try {
-      await signOut();
-      await checkUserSession?.();
-
+  const { action: signout, loading: signingOut } = GQLMutation({
+    mutation: USER_LOGOUT,
+    resolver: 'logout',
+    toastmsg: true,
+    callback: () => {
       onClose?.();
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-    }
-  }, [checkUserSession, onClose, router]);
+      window.location.replace('/');
+    },
+  });
+
+  const handleLogout = () => signout();
 
   return (
-    <Button fullWidth variant="soft" size="large" color="error" onClick={handleLogout} {...other}>
+    <Button 
+      fullWidth 
+      variant="soft" 
+      size="large" 
+      color="error" 
+      onClick={handleLogout}
+      disabled={signingOut}
+      {...other}
+    >
       Logout
     </Button>
   );

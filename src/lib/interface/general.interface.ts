@@ -4,7 +4,13 @@ import {
   TypedDocumentNode,
 } from '@apollo/client';
 import { DocumentNode } from 'graphql';
-import { Dispatch, MouseEventHandler, SetStateAction } from 'react';
+import {
+  Dispatch,
+  FormEventHandler,
+  MouseEventHandler,
+  SetStateAction,
+} from 'react';
+import { TAnswerType } from '../constant';
 
 export interface IGQLQuery {
   refetch: (variables?: Partial<any>) => Promise<ApolloQueryResult<any>>;
@@ -87,6 +93,12 @@ export interface T_Option {
 export interface IPhoneNumberInput {
   input: any;
   phonekey: string;
+  required?: boolean;
+  onChange: (value: SetStateAction<any>) => void;
+}
+
+export interface IPhoneNumberInputLegacy {
+  value: string;
   onChange: (value: SetStateAction<any>) => void;
   required?: boolean;
 }
@@ -98,4 +110,166 @@ export interface IWYSIWYG {
   height?: string;
   limited?: boolean;
   setValue: (value: string) => void;
+}
+
+export interface IInventoryAllocation {
+  campaignRunId: string;
+  clientTier2Id: string;
+}
+
+export interface IAllocations {
+  index: number;
+  id: string;
+  name: string;
+  photo: string;
+  allocated: number;
+  sold: number;
+}
+
+export interface IGeoLocation {
+  latitude?: number;
+  longitude?: number;
+  error?: string;
+}
+
+export interface IAnswerDropdownOption {
+  value: string;
+  label: string;
+}
+
+// export interface IAnswerChoiceMultiple {
+//   label: string;
+//   value: IChoice;
+// }
+
+export interface IQuestionnairField {
+  id: string;
+  isRequired: boolean;
+  noDuplicateResponse: boolean;
+  question: string;
+  optionsChoiceSingle?: IChoice[];
+  optionsChoiceMultiple?: IChoice[];
+  optionsDropdown?: IAnswerDropdownOption[];
+  feedbackType: TAnswerType;
+  feedback?: InputSurveyResponseFeedback | string | IChoice[];
+  allowMultipleFileUploads: boolean;
+}
+
+export interface IQuestionnaireSetup {
+  questionnaireFields: IQuestionnairField[];
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>;
+}
+
+export interface IQuestionnaireForm {
+  questionnaireFields: IQuestionnairField[];
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>;
+  submitting: boolean;
+  handleSubmit: (e: Event) => void;
+}
+
+export interface InputSurveyUpdate {
+  id?: string;
+  clientTier2Id?: string;
+  campaignRunId?: string;
+  name?: string;
+  description?: string;
+  questionnaireFields?: IQuestionnairField[];
+}
+
+export interface ISingleChoiceEdit {
+  id: string;
+  value1?: string;
+  value2?: string;
+}
+
+export interface InputSurveyResponseFeedback {
+  _string?: string;
+  _stringArray?: string[];
+  _choice?: IChoice;
+  _choiceArray?: IChoice[];
+}
+
+export interface InputSurveyResponse {
+  questionnaireFieldId: string;
+  feedback: InputSurveyResponseFeedback | string | string[] | IChoice[];
+}
+
+export interface InputSurveyReportCreate {
+  respondentName?: string;
+  respondentPhone?: string;
+  respondentEmail?: string;
+}
+
+export interface ISurveyReportTarget {
+  surveyId: string;
+}
+
+export interface IAgentTarget {
+  agentId: string;
+  target: number;
+  _filled?: number;
+  _agent?: any;
+}
+
+export interface IChoice {
+  text?: string;
+  documentId?: string;
+}
+
+interface IAgentOriginContextLabel {
+  title: string;
+  abbreviation: string;
+}
+
+export interface IAgentOriginContext {
+  nin: IAgentOriginContextLabel;
+  tin: IAgentOriginContextLabel;
+  hin: IAgentOriginContextLabel;
+  ssn: IAgentOriginContextLabel;
+}
+
+export interface IManageAgentKYC {
+  agentId?: string;
+  phone?: string;
+}
+
+export interface IInputConfigCreate {
+  campaignRunId?: string;
+  salePackagingId?: string;
+  saleUnits?: number;
+  giveawayPackagingId?: string;
+  giveawayUnits?: number;
+}
+
+export interface IInputConfigUpdate {
+  id?: string;
+  salePackagingId?: string;
+  saleUnits?: number;
+  giveawayPackagingId?: string;
+  giveawayUnits?: number;
+}
+
+export interface IFreeGiveawayAllocations {
+  index: number;
+  id: string;
+  name: string;
+  photo: string;
+  allocated: number;
+  givenAway: number;
+}
+
+export interface InputSalesGiveawaySurveyReportCreate {
+  salesGiveawayConfigId?: string;
+  quantityGiven?: number;
+  respondentName?: string;
+  respondentPhone?: string;
+  respondentEmail?: string;
+}
+
+export interface InputFreeGiveawaySurveyReportCreate {
+  respondentName?: string;
+  respondentPhone?: string;
+  respondentEmail?: string;
+  freeGiveawayAllocationId?: string;
+  quantityGiven?: number;
 }

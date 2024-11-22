@@ -20,36 +20,56 @@ import type { AuthState } from '../../types';
  * Customer will need to do some extra handling yourself if you want to extend the logic and other features...
  */
 
-type Props = {
-  children: React.ReactNode;
-};
+interface AuthContextType {
+  checkUserSession: () => Promise<void>;
+  user: AuthState['user'] | null;
+  loading: boolean;
+  authenticated: boolean;
+  unauthenticated: boolean;
+}
 
-export function AuthProvider({ children }: Props) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { state, setState } = useSetState<AuthState>({
     user: null,
     loading: true,
   });
 
-  const checkUserSession = useCallback(async () => {
+  const checkUserSession = async () => {
     try {
+      if (state.user) {
+        setState({
+          user: state.user,
+          loading: false,
+        });
+        return;
+      }
+  
       const accessToken = sessionStorage.getItem(STORAGE_KEY);
-
+  
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
-
+  
         const res = await axios.get(endpoints.auth.me);
-
         const { user } = res.data;
-
-        setState({ user: { ...user, accessToken }, loading: false });
+  
+        setState({
+          user: { ...user, accessToken },
+          loading: false,
+        });
       } else {
-        setState({ user: null, loading: false });
+        setState({
+          user: null,
+          loading: false,
+        });
       }
     } catch (error) {
-      console.error(error);
-      setState({ user: null, loading: false });
+      console.error('Session check failed:', error);
+      setState({
+        user: null,
+        loading: false,
+      });
     }
-  }, [setState]);
+  };
 
   useEffect(() => {
     checkUserSession();

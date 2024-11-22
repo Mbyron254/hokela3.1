@@ -1,14 +1,13 @@
-import { paths } from 'src/routes/paths';
+import { paths } from './routes/paths';
 
 import packageJson from '../package.json';
-
 // ----------------------------------------------------------------------
 
 export type ConfigValue = {
   appName: string;
   appVersion: string;
   serverUrl: string;
-  assetsDir: string;
+  assetsDir: string; 
   isStaticExport: boolean;
   auth: {
     method: 'main' | 'amplify' | 'firebase' | 'supabase' | 'auth0';
@@ -33,7 +32,7 @@ export type ConfigValue = {
 // ----------------------------------------------------------------------
 
 export const CONFIG: ConfigValue = {
-  appName: 'Minimal UI',
+  appName: 'Hokela 3.1',
   appVersion: packageJson.version,
   serverUrl: process.env.NEXT_PUBLIC_SERVER_URL ?? '',
   assetsDir: process.env.NEXT_PUBLIC_ASSETS_DIR ?? '',
@@ -45,15 +44,17 @@ export const CONFIG: ConfigValue = {
   auth: {
     method: 'main',
     skip: false,
-    redirectPath: paths.dashboard.root,
+    redirectPath: paths.v2.agent.root,
   },
   /**
    * Mapbox
    */
   mapboxApiKey: process.env.NEXT_PUBLIC_MAPBOX_API_KEY ?? '',
+
   /**
    * Firebase
    */
+  
   firebase: {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? '',
@@ -63,27 +64,20 @@ export const CONFIG: ConfigValue = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APPID ?? '',
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? '',
   },
-  /**
-   * Amplify
-   */
   amplify: {
-    userPoolId: process.env.NEXT_PUBLIC_AWS_AMPLIFY_USER_POOL_ID ?? '',
-    userPoolWebClientId: process.env.NEXT_PUBLIC_AWS_AMPLIFY_USER_POOL_WEB_CLIENT_ID ?? '',
-    region: process.env.NEXT_PUBLIC_AWS_AMPLIFY_REGION ?? '',
+    userPoolId: '',
+    userPoolWebClientId: '',
+    region: ''
   },
-  /**
-   * Auth0
-   */
   auth0: {
-    clientId: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID ?? '',
-    domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN ?? '',
-    callbackUrl: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL ?? '',
+    clientId: '',
+    domain: '',
+    callbackUrl: ''
   },
-  /**
-   * Supabase
-   */
   supabase: {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-    key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
-  },
+    url: '',
+    key: ''
+  }
 };
+
+export const PATH_AFTER_LOGIN = paths.v2.agent.root; // as '/dashboard'

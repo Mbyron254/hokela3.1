@@ -1,5 +1,4 @@
 // src/app/RootServerLayout.tsx
-import { CONFIG } from 'src/config-global';
 import { primary } from 'src/theme/core/palette';
 
 export const viewport = {
@@ -12,7 +11,7 @@ export const metadata = {
   icons: [
     {
       rel: 'icon',
-      url: `${CONFIG.assetsDir}/favicon.ico`,
+      url: `src/assets/favicon.ico`,
     },
   ],
 };

@@ -32,9 +32,9 @@ export function Section({
   method,
   layoutQuery,
   methods,
-  title = 'Manage the job',
+  title = 'Join Now Opportunities Awaits',
   imgUrl = `${CONFIG.assetsDir}/assets/illustrations/illustration-dashboard.webp`,
-  subtitle = 'More effectively with optimized workflows.',
+  subtitle = '',
   ...other
 }: SectionProps) {
   const theme = useTheme();
