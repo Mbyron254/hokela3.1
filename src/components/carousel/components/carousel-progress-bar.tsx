@@ -1,10 +1,12 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import type { BoxProps } from '@mui/material/Box';
 
 import { varAlpha } from 'src/theme/styles';
 
 import { carouselClasses } from '../classes';
+
 import type { CarouselProgressBarProps } from '../types';
 
 // ----------------------------------------------------------------------
@@ -16,8 +18,8 @@ const StyledRoot = styled(Box)(({ theme }) => ({
   borderRadius: 6,
   overflow: 'hidden',
   position: 'relative',
-  color: theme.palette.text.primary, // Updated here
-  backgroundColor: varAlpha(theme.palette.grey[500], 0.2), // Updated here
+  color: theme.vars.palette.text.primary,
+  backgroundColor: varAlpha(theme.vars.palette.grey['500Channel'], 0.2),
 }));
 
 const StyledProgress = styled(Box)(() => ({

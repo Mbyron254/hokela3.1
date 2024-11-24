@@ -1,7 +1,7 @@
 import { _jobs } from 'src/_mock/_job';
 import { CONFIG } from 'src/config-global';
 
-import { JobDetailsView } from 'src/sections/job/view';
+import { JobDetailsView } from 'src/sections/campaigns/offers/view';
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ export default function Page({ params }: Props) {
 
   const currentJob = _jobs.find((job) => job.id === id);
 
-  return <JobDetailsView job={currentJob} />;
+  return <JobDetailsView id={id} />;
 }
 
 // ----------------------------------------------------------------------

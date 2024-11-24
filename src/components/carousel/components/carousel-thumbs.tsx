@@ -1,22 +1,23 @@
+import type { BoxProps } from '@mui/material/Box';
+import type { CSSObject } from '@mui/material/styles';
+import type { ButtonBaseProps } from '@mui/material/ButtonBase';
+
 import { Children, forwardRef, isValidElement } from 'react';
 
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
-import type { BoxProps } from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
-import type { CSSObject } from '@mui/material/styles';
-import type { ButtonBaseProps } from '@mui/material/ButtonBase';
 
 import { varAlpha } from 'src/theme/styles';
 
 import { carouselClasses } from '../classes';
 import { CarouselSlide } from './carousel-slide';
 import { StyledRoot, StyledContainer } from '../carousel';
+
 import type { CarouselOptions, CarouselThumbProps, CarouselThumbsProps } from '../types';
 
 // ----------------------------------------------------------------------
 
-// eslint-disable-next-line react/display-name
 export const CarouselThumbs = forwardRef<HTMLDivElement, BoxProps & CarouselThumbsProps>(
   ({ children, slotProps, options, sx, className, ...other }, ref) => {
     const axis = options?.axis ?? 'x';
@@ -99,7 +100,7 @@ export function CarouselThumb({
           }),
         ...(selected && {
           opacity: 1,
-          boxShadow: (theme) => `0 0 0 2px ${theme.palette.primary.main}`, // Updated here
+          boxShadow: (theme) => `0 0 0 2px ${theme.vars.palette.primary.main}`,
         }),
         ...sx,
       }}
@@ -132,7 +133,7 @@ function useMaskStyle(axis: CarouselOptions['axis']): CSSObject {
     position: 'absolute',
   };
 
-  const bgcolor = `${theme.palette.background.paper} 20%, ${varAlpha(theme.palette.background.paper, 0)} 100%)`; // Updated here
+  const bgcolor = `${theme.vars.palette.background.paper} 20%, ${varAlpha(theme.vars.palette.background.paperChannel, 0)} 100%)`;
 
   if (axis === 'y') {
     return {

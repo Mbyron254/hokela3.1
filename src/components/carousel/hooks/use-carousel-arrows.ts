@@ -1,4 +1,5 @@
 import type { EmblaCarouselType } from 'embla-carousel';
+
 import { useState, useEffect, useCallback } from 'react';
 
 import type { UseCarouselArrowsReturn } from '../types';
@@ -34,8 +35,6 @@ export const useCarouselArrows = (mainApi?: EmblaCarouselType): UseCarouselArrow
   }, [mainApi, onSelect]);
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    next(){null},
     disablePrev,
     disableNext,
     onClickPrev,

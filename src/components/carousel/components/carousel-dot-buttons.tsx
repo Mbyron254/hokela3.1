@@ -1,11 +1,13 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
-import type { BoxProps } from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 
 import { varAlpha, stylesMode } from 'src/theme/styles';
 
 import { carouselClasses } from '../classes';
+
 import type { CarouselDotButtonsProps } from '../types';
 
 // ----------------------------------------------------------------------
@@ -75,7 +77,7 @@ export function CarouselDotButtons({
       borderRadius: '50%',
       typography: 'caption',
       color: 'text.disabled',
-      border: `solid 1px ${varAlpha(theme.palette.grey[500], 0.16)}`, // Updated here
+      border: `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.16)}`,
       ...(selected && {
         color: 'common.white',
         bgcolor: 'text.primary',
@@ -129,4 +131,3 @@ export function CarouselDotButtons({
     </Box>
   );
 }
-

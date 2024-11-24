@@ -28,22 +28,20 @@ export type IJobSalary = {
   negotiable: boolean;
 };
 
-export type IJobItem = {
+export interface IJobItem {
   id: string;
-  role: string;
-  title: string;
-  content: string;
-  publish: string;
-  skills: string[];
-  totalViews: number;
-  experience: string;
-  salary: IJobSalary;
-  benefits: string[];
-  locations: string[];
-  company: IJobCompany;
-  createdAt: string | null;
-  employmentTypes: string[];
-  workingSchedule: string[];
-  expiredDate: string | null;
-  candidates: IJobCandidate[];
-};
+  closeAdvertOn: string;
+  campaign: {
+    id: string;
+    name: string;
+    jobDescription: string;
+    jobQualification: string;
+    clientTier2: {
+      name: string;
+      clientTier1: {
+        name: string;
+      };
+    };
+  };
+  candidates?: any[]; // Add proper type if you have candidate data structure
+}

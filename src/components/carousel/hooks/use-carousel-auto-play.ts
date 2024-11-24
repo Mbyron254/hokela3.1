@@ -1,5 +1,6 @@
 import type {} from 'embla-carousel-autoplay';
 import type { EmblaCarouselType } from 'embla-carousel';
+
 import { useState, useEffect, useCallback } from 'react';
 
 import type { UseCarouselAutoPlayReturn } from '../types';

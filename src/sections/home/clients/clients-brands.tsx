@@ -10,12 +10,12 @@ import type { BoxProps } from '@mui/material/Box';
 
 import { _mock } from 'src/_mock';
 
-import { Carousel } from 'src/components/carousel/carousel';
+import { Carousel } from 'src/components/carousel-old/carousel';
 import { varFade, MotionViewport } from 'src/components/animate';
-import { useCarousel } from 'src/components/carousel/hooks/use-carousel';
-import { carouselBreakpoints } from 'src/components/carousel/breakpoints';
-import { CarouselDotButtons } from 'src/components/carousel/components/carousel-dot-buttons';
-import { CarouselArrowBasicButtons } from 'src/components/carousel/components/carousel-arrow-buttons';
+import { useCarousel } from 'src/components/carousel-old/hooks/use-carousel';
+import { carouselBreakpoints } from 'src/components/carousel-old/breakpoints';
+import { CarouselDotButtons } from 'src/components/carousel-old/components/carousel-dot-buttons';
+import { CarouselArrowBasicButtons } from 'src/components/carousel-old/components/carousel-arrow-buttons';
 
 import { SectionTitle } from './components/section-title';
 import { FloatLine, FloatTriangleDownIcon } from './components/svg-elements';

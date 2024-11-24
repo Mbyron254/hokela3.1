@@ -1,13 +1,15 @@
-import Box from '@mui/material/Box';
-import SvgIcon from '@mui/material/SvgIcon';
 import type { BoxProps } from '@mui/material/Box';
 import type { ButtonBaseProps } from '@mui/material/ButtonBase';
 import type { Theme, SxProps, CSSObject } from '@mui/material/styles';
+
+import Box from '@mui/material/Box';
+import SvgIcon from '@mui/material/SvgIcon';
 import ButtonBase, { buttonBaseClasses } from '@mui/material/ButtonBase';
 
 import { varAlpha, stylesMode } from 'src/theme/styles';
 
 import { carouselClasses } from '../classes';
+
 import type { CarouselArrowButtonProps, CarouselArrowButtonsProps } from '../types';
 
 // ----------------------------------------------------------------------
@@ -85,7 +87,7 @@ export function CarouselArrowNumberButtons({
         zIndex: 9,
         borderRadius: 1.25,
         color: 'common.white',
-        bgcolor: (theme) => varAlpha(theme.palette.grey[900], 0.48), // Updated here
+        bgcolor: (theme) => varAlpha(theme.vars.palette.grey['900Channel'], 0.48),
         ...sx,
       }}
       {...other}
@@ -120,7 +122,6 @@ export function CarouselArrowNumberButtons({
     </Box>
   );
 }
-
 
 // ----------------------------------------------------------------------
 

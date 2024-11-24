@@ -1,10 +1,10 @@
 
-import { DashboardView } from 'src/sections/dashboard/view';
+import { OverviewCourseView } from 'src/sections/course/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = { title: `Dashboard -   Hokela` };
+export const metadata = { title: `Agent | Dashboard - Hokela ` };
 
 export default function Page() {
-  return <DashboardView title="Dashboard" />;
+  return <OverviewCourseView />;
 }

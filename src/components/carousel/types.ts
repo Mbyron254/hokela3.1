@@ -1,7 +1,6 @@
+import type { Theme, SxProps } from '@mui/material/styles';
 import type { UseEmblaCarouselType } from 'embla-carousel-react';
 import type { EmblaOptionsType, EmblaCarouselType } from 'embla-carousel';
-
-import type { Theme, SxProps } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +32,6 @@ export type CarouselDotButtonsProps = Omit<UseCarouselDotsReturn, 'dotCount'> & 
  * Prev & Next Buttons
  */
 export type UseCarouselArrowsReturn = {
-  next?: () => unknown; 
   disablePrev: boolean;
   disableNext: boolean;
   onClickPrev: () => void;
@@ -138,7 +136,6 @@ export type CarouselOptions = CarouselBaseOptions & {
 };
 
 export type UseCarouselReturn = {
-  scrollNext: any;
   pluginNames?: string[];
   options?: CarouselOptions;
   mainRef: UseEmblaCarouselType[0];
@@ -148,16 +145,7 @@ export type UseCarouselReturn = {
   autoplay: UseCarouselAutoPlayReturn;
   progress: UseCarouselProgressReturn;
   autoScroll: UseCarouselAutoPlayReturn;
-  // arrows: UseCarouselArrowsReturn;
-  arrows: {
-    next: () => unknown;
-    scrollNext: any;
-    disablePrev: boolean;
-    disableNext: boolean;
-    onClickPrev: () => void
-    onClickNext: () => void
-    // next: () => unknown
-  }
+  arrows: UseCarouselArrowsReturn;
 };
 
 export type CarouselProps = {

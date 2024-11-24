@@ -83,55 +83,6 @@ type OfferData = {
   }>;
 };
 
-const MOCK_CAMPAIGNS: Campaign[] = [
-  {
-    id: 'camp-001',
-    title: 'Social Media Campaign',
-    company: 'Acme Corporation',
-    companyInitials: 'AC',
-    potentialPay: 5000,
-    unlockedAmount: 3750,
-    paidAmount: 2500,
-    kpisAchieved: 15,
-    totalKpis: 20,
-    profileCompletion: 90,
-    campaignProgress: 75,
-    daysRemaining: 5,
-    status: 'active'
-  },
-  {
-    id: 'camp-002',
-    title: 'Email Marketing',
-    company: 'Beta Inc',
-    companyInitials: 'BI',
-    potentialPay: 3000,
-    unlockedAmount: 2000,
-    paidAmount: 1500,
-    kpisAchieved: 8,
-    totalKpis: 12,
-    profileCompletion: 85,
-    campaignProgress: 65,
-    daysRemaining: 10,
-    status: 'active'
-  },
-  {
-    id: 'camp-003',
-    title: 'Content Marketing',
-    company: 'Delta Corp',
-    companyInitials: 'DC',
-    potentialPay: 4000,
-    unlockedAmount: 4000,
-    paidAmount: 4000,
-    kpisAchieved: 15,
-    totalKpis: 15,
-    profileCompletion: 100,
-    campaignProgress: 100,
-    daysRemaining: 0,
-    status: 'completed',
-    completedDate: '2023-12-01'
-  }
-];
-
 type Props = {
   title?: string;
 };
@@ -421,180 +372,180 @@ export function CampaignsView({ title = 'Blank' }: Props) {
     ));
   };
 
-  const renderCampaignCard = (campaign: Campaign) => (
-    <Box
-      key={campaign.id}
-      onClick={() => handleCampaignClick(campaign.id)}
-      sx={{
-        p: 3,
-        borderRadius: 2,
-        bgcolor: 'background.paper',
-        boxShadow: (theme) => theme.customShadows.z8,
-        transition: 'all 0.3s ease',
-        ':hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: (theme) => theme.customShadows.z16,
-          cursor: 'pointer',
-        },
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '4px',
-          background: (theme) => campaign.status === 'completed' 
-            ? `linear-gradient(90deg, ${theme.palette.success.main}, ${theme.palette.success.light})`
-            : `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-        },
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        mb: 3
-      }}
-    >
-      <Typography 
-        variant="h6" 
-        sx={{ 
-          mb: 2,
-          color: campaign.status === 'completed' ? 'success.main' : 'primary.main',
-          fontWeight: 700,
-          fontSize: '1.1rem',
-          lineHeight: 1.2
-        }}
-      >
-        {campaign.title}
-      </Typography>
+  // const renderCampaignCard = (campaign: Campaign) => (
+  //   <Box
+  //     key={campaign.id}
+  //     onClick={() => handleCampaignClick(campaign.id)}
+  //     sx={{
+  //       p: 3,
+  //       borderRadius: 2,
+  //       bgcolor: 'background.paper',
+  //       boxShadow: (theme) => theme.customShadows.z8,
+  //       transition: 'all 0.3s ease',
+  //       ':hover': {
+  //         transform: 'translateY(-4px)',
+  //         boxShadow: (theme) => theme.customShadows.z16,
+  //         cursor: 'pointer',
+  //       },
+  //       position: 'relative',
+  //       overflow: 'hidden',
+  //       '&::before': {
+  //         content: '""',
+  //         position: 'absolute',
+  //         top: 0,
+  //         left: 0,
+  //         width: '100%',
+  //         height: '4px',
+  //         background: (theme) => campaign.status === 'completed' 
+  //           ? `linear-gradient(90deg, ${theme.palette.success.main}, ${theme.palette.success.light})`
+  //           : `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+  //       },
+  //       display: 'flex',
+  //       flexDirection: 'column',
+  //       height: '100%',
+  //       mb: 3
+  //     }}
+  //   >
+  //     <Typography 
+  //       variant="h6" 
+  //       sx={{ 
+  //         mb: 2,
+  //         color: campaign.status === 'completed' ? 'success.main' : 'primary.main',
+  //         fontWeight: 700,
+  //         fontSize: '1.1rem',
+  //         lineHeight: 1.2
+  //       }}
+  //     >
+  //       {campaign.title}
+  //     </Typography>
 
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        mb: 3,
-        gap: 1
-      }}>
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: '50%',
-            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'primary.main',
-            fontWeight: 700,
-          }}
-        >
-          {campaign.companyInitials}
-        </Box>
-        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-          {campaign.company}
-        </Typography>
-      </Box>
+  //     <Box sx={{ 
+  //       display: 'flex', 
+  //       alignItems: 'center', 
+  //       mb: 3,
+  //       gap: 1
+  //     }}>
+  //       <Box
+  //         sx={{
+  //           width: 40,
+  //           height: 40,
+  //           borderRadius: '50%',
+  //           bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+  //           display: 'flex',
+  //           alignItems: 'center',
+  //           justifyContent: 'center',
+  //           color: 'primary.main',
+  //           fontWeight: 700,
+  //         }}
+  //       >
+  //         {campaign.companyInitials}
+  //       </Box>
+  //       <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+  //         {campaign.company}
+  //       </Typography>
+  //     </Box>
 
-      <Box 
-        sx={{ 
-          mb: 3,
-          p: 2,
-          borderRadius: 1.5,
-          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.04),
-        }}
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Potential Pay
-          </Typography>
-          <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 600 }}>
-            Ksh{campaign.potentialPay.toLocaleString()}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Unlocked
-          </Typography>
-          <Typography variant="subtitle2" sx={{ color: 'success.main', fontWeight: 600 }}>
-            Ksh{campaign.unlockedAmount.toLocaleString()}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Paid
-          </Typography>
-          <Typography variant="subtitle2" sx={{ color: 'info.main', fontWeight: 600 }}>
-            Ksh{campaign.paidAmount.toLocaleString()}
-          </Typography>
-        </Box>
-      </Box>
+  //     <Box 
+  //       sx={{ 
+  //         mb: 3,
+  //         p: 2,
+  //         borderRadius: 1.5,
+  //         bgcolor: (theme) => alpha(theme.palette.primary.main, 0.04),
+  //       }}
+  //     >
+  //       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+  //         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+  //           Potential Pay
+  //         </Typography>
+  //         <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 600 }}>
+  //           Ksh{campaign.potentialPay.toLocaleString()}
+  //         </Typography>
+  //       </Box>
+  //       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+  //         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+  //           Unlocked
+  //         </Typography>
+  //         <Typography variant="subtitle2" sx={{ color: 'success.main', fontWeight: 600 }}>
+  //           Ksh{campaign.unlockedAmount.toLocaleString()}
+  //         </Typography>
+  //       </Box>
+  //       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+  //         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+  //           Paid
+  //         </Typography>
+  //         <Typography variant="subtitle2" sx={{ color: 'info.main', fontWeight: 600 }}>
+  //           Ksh{campaign.paidAmount.toLocaleString()}
+  //         </Typography>
+  //       </Box>
+  //     </Box>
 
-      {campaign.status === 'active' ? (
-        <>
-          <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Campaign Progress
-              </Typography>
-              <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 600 }}>
-                {campaign.campaignProgress}%
-              </Typography>
-            </Box>
-            <LinearProgress
-              variant="determinate"
-              value={campaign.campaignProgress}
-              sx={{
-                height: 8,
-                borderRadius: 2,
-                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
-                '& .MuiLinearProgress-bar': {
-                  borderRadius: 2,
-                  background: (theme) => `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-                },
-              }}
-            />
-          </Box>
+  //     {campaign.status === 'active' ? (
+  //       <>
+  //         <Box sx={{ mb: 2 }}>
+  //           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+  //             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+  //               Campaign Progress
+  //             </Typography>
+  //             <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 600 }}>
+  //               {campaign.campaignProgress}%
+  //             </Typography>
+  //           </Box>
+  //           <LinearProgress
+  //             variant="determinate"
+  //             value={campaign.campaignProgress}
+  //             sx={{
+  //               height: 8,
+  //               borderRadius: 2,
+  //               bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+  //               '& .MuiLinearProgress-bar': {
+  //                 borderRadius: 2,
+  //                 background: (theme) => `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+  //               },
+  //             }}
+  //           />
+  //         </Box>
 
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 0.5,
-              color: 'warning.main',
-              bgcolor: (theme) => alpha(theme.palette.warning.main, 0.08),
-              borderRadius: 1.5,
-              p: 1,
-              mt: 'auto'
-            }}
-          >
-            <Box component="span" sx={{ width: 16, height: 16 }}>⏳</Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-              {campaign.daysRemaining} Days Remaining
-            </Typography>
-          </Box>
-        </>
-      ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 0.5,
-            color: 'success.main',
-            bgcolor: (theme) => alpha(theme.palette.success.main, 0.08),
-            borderRadius: 1.5,
-            p: 1,
-            mt: 'auto'
-          }}
-        >
-          <Box component="span" sx={{ width: 16, height: 16 }}>✓</Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            Completed on {new Date(campaign.completedDate!).toLocaleDateString()}
-          </Typography>
-        </Box>
-      )}
-    </Box>
-  );
+  //         <Box
+  //           sx={{
+  //             display: 'flex',
+  //             alignItems: 'center',
+  //             justifyContent: 'center',
+  //             gap: 0.5,
+  //             color: 'warning.main',
+  //             bgcolor: (theme) => alpha(theme.palette.warning.main, 0.08),
+  //             borderRadius: 1.5,
+  //             p: 1,
+  //             mt: 'auto'
+  //           }}
+  //         >
+  //           <Box component="span" sx={{ width: 16, height: 16 }}>⏳</Box>
+  //           <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+  //             {campaign.daysRemaining} Days Remaining
+  //           </Typography>
+  //         </Box>
+  //       </>
+  //     ) : (
+  //       <Box
+  //         sx={{
+  //           display: 'flex',
+  //           alignItems: 'center',
+  //           justifyContent: 'center',
+  //           gap: 0.5,
+  //           color: 'success.main',
+  //           bgcolor: (theme) => alpha(theme.palette.success.main, 0.08),
+  //           borderRadius: 1.5,
+  //           p: 1,
+  //           mt: 'auto'
+  //         }}
+  //       >
+  //         <Box component="span" sx={{ width: 16, height: 16 }}>✓</Box>
+  //         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+  //           Completed on {new Date(campaign.completedDate!).toLocaleDateString()}
+  //         </Typography>
+  //       </Box>
+  //     )}
+  //   </Box>
+  // );
 
   return (
     <DashboardContent maxWidth="xl">
@@ -804,6 +755,7 @@ export function CampaignsView({ title = 'Blank' }: Props) {
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
+          {/* <MyApplicationsView /> */}
           <Typography variant="body1" sx={{ textAlign: 'center', py: 4 }}>
             No campaign applications found
           </Typography>
