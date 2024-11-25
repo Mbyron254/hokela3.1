@@ -17,6 +17,8 @@ import { Label, labelClasses } from 'src/components/label';
 import { Carousel, useCarousel } from 'src/components/carousel';
 import { CarouselArrowBasicButtons } from 'src/components/carousel/components/carousel-arrow-buttons';
 
+import { paths } from 'src/routes/paths';
+
 // ----------------------------------------------------------------------
 
 type JobType = {
@@ -71,9 +73,15 @@ export function CourseFeatured({ title, jobs,  sx, ...other }: Props) {
         }}
         sx={{ px: 0.5 }}
       >
-        {jobs.map((job) => (
-          <JobCarouselItem key={job.id} job={job} />
-        ))}
+        {jobs?.length ? (
+          jobs.map((job) => (
+            <JobCarouselItem key={job.id} job={job} />
+          ))
+        ) : (
+          <Box sx={{ textAlign: 'center', color: 'text.secondary', p: 3 }}>
+            No featured campaign offers available
+          </Box>
+        )}
       </Carousel>
     </Box>
   );
@@ -137,7 +145,12 @@ function JobCarouselItem({ job, sx, ...other }: JobCarouselItemProps) {
           {job.campaign.jobDescription}
         </Typography>
 
-        <Button variant="contained" size="small" fullWidth>
+        <Button
+          variant="contained"
+          size="small"
+          fullWidth
+          href={paths.v2.agent.campaigns.offers.details(job.id)}
+        >
           Apply Now
         </Button>
       </Box>

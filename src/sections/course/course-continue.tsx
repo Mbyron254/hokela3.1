@@ -12,6 +12,8 @@ import { fPercent } from 'src/utils/format-number';
 
 import { varAlpha } from 'src/theme/styles';
 
+import { paths } from 'src/routes/paths';
+
 // ----------------------------------------------------------------------
 
 type TClientTier1 = {
@@ -88,9 +90,15 @@ export function CourseContinue({ title, subheader, runs, list, ...other }: Props
       <CardHeader title={title} subheader={subheader} />
 
       <Box sx={{ p: 3, gap: 3, display: 'flex', flexDirection: 'column' }}>
-        {runs.map((run) => (
-          <Item key={run.id} run={run} />
-        ))}
+        {runs?.length ? (
+          runs.map((run) => (
+            <Item key={run.id} run={run} />
+          ))
+        ) : (
+          <Box sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            No active runs available
+          </Box>
+        )}
       </Box>
     </Card>
   );
@@ -117,7 +125,12 @@ function Item({ run, sx, ...other }: ItemProps) {
       />
 
       <Box sx={{ minWidth: 0, display: 'flex', flex: '1 1 auto', flexDirection: 'column' }}>
-        <Link color="inherit" noWrap sx={{ mb: 0.5, typography: 'subtitle2' }}>
+        <Link 
+          href={paths.v2.agent.campaigns.details(run.id)}
+          color="inherit" 
+          noWrap 
+          sx={{ mb: 0.5, typography: 'subtitle2' }}
+        >
           {run.campaignRun.campaign.name}
         </Link>
 

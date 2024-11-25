@@ -3,8 +3,10 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import { GQLMutation } from 'src/lib/client';
+import { GQLMutation,GQLQuery } from 'src/lib/client';
 import { USER_LOCK, USER_LOGOUT } from 'src/lib/mutations/user.mutation';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+
 
 import { paths } from 'src/routes/paths';
 
@@ -17,6 +19,10 @@ import {Label} from 'src/components/label';
 export default function NavUpgrade() {
   const { user } = useMockedUser();
 
+  const { data: session } = GQLQuery({
+    query: Q_SESSION_SELF,
+    queryAction: 'sessionSelf',
+  });
   const { action: signout, loading: signingOut } = GQLMutation({
     mutation: USER_LOGOUT,
     resolver: 'logout',
@@ -44,7 +50,7 @@ export default function NavUpgrade() {
     >
       <Stack alignItems="center">
         <Box sx={{ position: 'relative' }}>
-          <Avatar src={user?.photoURL} alt={user?.displayName} sx={{ width: 48, height: 48 }} />
+          <Avatar src={session?.user?.profile?.photo} alt={session.user?.name || 'Agent'} sx={{ width: 48, height: 48 }} />
           <Label
             color="success"
             variant="filled"
@@ -63,7 +69,7 @@ export default function NavUpgrade() {
 
         <Stack spacing={0.5} sx={{ mt: 1.5, mb: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+            {session?.user?.name}
           </Typography>
 
           <Typography variant="body2" noWrap sx={{ color: 'text.disabled' }}>

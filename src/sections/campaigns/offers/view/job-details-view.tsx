@@ -12,7 +12,7 @@ import { paths } from 'src/routes/paths';
 import { useTabs } from 'src/hooks/use-tabs';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { JOB_DETAILS_TABS, JOB_PUBLISH_OPTIONS } from 'src/_mock';
+// import {  JOB_PUBLISH_OPTIONS } from 'src/_mock';
 
 import { GQLMutation } from 'src/lib/client';
 import { formatDate } from 'src/lib/helpers';
@@ -29,7 +29,13 @@ import { redirect, useParams } from 'next/navigation';
 // ----------------------------------------------------------------------
 
 export function JobDetailsView({ id }: { id: string }) {
-
+  const JOB_DETAILS_TABS = [
+    { label: 'Job content', value: 'content' },
+  ];
+  const JOB_PUBLISH_OPTIONS = [
+    { value: 'Apply', label: 'Apply' },
+    { value: 'Save as Draft', label: 'Save as Draft' },
+  ];
   
   if (!id) {
     return null;
@@ -78,7 +84,7 @@ export function JobDetailsView({ id }: { id: string }) {
   }, [applied]);
   const [publish, setPublish] = useState(job?.publish);
   const handleChangePublish = useCallback((newValue: string) => {
-    setPublish(newValue);
+    handleApply();
   }, []);
 
   const renderTabs = (
@@ -110,6 +116,7 @@ export function JobDetailsView({ id }: { id: string }) {
         publish={publish || ''}
         onChangePublish={handleChangePublish}
         publishOptions={JOB_PUBLISH_OPTIONS}
+        loading={applying}
       />
       {renderTabs}
 

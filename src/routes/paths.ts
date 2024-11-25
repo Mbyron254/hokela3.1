@@ -17,6 +17,7 @@ const v2_paths = {
   [ERole.AGENT]: {
     root: `${ROOTS.V2}/agent/dashboard`,
     profile: `${ROOTS.V2}/agent/profile`,
+    account: `${ROOTS.V2}/agent/profile/account`,
     addProfile: `${ROOTS.V2}/agent/profile/add`,
     settings: `${ROOTS.V2}/agent/settings`, 
     editProfile: (id: string) => `${ROOTS.V2}/agent/profile/edit/${id}`,

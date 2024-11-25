@@ -16,7 +16,15 @@ export default function Page({ params }: Props) {
 
   const currentJob = _jobs.find((job) => job.id === id);
 
-  return <JobEditView job={currentJob} />;
+  if (!currentJob) {
+    return null;
+  }
+
+  return <JobEditView job={{
+    ...currentJob,
+    closeAdvertOn: new Date().toISOString(),
+    campaign: null,
+  }} />;
 }
 
 // ----------------------------------------------------------------------

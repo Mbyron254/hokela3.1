@@ -1,5 +1,6 @@
 import { _mock } from 'src/_mock';
 
+
 // To get the user from the <AuthContext/>, you can use
 
 // Change:

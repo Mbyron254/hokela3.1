@@ -17,6 +17,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 type Props = StackProps & {
+  loading: boolean;
   backLink: string;
   editLink: string;
   liveLink: string;
@@ -29,6 +30,7 @@ type Props = StackProps & {
 };
 
 export function JobDetailsToolbar({
+  loading,
   publish,
   backLink,
   editLink,
@@ -53,7 +55,7 @@ export function JobDetailsToolbar({
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {publish === 'published' && (
+        {/* {publish === 'published' && (
           <Tooltip title="Go Live">
             <IconButton component={RouterLink} href={liveLink}>
               <Iconify icon="eva:external-link-fill" />
@@ -65,18 +67,18 @@ export function JobDetailsToolbar({
           <IconButton component={RouterLink} href={editLink}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
 
         <LoadingButton
           color="inherit"
           variant="contained"
-          loading={!publish}
+          loading={loading}
           loadingIndicator="Loading…"
           endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
           onClick={popover.onOpen}
           sx={{ textTransform: 'capitalize' }}
         >
-          {publish}
+           Apply
         </LoadingButton>
       </Stack>
 
@@ -91,8 +93,8 @@ export function JobDetailsToolbar({
                 onChangePublish(option.value);
               }}
             >
-              {option.value === 'published' && <Iconify icon="eva:cloud-upload-fill" />}
-              {option.value === 'draft' && <Iconify icon="solar:file-text-bold" />}
+              {option.value === 'Apply' && <Iconify icon="eva:cloud-upload-fill" />}
+              {option.value === 'Save as Draft' && <Iconify icon="solar:file-text-bold" />}
               {option.label}
             </MenuItem>
           ))}

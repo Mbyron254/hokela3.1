@@ -16,6 +16,8 @@ import { varAlpha } from 'src/theme/styles';
 
 import { Iconify } from 'src/components/iconify';
 
+import { paths } from 'src/routes/paths';
+
 // ----------------------------------------------------------------------
 
 type TClientTier1 = {
@@ -103,9 +105,15 @@ export function CourseReminders({ title, runs, list, ...other }: Props) {
       </Typography>
 
       <Box sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
-        {runs.map((run, index) => (
-          <Item key={run.id} run={run} sx={{ color: colors[index % colors.length] }} />
-        ))}
+        {runs?.length ? (
+          runs.map((run, index) => (
+            <Item key={run.id} run={run} sx={{ color: colors[index % colors.length] }} />
+          ))
+        ) : (
+          <Box sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            No reminders available
+          </Box>
+        )}
       </Box>
     </Card>
   );
@@ -143,7 +151,12 @@ function Item({ run, sx, ...other }: CourseItemProps) {
           flexDirection: 'column',
         }}
       >
-        <Link variant="subtitle2" color="inherit" noWrap sx={{ color: 'text.primary' }}>
+        <Link 
+          href={paths.v2.agent.campaigns.details(run.id)}
+          color="inherit" 
+          noWrap 
+          sx={{ color: 'text.primary' }}
+        >
           {run.campaignRun.campaign.name}
         </Link>
 

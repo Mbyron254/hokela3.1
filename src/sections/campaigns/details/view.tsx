@@ -321,6 +321,7 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
             Campaign Details
           </Typography>
         </Breadcrumbs>
+        
 
         <Box sx={{ p: 3 }}>
           <Box
