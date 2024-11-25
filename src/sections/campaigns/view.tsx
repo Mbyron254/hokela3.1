@@ -177,8 +177,8 @@ export function CampaignsView({ title = 'Blank' }: Props) {
     },
   ];
 
-  const activeCampaigns = MOCK_CAMPAIGNS.filter(campaign => campaign.status === 'active');
-  const completedCampaigns = MOCK_CAMPAIGNS.filter(campaign => campaign.status === 'completed');
+  const activeCampaigns = offers?.rows?.filter((campaign: any) => campaign.status === 'active');
+  const completedCampaigns = offers?.rows?.filter((campaign: any) => campaign.status === 'completed');
 
   const renderActiveOffers = () => {
     if (!offers?.rows?.length) {

@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { M_OPEN_JOBS } from 'src/lib/mutations/campaign-run.mutation';
 import { M_CAMPAIGN_RUN_OFFERS } from 'src/lib/mutations/campaign-run-offer.mutation';
+import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/campaign-run-application.mutation';
+
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { useEffect, useState } from 'react';
 
@@ -70,6 +72,15 @@ export function OverviewCourseView() {
     resolver: 'openJobs',
     toastmsg: false,
   });
+  const {
+    action: getApplications,
+    loading: loadingApplications,
+    data: applications,
+  } = GQLMutation({
+    mutation: M_CAMPAIGN_RUN_APPLICATIONS,
+    resolver: 'm_campaignRunApplications',
+    toastmsg: false,
+  });
 
   const loadRunsActive = (page?: number, pageSize?: number) => {
     getJobs({ variables: { input: { page, pageSize } } });
@@ -84,12 +95,23 @@ export function OverviewCourseView() {
       });
     }
   };
+  const loadApplications = () => {
+    if (session?.user?.agent?.id) {
+      getApplications({
+        variables: {
+          input: { agentId: session.user.agent.id },
+        },
+      });
+    }
+  };
 
   useEffect(() => loadOffers(), [session?.user?.agent?.id]);
   useEffect(() => loadRunsActive(), []);
+  useEffect(() => loadApplications(), [session?.user?.agent?.id]);
   console.log(offers, 'offers');
   console.log(session, 'session');
   console.log('JOBS  ', jobs);
+  console.log('APPLICATIONS  ', applications);
 
   return (
     <DashboardContent
@@ -140,20 +162,20 @@ export function OverviewCourseView() {
           >
             <CourseWidgetSummary
               title="Running Campaigns"
-              total={offers?.count }
+              total={offers?.count || 0}
               icon={`${CONFIG.assetsDir}/assets/icons/courses/ic-courses-progress.svg`}
             />
 
             <CourseWidgetSummary
               title="Active Applications"
-              total={3}
+              total={applications?.count || 0}
               color="success"
               icon={`${CONFIG.assetsDir}/assets/icons/courses/ic-courses-completed.svg`}
             />
 
             <CourseWidgetSummary
               title="Approved Applications"
-              total={1}
+              total={applications?.count || 0}
               color="secondary"
               icon={`${CONFIG.assetsDir}/assets/icons/courses/ic-courses-certificates.svg`}
             />

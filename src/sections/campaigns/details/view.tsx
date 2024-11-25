@@ -32,6 +32,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import SalesGiveAwayView from './sales-give-aways-view';
+import { PosWidgetSummary } from './pos-widget-summary';
 
 // ----------------------------------------------------------------------
 
@@ -489,6 +490,8 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
                         <Typography variant="overline" sx={{ color: 'primary.main' }}>Total Shops Visited</Typography>
                         <Typography variant="h4">0</Typography>
                       </Box>
+                     
+                          
                       <Box sx={{ p: 2, bgcolor: (theme) => alpha(theme.palette.success.main, 0.08), borderRadius: 2 }}>
                         <Typography variant="overline" sx={{ color: 'success.main' }}>Distance Covered</Typography>
                         <Typography variant="h4">0 km</Typography>
@@ -681,22 +684,49 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
                           Quick Stats
                         </Typography>
                         <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-                          <Box sx={{ p: 2, bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08), borderRadius: 2 }}>
+                          {/* <Box sx={{ p: 2, bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08), borderRadius: 2 }}>
                             <Typography variant="overline" sx={{ color: 'primary.main' }}>Total Products</Typography>
                             <Typography variant="h4">{allocations.length}</Typography>
-                          </Box>
-                          <Box sx={{ p: 2, bgcolor: (theme) => alpha(theme.palette.success.main, 0.08), borderRadius: 2 }}>
+                          </Box> */}
+                          <PosWidgetSummary
+                           title="Product sold"
+                           percent={2.6}
+                           total={allocations.reduce((sum, a) => sum + a.quantitySold, 0)}
+                           chart={{
+                             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                             series: [22, 8, 35, 50, 82, 84, 77, 12],
+                           }}
+                          />
+                           <PosWidgetSummary
+                           title="Number of Products"
+                           percent={2.6}
+                           total= {allocations.length}
+                           chart={{
+                             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                             series: [22, 8, 35, 50, 82, 84, 77, 12],
+                           }}
+                          />
+                          {/* <Box sx={{ p: 2, bgcolor: (theme) => alpha(theme.palette.success.main, 0.08), borderRadius: 2 }}>
                             <Typography variant="overline" sx={{ color: 'success.main' }}>Total Sales</Typography>
                             <Typography variant="h4">
                               {allocations.reduce((sum, a) => sum + a.quantitySold, 0)}
                             </Typography>
-                          </Box>
-                          <Box sx={{ p: 2, bgcolor: (theme) => alpha(theme.palette.info.main, 0.08), borderRadius: 2 }}>
+                          </Box> */}
+                           <PosWidgetSummary
+                           title="Remaining Stock"
+                           percent={2.6}
+                           total= {allocations.reduce((sum, a) => sum + (a.quantityAllocated - a.quantitySold), 0)}
+                           chart={{
+                             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                             series: [22, 8, 35, 50, 82, 84, 77, 12],
+                           }}
+                          />
+                          {/* <Box sx={{ p: 2, bgcolor: (theme) => alpha(theme.palette.info.main, 0.08), borderRadius: 2 }}>
                             <Typography variant="overline" sx={{ color: 'info.main' }}>Remaining Stock</Typography>
                             <Typography variant="h4">
                               {allocations.reduce((sum, a) => sum + (a.quantityAllocated - a.quantitySold), 0)}
                             </Typography>
-                          </Box>
+                          </Box> */}
                         </Box>
                       </Box>
 
