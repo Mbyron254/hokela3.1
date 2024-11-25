@@ -8,11 +8,11 @@ import Avatar from '@mui/material/Avatar';
 import CardHeader from '@mui/material/CardHeader';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
+import { paths } from 'src/routes/paths';
+
 import { fPercent } from 'src/utils/format-number';
 
 import { varAlpha } from 'src/theme/styles';
-
-import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 

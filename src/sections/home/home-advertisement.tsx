@@ -8,7 +8,7 @@ import Container from '@mui/material/Container';
 
 import { bgGradient } from 'src/theme/css';
 
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------

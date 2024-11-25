@@ -1,5 +1,6 @@
 
 import { CONFIG } from 'src/config-global';
+
 import { JobListView } from 'src/sections/campaigns/offers/view';
 
 // ----------------------------------------------------------------------

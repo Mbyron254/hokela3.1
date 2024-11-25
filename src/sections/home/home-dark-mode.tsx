@@ -38,8 +38,11 @@ export default function HomeDarkMode() {
 
       <m.div variants={varFade().inUp}>
         <Switch
-          checked={settings.themeMode === 'dark'}
+          // @ts-ignore
+          checked={settings?.themeMode === 'dark'}
           onClick={() =>
+                      // @ts-ignore
+
             settings.onUpdate('themeMode', settings.themeMode === 'light' ? 'dark' : 'light')
           }
         />

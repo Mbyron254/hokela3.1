@@ -1,10 +1,11 @@
-import { useId } from 'react';
-import { m } from 'framer-motion';
 import type { MotionProps } from 'framer-motion';
-
-import Box from '@mui/material/Box';
 import type { BoxProps } from '@mui/material/Box';
 import type { Theme, SxProps, CSSObject } from '@mui/material/styles';
+
+import { useId } from 'react';
+import { m } from 'framer-motion';
+
+import Box from '@mui/material/Box';
 
 import { varFade } from 'src/components/animate';
 

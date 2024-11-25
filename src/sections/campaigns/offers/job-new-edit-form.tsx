@@ -72,19 +72,19 @@ export function JobNewEditForm({ currentJob }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      title: currentJob?.title || '',
-      content: currentJob?.content || '',
-      employmentTypes: currentJob?.employmentTypes || [],
-      experience: currentJob?.experience || '1 year exp',
-      role: currentJob?.role || _roles[1],
-      skills: currentJob?.skills || [],
-      workingSchedule: currentJob?.workingSchedule || [],
-      locations: currentJob?.locations || [],
-      expiredDate: currentJob?.expiredDate || null,
-      salary: currentJob?.salary || { type: 'Hourly', price: 0, negotiable: false },
-      benefits: currentJob?.benefits || [],
+      title: '',
+      content:  '',
+      employmentTypes: [],
+      experience:  '1 year exp',
+      role: _roles[1],
+      skills: [],
+      workingSchedule: [],
+      locations: [],
+      expiredDate: null,
+      salary: { type: 'Hourly', price: 0, negotiable: false },
+      benefits: [],
     }),
-    [currentJob]
+    []
   );
 
   const methods = useForm<NewJobSchemaType>({
@@ -111,7 +111,7 @@ export function JobNewEditForm({ currentJob }: Props) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
       toast.success(currentJob ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.job.root);
+      router.push(paths?.v2?.agent.campaigns.offers.root);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);

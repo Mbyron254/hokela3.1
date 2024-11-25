@@ -9,7 +9,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 import { presetOptions } from 'src/theme/options/presets';
 
 import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import { varFade, MotionViewport } from 'src/components/animate';
 
@@ -47,7 +47,8 @@ export default function HomeColorPresets() {
           <Image
             disabledEffect
             alt="screen"
-            src={`/assets/images/home/presets/screen_${settings.themeColorPresets}.webp`}
+            // @ts-ignore
+            src={`/assets/images/home/presets/screen_${settings?.themeColorPresets}.webp`}
           />
         </m.div>
       </Box>
@@ -58,7 +59,8 @@ export default function HomeColorPresets() {
             <Image
               disabledEffect
               alt="sidebar"
-              src={`/assets/images/home/presets/block_${settings.themeColorPresets}.webp`}
+              // @ts-ignore
+              src={`/assets/images/home/presets/block_${settings?.themeColorPresets}.webp`}
             />
           </m.div>
         </m.div>
@@ -70,7 +72,8 @@ export default function HomeColorPresets() {
             <Image
               disabledEffect
               alt="chart"
-              src={`/assets/images/home/presets/chart_${settings.themeColorPresets}.webp`}
+              // @ts-ignore
+              src={`/assets/images/home/presets/chart_${settings?.themeColorPresets}.webp`}
             />
           </m.div>
         </m.div>
@@ -82,7 +85,8 @@ export default function HomeColorPresets() {
             <Image
               disabledEffect
               alt="sidebar"
-              src={`/assets/images/home/presets/sidebar_${settings.themeColorPresets}.webp`}
+              // @ts-ignore
+              src={`/assets/images/home/presets/sidebar_${settings?.themeColorPresets}.webp`}
             />
           </m.div>
         </m.div>
@@ -106,11 +110,13 @@ export default function HomeColorPresets() {
         {presetOptions.map((color, index) => {
           const { name, value } = color;
 
-          const selected = settings.themeColorPresets === name;
+          // @ts-ignore
+          const selected = settings?.themeColorPresets === name;
 
           return (
             <CardActionArea
               key={name}
+              // @ts-ignore
               onClick={() => settings.onUpdate('themeColorPresets', name)}
               sx={{
                 width: 24,

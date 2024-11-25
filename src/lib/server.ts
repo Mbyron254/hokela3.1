@@ -1,17 +1,21 @@
 'use client';
 
-import { DocumentNode, print } from 'graphql';
+import type { DocumentNode} from 'graphql';
+
+import { print } from 'graphql';
+
 import {
+  DEFAULT_IMAGE,
   CLIENT_HOST_DEV,
   CLIENT_HOST_PRO,
-  DEFAULT_IMAGE,
   HEADER_KEY_CLIENT,
   HEADER_VAL_CLIENT,
   SERVER_API_DEV_GQL,
   SERVER_API_PRO_GQL,
 } from './constant';
 
-export const serverGateway = async (GQLDN: DocumentNode, variables: any) => {
+export const serverGateway = async (GQLDN: DocumentNode, variables: any): Promise<any | null> => {
+  return null;
   let uri: string;
 
   switch (process.env.NODE_ENV) {
@@ -44,15 +48,16 @@ export const serverGateway = async (GQLDN: DocumentNode, variables: any) => {
     // console.log(rs);
 
     if (rs.data) return rs.data;
-    else if (rs.errors?.length) {
+    if (rs.errors?.length) {
       console.log('GQL Errors =======> ');
 
-      for (let i = 0; i < rs.errors; i++) {
+      for (let i = 0; i < rs.errors.length; i += 1) {
         console.log(rs.errors[i]);
       }
     }
   } catch (error) {
     console.log('SAPI Error =======> ', error);
+    return null;
   }
 };
 

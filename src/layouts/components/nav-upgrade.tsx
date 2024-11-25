@@ -9,16 +9,14 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { alpha as hexAlpha } from '@mui/material/styles';
 
-import { paths } from 'src/routes/paths';
-
+import { CONFIG } from 'src/config-global';
+import { GQLMutation } from 'src/lib/client';
 import { varAlpha, bgGradient } from 'src/theme/styles';
+import { USER_LOGOUT } from 'src/lib/mutations/user.mutation';
 
 import { Label } from 'src/components/label';
 
 import { useMockedUser } from 'src/auth/hooks';
-import { CONFIG } from 'src/config-global';
-import { GQLMutation } from 'src/lib/client';
-import { USER_LOGOUT } from 'src/lib/mutations/user.mutation';
 
 // ----------------------------------------------------------------------
 

@@ -1,3 +1,5 @@
+import type { NodeViewProps } from '@tiptap/react';
+
 import { common, createLowlight } from 'lowlight';
 import LinkExtension from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
@@ -79,7 +81,9 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(
         }),
         CodeBlockLowlightExtension.extend({
           addNodeView() {
-            return ReactNodeViewRenderer(CodeHighlightBlock);
+            return ReactNodeViewRenderer((props: NodeViewProps) => (
+              <CodeHighlightBlock {...(props as any)} />
+            ));
           },
         }).configure({ lowlight, HTMLAttributes: { class: editorClasses.content.codeBlock } }),
       ],

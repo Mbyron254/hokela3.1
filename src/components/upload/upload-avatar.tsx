@@ -135,7 +135,7 @@ export function UploadAvatar({
       </Box>
 
       {helperText && helperText}
-
+        {/* @ts-ignore */}
       <RejectionFiles files={fileRejections} />
     </>
   );

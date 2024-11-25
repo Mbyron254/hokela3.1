@@ -1,28 +1,31 @@
+import type { Dispatch, SetStateAction } from 'react';
+
 import { format } from 'date-fns';
+
 import {
-  IAgentOriginContext,
-  IGeoLocation,
-  TState,
-} from './interface/general.interface';
-import {
-  CLIENT_HOST_DEV,
-  CLIENT_HOST_PRO,
-  CLIENT_TYPE_DISTRIBUTOR,
-  CLIENT_TYPE_MARKETING_AGENCY,
-  CLIENT_TYPE_PRODUCER,
-  CLIENT_TYPE_RETAILER,
-  CODE_ETHIOPIA,
+  ROLE_ROOT,
   CODE_KENYA,
-  CODE_RWANDA,
-  CODE_TANZANIA,
-  CODE_UGANDA,
-  ROLE_AC_MANAGER,
   ROLE_AGENT,
   ROLE_GUEST,
-  ROLE_ROOT,
+  CODE_RWANDA,
+  CODE_UGANDA,
+  CODE_ETHIOPIA,
+  CODE_TANZANIA,
   USER_AC_STATE,
+  CLIENT_HOST_DEV,
+  CLIENT_HOST_PRO,
+  ROLE_AC_MANAGER,
+  CLIENT_TYPE_PRODUCER,
+  CLIENT_TYPE_RETAILER,
+  CLIENT_TYPE_DISTRIBUTOR,
+  CLIENT_TYPE_MARKETING_AGENCY,
 } from './constant';
-import { Dispatch, SetStateAction } from 'react';
+
+import type {
+  TState,
+  IGeoLocation,
+  IAgentOriginContext,
+} from './interface/general.interface';
 
 const short = require('short-uuid');
 
@@ -37,46 +40,35 @@ export const clientOrigin = (): string => {
   }
 };
 
-export const isWhiteSpaces = (_string: string): boolean => {
-  return /^\s+$/.test(_string);
-};
+export const isWhiteSpaces = (_string: string): boolean => /^\s+$/.test(_string);
 
-export const randomHexadecimal = (size: number): string => {
-  return [...Array(size)]
+export const randomHexadecimal = (size: number): string => [...Array(size)]
     .map(() => Math.floor(Math.random() * 16).toString(16))
     .join('');
-};
 
-export const generateShortUUIDV4 = (): string => {
-  return short.generate();
-};
+export const generateShortUUIDV4 = (): string => short.generate();
 
 export const unallocatedAssets = (associated: any[], all: any[]): any[] => {
-  const unallocatedIds: string[] = [];
+  const unallocatedIds = all.map(item => item.id);
 
-  for (let i = 0; i < all.length; i++) {
-    unallocatedIds.push(all[i].id);
-  }
-
-  for (let i = 0; i < associated.length; i++) {
-    unallocatedIds.splice(unallocatedIds.indexOf(associated[i].id), 1);
-  }
-  const availlableAssets: any = [];
-
-  for (let i = 0; i < unallocatedIds.length; i++) {
-    for (let x = 0; x < all.length; x++) {
-      if (unallocatedIds[i] === all[x].id) {
-        availlableAssets.push(all[x]);
-      }
+  associated.forEach(item => {
+    const index = unallocatedIds.indexOf(item.id);
+    if (index > -1) {
+      unallocatedIds.splice(index, 1);
     }
-  }
-  return availlableAssets;
+  });
+
+  const availableAssets = all.filter(item => 
+    unallocatedIds.includes(item.id)
+  );
+
+  return availableAssets;
 };
 
 export const commafy = (num: string | number) => {
   if (!num || num === '') return '0';
 
-  let str = num.toString().split('.');
+  const str = num.toString().split('.');
 
   if (str[0].length >= 4) {
     str[0] = str[0].replace(/(\d)(?=(\d{3})+$)/g, '$1,');
@@ -94,7 +86,7 @@ export const formatDate = (
 ): string => {
   if (!date) return '';
 
-  return format(new Date(date), _format ? _format : 'yyyy MMM dd, hh:mm b');
+  return format(new Date(date), _format || 'yyyy MMM dd, hh:mm b');
 };
 
 export const formatTimeTo12Hr = (time: string | undefined): string => {
@@ -121,6 +113,11 @@ export const parseUserState = (state: number): TState => {
     case USER_AC_STATE.suspended:
       theme = 'danger';
       label = 'Suspended';
+      break;
+
+    default:
+      theme = 'light';
+      label = '---';
       break;
   }
 
@@ -230,13 +227,13 @@ export const getGeoLocation = async (
 
   if (window.navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      function (position) {
+      (position) => {
         setLocation({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
       },
-      function (error) {
+      (error) => {
         if (error.code === error.PERMISSION_DENIED) {
           setLocation({ error: 'Location permission denied' });
         } else if (error.code === error.POSITION_UNAVAILABLE) {

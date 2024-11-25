@@ -1,3 +1,5 @@
+import type { INotification } from 'src/types/notification';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -9,10 +11,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 
 import { fToNow } from 'src/utils/format-time';
 
-import Label from 'src/components/label';
-import FileThumbnail from 'src/components/file-thumbnail';
-
-import { INotification } from 'src/types/notification';
+import {Label} from 'src/components/label';
+import {FileThumbnail} from 'src/components/file-thumbnail';
 
 // ----------------------------------------------------------------------
 

@@ -31,7 +31,7 @@ declare module '@mui/material/styles' {
     customShadows: CustomShadows;
   }
   interface ThemeOptions {
-    customShadows?: CustomShadows;
+    customShadows: CustomShadows;
   }
   interface ThemeVars {
     customShadows: CustomShadows;

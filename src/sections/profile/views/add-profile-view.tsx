@@ -1,28 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
 import QRCode from 'react-qr-code';
-import Paper from '@mui/material/Paper';
-import { alpha, useTheme } from '@mui/material/styles';
-import { useMediaQuery } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
 import { Icon } from '@iconify/react';
-import MobileStepper from '@mui/material/MobileStepper';
+
+import Box from '@mui/material/Box';
+import Step from '@mui/material/Step';
+import Paper from '@mui/material/Paper';
+import Radio from '@mui/material/Radio';
+import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import Stepper from '@mui/material/Stepper';
+import MenuItem from '@mui/material/MenuItem';
+import { useMediaQuery } from '@mui/material';
+import StepLabel from '@mui/material/StepLabel';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import RadioGroup from '@mui/material/RadioGroup';
+import Typography from '@mui/material/Typography';
+import FormControl from '@mui/material/FormControl';
+import { alpha, useTheme } from '@mui/material/styles';
 import FormHelperText from '@mui/material/FormHelperText';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 // ----------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ const AddProfileView = () => {
         break;
       }
       
-      case 1:
+      case 1: {
         const hasEmptyFields = employmentHistory.some(entry => !entry.role || !entry.type);
         if (hasEmptyFields) {
           newErrors.employmentHistory = true;
@@ -89,14 +89,19 @@ const AddProfileView = () => {
           newErrors.employmentHistory = false;
         }
         break;
+      }
 
-      case 2:
+      case 2: {
         if (lookingForJob === 'yes' && jobTypes.length === 0) {
           newErrors.jobTypes = true;
           isValid = false;
         } else {
           newErrors.jobTypes = false;
         }
+        break;
+      }
+
+      default:
         break;
     }
 
@@ -170,16 +175,16 @@ const AddProfileView = () => {
               mt: 2, 
               borderRadius: 3,
               height: '60dvh',
-              background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
               backdropFilter: 'blur(8px)',
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             }}
           >
             <Typography 
               variant="h4" 
               sx={{ 
                 mb: 1,
-                background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
@@ -216,7 +221,7 @@ const AddProfileView = () => {
                   '& .MuiOutlinedInput-notchedOutline': { 
                     borderRadius: 2,
                     borderWidth: 2,
-                    borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                    borderColor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                   }
                 }}
               >
@@ -252,7 +257,7 @@ const AddProfileView = () => {
                   '& .MuiOutlinedInput-notchedOutline': { 
                     borderRadius: 2,
                     borderWidth: 2,
-                    borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                    borderColor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                   }
                 }}
               >
@@ -274,9 +279,9 @@ const AddProfileView = () => {
               p: 4,
               mt: 2, 
               borderRadius: 3,
-              background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
               backdropFilter: 'blur(8px)',
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4 }}>
@@ -284,7 +289,7 @@ const AddProfileView = () => {
                 <Typography 
                   variant="h4" 
                   sx={{ 
-                    background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                    background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     color: 'transparent',
@@ -303,10 +308,10 @@ const AddProfileView = () => {
                 variant="outlined"
                 sx={{ 
                   borderRadius: 2,
-                  borderColor: (theme) => alpha(theme.palette.primary.main, 0.3),
+                  borderColor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                   '&:hover': {
                     borderColor: 'primary.main',
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1)
+                    bgcolor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                   }
                 }}
               >
@@ -319,8 +324,8 @@ const AddProfileView = () => {
                 <Box key={index} sx={{ 
                   p: 2, 
                   borderRadius: 2,
-                  bgcolor: (theme) => alpha(theme.palette.background.paper, 0.6),
-                  border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                  bgcolor: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+                  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
                 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h6" sx={{ color: 'text.secondary' }}>
@@ -332,7 +337,7 @@ const AddProfileView = () => {
                         sx={{ 
                           color: 'error.main',
                           '&:hover': { 
-                            bgcolor: (theme) => alpha(theme.palette.error.main, 0.1)
+                            bgcolor: `linear-gradient(45deg, ${theme.palette.error.main}, ${theme.palette.error.light})`,
                           }
                         }}
                       >
@@ -363,7 +368,7 @@ const AddProfileView = () => {
                           '& .MuiOutlinedInput-notchedOutline': { 
                             borderRadius: 2,
                             borderWidth: 2,
-                            borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                            borderColor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                           }
                         }}
                       >
@@ -397,7 +402,7 @@ const AddProfileView = () => {
                           '& .MuiOutlinedInput-notchedOutline': { 
                             borderRadius: 2,
                             borderWidth: 2,
-                            borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                            borderColor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                           }
                         }}
                       >
@@ -424,16 +429,16 @@ const AddProfileView = () => {
               mt: 2, 
               borderRadius: 3,
               height: '60dvh',
-              background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
               backdropFilter: 'blur(8px)',
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             }}
           >
             <Typography 
               variant="h4" 
               sx={{ 
                 mb: 1,
-                background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
@@ -443,7 +448,7 @@ const AddProfileView = () => {
               Job Preferences
             </Typography>
             <Typography variant="subtitle1" sx={{ mb: 4, color: 'text.secondary', fontWeight: 500 }}>
-              Let us know what you're looking for
+              Let us know what you&apos;re looking for
             </Typography>
             <FormControl sx={{ mb: 4 }} required>
               <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>Are you currently looking for a job?</Typography>
@@ -452,7 +457,7 @@ const AddProfileView = () => {
                 onChange={(e) => setLookingForJob(e.target.value)}
                 sx={{
                   '& .MuiRadio-root': {
-                    color: (theme) => alpha(theme.palette.primary.main, 0.5),
+                    color: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                   }
                 }}
               >
@@ -486,7 +491,7 @@ const AddProfileView = () => {
                     '& .MuiOutlinedInput-notchedOutline': { 
                       borderRadius: 2,
                       borderWidth: 2,
-                      borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                      borderColor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                     }
                   }}
                 >
@@ -510,16 +515,16 @@ const AddProfileView = () => {
               mt: 2, 
               borderRadius: 3,
               height: '60dvh',
-              background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
               backdropFilter: 'blur(8px)',
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             }}
           >
             <Typography 
               variant="h4" 
               sx={{ 
                 mb: 1,
-                background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
@@ -557,16 +562,16 @@ const AddProfileView = () => {
               mt: 2, 
               borderRadius: 3,
               height: '60dvh',
-              background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
               backdropFilter: 'blur(8px)',
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             }}
           >
             <Typography 
               variant="h4" 
               sx={{ 
                 mb: 1,
-                background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
@@ -591,7 +596,7 @@ const AddProfileView = () => {
                   }}
                 />
               }
-              label={<Typography variant="body1" sx={{ color: 'text.secondary' }}>Let recruiters know you're open to opportunities</Typography>}
+              label={<Typography variant="body1" sx={{ color: 'text.secondary' }}>Let recruiters know you&apos;re open to opportunities</Typography>}
             />
           </Paper>
         );
@@ -604,16 +609,16 @@ const AddProfileView = () => {
               mt: 2, 
               borderRadius: 3,
               height: '60dvh',
-              background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
               backdropFilter: 'blur(8px)',
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             }}
           >
             <Typography 
               variant="h4" 
               sx={{ 
                 mb: 1,
-                background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
@@ -632,7 +637,7 @@ const AddProfileView = () => {
               borderRadius: 2, 
               display: 'flex',
               justifyContent: 'center',
-              boxShadow: (theme) => `0 8px 24px ${alpha(theme.palette.primary.main, 0.15)}`
+              boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.15)}`
             }}>
               <QRCode value="https://play.google.com/store/apps/details?id=com.hokela" size={200} />
             </Box>
@@ -647,9 +652,9 @@ const AddProfileView = () => {
               mt: 2, 
               borderRadius: 3,
               height: '60dvh',
-              background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
               backdropFilter: 'blur(8px)',
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
@@ -660,7 +665,7 @@ const AddProfileView = () => {
               variant="h4" 
               sx={{ 
                 mb: 1,
-                background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
@@ -668,7 +673,7 @@ const AddProfileView = () => {
                 textAlign: 'center'
               }}
             >
-              Let's Connect
+              Let&apos;s Connect
             </Typography>
             <Typography variant="subtitle1" sx={{ mb: 4, color: 'text.secondary', fontWeight: 500, textAlign: 'center' }}>
               Start building your professional network
@@ -682,7 +687,7 @@ const AddProfileView = () => {
                 py: 1.5,
                 width: '80%',
                 maxWidth: '400px',
-                boxShadow: (theme) => `0 8px 16px ${alpha(theme.palette.primary.main, 0.24)}`,
+                boxShadow: `0 8px 16px ${alpha(theme.palette.primary.main, 0.24)}`,
                 transition: 'transform 0.2s',
                 '&:hover': {
                   transform: 'translateY(-2px)',
@@ -714,13 +719,13 @@ const AddProfileView = () => {
             p: 3, 
             mb: 3, 
             borderRadius: 2,
-            background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+            background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
             backdropFilter: 'blur(8px)',
-            border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             '& .MuiStepLabel-label': {
-              color: (theme) => alpha(theme.palette.text.primary, 0.7),
+              color: `linear-gradient(45deg, ${theme.palette.text.primary}, ${theme.palette.text.secondary})`,
               '&.Mui-active': {
-                background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
@@ -728,7 +733,7 @@ const AddProfileView = () => {
               }
             },
             '& .MuiStepIcon-root': {
-              color: (theme) => alpha(theme.palette.primary.main, 0.3),
+              color: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
               '&.Mui-active': {
                 color: 'primary.main'
               },
@@ -742,7 +747,7 @@ const AddProfileView = () => {
             <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography 
                 sx={{ 
-                  background: (theme) => `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   color: 'transparent',
@@ -756,8 +761,8 @@ const AddProfileView = () => {
                   onClick={handleBack}
                   disabled={activeStep === 0}
                   sx={{ 
-                    color: (theme) => alpha(theme.palette.primary.main, 0.7),
-                    '&:hover': { bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1) }
+                    color: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                    '&:hover': { bgcolor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})` }
                   }}
                 >
                   <Icon icon="mdi:chevron-left" />
@@ -766,8 +771,8 @@ const AddProfileView = () => {
                   onClick={handleNext}
                   disabled={activeStep === steps.length - 1}
                   sx={{ 
-                    color: (theme) => alpha(theme.palette.primary.main, 0.7),
-                    '&:hover': { bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1) }
+                    color: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                    '&:hover': { bgcolor: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})` }
                   }}
                 >
                   <Icon icon="mdi:chevron-right" />
@@ -788,7 +793,7 @@ const AddProfileView = () => {
         {activeStep === steps.length ? (
           <Paper elevation={3} sx={{ p: 4, mt: 2, borderRadius: 2, textAlign: 'center', mb: 4 }}>
             <Typography variant="h5" sx={{ color: 'primary.main', fontWeight: 600 }}>
-              All steps completed - you're ready to go!
+              All steps completed - you&apos;re ready to go!
             </Typography>
           </Paper>
         ) : (
@@ -810,7 +815,7 @@ const AddProfileView = () => {
                 onClick={handleNext}
                 sx={{ 
                   borderRadius: 2,
-                  boxShadow: (theme) => `0 8px 16px ${alpha(theme.palette.primary.main, 0.24)}`
+                  boxShadow: `0 8px 16px ${alpha(theme.palette.primary.main, 0.24)}`
                 }}
               >
                 {activeStep === steps.length - 1 ? 'Finish' : 'Next'}

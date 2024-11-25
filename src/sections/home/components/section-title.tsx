@@ -1,27 +1,22 @@
-import { m } from 'framer-motion';
 import type { MotionProps } from 'framer-motion';
-
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import type { StackProps } from '@mui/material/Stack';
 import type { Theme, SxProps } from '@mui/material/styles';
 
-import { varAlpha, textGradient } from 'src/theme/styles';
+import { m } from 'framer-motion';
+
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+
+import { textGradient } from 'src/theme/styles';
 
 import { varFade } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 
-interface CustomTheme extends Theme {
-  vars: {
-    palette: {
-      text: {
-        primary: string;
-        primaryChannel: string;
-      };
-    };
-  };
+interface CustomTheme extends Omit<Theme, 'vars'> {
+  vars?: Theme['vars'];
 }
 type TextProps = {
   sx?: SxProps<Theme>;
@@ -84,7 +79,7 @@ export function SectionTitle({
               opacity: 0.4,
               display: 'inline-block',
               ...textGradient(
-                `to right, ${paletteTextPrimary}, ${varAlpha(hexToRgbChannel(paletteTextPrimary), 0.2)}`
+                `to right, ${paletteTextPrimary}, ${alpha(paletteTextPrimary, 0.2)}`
               ),
             };
           }}

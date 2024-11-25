@@ -1,3 +1,4 @@
+import type { StackProps } from '@mui/material/Stack';
 import type { ButtonBaseProps } from '@mui/material/ButtonBase';
 import type { Theme, SxProps, CSSObject } from '@mui/material/styles';
 
@@ -35,6 +36,14 @@ export type NavItemStateProps = {
   enabledRootRedirect?: boolean;
 };
 
+export type NavProps = StackProps & {
+  data: {
+    subheader: string;
+    items: NavItemBaseProps[];
+  }[];
+  slotProps?: SlotProps;
+};
+
 export type NavItemBaseProps = {
   path: string;
   title: string;
@@ -47,6 +56,7 @@ export type NavItemBaseProps = {
   icon?: string | React.ReactNode;
   info?: string[] | React.ReactNode;
 };
+
 
 export type NavItemProps = ButtonBaseProps & NavItemStateProps & NavItemBaseProps;
 

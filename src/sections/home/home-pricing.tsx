@@ -1,23 +1,24 @@
+import type { StackProps } from '@mui/material/Stack';
+
 import { m } from 'framer-motion';
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { alpha } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Stack, { StackProps } from '@mui/material/Stack';
 
 import { paths } from 'src/routes/paths';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { _homePlans } from 'src/_mock';
+// import { _homePlans } from 'src/_mock';
 
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
@@ -64,19 +65,19 @@ export default function HomePricing() {
             border: (theme) => `dashed 1px ${theme.palette.divider}`,
           }}
         >
-          {_homePlans.map((plan) => (
+          {/* {_homePlans.map((plan) => (
             <m.div key={plan.license} variants={varFade().in}>
               <PlanCard key={plan.license} plan={plan} />
             </m.div>
-          ))}
+          ))} */}
         </Box>
       ) : (
         <>
           <Stack alignItems="center" sx={{ mb: 5 }}>
             <Tabs value={currentTab} onChange={handleChangeTab}>
-              {_homePlans.map((tab) => (
+              {/* {_homePlans.map((tab) => (
                 <Tab key={tab.license} value={tab.license} label={tab.license} />
-              ))}
+              ))} */}
             </Tabs>
           </Stack>
 
@@ -86,7 +87,7 @@ export default function HomePricing() {
               border: (theme) => `dashed 1px ${theme.palette.divider}`,
             }}
           >
-            {_homePlans.map(
+            {/* {_homePlans.map(
               (tab) =>
                 tab.license === currentTab && (
                   <PlanCard
@@ -97,7 +98,7 @@ export default function HomePricing() {
                     }}
                   />
                 )
-            )}
+            )} */}
           </Box>
         </>
       )}
@@ -225,7 +226,7 @@ function PlanCard({ plan, sx, ...other }: PlanCardProps) {
           size="small"
           target="_blank"
           rel="noopener"
-          href={paths.minimalUI}
+          href={paths.faqs}
           endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}
         >
           Learn more

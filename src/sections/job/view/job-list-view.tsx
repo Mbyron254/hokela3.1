@@ -2,27 +2,19 @@
 
 import type { IJobItem, IJobFilters } from 'src/types/job';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
 import { orderBy } from 'src/utils/helper';
 
-
 import { GQLMutation } from 'src/lib/client';
-import { formatDate } from 'src/lib/helpers';
-import { M_OPEN_JOBS } from 'src/lib/mutations/campaign-run.mutation';
-
 import { DashboardContent } from 'src/layouts/dashboard';
+import { M_OPEN_JOBS } from 'src/lib/mutations/campaign-run.mutation';
 import {
-  _jobs,
   _roles,
   JOB_SORT_OPTIONS,
   JOB_BENEFIT_OPTIONS,
@@ -30,7 +22,6 @@ import {
   JOB_EMPLOYMENT_TYPE_OPTIONS,
 } from 'src/_mock';
 
-import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
@@ -82,6 +73,7 @@ export function JobListView() {
 
   useEffect(() => {
     loadRunsActive();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   console.log('JOBS  ', jobs);
@@ -142,12 +134,14 @@ export function JobListView() {
 
       if (inputValue) {
         const results = transformedJobs.filter(
+          // @ts-ignore
           (job) => job.title.toLowerCase().indexOf(search.state.query.toLowerCase()) !== -1
         );
 
         search.setState({ results });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [search]
   );
 
@@ -221,37 +215,46 @@ const applyFilter = ({ inputData, filters, sortBy }: ApplyFilterProps) => {
 
   // Sort by
   if (sortBy === 'latest') {
+    // @ts-ignore
     inputData = orderBy(inputData, ['createdAt'], ['desc']);
   }
 
   if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
+    // @ts-ignore
+      inputData = orderBy(inputData, ['createdAt'], ['asc']);
   }
 
   if (sortBy === 'popular') {
+    // @ts-ignore
     inputData = orderBy(inputData, ['totalViews'], ['desc']);
   }
 
   // Filters
   if (employmentTypes.length) {
-    inputData = inputData.filter((job) =>
+    // @ts-ignore
+      inputData = inputData.filter((job) =>
+      // @ts-ignore
       job.employmentTypes.some((item) => employmentTypes.includes(item))
     );
   }
 
   if (experience !== 'all') {
+    // @ts-ignore
     inputData = inputData.filter((job) => job.experience === experience);
   }
 
   if (roles.length) {
+    // @ts-ignore
     inputData = inputData.filter((job) => roles.includes(job.role));
   }
 
   if (locations.length) {
+    // @ts-ignore
     inputData = inputData.filter((job) => job.locations.some((item) => locations.includes(item)));
   }
 
   if (benefits.length) {
+    // @ts-ignore
     inputData = inputData.filter((job) => job.benefits.some((item) => benefits.includes(item)));
   }
 

@@ -1,3 +1,5 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import { useState } from 'react';
 import { m } from 'framer-motion';
 
@@ -6,13 +8,12 @@ import { alpha } from '@mui/system';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import type { BoxProps } from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Accordion, { accordionClasses } from '@mui/material/Accordion';
 import AccordionDetails, { accordionDetailsClasses } from '@mui/material/AccordionDetails';
 import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
 
 import { SectionTitle } from './components/section-title';

@@ -12,17 +12,15 @@
   import Typography from '@mui/material/Typography';
   import ListItemText from '@mui/material/ListItemText';
 
-  import { paths } from 'src/routes/paths';
   import { RouterLink } from 'src/routes/components';
 
   import { fDate } from 'src/utils/format-time';
-  import { fCurrency } from 'src/utils/format-number';
-
-  import { Iconify } from 'src/components/iconify';
+  
+import { Iconify } from 'src/components/iconify';
   import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { ERole } from 'src/types/client';
 
-  // ----------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
 
   type Props = {
     job: IJobItem;
@@ -44,8 +42,8 @@ import { ERole } from 'src/types/client';
 
           <Stack sx={{ p: 3, pb: 2 }}>
             <Avatar
-              alt={job.company.name}
-              src={job.company.logo}
+              alt={job.campaign.clientTier2.name}
+              src={job.campaign.clientTier2.name}
               variant="rounded"
               sx={{ width: 48, height: 48, mb: 2 }}
             />
@@ -58,10 +56,10 @@ import { ERole } from 'src/types/client';
                   href={`/v2/agent/dashboard/campaigns/offers/${job.id}`}
                   color="inherit"
                 >
-                  {job.title}
+                  {job.campaign.name}
                 </Link>
               }
-              secondary={`Posted date: ${fDate(job.createdAt)}`}
+              secondary={`Posted date: ${fDate(job.closeAdvertOn)}`}
               primaryTypographyProps={{ typography: 'subtitle1' }}
               secondaryTypographyProps={{
                 mt: 1,
@@ -78,7 +76,7 @@ import { ERole } from 'src/types/client';
               sx={{ color: 'primary.main', typography: 'caption' }}
             >
               <Iconify width={16} icon="solar:users-group-rounded-bold" />
-              {job.candidates.length} candidates
+              {job.candidates?.length} candidates
             </Stack>
           </Stack>
 
@@ -87,19 +85,19 @@ import { ERole } from 'src/types/client';
           <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
             {[
               {
-                label: job.experience,
+                label: job.campaign.jobQualification,
                 icon: <Iconify width={16} icon="carbon:skill-level-basic" sx={{ flexShrink: 0 }} />,
               },
               {
-                label: job.employmentTypes.join(', '),
+                label: job.closeAdvertOn,
                 icon: <Iconify width={16} icon="solar:clock-circle-bold" sx={{ flexShrink: 0 }} />,
               },
               {
-                label: job.salary.negotiable ? 'Negotiable' : fCurrency(job.salary.price),
+                label: '10000',
                 icon: <Iconify width={16} icon="solar:wad-of-money-bold" sx={{ flexShrink: 0 }} />,
               },
               {
-                label: job.role,
+                label: job.campaign.clientTier2.name,
                 icon: <Iconify width={16} icon="solar:user-rounded-bold" sx={{ flexShrink: 0 }} />,
               },
             ].map((item) => (

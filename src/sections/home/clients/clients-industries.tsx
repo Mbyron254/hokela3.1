@@ -1,9 +1,11 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import { m } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
-import Box, { BoxProps } from '@mui/material/Box';
 
 import { _mock } from 'src/_mock';
 

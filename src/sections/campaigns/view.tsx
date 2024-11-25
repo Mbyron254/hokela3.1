@@ -1,25 +1,28 @@
 'use client';
 
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { GQLMutation, GQLQuery } from 'src/lib/client';
-import { M_CAMPAIGN_RUN_OFFERS } from 'src/lib/mutations/campaign-run-offer.mutation';
-import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-import { useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import { alpha } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { Card, Grid, Stack, LinearProgress } from '@mui/material';
+
+import { paths } from 'src/routes/paths';
 
 import { varAlpha } from 'src/theme/styles';
+import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from 'next/link';
-import { alpha } from '@mui/material/styles';
-import { Card, Grid, LinearProgress, Stack } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { paths } from 'src/routes/paths';
-import { ERole } from 'src/types/client';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { M_CAMPAIGN_RUN_OFFERS } from 'src/lib/mutations/campaign-run-offer.mutation';
+
 import { Iconify } from 'src/components/iconify';
+
+import { ERole } from 'src/types/client';
 
 // ----------------------------------------------------------------------
 
@@ -137,7 +140,9 @@ export function CampaignsView({ title = 'Blank' }: Props) {
     }
   };
 
-  useEffect(() => loadOffers(), [session?.user?.agent?.id]);
+  useEffect(() => loadOffers(), 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [session?.user?.agent?.id]);
 
   // Remove debug log in production
   // console.log(offers, 'offers');

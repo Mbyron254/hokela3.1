@@ -1,4 +1,4 @@
-import { Iconify, IconifyProps } from '../iconify';
+import { Iconify } from '../iconify';
 
 // ----------------------------------------------------------------------
 

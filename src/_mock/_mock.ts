@@ -1,7 +1,5 @@
 import { fSub } from 'src/utils/format-time';
 
-import { CONFIG } from 'src/config-global';
-
 import {
   _id,
   _ages,

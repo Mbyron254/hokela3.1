@@ -1,5 +1,6 @@
 /* eslint-disable react/display-name */
 import type { MotionProps } from 'framer-motion';
+import type { BoxProps } from '@mui/material/Box';
 import { useRef, useState, forwardRef } from 'react';
 import { m, useSpring, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 
@@ -7,17 +8,15 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import SvgIcon from '@mui/material/SvgIcon';
 import Container from '@mui/material/Container';
-import type { BoxProps } from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { alpha, styled, useTheme, createTheme } from '@mui/material/styles';
 
-import { useClientRect } from 'src/hooks/use-client-rect';
-import type { UseClientRectReturn } from 'src/hooks/use-client-rect';
+import { useClientRect,UseClientRectReturn } from 'src/hooks/use-client-rect';
 
 import { stylesMode } from 'src/theme/styles';
 import PRIMARY_COLOR from 'src/theme/with-settings/primary-color.json';
 
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
 
 import { SectionTitle } from './components/section-title';
@@ -27,13 +26,12 @@ import { FloatLine, FloatPlusIcon } from './components/svg-elements';
 
 const customTheme = createTheme({
   palette: {
+    // @ts-ignore
     primary: {
       lighter: '#8e99f3',
       main: '#1976d2',
       darker: '#004ba0',
       contrastText: '#ffffff',
-      lighterChannel: 'rgb', // or 'hsl' or 'hsv'
-      darkerChannel: 'rgb', // or 'hsl' or 'hsv'
     },
     background: {
       neutral: '#f4f6f8',
@@ -41,6 +39,18 @@ const customTheme = createTheme({
     grey: {
       500: '#9e9e9e',
     },
+  },
+  customShadows: {
+    primary: 'none',
+    secondary: 'none',
+    info: 'none',
+    success: 'none',
+    warning: 'none',
+    error: 'none',
+    card: 'none',
+    dialog: 'none',
+    // @ts-ignore
+    paper: 'none',
   },
 });
 

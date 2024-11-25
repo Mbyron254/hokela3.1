@@ -1,11 +1,13 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
-import type { BoxProps } from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 
 import { varAlpha, stylesMode } from 'src/theme/styles';
 
 import { carouselClasses } from '../classes';
+
 import type { CarouselDotButtonsProps } from '../types';
 
 // ----------------------------------------------------------------------

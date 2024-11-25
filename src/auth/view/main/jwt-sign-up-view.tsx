@@ -17,15 +17,16 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
-import { useBoolean } from 'src/hooks/use-boolean';
+import { GQLMutation } from 'src/lib/client';
+import { USER_CREATE_SELF } from 'src/lib/mutations/user.mutation';
+
 import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from '../../hooks';
 import { FormHead } from '../../components/form-head';
 import { SignUpTerms } from '../../components/sign-up-terms';
 
-import { GQLMutation } from 'src/lib/client';
-import { USER_CREATE_SELF } from 'src/lib/mutations/user.mutation';
+
 
 // ----------------------------------------------------------------------
 

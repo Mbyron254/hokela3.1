@@ -1,11 +1,13 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import { Children, isValidElement } from 'react';
 
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import type { BoxProps } from '@mui/material/Box';
 
 import { carouselClasses } from './classes';
 import { CarouselSlide } from './components/carousel-slide';
+
 import type { CarouselProps, CarouselOptions } from './types';
 
 // ----------------------------------------------------------------------

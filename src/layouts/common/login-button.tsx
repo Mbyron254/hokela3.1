@@ -1,5 +1,6 @@
+import type { Theme, SxProps } from '@mui/material/styles';
+
 import Button from '@mui/material/Button';
-import { Theme, SxProps } from '@mui/material/styles';
 
 import { RouterLink } from 'src/routes/components';
 

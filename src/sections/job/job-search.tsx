@@ -30,14 +30,14 @@ export function JobSearch({ search, onSearch }: Props) {
   const router = useRouter();
 
   const handleClick = (id: string) => {
-    router.push(paths.dashboard.job.details(id));
+    router.push(paths.v2.agent.campaigns.offers.details(id));
   };
 
   const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (search.state.query) {
       if (event.key === 'Enter') {
         const selectProduct = search.state.results.filter(
-          (job) => job.title === search.state.query
+          (job) => job.campaign.name === search.state.query
         )[0];
 
         handleClick(selectProduct.id);
@@ -52,7 +52,7 @@ export function JobSearch({ search, onSearch }: Props) {
       popupIcon={null}
       options={search.state.results}
       onInputChange={(event, newValue) => onSearch(newValue)}
-      getOptionLabel={(option) => option.title}
+      getOptionLabel={(option) => option.campaign.name}
       noOptionsText={<SearchNotFound query={search.state.query} />}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       renderInput={(params) => (
@@ -71,8 +71,8 @@ export function JobSearch({ search, onSearch }: Props) {
         />
       )}
       renderOption={(props, job, { inputValue }) => {
-        const matches = match(job.title, inputValue);
-        const parts = parse(job.title, matches);
+        const matches = match(job.campaign.name, inputValue);
+        const parts = parse(job.campaign.name, matches);
 
         return (
           <Box component="li" {...props} onClick={() => handleClick(job.id)} key={job.id}>

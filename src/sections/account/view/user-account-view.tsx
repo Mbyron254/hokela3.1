@@ -1,5 +1,9 @@
 'use client';
 
+import type { InputAccountUpdate } from 'src/lib/interface/auth.interface';
+
+import { useState, useEffect } from 'react';
+
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 
@@ -7,7 +11,11 @@ import { paths } from 'src/routes/paths';
 
 import { useTabs } from 'src/hooks/use-tabs';
 
+import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
+// import { IDocumentWrapper } from 'src/lib/interface/dropzone.type';
+import { M_AGENT } from 'src/lib/mutations/agent.mutation';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { _userAbout, _userPlans, _userPayment, _userInvoices, _userAddressBook } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
@@ -18,16 +26,6 @@ import { AccountBilling } from '../account-billing';
 import { AccountSocialLinks } from '../account-social-links';
 import { AccountNotifications } from '../account-notifications';
 import { AccountChangePassword } from '../account-change-password';
-
-import { GQLMutation, GQLQuery } from 'src/lib/client';
-import { agentContext } from 'src/lib/helpers';
-import { InputAccountUpdate } from 'src/lib/interface/auth.interface';
-import { IDocumentWrapper } from 'src/lib/interface/dropzone.type';
-import { IAgentOriginContext } from 'src/lib/interface/general.interface';
-import { M_AGENT, M_AGENT_UPDATE_SELF } from 'src/lib/mutations/agent.mutation';
-import { USER_UPDATE_SELF } from 'src/lib/mutations/user.mutation';
-import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-import { useEffect, useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -46,12 +44,13 @@ const TABS = [
 // ----------------------------------------------------------------------
 
 export function AccountView() {
+  const [mounted, setMounted] = useState(false);
   const tabs = useTabs('general');
   const { data: session } = GQLQuery({
     query: Q_SESSION_SELF,
     queryAction: 'sessionSelf',
   });
-  const { action: getAgent, data: agent } = GQLMutation({
+  const { action: getAgent } = GQLMutation({
     mutation: M_AGENT,
     resolver: 'agent',
     toastmsg: false,
@@ -93,45 +92,16 @@ export function AccountView() {
     passwordConfirmartion: undefined,
   });
 
-  const loadAgent = () => {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (session?.user?.agent?.id) {
       getAgent({ variables: { input: { id: session.user.agent.id } } });
     }
-  };
-  // const handleUpdate = (_key: string, _value: string) => {
-  //   update({ variables: { input: { [_key]: _value } } });
-  // };
-  // const handleUpdateAccount = () => {
-  //   updateAccount({ variables: { input } });
-  // };
+  }, [session?.user?.agent?.id, getAgent]);
 
-  useEffect(() => loadAgent(), [session?.user?.agent?.id]);
-  // useEffect(() => {
-  //   if (session?.user?.phone) {
-  //     setContext(agentContext(session.user.phone.substring(0, 3)));
-  //   }
-  // }, [session?.user?.phone]);
-  // useEffect(() => {
-  //   if (documentsNin?.length) {
-  //     handleUpdate('ninId', documentsNin[documentsNin.length - 1].meta?.id);
-  //   }
-  // }, [documentsNin]);
-  // useEffect(() => {
-  //   if (documentsTin?.length) {
-  //     handleUpdate('tinId', documentsTin[documentsTin.length - 1].meta?.id);
-  //   }
-  // }, [documentsTin]);
-  // useEffect(() => {
-  //   if (documentsHin?.length) {
-  //     handleUpdate('hinId', documentsHin[documentsHin.length - 1].meta?.id);
-  //   }
-  // }, [documentsHin]);
-  // useEffect(() => {
-  //   if (documentsSsn?.length) {
-  //     handleUpdate('ssnId', documentsSsn[documentsSsn.length - 1].meta?.id);
-  //   }
-  // }, [documentsSsn]);
-  
   useEffect(() => {
     if (session?.user) {
       setInput({
@@ -144,6 +114,9 @@ export function AccountView() {
     }
   }, [session?.user]);
 
+  if (!mounted) {
+    return null;
+  }
 
   console.log('AGENT  ', input);
   return (

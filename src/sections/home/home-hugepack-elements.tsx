@@ -38,9 +38,9 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { _mock } from 'src/_mock';
 
-import Label from 'src/components/label';
 import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
+import {Label} from 'src/components/label';
+import {Iconify} from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
@@ -74,7 +74,7 @@ export default function HomeHugePackElements() {
         variant="outlined"
         target="_blank"
         rel="noopener"
-        href={paths.components}
+        href={paths.auth.main.signIn}
         endIcon={<Iconify icon="eva:arrow-ios-forward-fill" width={18} sx={{ ml: -0.5 }} />}
       >
         View All Components

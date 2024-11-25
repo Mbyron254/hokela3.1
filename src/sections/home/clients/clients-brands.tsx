@@ -1,3 +1,5 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import { m } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
@@ -6,7 +8,6 @@ import { alpha } from '@mui/system';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Container from '@mui/material/Container';
-import type { BoxProps } from '@mui/material/Box';
 
 import { _mock } from 'src/_mock';
 

@@ -22,9 +22,9 @@ export function JobEditView({ job }: Props) {
       <CustomBreadcrumbs
         heading="Edit"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Job', href: paths.dashboard.job.root },
-          { name: job?.title },
+          { name: 'Dashboard', href: paths?.v2?.agent.root },
+          { name: 'Job', href: paths?.v2?.agent.campaigns.offers.root },
+          { name: job?.campaign?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

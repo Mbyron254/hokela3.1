@@ -1,5 +1,5 @@
-import { ApolloQueryResult } from '@apollo/client';
-import { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import type { ApolloQueryResult } from '@apollo/client';
 
 export interface IDataTable {
   columns: any[];

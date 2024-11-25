@@ -1,6 +1,5 @@
 // import { useMemo } from 'react';
 
-import { headers } from 'next/headers';
 
 import { m } from 'framer-motion';
 
@@ -16,13 +15,14 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { varHover } from 'src/components/animate';
-// import { useRealmApp } from 'src/components/realm';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { GQLMutation } from 'src/lib/client';
-import { USER_LOCK, USER_LOGOUT } from 'src/lib/mutations/user.mutation';
-
 import { sourceImage } from 'src/lib/server';
+import { GQLQuery, GQLMutation } from 'src/lib/client';
+import { USER_LOGOUT } from 'src/lib/mutations/user.mutation';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+
+import { varHover } from 'src/components/animate';
+// import { useRealm, GQLQueryApp } from 'src/components/realm';
+import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 
 // import { IUserAccount } from 'src/types/user';
@@ -50,6 +50,11 @@ export default function AccountPopover() {
   const router = useRouter();
   // const realmApp = useRealmApp();
   const popover = usePopover();
+
+  const { data: session } = GQLQuery({
+    query: Q_SESSION_SELF,
+    queryAction: 'sessionSelf',
+  });
 
 
   const { action: signout, loading: signingOut } = GQLMutation({
@@ -86,26 +91,26 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={sourceImage(user?.profile?.photo?.fileName) as string}
-          alt={realmUser?.displayName}
+          src={sourceImage(session?.user?.profile?.photo) as string}
+          alt={session?.user?.name}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {realmUser?.displayName.charAt(0).toUpperCase()}
+          {session?.user?.name?.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {realmUser?.displayName}
+            {session?.user?.name}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {realmUser?.email}
+            {session?.user?.email}
           </Typography>
         </Box>
 

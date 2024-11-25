@@ -9,14 +9,14 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
+import { paths } from 'src/routes/paths';
+
 import { fDateTime } from 'src/utils/format-time';
 import { fPercent } from 'src/utils/format-number';
 
 import { varAlpha } from 'src/theme/styles';
 
 import { Iconify } from 'src/components/iconify';
-
-import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 

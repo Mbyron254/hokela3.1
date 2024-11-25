@@ -1,8 +1,10 @@
-import Stack, { StackProps } from '@mui/material/Stack';
-import { alpha, styled, useTheme } from '@mui/material/styles';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import type { StackProps } from '@mui/material/Stack';
+import type { IconButtonProps } from '@mui/material/IconButton';
 
-import { IconifyProps } from '../iconify';
+import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import { alpha, styled, useTheme } from '@mui/material/styles';
+
 import { LeftIcon, RightIcon } from './arrow-icons';
 
 // ----------------------------------------------------------------------

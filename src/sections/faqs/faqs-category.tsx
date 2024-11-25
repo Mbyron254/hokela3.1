@@ -13,7 +13,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 import TextMaxLine from 'src/components/text-max-line';
 import { varFade, MotionViewport } from 'src/components/animate';
 

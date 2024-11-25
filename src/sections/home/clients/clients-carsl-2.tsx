@@ -1,9 +1,12 @@
-import { m, MotionProps } from 'framer-motion';
+import type { MotionProps } from 'framer-motion';
+import type { BoxProps } from '@mui/material/Box';
 
+import { m } from 'framer-motion';
+
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import { useTheme } from '@mui/material/styles';
-import Box, { BoxProps } from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import { varFade, MotionContainer } from 'src/components/animate';

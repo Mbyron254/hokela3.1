@@ -23,7 +23,18 @@ export default function Page({ params }: Props) {
   return <JobEditView job={{
     ...currentJob,
     closeAdvertOn: new Date().toISOString(),
-    campaign: null,
+    campaign: {
+      id: '',
+      name: '',
+      jobDescription: '',
+      jobQualification: '',
+      clientTier2: {
+        name: '',
+        clientTier1: {
+          name: ''
+        }
+      }
+    },
   }} />;
 }
 

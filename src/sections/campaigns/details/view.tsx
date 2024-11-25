@@ -1,36 +1,34 @@
 'use client';
 
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
+import type { IGeoLocation } from 'src/lib/interface/general.interface';
+import type { IAgentAllocation } from 'src/lib/interface/campaign.interface';
 
 import Link from 'next/link';
-import { alpha } from '@mui/material/styles';
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { GQLMutation } from 'src/lib/client';
-import { M_CAMPAIGN_RUN_OFFER } from 'src/lib/mutations/campaign-run-offer.mutation';
-import { formatDate, formatTimeTo12Hr, getGeoLocation } from 'src/lib/helpers';
 import { Icon } from '@iconify/react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import {
-  M_AGENT_ALLOCATIONS,
-  M_UPDATE_SALE,
-} from 'src/lib/mutations/inventory-allocation.mutation';
-import { sourceImage } from 'src/lib/server';
-import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
-
-import { IGeoLocation } from 'src/lib/interface/general.interface';
-import { IAgentAllocation } from 'src/lib/interface/campaign.interface';
-
+import Box from '@mui/material/Box';
+import Select from '@mui/material/Select';
+import { alpha } from '@mui/material/styles';
+import MenuItem from '@mui/material/MenuItem';
+import { TabPanel, TabContext } from '@mui/lab';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { Tab , Tabs, FormControl } from '@mui/material';
 
 import { varAlpha } from 'src/theme/styles';
-import { TabContext, TabPanel } from '@mui/lab';
-import { FormControl, Tabs } from '@mui/material';
-import { Tab } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import { GQLMutation } from 'src/lib/client';
+import { sourceImage } from 'src/lib/server';
+import { formatDate, formatTimeTo12Hr } from 'src/lib/helpers';
+import { M_CAMPAIGN_RUN_OFFER } from 'src/lib/mutations/campaign-run-offer.mutation';
+import {
+  M_UPDATE_SALE,
+  M_AGENT_ALLOCATIONS,
+} from 'src/lib/mutations/inventory-allocation.mutation';
+
+import SurveyReports from './survey-reports';
 import SalesGiveAwayView from './sales-give-aways-view';
 import { PosWidgetSummary } from './pos-widget-summary';
 
@@ -135,8 +133,7 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
   const [allocations, setAllocations] = useState<IAgentAllocation[]>([]);
 
-  const filteredAllocations = useMemo(() => {
-    return allocations.filter(allocation => {
+  const filteredAllocations = useMemo(() => allocations.filter(allocation => {
       const matchesSearch = allocation.product.name.toLowerCase().includes(searchQuery.toLowerCase());
       
       switch (filter) {
@@ -147,8 +144,7 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
         default:
           return matchesSearch;
       }
-    });
-  }, [allocations, searchQuery, filter]);
+    }), [allocations, searchQuery, filter]);
 
   const loadOffer = useCallback(() => {
     if (campaignId) {
@@ -156,13 +152,13 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
     }
   }, [campaignId, getOffer]);
 
-  const loadSalesAllocations = () => {
+  const loadSalesAllocations = useCallback(() => {
     if (offer?.campaignRun?.id) {
       getSalesAllocations({
         variables: { input: { campaignRunId: offer.campaignRun.id } },
       });
     }
-  };
+  }, [offer?.campaignRun?.id, getSalesAllocations]);
 
   useEffect(() => {
     loadOffer();
@@ -177,7 +173,7 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
   const handleChange = (id: string, direction: string) => {
     const _curr: IAgentAllocation[] = [...allocations];
 
-    for (let i = 0; i < _curr.length; i++) {
+    for (let i = 0; i < _curr.length; i += 1) {
       if (_curr[i].id === id) {
         if (direction === 'up') {
           if (_curr[i].quantitySold < _curr[i].quantityAllocated) {
@@ -210,13 +206,19 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
     setAllocations(_curr);
   };
   console.log('ALLOCATIONS', allocations);
-  useEffect(() => loadOffer(), []);
-  useEffect(() => loadSalesAllocations(), [offer?.campaignRun?.id, updated]);
+  useEffect(() => loadOffer(),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  []);
+  useEffect(() => {
+    if (offer?.campaignRun?.id || updated) {
+      loadSalesAllocations();
+    }
+  }, [offer?.campaignRun?.id, updated, loadSalesAllocations]);
   useEffect(() => {
     if (allocationSales) {
       const _allocations: IAgentAllocation[] = [];
 
-      for (let i = 0; i < allocationSales.length; i++) {
+      for (let i = 0; i < allocationSales.length; i += 1) {
         _allocations.push({
           index: allocationSales[i].index,
           id: allocationSales[i].id,
@@ -945,151 +947,7 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
                     Available Surveys
                   </Typography>
 
-                  <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-                    <Box
-                      sx={{
-                        p: 3,
-                        bgcolor: 'background.paper',
-                        borderRadius: 2,
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        boxShadow: '0 4px 12px 0 rgba(0,0,0,0.05)',
-                        border: '1px solid',
-                        borderColor: 'primary.lighter',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        '&:hover': {
-                          transform: 'translateY(-8px)',
-                          boxShadow: '0 12px 24px 0 rgba(0,0,0,0.1)',
-                          '& .survey-shine': {
-                            transform: 'translateX(100%)'
-                          }
-                        },
-                        '& .survey-shine': {
-                          position: 'absolute',
-                          top: 0,
-                          left: -100,
-                          width: '50px',
-                          height: '100%',
-                          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                          transform: 'translateX(-100%)',
-                          transition: 'transform 0.6s ease',
-                        }
-                      }}
-                    >
-                      <div className="survey-shine" />
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                        <Box
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: '12px',
-                            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
-                        >
-                          <Typography variant="subtitle1" color="primary.main">CX</Typography>
-                        </Box>
-                        <Typography variant="subtitle1" color="primary.main" fontWeight={600}>
-                          Customer Experience Survey
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        Share your insights about customer interactions and service delivery
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Box component="span" sx={{ 
-                            width: 8, 
-                            height: 8, 
-                            borderRadius: '50%', 
-                            bgcolor: 'success.main',
-                            boxShadow: (theme) => `0 0 8px ${theme.palette.success.main}`
-                          }} />
-                          <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
-                            Open for responses
-                          </Typography>
-                        </Box>
-                        <Typography variant="caption" color="text.secondary">
-                          5 min completion
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        p: 3,
-                        bgcolor: 'background.paper',
-                        borderRadius: 2,
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        boxShadow: '0 4px 12px 0 rgba(0,0,0,0.05)',
-                        border: '1px solid',
-                        borderColor: 'primary.lighter',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        '&:hover': {
-                          transform: 'translateY(-8px)',
-                          boxShadow: '0 12px 24px 0 rgba(0,0,0,0.1)',
-                          '& .survey-shine': {
-                            transform: 'translateX(100%)'
-                          }
-                        },
-                        '& .survey-shine': {
-                          position: 'absolute',
-                          top: 0,
-                          left: -100,
-                          width: '50px',
-                          height: '100%',
-                          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                          transform: 'translateX(-100%)',
-                          transition: 'transform 0.6s ease',
-                        }
-                      }}
-                    >
-                      <div className="survey-shine" />
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                        <Box
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: '12px',
-                            bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
-                        >
-                          <Typography variant="subtitle1" color="warning.main">PF</Typography>
-                        </Box>
-                        <Typography variant="subtitle1" color="primary.main" fontWeight={600}>
-                          Product Feedback Survey
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        Help us improve our products with your valuable feedback
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Box component="span" sx={{ 
-                            width: 8, 
-                            height: 8, 
-                            borderRadius: '50%', 
-                            bgcolor: 'warning.main',
-                            boxShadow: (theme) => `0 0 8px ${theme.palette.warning.main}`
-                          }} />
-                          <Typography variant="caption" color="warning.main" sx={{ fontWeight: 600 }}>
-                            Closes in 2 days
-                          </Typography>
-                        </Box>
-                        <Typography variant="caption" color="text.secondary">
-                          10 min completion
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
+               <SurveyReports campaignRunId={campaignId}/>
 
                   <Box
                     sx={{

@@ -11,7 +11,7 @@ import { useOffSetTop } from 'src/hooks/use-off-set-top';
 
 import { bgBlur } from 'src/theme/css';
 
-import Logo from 'src/components/logo';
+import {Logo} from 'src/components/logo';
 
 import { HEADER } from '../config-layout';
 import HeaderShadow from './header-shadow';

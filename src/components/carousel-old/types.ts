@@ -1,7 +1,6 @@
+import type { Theme, SxProps } from '@mui/material/styles';
 import type { UseEmblaCarouselType } from 'embla-carousel-react';
 import type { EmblaOptionsType, EmblaCarouselType } from 'embla-carousel';
-
-import type { Theme, SxProps } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 

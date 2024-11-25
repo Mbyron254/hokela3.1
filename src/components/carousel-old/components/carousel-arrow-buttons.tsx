@@ -1,13 +1,15 @@
-import Box from '@mui/material/Box';
-import SvgIcon from '@mui/material/SvgIcon';
 import type { BoxProps } from '@mui/material/Box';
 import type { ButtonBaseProps } from '@mui/material/ButtonBase';
 import type { Theme, SxProps, CSSObject } from '@mui/material/styles';
+
+import Box from '@mui/material/Box';
+import SvgIcon from '@mui/material/SvgIcon';
 import ButtonBase, { buttonBaseClasses } from '@mui/material/ButtonBase';
 
 import { varAlpha, stylesMode } from 'src/theme/styles';
 
 import { carouselClasses } from '../classes';
+
 import type { CarouselArrowButtonProps, CarouselArrowButtonsProps } from '../types';
 
 // ----------------------------------------------------------------------

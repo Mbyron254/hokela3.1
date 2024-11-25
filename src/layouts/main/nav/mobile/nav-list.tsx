@@ -9,7 +9,8 @@ import { useActiveLink } from 'src/routes/hooks/use-active-link';
 import { NavSectionVertical } from 'src/components/nav-section';
 
 import { NavItem } from './nav-item';
-import { NavListProps } from '../types';
+
+import type { NavListProps } from '../types';
 
 // ----------------------------------------------------------------------
 
@@ -46,6 +47,7 @@ export default function NavList({ data }: NavListProps) {
             data={data.children}
             slotProps={{
               rootItem: {
+                // @ts-expect-error
                 minHeight: 36,
               },
             }}

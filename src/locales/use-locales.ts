@@ -6,13 +6,29 @@ import { useTranslation } from 'react-i18next';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { localStorageGetItem } from 'src/utils/storage-available';
+
 import { toast } from 'src/components/snackbar';
 
-import { allLangs } from './all-langs';
+import { allLangs,defaultLang } from './config-lang';
+// import { allLangs } from './all-langs';
 import { fallbackLng, changeLangMessages as messages } from './config-locales';
 
 import type { LanguageValue } from './config-locales';
 
+
+// ----------------------------------------------------------------------
+
+export function useLocales() {
+  const langStorage = localStorageGetItem('i18nextLng');
+
+  const currentLang = allLangs.find((lang) => lang.value === langStorage) || defaultLang;
+
+  return {
+    allLangs,
+    currentLang,
+  };
+}
 // ----------------------------------------------------------------------
 
 export function useTranslate(ns?: string) {
@@ -38,6 +54,7 @@ export function useTranslate(ns?: string) {
         });
 
         if (currentLang) {
+          // @ts-expect-error
           dayjs.locale(currentLang.adapterLocale);
         }
 

@@ -3,14 +3,12 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import { GQLMutation,GQLQuery } from 'src/lib/client';
-import { USER_LOCK, USER_LOGOUT } from 'src/lib/mutations/user.mutation';
-import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-
-
-import { paths } from 'src/routes/paths';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
+
+import { GQLQuery,GQLMutation } from 'src/lib/client';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { USER_LOCK, USER_LOGOUT } from 'src/lib/mutations/user.mutation';
 
 import {Label} from 'src/components/label';
 
@@ -77,7 +75,7 @@ export default function NavUpgrade() {
           </Typography>
         </Stack>
 
-        <Button variant="contained" onClick={handleSignOut} target="_blank" rel="noopener">
+        <Button variant="contained" onClick={handleSignOut}>
           Logout
         </Button>
       </Stack>

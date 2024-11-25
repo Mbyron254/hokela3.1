@@ -1,7 +1,10 @@
 /* eslint-disable react/jsx-no-useless-fragment */
+import type { BoxProps } from '@mui/material/Box';
+import type { Theme, SxProps } from '@mui/material/styles';
+
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Box, { BoxProps } from '@mui/material/Box';
-import { Theme, styled, SxProps } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 

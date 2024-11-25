@@ -7,17 +7,14 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { fCurrency, fShortenNumber } from 'src/utils/format-number';
+import { paths } from 'src/routes/paths';
 
 import { maxLine } from 'src/theme/styles';
 
-import  Image  from 'src/components/image';
 import { Iconify } from 'src/components/iconify';
 import { Label, labelClasses } from 'src/components/label';
 import { Carousel, useCarousel } from 'src/components/carousel';
 import { CarouselArrowBasicButtons } from 'src/components/carousel/components/carousel-arrow-buttons';
-
-import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 

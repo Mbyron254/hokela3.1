@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client';
 
 // export const Q_CLIENTS_T1 = gql`
 //   query tier1Clients($input: InputClientsTier1!) {

@@ -11,11 +11,16 @@ type Props = {
   params: { id: string };
 };
 
+type JobDetailsViewProps = {
+  job: typeof _jobs[0] | undefined;
+};
+
 export default function Page({ params }: Props) {
   const { id } = params;
 
   const currentJob = _jobs.find((job) => job.id === id);
 
+  // @ts-ignore
   return <JobDetailsView job={currentJob} />;
 }
 

@@ -115,7 +115,7 @@ export function Upload({
           {helperText}
         </FormHelperText>
       )}
-
+      {/* @ts-ignore */}
       <RejectionFiles files={fileRejections} />
 
       {/* Multi files */}

@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
   });
 
-  const checkUserSession = async () => {
+  const checkUserSession = useCallback(async () => {
     try {
       if (state.user) {
         setState({
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading: false,
       });
     }
-  };
+  }, [state.user, setState]);
 
   useEffect(() => {
     checkUserSession();

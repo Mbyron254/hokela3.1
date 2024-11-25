@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box';
 
 import { setFont } from 'src/theme/styles';
+import { CONFIG } from 'src/config-global';
 
 import { SvgColor } from '../../svg-color';
 import { Block, BlockOption } from './styles';
-import { CONFIG } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 

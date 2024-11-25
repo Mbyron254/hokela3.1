@@ -11,7 +11,7 @@ import { paths } from 'src/routes/paths';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
@@ -26,7 +26,7 @@ export default function HomeLookingFor() {
       variant="outlined"
       target="_blank"
       rel="noopener"
-      href={paths.zoneUI}
+      href={paths.auth.main.signIn}
       endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}
     >
       Visit Zone Landing Page

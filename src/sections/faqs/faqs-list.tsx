@@ -5,7 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 
 import { _faqs } from 'src/_mock';
 
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 

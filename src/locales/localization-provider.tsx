@@ -23,10 +23,11 @@ type Props = {
 
 export function LocalizationProvider({ children }: Props) {
   const { currentLang } = useTranslate();
-
+  // @ts-expect-error
   dayjs.locale(currentLang.adapterLocale);
 
   return (
+    // @ts-expect-error
     <Provider dateAdapter={AdapterDayjs} adapterLocale={currentLang.adapterLocale}>
       {children}
     </Provider>

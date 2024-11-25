@@ -1,10 +1,12 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import type { BoxProps } from '@mui/material/Box';
 
 import { varAlpha } from 'src/theme/styles';
 
 import { carouselClasses } from '../classes';
+
 import type { CarouselProgressBarProps } from '../types';
 
 // ----------------------------------------------------------------------

@@ -1,9 +1,4 @@
-import { useState } from 'react';
 import { alpha } from '@mui/material/styles';
-import { GQLMutation, GQLQuery } from 'src/lib/client';
-import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/campaign-run-application.mutation';
-import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-import { formatDate } from 'src/lib/helpers';
 import {
   Box,
   Card,
@@ -12,9 +7,15 @@ import {
   Typography,
   LinearProgress,
 } from '@mui/material';
+
 import { useRouter } from 'src/routes/hooks';
 
-import Iconify from 'src/components/iconify';
+import { formatDate } from 'src/lib/helpers';
+import { GQLQuery, GQLMutation } from 'src/lib/client';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/campaign-run-application.mutation';
+
+import {Iconify} from 'src/components/iconify';
 
 export default function MyApplicationsView() {
   const router = useRouter();

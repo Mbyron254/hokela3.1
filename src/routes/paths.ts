@@ -50,6 +50,7 @@ const v2_paths = {
 
 export const paths = {
   faqs: '/faqs',
+  changelog: 'https://docs.minimals.cc/changelog',
   minimalStore: 'https://mui.com/store/items/minimal-dashboard/',
   // AUTH
   auth: {

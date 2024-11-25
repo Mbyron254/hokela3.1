@@ -1,16 +1,15 @@
-import {
-  ApolloQueryResult,
-  OperationVariables,
-  TypedDocumentNode,
-} from '@apollo/client';
-import { DocumentNode } from 'graphql';
-import {
+import type { DocumentNode } from 'graphql';
+import type {
   Dispatch,
-  FormEventHandler,
-  MouseEventHandler,
   SetStateAction,
-} from 'react';
-import { TAnswerType } from '../constant';
+  MouseEventHandler} from 'react';
+import type {
+  ApolloQueryResult,
+  TypedDocumentNode,
+  OperationVariables,
+} from '@apollo/client';
+
+import type { TAnswerType } from '../constant';
 
 export interface IGQLQuery {
   refetch: (variables?: Partial<any>) => Promise<ApolloQueryResult<any>>;

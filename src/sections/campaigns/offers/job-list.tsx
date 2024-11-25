@@ -8,8 +8,9 @@ import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { JobItem } from './job-item';
 import { ERole } from 'src/types/client';
+
+import { JobItem } from './job-item';
 
 // ----------------------------------------------------------------------
 

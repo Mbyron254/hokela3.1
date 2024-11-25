@@ -1,7 +1,7 @@
 import type { ThemeUpdateOptions } from './types';
 
 // ----------------------------------------------------------------------
-
+// @ts-ignore
 export const overridesTheme: ThemeUpdateOptions = {
   /**
    *

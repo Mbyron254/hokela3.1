@@ -1,12 +1,13 @@
+import type { BoxProps } from '@mui/material/Box';
+
 import { m } from 'framer-motion';
 
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
-import type { BoxProps } from '@mui/material/Box';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-// import { varAlpha, stylesMode } from 'src/theme/styles';
+import { varAlpha, stylesMode } from 'src/theme/styles';
 
 import { MotionContainer } from 'src/components/animate';
 

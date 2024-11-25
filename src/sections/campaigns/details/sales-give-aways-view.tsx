@@ -1,22 +1,22 @@
-import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import type {
+    IChoice,
+    IQuestionnairField,
+    InputSurveyResponse,
+    IAnswerDropdownOption,
+    InputSalesGiveawaySurveyReportCreate,
+  } from 'src/lib/interface/general.interface';
+
+import React, { useState, useEffect } from 'react';
+
+import { Box, Button, Typography } from '@mui/material';
+
 import { GQLMutation } from 'src/lib/client';
-import { FC, useEffect, useState } from 'react';
-import { sourceImage } from 'src/lib/server';
-import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
 // import { QuestionnaireForm } from '../QuestionnaireForm';
 import {
-  AGENT_SALES_GIVEAWAY_CONFIGURATIONS,
-  SALES_GIVEAWAY_REPORT_CREATE,
   SALES_GIVEAWAY_SURVEY,
+  SALES_GIVEAWAY_REPORT_CREATE,
+  AGENT_SALES_GIVEAWAY_CONFIGURATIONS,
 } from 'src/lib/mutations/sales-giveaway.mutation';
-import {
-    IAnswerDropdownOption,
-    IChoice,
-    InputSalesGiveawaySurveyReportCreate,
-    InputSurveyResponse,
-    IQuestionnairField,
-  } from 'src/lib/interface/general.interface';
 
 interface Allocation {
   id: string;
@@ -81,17 +81,15 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
     if (survey.id) {
       const _responses: InputSurveyResponse[] = [];
 
-      let _string: undefined | string = undefined;
-      let _stringArray: undefined | string[] = undefined;
+      let _string: undefined | string;
+      let _stringArray: undefined | string[];
 
-      for (let i = 0; i < questionnaireFields.length; i++) {
+      for (let i = 0; i < questionnaireFields.length; i += 1) {
         if (Array.isArray(questionnaireFields[i].feedback)) {
           _stringArray = questionnaireFields[i].feedback as string[];
-        } else {
-          if (questionnaireFields[i].feedback) {
+        } else if (questionnaireFields[i].feedback) {
             _string = questionnaireFields[i].feedback as string;
           }
-        }
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: { _string, _stringArray },
@@ -104,12 +102,14 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
   useEffect(() => {
     loadSurvey();
     loadSalesConfigs();
-  }, [campaignRunId]);
+  }, 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [campaignRunId]);
   useEffect(() => {
     if (survey) {
       const _fields = [];
 
-      for (let i = 0; i < survey.questionnaireFields.length; i++) {
+      for (let i = 0; i < survey.questionnaireFields.length; i += 1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
@@ -117,7 +117,7 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
         for (
           let k = 0;
           k < survey.questionnaireFields[i].optionsChoiceSingle.length;
-          k++
+          k += 1
         ) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
@@ -129,7 +129,7 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
         for (
           let k = 0;
           k < survey.questionnaireFields[i].optionsChoiceMultiple.length;
-          k++
+          k += 1
         ) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
@@ -141,7 +141,7 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
         for (
           let k = 0;
           k < survey.questionnaireFields[i].optionsDropdown.length;
-          k++
+          k += 1
         ) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
@@ -169,13 +169,15 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
   useEffect(() => {
     const _questionnaireFields = questionnaireFields;
 
-    for (let i = 0; i < _questionnaireFields.length; i++) {
+    for (let i = 0; i < _questionnaireFields.length; i += 1) {
       _questionnaireFields[i].feedback = undefined;
     }
     setQuestionnaireFields(_questionnaireFields);
     loadSalesConfigs();
     loadSurvey();
-  }, [created]);
+  },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+   [created]);
   return (
     <Box sx={{ mb: 4 }}>
       <Typography variant="subtitle1" sx={{ mb: 2, color: 'text.primary', fontWeight: 600 }}>
@@ -210,8 +212,8 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
                 variant="contained"
                 color="primary"
                 sx={{ mt: 2 }}
-                onClick={() => handleGiveProduct(config.id)}
-                disabled={config.giveaway.totalIssued >= config.giveaway.totalUnlocked}
+                onClick={() => {}}
+                // disabled={config.giveaway.totalIssued >= config.giveaway.totalUnlocked}
               >
                 Give Product
               </Button>

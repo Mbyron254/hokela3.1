@@ -1,8 +1,8 @@
 'use client';
 
-import type { IJobItem } from 'src/types/job';
 
-import { useState, useCallback, useEffect } from 'react';
+import { redirect } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -11,26 +11,25 @@ import { paths } from 'src/routes/paths';
 
 import { useTabs } from 'src/hooks/use-tabs';
 
-import { DashboardContent } from 'src/layouts/dashboard';
-import { JOB_DETAILS_TABS, JOB_PUBLISH_OPTIONS } from 'src/_mock';
-
 import { GQLMutation } from 'src/lib/client';
 import { formatDate } from 'src/lib/helpers';
-import { M_CAMPAIGN_RUN_APPLY } from 'src/lib/mutations/campaign-run-application.mutation';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { JOB_DETAILS_TABS, JOB_PUBLISH_OPTIONS } from 'src/_mock';
 import { M_OPEN_JOB } from 'src/lib/mutations/campaign-run.mutation';
+import { M_CAMPAIGN_RUN_APPLY } from 'src/lib/mutations/campaign-run-application.mutation';
 
 import { Label } from 'src/components/label';
 
 import { JobDetailsToolbar } from '../job-details-toolbar';
 import { JobDetailsContent } from '../job-details-content';
 import { JobDetailsCandidates } from '../job-details-candidates';
-import { redirect } from 'next/navigation';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   params: {
     id: string;
+    job: any;
   };
 };
 
@@ -54,16 +53,18 @@ export function JobDetailsView({ params }: Props) {
 
   const [deadline, setDeadline] = useState({ date: '', time: '' });
 
-  const loadJob = () => {
+  const loadJob = useCallback(() => {
     getJob({ variables: { input: { id: params.id } } });
-  };
-  const handleApply = () => {
+  }, [getJob, params.id]);
+
+  const handleApply = useCallback(() => {
     apply({ variables: { input: { campaignRunId: params.id } } });
-  };
+  }, [apply, params.id]);
 
   useEffect(() => {
     loadJob();
-  }, []);
+  }, [loadJob]);
+
   useEffect(() => {
     if (job) {
       setDeadline({

@@ -1,11 +1,13 @@
+import type { IconButtonProps } from '@mui/material/IconButton';
+
 import { useTheme } from '@mui/material/styles';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { bgBlur } from 'src/theme/css';
 
-import Iconify from 'src/components/iconify';
+import {Iconify} from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
 import { NAV } from '../config-layout';
@@ -27,7 +29,8 @@ export default function NavToggleButton({ sx, ...other }: IconButtonProps) {
     <IconButton
       size="small"
       onClick={() =>
-        settings.onUpdate('themeLayout', settings.themeLayout === 'vertical' ? 'mini' : 'vertical')
+        // @ts-expect-error
+        settings.onUpdate('themeLayout', settings?.themeLayout === 'vertical' ? 'mini' : 'vertical')
       }
       sx={{
         p: 0.5,
@@ -47,6 +50,7 @@ export default function NavToggleButton({ sx, ...other }: IconButtonProps) {
       <Iconify
         width={16}
         icon={
+          // @ts-expect-error
           settings.themeLayout === 'vertical'
             ? 'eva:arrow-ios-back-fill'
             : 'eva:arrow-ios-forward-fill'

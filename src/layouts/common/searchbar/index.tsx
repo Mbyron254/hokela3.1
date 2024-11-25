@@ -17,13 +17,14 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useEventListener } from 'src/hooks/use-event-listener';
 
-import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
-import SearchNotFound from 'src/components/search-not-found';
+import { navData } from 'src/layouts/config-nav-dashboard';
+
+import { Label } from 'src/components/label';
+import { Iconify } from 'src/components/iconify';
+import { Scrollbar } from 'src/components/scrollbar';
+import { SearchNotFound } from 'src/components/search-not-found';
 
 import ResultItem from './result-item';
-import { useNavData } from '../../dashboard/config-navigation';
 import { applyFilter, groupedData, getAllItems } from './utils';
 
 // ----------------------------------------------------------------------
@@ -39,7 +40,7 @@ function Searchbar() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const navData = useNavData();
+  // const navData = useNavData();
 
   const handleClose = useCallback(() => {
     search.onFalse();

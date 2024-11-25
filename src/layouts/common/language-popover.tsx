@@ -6,9 +6,9 @@ import IconButton from '@mui/material/IconButton';
 
 import { useLocales, useTranslate } from 'src/locales';
 
-import Iconify from 'src/components/iconify';
+import { Iconify } from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ export default function LanguagePopover() {
 
   const handleChangeLang = useCallback(
     (newLang: string) => {
+      // @ts-expect-error
       onChangeLang(newLang);
       popover.onClose();
     },

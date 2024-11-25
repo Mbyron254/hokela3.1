@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import type { BoxProps } from '@mui/material/Box';
+
 import { m } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 
@@ -9,7 +11,6 @@ import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
 import Divider from '@mui/material/Divider';
 import Container from '@mui/material/Container';
-import type { BoxProps } from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import { fToNow } from 'src/utils/format-time';

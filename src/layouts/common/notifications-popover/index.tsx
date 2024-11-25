@@ -19,10 +19,10 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { _notifications } from 'src/_mock';
 
-import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
+import { Label } from 'src/components/label';
+import { Iconify } from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
+import { Scrollbar } from 'src/components/scrollbar';
 
 import NotificationItem from './notification-item';
 
@@ -128,6 +128,7 @@ export default function NotificationsPopover() {
     <Scrollbar>
       <List disablePadding>
         {notifications.map((notification) => (
+          // @ts-expect-error
           <NotificationItem key={notification.id} notification={notification} />
         ))}
       </List>

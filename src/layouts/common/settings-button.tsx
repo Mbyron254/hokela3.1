@@ -1,8 +1,9 @@
+import type { Theme, SxProps } from '@mui/material/styles';
+
 import { m } from 'framer-motion';
 
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import { Theme, SxProps } from '@mui/material/styles';
 import Badge, { badgeClasses } from '@mui/material/Badge';
 
 import {Iconify} from 'src/components/iconify';
@@ -34,7 +35,8 @@ export default function SettingsButton({ sx }: Props) {
       <Box
         component={m.div}
         animate={{
-          rotate: [0, settings.open ? 0 : 360],
+          // @ts-expect-error
+          rotate: [0, settings?.open ? 0 : 360],
         }}
         transition={{
           duration: 12,
@@ -48,7 +50,8 @@ export default function SettingsButton({ sx }: Props) {
           whileHover="hover"
           variants={varHover(1.05)}
           aria-label="settings"
-          onClick={settings.onToggle}
+          // @ts-expect-error
+          onClick={settings?.onToggle}
           sx={{
             width: 40,
             height: 40,

@@ -1,8 +1,7 @@
 'use client';
 
-import type { IJobItem } from 'src/types/job';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -14,17 +13,18 @@ import { useTabs } from 'src/hooks/use-tabs';
 import { DashboardContent } from 'src/layouts/dashboard';
 // import {  JOB_PUBLISH_OPTIONS } from 'src/_mock';
 
+import { redirect } from 'next/navigation';
+
 import { GQLMutation } from 'src/lib/client';
 import { formatDate } from 'src/lib/helpers';
-import { M_CAMPAIGN_RUN_APPLY } from 'src/lib/mutations/campaign-run-application.mutation';
 import { M_OPEN_JOB } from 'src/lib/mutations/campaign-run.mutation';
+import { M_CAMPAIGN_RUN_APPLY } from 'src/lib/mutations/campaign-run-application.mutation';
 
 import { Label } from 'src/components/label';
 
 import { JobDetailsToolbar } from '../job-details-toolbar';
 import { JobDetailsContent } from '../job-details-content';
 import { JobDetailsCandidates } from '../job-details-candidates';
-import { redirect, useParams } from 'next/navigation';
 
 // ----------------------------------------------------------------------
 
@@ -36,18 +36,18 @@ export function JobDetailsView({ id }: { id: string }) {
     { value: 'Apply', label: 'Apply' },
     { value: 'Save as Draft', label: 'Save as Draft' },
   ];
-  
-  if (!id) {
-    return null;
-  }
 
+  // Move all hooks before any conditional returns
   const tabs = useTabs('content');
+  const [deadline, setDeadline] = useState({ date: '', time: '' });
+  const [publish, setPublish] = useState('');
 
   const { action: getJob, data: job } = GQLMutation({
     mutation: M_OPEN_JOB,
     resolver: 'openJob',
     toastmsg: false,
   });
+  
   const {
     action: apply,
     loading: applying,
@@ -58,34 +58,39 @@ export function JobDetailsView({ id }: { id: string }) {
     toastmsg: false,
   });
 
-  const [deadline, setDeadline] = useState({ date: '', time: '' });
-
-  const loadJob = () => {
+  const loadJob = useCallback(() => {
     getJob({ variables: { input: { id } } });
-  };
-  const handleApply = () => {
+  }, [getJob, id]);
+
+  const handleApply = useCallback(() => {
     apply({ variables: { input: { campaignRunId: id } } });
-  };
-  console.log(job, 'JOB')
+  }, [apply, id]);
+
+  const handleChangePublish = useCallback(() => {
+    handleApply();
+  }, [handleApply]);
 
   useEffect(() => {
     loadJob();
-  }, []);
+  }, [loadJob]);
+
   useEffect(() => {
     if (job) {
       setDeadline({
         date: formatDate(job.closeAdvertOn).split(',')[0],
         time: formatDate(job.closeAdvertOn).split(',')[1],
       });
+      setPublish(job.publish);
     }
   }, [job]);
+
   useEffect(() => {
     if (applied) redirect(`/agent/job-advertisements`);
   }, [applied]);
-  const [publish, setPublish] = useState(job?.publish);
-  const handleChangePublish = useCallback((newValue: string) => {
-    handleApply();
-  }, []);
+
+  if (!id) {
+    return null;
+  }
 
   const renderTabs = (
     <Tabs value={tabs.value} onChange={tabs.onChange} sx={{ mb: { xs: 3, md: 5 } }}>

@@ -1,6 +1,5 @@
   import type { IJobItem } from 'src/types/job';
 
-  import Box from '@mui/material/Box';
   import Link from '@mui/material/Link';
   import Card from '@mui/material/Card';
   import Stack from '@mui/material/Stack';
@@ -9,20 +8,17 @@
   import MenuList from '@mui/material/MenuList';
   import MenuItem from '@mui/material/MenuItem';
   import IconButton from '@mui/material/IconButton';
-  import Typography from '@mui/material/Typography';
   import ListItemText from '@mui/material/ListItemText';
 
-  import { paths } from 'src/routes/paths';
   import { RouterLink } from 'src/routes/components';
 
   import { fDate } from 'src/utils/format-time';
-  import { fCurrency } from 'src/utils/format-number';
-
-  import { Iconify } from 'src/components/iconify';
+  
+import { Iconify } from 'src/components/iconify';
   import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import { ERole } from 'src/types/client';
 
-  // ----------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
 
   type Props = {
     job: IJobItem;
@@ -44,8 +40,9 @@ import { ERole } from 'src/types/client';
 
           <Stack sx={{ p: 3, pb: 2 }}>
             <Avatar
-              alt={job.company.name}
-              src={job.company.logo}
+              alt={job?.campaign?.clientTier2?.name}
+              // @ts-expect-error
+              src={job?.campaign.clientTier2?.logo || ''}
               variant="rounded"
               sx={{ width: 48, height: 48, mb: 2 }}
             />
@@ -58,10 +55,10 @@ import { ERole } from 'src/types/client';
                   href={`/v2/agent/dashboard/campaigns/offers/${job.id}`}
                   color="inherit"
                 >
-                  {job.title}
+                  {job?.campaign?.name}
                 </Link>
               }
-              secondary={`Posted date: ${fDate(job.createdAt)}`}
+              secondary={`Posted date: ${fDate(job.closeAdvertOn)}`}
               primaryTypographyProps={{ typography: 'subtitle1' }}
               secondaryTypographyProps={{
                 mt: 1,
@@ -71,7 +68,7 @@ import { ERole } from 'src/types/client';
               }}
             />
 
-            <Stack
+            {/* <Stack
               spacing={0.5}
               direction="row"
               alignItems="center"
@@ -79,12 +76,12 @@ import { ERole } from 'src/types/client';
             >
               <Iconify width={16} icon="solar:users-group-rounded-bold" />
               {job.candidates.length} candidates
-            </Stack>
+            </Stack> */}
           </Stack>
 
           <Divider sx={{ borderStyle: 'dashed' }} />
 
-          <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
+          {/* <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
             {[
               {
                 label: job.experience,
@@ -117,7 +114,7 @@ import { ERole } from 'src/types/client';
                 </Typography>
               </Stack>
             ))}
-          </Box>
+          </Box> */}
         </Card>
 
         <CustomPopover

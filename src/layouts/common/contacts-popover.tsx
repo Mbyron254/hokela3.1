@@ -11,10 +11,10 @@ import { fToNow } from 'src/utils/format-time';
 
 import { _contacts } from 'src/_mock';
 
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
+import {Iconify} from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { Scrollbar } from 'src/components/scrollbar';
+import  { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 

@@ -1,8 +1,8 @@
 'use client';
 
-import { Button, Typography } from '@mui/material';
-
 import { useEffect } from 'react';
+
+import { Button, Typography } from '@mui/material';
 
 export default function Error({
   error,

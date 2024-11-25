@@ -1,14 +1,14 @@
 'use client';
 
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import Card from '@mui/material/Card';
-import LinearProgress from '@mui/material/LinearProgress';
 import { Icon } from '@iconify/react';
 
-import { varAlpha } from 'src/theme/styles';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+
 import { DashboardContent } from 'src/layouts/dashboard';
 
 // ----------------------------------------------------------------------

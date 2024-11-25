@@ -1,21 +1,20 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import Box from '@mui/material/Box';
 import { cardClasses } from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 
-import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { CONFIG } from 'src/config-global';
+import { varAlpha } from 'src/theme/styles';
+import { GQLQuery, GQLMutation } from 'src/lib/client';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { _coursesContinue, _coursesReminder } from 'src/_mock';
 import { M_OPEN_JOBS } from 'src/lib/mutations/campaign-run.mutation';
 import { M_CAMPAIGN_RUN_OFFERS } from 'src/lib/mutations/campaign-run-offer.mutation';
 import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/campaign-run-application.mutation';
-
-import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-import { useEffect, useState } from 'react';
-
-import { CONFIG } from 'src/config-global';
-import { varAlpha } from 'src/theme/styles';
-import { DashboardContent } from 'src/layouts/dashboard';
-import { _coursesContinue, _coursesFeatured, _coursesReminder } from 'src/_mock';
 
 import { CourseProgress } from '../course-progress';
 import { CourseContinue } from '../course-continue';
@@ -105,9 +104,16 @@ export function OverviewCourseView() {
     }
   };
 
-  useEffect(() => loadOffers(), [session?.user?.agent?.id]);
-  useEffect(() => loadRunsActive(), []);
-  useEffect(() => loadApplications(), [session?.user?.agent?.id]);
+  useEffect(() =>
+     loadOffers(), 
+// eslint-disable-next-line react-hooks/exhaustive-deps
+  [session?.user?.agent?.id]);
+  useEffect(() => loadRunsActive(), 
+// eslint-disable-next-line react-hooks/exhaustive-deps
+  []);
+  useEffect(() => loadApplications(), 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [session?.user?.agent?.id]);
   console.log(offers, 'offers');
   console.log(session, 'session');
   console.log('JOBS  ', jobs);
@@ -150,7 +156,7 @@ export function OverviewCourseView() {
             </Typography>
             <Typography
               sx={{ color: 'text.secondary' }}
-            >{`Welcome back to Hokela 3.1!`}</Typography>
+            >Welcome back to Hokela 3.1!</Typography>
           </Box>
 
           <Box
