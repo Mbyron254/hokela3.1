@@ -8,8 +8,9 @@ import { CONFIG } from 'src/config-global';
 
 import { SplashScreen } from 'src/components/loading-screen';
 
-import { useAuthContext } from '../hooks';
 import { paths } from 'src/routes/paths';
+
+import { useAuthContext } from '../hooks';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +45,8 @@ export function GuestGuard({ children }: Props) {
         homePath = paths.v2.admin.root;
       } else {
         const clientType = user?.role?.clientTier1?.clientType?.name || 
-                          user?.role?.clientTier2?.clientType?.name;
+                          user?.role?.clientTier2?.clientType?.name || 
+                          'Hokela Interactive';
         
         switch (clientType) {
           case 'PRODUCER':
@@ -58,6 +60,9 @@ export function GuestGuard({ children }: Props) {
             break;
           case 'MARKETING_AGENCY':
             homePath = paths.v2.marketing.root;
+            break;
+          default:
+            homePath = '/';
             break;
         }
       }

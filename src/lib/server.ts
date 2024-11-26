@@ -50,12 +50,14 @@ export const serverGateway = async (GQLDN: DocumentNode, variables: any) => {
     if (rs.errors?.length) {
       console.log('GQL Errors =======> ');
 
-      for (let i = 0; i < rs.errors.length; i++) {
+      for (let i = 0; i < rs.errors.length; i += 1) {
         console.log(rs.errors[i]);
       }
     }
+    return null; // Add explicit return
   } catch (error) {
     console.log('SAPI Error =======> ', error);
+    return null; // Add explicit return
   }
 };
 

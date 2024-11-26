@@ -61,7 +61,7 @@ export async function middleware(request: NextRequest) {
     console.log('Session Data:', session);
 
     if (session && session.user) {
-      let isActiveAccount = session.user.state === USER_AC_STATE.active;
+      const isActiveAccount = session.user.state === USER_AC_STATE.active;
 
       if (isActiveAccount) {
         if (session.locked) {
@@ -127,24 +127,24 @@ export async function middleware(request: NextRequest) {
           if (isAuth) {
             console.log('Redirecting to homepage after auth');
             return NextResponse.redirect(new URL(userHomePage, request.url));
-          } else {
-            if (!allowedToView) {
-              console.log('User not allowed to view current page, redirecting to homepage');
-              return NextResponse.redirect(new URL(userHomePage, request.url));
-            } else {
-              console.log('Setting session headers');
-              headers.set(
-                'session',
-                JSON.stringify({
-                  menu: [],
-                  user: session?.user,
-                  accountLabel,
-                  isActiveAccount: session?.user?.state === USER_AC_STATE.active,
-                  isLocked: session?.locked
-                })
-              );
-            }
           }
+
+          if (!allowedToView) {
+            console.log('User not allowed to view current page, redirecting to homepage');
+            return NextResponse.redirect(new URL(userHomePage, request.url));
+          }
+
+          console.log('Setting session headers');
+          headers.set(
+            'session',
+            JSON.stringify({
+              menu: [],
+              user: session?.user,
+              accountLabel,
+              isActiveAccount: session?.user?.state === USER_AC_STATE.active,
+              isLocked: session?.locked
+            })
+          );
         }
       } else {
         if (session.user.state === USER_AC_STATE.unconfirmed) {
