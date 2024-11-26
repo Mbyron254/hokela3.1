@@ -14,8 +14,7 @@ import {
   SERVER_API_PRO_GQL,
 } from './constant';
 
-export const serverGateway = async (GQLDN: DocumentNode, variables: any): Promise<any | null> => {
-  return null;
+export const serverGateway = async (GQLDN: DocumentNode, variables: any) => {
   let uri: string;
 
   switch (process.env.NODE_ENV) {
@@ -51,13 +50,12 @@ export const serverGateway = async (GQLDN: DocumentNode, variables: any): Promis
     if (rs.errors?.length) {
       console.log('GQL Errors =======> ');
 
-      for (let i = 0; i < rs.errors.length; i += 1) {
+      for (let i = 0; i < rs.errors.length; i++) {
         console.log(rs.errors[i]);
       }
     }
   } catch (error) {
     console.log('SAPI Error =======> ', error);
-    return null;
   }
 };
 

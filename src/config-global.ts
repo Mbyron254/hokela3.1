@@ -1,5 +1,6 @@
 import { paths } from './routes/paths';
 import packageJson from '../package.json';
+// import { ERole } from './types/client';
 // ----------------------------------------------------------------------
 
 export type ConfigValue = {

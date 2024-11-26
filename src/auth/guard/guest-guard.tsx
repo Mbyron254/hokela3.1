@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 
-import { paths } from 'src/routes/paths';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { CONFIG } from 'src/config-global';
@@ -10,6 +9,7 @@ import { CONFIG } from 'src/config-global';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -43,7 +43,8 @@ export function GuestGuard({ children }: Props) {
       } else if (!user?.role?.clientTier1 && !user?.role?.clientTier2) {
         homePath = paths.v2.admin.root;
       } else {
-        const clientType = user?.role?.clientTier1?.clientType?.name || user?.role?.clientTier2?.clientType?.name;
+        const clientType = user?.role?.clientTier1?.clientType?.name || 
+                          user?.role?.clientTier2?.clientType?.name;
         
         switch (clientType) {
           case 'PRODUCER':
@@ -57,9 +58,6 @@ export function GuestGuard({ children }: Props) {
             break;
           case 'MARKETING_AGENCY':
             homePath = paths.v2.marketing.root;
-            break;
-          default:
-            homePath = paths.v2.agent.root;
             break;
         }
       }

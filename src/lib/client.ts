@@ -5,7 +5,7 @@ import { enqueueSnackbar } from 'notistack';
 import { onError } from '@apollo/client/link/error';
 import { from, HttpLink, useQuery, useMutation, ApolloClient, InMemoryCache } from '@apollo/client';
 
-import { HEADER_KEY_CLIENT, HEADER_VAL_CLIENT, QUERY_REVALIDATE_INTERVAL_MS } from './constant';
+import { HEADER_KEY_CLIENT, HEADER_VAL_CLIENT, QUERY_REVALIDATE_INTERVAL_MS, SERVER_API_DEV_GQL, SERVER_API_PRO_RST } from './constant';
 
 import type {
   IGQLQuery,
@@ -18,12 +18,10 @@ let client: ApolloClient<any> | null = null;
 
 const getClient = () => {
   if (!client || typeof window === undefined) {
+    const uri = process.env.NODE_ENV === 'production' ? SERVER_API_PRO_RST : SERVER_API_DEV_GQL;
+    
     client = new ApolloClient({
       link: from([
-        new HttpLink({
-          uri: 'http://localhost:3001/graphql',
-          credentials: 'include',
-        }),
         onError(({ graphQLErrors, networkError }) => {
           if (graphQLErrors) {
             console.log(graphQLErrors);
@@ -31,6 +29,10 @@ const getClient = () => {
           if (networkError) {
             console.error('Network error', networkError);
           }
+        }),
+        new HttpLink({
+          uri,
+          credentials: 'include',
         }),
       ]),
       cache: new InMemoryCache(),
