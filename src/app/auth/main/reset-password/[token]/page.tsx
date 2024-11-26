@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useParams } from 'next/navigation';
+import Link from '@mui/material/Link';
+import NextLink from 'next/link';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -146,6 +148,22 @@ function ResetPasswordView() {
       >
         Reset Password
       </LoadingButton>
+
+      <Box sx={{ textAlign: 'center' }}>
+        <Link
+          href="/auth/login"
+          component={NextLink}
+          sx={{ 
+            color: 'text.secondary',
+            textDecoration: 'underline',
+            '&:hover': {
+              color: 'primary.main',
+            }
+          }}
+        >
+          Return to Login
+        </Link>
+      </Box>
     </Box>
   );
 
