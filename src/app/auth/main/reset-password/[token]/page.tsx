@@ -151,7 +151,7 @@ function ResetPasswordView() {
 
       <Box sx={{ textAlign: 'center' }}>
         <Link
-          href="/auth/login"
+          href="/auth/main/sign-in"
           component={NextLink}
           sx={{ 
             color: 'text.secondary',
