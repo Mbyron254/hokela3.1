@@ -81,3 +81,4 @@ export const CONFIG: ConfigValue = {
 };
 
 export const PATH_AFTER_LOGIN = paths.v2.agent.root; // as '/dashboard'
+export const MAPBOX_API = process.env.NEXT_PUBLIC_MAPBOX_API;

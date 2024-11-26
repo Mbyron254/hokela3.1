@@ -39,12 +39,35 @@ export const UpdateUserSchema = zod.object({
   // Not required
   isPublic: zod.boolean(),
 });
+export type TUserProfile = {
+  __typename: 'TUserProfile';
+  photo: null | any; // Update this type based on actual photo structure
+};
 
-export function AccountGeneral() {
+export type TRole = {
+  __typename: 'TRole';
+  clientTier1: null | any;
+  clientTier2: null | any;
+};
+
+export type TAgent = {
+  __typename: 'TAgent';
+  id: string;
+};
+
+export type TUser = {
+  __typename: 'TUser';
+  name: string;
+  profile: TUserProfile;
+  role: TRole;
+  agent: TAgent;
+};
+
+export function AccountGeneral({  agent }: { agent: TUser }) {
   const { user } = useMockedUser();
 
   const defaultValues = {
-    displayName: user?.displayName || '',
+    displayName: agent?.name || '',
     email: user?.email || '',
     photoURL: user?.photoURL || null,
     phoneNumber: user?.phoneNumber || '',
@@ -134,17 +157,17 @@ export function AccountGeneral() {
               <Field.Text name="displayName" label="Name" />
               <Field.Text name="email" label="Email address" />
               <Field.Phone name="phoneNumber" label="Phone number" />
-              <Field.Text name="address" label="Address" />
+              {/* <Field.Text name="address" label="Address" />
 
               <Field.CountrySelect name="country" label="Country" placeholder="Choose a country" />
 
               <Field.Text name="state" label="State/region" />
               <Field.Text name="city" label="City" />
-              <Field.Text name="zipCode" label="Zip/code" />
+              <Field.Text name="zipCode" label="Zip/code" /> */}
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <Field.Text name="about" multiline rows={4} label="About" />
+              {/* <Field.Text name="about" multiline rows={4} label="About" /> */}
 
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save changes
