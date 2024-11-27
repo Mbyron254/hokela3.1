@@ -58,6 +58,8 @@ export type TAgent = {
 export type TUser = {
   __typename: 'TUser';
   name: string;
+  email: string;
+  phone: string;
   profile: TUserProfile;
   role: TRole;
   agent: TAgent;
@@ -68,9 +70,9 @@ export function AccountGeneral({  agent }: { agent: TUser }) {
 
   const defaultValues = {
     displayName: agent?.name || '',
-    email: user?.email || '',
+    email: agent?.email || '',
     photoURL: user?.photoURL || null,
-    phoneNumber: user?.phoneNumber || '',
+    phoneNumber: agent?.phone || '',
     country: user?.country || '',
     address: user?.address || '',
     state: user?.state || '',
