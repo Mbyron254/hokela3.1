@@ -1,6 +1,8 @@
 /* eslint-disable react/display-name */
 import type { MotionProps } from 'framer-motion';
 import type { BoxProps } from '@mui/material/Box';
+import type {UseClientRectReturn } from 'src/hooks/use-client-rect';
+
 import { useRef, useState, forwardRef } from 'react';
 import { m, useSpring, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 
@@ -11,7 +13,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { alpha, styled, useTheme, createTheme } from '@mui/material/styles';
 
-import { useClientRect,UseClientRectReturn } from 'src/hooks/use-client-rect';
+import { useClientRect } from 'src/hooks/use-client-rect';
 
 import { stylesMode } from 'src/theme/styles';
 import PRIMARY_COLOR from 'src/theme/with-settings/primary-color.json';

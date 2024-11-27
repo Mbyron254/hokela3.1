@@ -69,10 +69,12 @@ export function JobDetailsView({ id }: { id: string }) {
   const handleChangePublish = useCallback(() => {
     console.log('handleChangePublish', id);
     handleApply();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleApply]);
 
   useEffect(() => {
     loadJob();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadJob]);
 
   useEffect(() => {

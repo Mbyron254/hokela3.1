@@ -1,3 +1,7 @@
+import type { Theme, SxProps } from '@mui/material/styles';
+import type { TextFieldProps } from '@mui/material/TextField';
+import type { FormControlProps } from '@mui/material/FormControl';
+
 import { Controller, useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
@@ -5,11 +9,10 @@ import Chip from '@mui/material/Chip';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
-import { Theme, SxProps } from '@mui/material/styles';
+import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
-import FormControl, { FormControlProps } from '@mui/material/FormControl';
 
 // ----------------------------------------------------------------------
 

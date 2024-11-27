@@ -1,11 +1,11 @@
 import Yup from 'yup';
+import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { isEmpty, isString } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useRef, useEffect, useCallback } from 'react';
 
 import { LoadingButton } from '@mui/lab';
-import { Grid, Stack, Button, Tooltip, MenuItem, Typography } from '@mui/material';
+import { Grid, Stack, Button, Tooltip, Typography } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
@@ -17,18 +17,6 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import FormProvider from './form-provider'; // Adjust the import path as needed
 
-import RHFCode from './rhf-code';
-import RHFSlider from './rhf-slider';
-import RHFEditor from './rhf-editor';
-import RHFSwitch from './rhf-switch';
-import RHFCamera from './rhf-camera';
-import { RHFUpload } from './rhf-upload';
-import RHFTextField from './rhf-text-field';
-import { RHFCheckbox } from './rhf-checkbox';
-import RHFRadioGroup from './rhf-radio-group';
-import RHFGeoLocation from './rhf-geolocation';
-import RHFAutocomplete from './rhf-autocomplete';
-import { RHFSelect, RHFMultiSelect } from './rhf-select';
 
 type DynamicFormProps = {
   questions: [];

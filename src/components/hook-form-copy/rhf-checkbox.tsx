@@ -1,3 +1,6 @@
+import type {
+  FormControlLabelProps} from '@mui/material/FormControlLabel';
+
 import { Controller, useFormContext } from 'react-hook-form';
 
 import Checkbox from '@mui/material/Checkbox';
@@ -6,7 +9,6 @@ import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControlLabel, {
-  FormControlLabelProps,
   formControlLabelClasses,
 } from '@mui/material/FormControlLabel';
 

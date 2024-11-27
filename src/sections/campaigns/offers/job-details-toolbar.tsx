@@ -36,8 +36,7 @@ export function JobDetailsToolbar({
   ...other
 }: Props) {
   return (
-    <>
-      <Stack spacing={1.5} direction="row" sx={{ mb: { xs: 3, md: 5 }, ...sx }} {...other}>
+    <Stack spacing={1.5} direction="row" sx={{ mb: { xs: 3, md: 5 }, ...sx }} {...other}>
         <Button
           component={RouterLink}
           href={backLink}
@@ -73,6 +72,5 @@ export function JobDetailsToolbar({
           Apply
         </LoadingButton>
       </Stack>
-    </>
   );
 }

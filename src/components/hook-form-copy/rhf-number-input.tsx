@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import type { TextFieldProps } from '@mui/material/TextField';
+
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { Box, Slider, Typography } from '@mui/material';
-import { TextFieldProps } from '@mui/material/TextField';
 
 // import { useRealmApp } from 'src/components/realm';
 

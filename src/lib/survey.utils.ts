@@ -1,10 +1,12 @@
-import { Dispatch, SetStateAction } from 'react';
-import { MULTIMEDIA, TEXT_SHORT } from './constant';
+import type { Dispatch, SetStateAction } from 'react';
+
+import { TEXT_SHORT } from './constant';
 import { generateShortUUIDV4 } from './helpers';
-import {
+
+import type {
   IChoice,
-  InputSurveyResponseFeedback,
   IQuestionnairField,
+  InputSurveyResponseFeedback,
 } from './interface/general.interface';
 
 export const formElementAdd = (
@@ -228,10 +230,8 @@ export const editFormElementAllowMultipleFileUploads = (
   const index = tmpFormElements.findIndex((f) => f.id === id);
 
   if (index > -1) {
-    tmpFormElements[index].allowMultipleFileUploads = tmpFormElements[index]
-      .allowMultipleFileUploads
-      ? false
-      : true;
+    tmpFormElements[index].allowMultipleFileUploads = !tmpFormElements[index]
+      .allowMultipleFileUploads;
   }
   setQuestionnaireFields(tmpFormElements);
 };

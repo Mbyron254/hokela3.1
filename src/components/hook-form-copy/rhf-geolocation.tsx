@@ -1,7 +1,8 @@
+import type { MapRef } from 'react-map-gl';
+
 import { isNumber } from 'lodash';
-import { MapRef } from 'react-map-gl';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
 import { Card, Stack, Button, FormHelperText } from '@mui/material';
 

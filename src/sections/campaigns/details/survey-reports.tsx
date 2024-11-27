@@ -1,8 +1,8 @@
-import type { IChoice, IQuestionnairField, InputSurveyResponse, IAnswerDropdownOption, InputSurveyReportCreate } from 'src/lib/interface/general.interface';
+import type { IQuestionnairField, InputSurveyResponse, InputSurveyReportCreate } from 'src/lib/interface/general.interface';
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { Box, Card, Grid, Stack, Button, Typography, CardContent, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Divider } from '@mui/material';
+import { Box, Card, Grid, Stack, Button, Dialog, Divider, TextField, Typography, CardContent, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
   import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
@@ -156,7 +156,7 @@ const loadSurvey = useCallback(() => {
   }, [survey?.id, session?.user?.agent?.id, loadTarget, loadReports]);
   useEffect(() => {
     if (survey?.questionnaireFields) {
-      const _fields = survey.questionnaireFields.map((field) => ({
+      const _fields = survey.questionnaireFields.map((field: IQuestionnairField) => ({
         id: field.id,
         isRequired: field.isRequired ?? false,
         noDuplicateResponse: field.noDuplicateResponse ?? false,
@@ -179,7 +179,9 @@ const loadSurvey = useCallback(() => {
     setQuestionnaireFields(_questionnaireFields);
     loadTarget();
     loadReports();
-  }, [created, questionnaireFields, loadTarget, loadReports]);
+  },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+   [created, questionnaireFields, loadTarget, loadReports]);
 
   console.log('SURVEY',questionnaireFields);
  
@@ -372,12 +374,14 @@ const loadSurvey = useCallback(() => {
                 {(field.feedbackType === 'single_choice' || field.feedbackType === 'multiple_choice') && (
                   <Stack spacing={1}>
                     {field.optionsChoiceSingle?.map((choice) => (
+                      // @ts-ignore
                       <Box key={choice.id} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <input 
                           type={field.feedbackType === 'single_choice' ? 'radio' : 'checkbox'}
                           name={`question-${field.id}`}
                           required={field.isRequired}
                         />
+                        {/* @ts-ignore */}
                         <Typography>{choice.value1}</Typography>
                       </Box>
                     ))}

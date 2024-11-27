@@ -29,7 +29,6 @@ import {
 } from 'src/lib/mutations/inventory-allocation.mutation';
 
 import SurveyReports from './survey-reports';
-import SalesGiveAwayView from './sales-give-aways-view';
 import { PosWidgetSummary } from './pos-widget-summary';
 
 // ----------------------------------------------------------------------

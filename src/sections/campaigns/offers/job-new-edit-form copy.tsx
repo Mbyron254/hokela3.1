@@ -1,12 +1,9 @@
 import type { IJobItem } from 'src/types/job';
 
-import { z as zod } from 'zod';
-import { useMemo, useEffect } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useMemo } from 'react';
+import { Controller } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
@@ -19,21 +16,16 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import {
   _roles,
-  JOB_SKILL_OPTIONS,
   JOB_BENEFIT_OPTIONS,
-  JOB_EXPERIENCE_OPTIONS,
   JOB_EMPLOYMENT_TYPE_OPTIONS,
-  JOB_WORKING_SCHEDULE_OPTIONS,
 } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
-import FormProvider, { RHFTextField, RHFMultiCheckbox, RHFEditor, RHFSwitch } from 'src/components/hook-form-copy';
+import FormProvider, { RHFEditor, RHFSwitch, RHFTextField, RHFMultiCheckbox } from 'src/components/hook-form-copy';
 // ----------------------------------------------------------------------
 
 // export type NewJobSchemaType = zod.infer<typeof NewJobSchema>;

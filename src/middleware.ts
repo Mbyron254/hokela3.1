@@ -1,17 +1,19 @@
 import type { NextRequest } from 'next/server';
+
 import { NextResponse } from 'next/server';
-import {
-  CLIENT_TYPE_DISTRIBUTOR,
-  CLIENT_TYPE_MARKETING_AGENCY,
-  CLIENT_TYPE_PRODUCER,
-  CLIENT_TYPE_RETAILER,
-  ROLE_AGENT,
-  SESSION_COOKIE,
-  USER_AC_STATE,
-} from './lib/constant';
+
+import { paths } from './routes/paths';
 import { serverGateway } from './lib/server';
 import { Q_SESSION } from './lib/queries/session.query';
-import { paths } from './routes/paths';
+import {
+  ROLE_AGENT,
+  USER_AC_STATE,
+  SESSION_COOKIE,
+  CLIENT_TYPE_PRODUCER,
+  CLIENT_TYPE_RETAILER,
+  CLIENT_TYPE_DISTRIBUTOR,
+  CLIENT_TYPE_MARKETING_AGENCY,
+} from './lib/constant';
 
 export async function middleware(request: NextRequest) {
   const isRecover = request.nextUrl.pathname.startsWith(`/auth/main/recover`);

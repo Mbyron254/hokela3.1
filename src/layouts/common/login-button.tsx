@@ -2,9 +2,8 @@ import type { Theme, SxProps } from '@mui/material/styles';
 
 import Button from '@mui/material/Button';
 
-import { RouterLink } from 'src/routes/components';
-
 import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
 // ----------------------------------------------------------------------
 
 type Props = {

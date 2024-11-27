@@ -1,28 +1,27 @@
 'use client';
 
-import { Container, Tab, Tabs, Box, Typography } from '@mui/material';
+import { useEffect } from 'react';
+
+import { Tab, Tabs } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 
-import { _userAbout } from 'src/_mock';
+// import { useEffect, useState } from 'react';
+import { useTabs } from 'src/hooks/use-tabs';
+
+import { GQLQuery, GQLMutation } from 'src/lib/client';
+// import { agentContext } from 'src/lib/helpers';
+import { M_AGENT } from 'src/lib/mutations/agent.mutation';
+import { DashboardContent } from 'src/layouts/dashboard/main';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 
 import {Iconify} from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
-
-import { GQLMutation, GQLQuery } from 'src/lib/client';
-// import { agentContext } from 'src/lib/helpers';
-import { M_AGENT } from 'src/lib/mutations/agent.mutation';
-import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-// import { useEffect, useState } from 'react';
-import { useTabs } from 'src/hooks/use-tabs';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { DashboardContent } from 'src/layouts/dashboard/main';
-
 
 import {AccountGeneral} from '../account-general';
-import { AccountChangePassword } from '../account-change-password';
 import { AccountNotifications } from '../account-notifications';
-import { useEffect } from 'react';
+import { AccountChangePassword } from '../account-change-password';
 
 
 
@@ -66,7 +65,9 @@ export default function AccountView() {
       getAgent({ variables: { input: { id: session.user.agent.id } } });
     }
   };
-  useEffect(() => loadAgent(), [session?.user?.agent?.id]);
+  useEffect(() => loadAgent(),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [session?.user?.agent?.id]);
   console.log(agent, 'AGENT');
   console.log(session?.user, 'USER');
 

@@ -5,7 +5,7 @@ import { enqueueSnackbar } from 'notistack';
 import { onError } from '@apollo/client/link/error';
 import { from, HttpLink, useQuery, useMutation, ApolloClient, InMemoryCache } from '@apollo/client';
 
-import { HEADER_KEY_CLIENT, HEADER_VAL_CLIENT, QUERY_REVALIDATE_INTERVAL_MS, SERVER_API_DEV_GQL, SERVER_API_PRO_RST } from './constant';
+import { HEADER_KEY_CLIENT, HEADER_VAL_CLIENT, SERVER_API_DEV_GQL, SERVER_API_PRO_RST, QUERY_REVALIDATE_INTERVAL_MS } from './constant';
 
 import type {
   IGQLQuery,
