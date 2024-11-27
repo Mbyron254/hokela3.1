@@ -22,6 +22,7 @@ import { DashboardContent } from 'src/layouts/dashboard/main';
 import {AccountGeneral} from '../account-general';
 import { AccountChangePassword } from '../account-change-password';
 import { AccountNotifications } from '../account-notifications';
+import { useEffect } from 'react';
 
 
 
@@ -65,8 +66,8 @@ export default function AccountView() {
       getAgent({ variables: { input: { id: session.user.agent.id } } });
     }
   };
-//   useEffect(() => loadAgent(), [session?.user?.agent?.id]);
-//   console.log(agent, 'AGENT');
+  useEffect(() => loadAgent(), [session?.user?.agent?.id]);
+  console.log(agent, 'AGENT');
   console.log(session?.user, 'USER');
 
   return (
