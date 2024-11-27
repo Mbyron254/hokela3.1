@@ -67,6 +67,7 @@ export function JobDetailsView({ id }: { id: string }) {
   }, [apply, id]);
 
   const handleChangePublish = useCallback(() => {
+    console.log('handleChangePublish', id);
     handleApply();
   }, [handleApply]);
 

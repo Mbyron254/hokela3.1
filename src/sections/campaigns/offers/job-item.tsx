@@ -41,8 +41,7 @@ import { Iconify } from 'src/components/iconify';
           <Stack sx={{ p: 3, pb: 2 }}>
             <Avatar
               alt={job?.campaign?.clientTier2?.name}
-              // @ts-expect-error
-              src={job?.campaign.clientTier2?.logo || ''}
+              src=''
               variant="rounded"
               sx={{ width: 48, height: 48, mb: 2 }}
             />

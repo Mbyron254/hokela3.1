@@ -472,9 +472,8 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
               >
                 <Tab label="Area of Operation" value="0" />
                 <Tab label="Sales" value="1" />
-                <Tab label="Sales Giveaway" value="2" />
-                <Tab label="Free Giveaway" value="3" />
-                <Tab label="Surveys" value="4" />
+                <Tab label="Giveaways" value="2" />
+                <Tab label="Surveys" value="3" />
               </Tabs>
 
               <Box sx={{ p: 3 }}>
@@ -906,26 +905,9 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
                     </>
                   )}
                 </TabPanel>
+               
+
                 <TabPanel value="2">
-                  <Typography variant="h6" sx={{ mb: 3, color: 'primary.main', fontWeight: 700 }}>
-                    Sales Giveaway Dashboard
-                  </Typography>
-
-                  <SalesGiveAwayView campaignRunId={offer?.campaignRun?.id} />
-
-                  {/* <Box sx={{ mb: 4 }}>
-                    <Typography variant="subtitle1" sx={{ mb: 2, color: 'text.primary', fontWeight: 600 }}>
-                      Product Giveaway Combos
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px', bgcolor: 'background.paper', borderRadius: 2, boxShadow: '0 4px 12px 0 rgba(0,0,0,0.05)' }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                      🛍️ Product Giveaway  Coming Soon
-                      </Typography>
-                    </Box>
-                  </Box> */}
-                </TabPanel>
-
-                <TabPanel value="3">
                   <Typography variant="h6" sx={{ mb: 3, color: 'primary.main', fontWeight: 700 }}>
                     Free Giveaway
                   </Typography>
@@ -942,12 +924,12 @@ export function CampaignDetailsView({ title = 'Campaign Details', campaignId }: 
                   </Box>
                 </TabPanel>
 
-                <TabPanel value="4">
+                <TabPanel value="3">
                   <Typography variant="h6" sx={{ mb: 3, color: 'primary.main', fontWeight: 700 }}>
                     Available Surveys
                   </Typography>
 
-               <SurveyReports campaignRunId={campaignId}/>
+               <SurveyReports campaignRunId={ offer?.campaignRun?.id}/>
 
                   <Box
                     sx={{
