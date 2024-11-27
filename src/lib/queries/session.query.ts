@@ -86,6 +86,8 @@ export const Q_SESSION_SELF = gql`
     sessionSelf {
       user {
         name
+        email
+        phone
         profile {
           photo {
             fileName
