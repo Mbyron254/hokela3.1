@@ -112,6 +112,17 @@ const loadSurvey = useCallback(() => {
       });
     }
   }, [survey?.id, session?.user?.agent?.id, getReports]);
+
+  // Add reset form function
+  const resetForm = useCallback(() => {
+    setInputCreate({
+      respondentName: '',
+      respondentPhone: '',
+      respondentEmail: '',
+    });
+    setResponses({});
+  }, []);
+
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -120,17 +131,13 @@ const loadSurvey = useCallback(() => {
       return;
     }
   
-    const _responses: InputSurveyResponse[] = questionnaireFields.map((field) => {
-      const feedback: FeedbackValue = responses[field.id];
-      
-      return {
-        questionnaireFieldId: field.id,
-        feedback: {
-          _string: typeof feedback === 'string' ? feedback : undefined,
-          _stringArray: Array.isArray(feedback) ? feedback : undefined,
-        },
-      };
-    });
+    const _responses: InputSurveyResponse[] = questionnaireFields.map((field) => ({
+      questionnaireFieldId: field.id,
+      feedback: {
+        _string: typeof responses[field.id] === 'string' ? responses[field.id] as string : undefined,
+        _stringArray: Array.isArray(responses[field.id]) ? responses[field.id] as string[] : undefined,
+      },
+    }));
   
     create({
       variables: {
@@ -143,8 +150,11 @@ const loadSurvey = useCallback(() => {
           responses: _responses,
         },
       },
+      onCompleted: () => {
+        resetForm();
+        handleCloseDialog();
+      },
     });
-    handleCloseDialog();
   };
 
   useEffect(() => {
@@ -157,7 +167,7 @@ const loadSurvey = useCallback(() => {
   useEffect(() => {
     if (survey?.questionnaireFields) {
       const _fields = survey.questionnaireFields.map((field: IQuestionnairField) => ({
-        id: field.id,
+        ...field,
         isRequired: field.isRequired ?? false,
         noDuplicateResponse: field.noDuplicateResponse ?? false,
         question: field.question ?? '',
@@ -169,19 +179,13 @@ const loadSurvey = useCallback(() => {
       }));
       setQuestionnaireFields(_fields);
     }
-  }, [survey]);
+  }, [survey?.questionnaireFields]);
   useEffect(() => {
-    const _questionnaireFields = survey?.questionnaireFields;
-
-    for (let i = 0; i < _questionnaireFields?.length; i += 1) {
-      _questionnaireFields[i].feedback = undefined;
+    if (created) {
+      loadTarget();
+      loadReports();
     }
-    setQuestionnaireFields(_questionnaireFields);
-    loadTarget();
-    loadReports();
-  },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-   [created, questionnaireFields, loadTarget, loadReports]);
+  }, [created, loadTarget, loadReports]);
 
   console.log('SURVEY',questionnaireFields);
  

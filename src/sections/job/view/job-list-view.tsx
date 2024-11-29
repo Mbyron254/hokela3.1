@@ -46,14 +46,9 @@ type TCampaignRun = {
       name: string;
       clientTier1: {
         name: string;
-      }
-    }
-  }
-};
-
-type TJobsResponse = {
-  count: number;
-  rows: TCampaignRun[];
+      };
+    };
+  };
 };
 
 export function JobListView() {
@@ -91,27 +86,28 @@ export function JobListView() {
     employmentTypes: [],
   });
 
-  const transformedJobs = jobs?.rows?.map((job: TCampaignRun) => ({
-    id: job.id,
-    title: job.campaign.name,
-    description: job.campaign.jobDescription,
-    createdAt: new Date().toISOString(),
-    experience: 'Junior',
-    role: 'Developer',
-    locations: ['Remote'],
-    employmentTypes: ['Full-time'],
-    benefits: ['Healthcare', 'Annual Leave'],
-    totalViews: 0,
-    company: {
-      name: job.campaign.clientTier2.name,
-      logo: '/assets/images/company/company_1.png',
-    },
-    salary: {
-      negotiable: true,
-      price: 0,
-    },
-    candidates: [],
-  })) || [];
+  const transformedJobs =
+    jobs?.rows?.map((job: TCampaignRun) => ({
+      id: job.id,
+      title: job.campaign.name,
+      description: job.campaign.jobDescription,
+      createdAt: new Date().toISOString(),
+      experience: 'Junior',
+      role: 'Developer',
+      locations: ['Remote'],
+      employmentTypes: ['Full-time'],
+      benefits: ['Healthcare', 'Annual Leave'],
+      totalViews: 0,
+      company: {
+        name: job.campaign.clientTier2.name,
+        logo: '/assets/images/company/company_1.png',
+      },
+      salary: {
+        negotiable: true,
+        price: 0,
+      },
+      candidates: [],
+    })) || [];
 
   const dataFiltered = applyFilter({ inputData: transformedJobs, filters: filters.state, sortBy });
 
@@ -182,10 +178,9 @@ export function JobListView() {
         heading="List"
         links={[
           { name: 'Dashboard', href: '/dashboard' },
-          { name: 'Job',href: '/dashboard/job' },
+          { name: 'Job', href: '/dashboard/job' },
           { name: 'List' },
         ]}
-
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
@@ -221,7 +216,7 @@ const applyFilter = ({ inputData, filters, sortBy }: ApplyFilterProps) => {
 
   if (sortBy === 'oldest') {
     // @ts-ignore
-      inputData = orderBy(inputData, ['createdAt'], ['asc']);
+    inputData = orderBy(inputData, ['createdAt'], ['asc']);
   }
 
   if (sortBy === 'popular') {
@@ -232,7 +227,7 @@ const applyFilter = ({ inputData, filters, sortBy }: ApplyFilterProps) => {
   // Filters
   if (employmentTypes.length) {
     // @ts-ignore
-      inputData = inputData.filter((job) =>
+    inputData = inputData.filter((job) =>
       // @ts-ignore
       job.employmentTypes.some((item) => employmentTypes.includes(item))
     );

@@ -20,8 +20,8 @@ import { useSettingsContext } from 'src/components/settings';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {AccountGeneral} from '../account-general';
+import AccountVerification from '../account-verify';
 import { AccountNotifications } from '../account-notifications';
-import { AccountChangePassword } from '../account-change-password';
 
 
 
@@ -33,15 +33,18 @@ const TABS = [
       icon: <Iconify icon="solar:user-id-bold" width={24} />,
     },
     {
-      value: 'security',
-      label: 'Security',
-      icon: <Iconify icon="ic:round-vpn-key" width={24} />,
-    },
-    {
       value: 'notifications',
       label: 'Notifications',
       icon: <Iconify icon="solar:bell-bing-bold" width={24} />,
     },
+    {
+      value: 'verification',
+      label: 'Verification',
+      icon: <Iconify icon="bitcoin-icons:verify-filled" width={24} />,
+    },
+ 
+   
+   
   ];
 export default function AccountView() {
   const settings = useSettingsContext();
@@ -95,8 +98,8 @@ export default function AccountView() {
 
       {tabs.value === 'notifications' && <AccountNotifications />}
 
+      {tabs.value === 'verification' && <AccountVerification agent={agent} />}
 
-      {tabs.value === 'security' && <AccountChangePassword />}
     </DashboardContent>
   );
 //   return (
