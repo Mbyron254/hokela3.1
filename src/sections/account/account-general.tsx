@@ -1,7 +1,7 @@
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { isValidPhoneNumber } from 'react-phone-number-input/input';
+import { useState, useEffect } from 'react';
+import { enqueueSnackbar } from 'notistack';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -13,32 +13,27 @@ import LoadingButton from '@mui/lab/LoadingButton';
 
 import { fData } from 'src/utils/format-number';
 
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { GQLQuery, GQLMutation } from 'src/lib/client';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { M_AGENT_UPDATE_SELF } from 'src/lib/mutations/agent.mutation';
 
-import { useMockedUser } from 'src/auth/hooks';
+import { Form, Field } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
+export const UpdateUserSchema = zod.object({
+  id: zod.string().optional(),
+  passwordCurrent: zod.string().optional(),
+  name: zod.string().optional(),
+  email: zod.string().optional(),
+  phone: zod.string().optional(),
+  photoId: zod.string().optional(),
+  password: zod.string().optional(),
+  passwordConfirmation: zod.string().optional(),
+});
+
 export type UpdateUserSchemaType = zod.infer<typeof UpdateUserSchema>;
 
-export const UpdateUserSchema = zod.object({
-  displayName: zod.string().min(1, { message: 'Name is required!' }),
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
-  photoURL: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
-  phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
-  country: schemaHelper.objectOrNull({ message: { required_error: 'Country is required!' } }),
-  address: zod.string().min(1, { message: 'Address is required!' }),
-  state: zod.string().min(1, { message: 'State is required!' }),
-  city: zod.string().min(1, { message: 'City is required!' }),
-  zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-  about: zod.string().min(1, { message: 'About is required!' }),
-  // Not required
-  isPublic: zod.boolean(),
-});
 export type TUserProfile = {
   __typename: 'TUserProfile';
   photo: null | any; // Update this type based on actual photo structure
@@ -65,26 +60,45 @@ export type TUser = {
   agent: TAgent;
 };
 
-export function AccountGeneral({  agent }: { agent: TUser }) {
-  const { user } = useMockedUser();
+export function AccountGeneral({ agent }: { agent: TUser }) {
+  const { data: session } = GQLQuery({
+    query: Q_SESSION_SELF,
+    queryAction: 'sessionSelf',
+  });
 
   const defaultValues = {
-    displayName: agent?.name || '',
-    email: agent?.email || '',
-    photoURL: user?.photoURL || null,
-    phoneNumber: agent?.phone || '',
-    country: user?.country || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
+    displayName: session?.sessionSelf?.user?.name || agent?.name || '',
+    email: session?.sessionSelf?.user?.email || agent?.email || '',
+    phoneNumber: session?.sessionSelf?.user?.phone || agent?.phone || '',
+    passwordCurrent: '',
+    password: '',
+    passwordConfirmation: '',
+    id: session?.sessionSelf?.user?.agent?.id || agent?.agent?.id || '',
   };
 
-  const methods = useForm<UpdateUserSchemaType>({
+  const {
+    action: update,
+    loading: updating,
+    data: updated,
+  } = GQLMutation({
+    mutation: M_AGENT_UPDATE_SELF,
+    resolver: 'agentUpdateSelf',
+    toastmsg: true,
+  });
+
+  const [input, setInput] = useState<UpdateUserSchemaType>({
+    id: undefined,
+    passwordCurrent: undefined,
+    name: undefined,
+    email: undefined,
+    phone: undefined,
+    photoId: undefined,
+    password: undefined,
+    passwordConfirmation: undefined,
+  });
+
+  const methods = useForm({
     mode: 'all',
-    resolver: zodResolver(UpdateUserSchema),
     defaultValues,
   });
 
@@ -93,13 +107,52 @@ export function AccountGeneral({  agent }: { agent: TUser }) {
     formState: { isSubmitting },
   } = methods;
 
+  useEffect(() => {
+    if (session?.user) {
+      setInput({
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        phone: session.user.phone,
+        photoId: session.user.profile?.photo?.id,
+      });
+    }
+  }, [session?.user]);
+
+  useEffect(() => {
+    console.log('Session User:', session?.sessionSelf?.user);
+    console.log('Agent:', agent);
+  }, [session, agent]);
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      toast.success('Update success!');
-      console.info('DATA', data);
+      if (!data.passwordCurrent) {
+        enqueueSnackbar('Current password is required', { variant: 'error' });
+        return;
+      }
+
+      if (data.password && data.password !== data.passwordConfirmation) {
+        enqueueSnackbar('New passwords do not match', { variant: 'error' });
+        return;
+      }
+
+      await update({
+        variables: {
+          input: {
+            name: data?.displayName,
+            email: data.email,
+            phone: data?.phoneNumber,
+            currentPassword: data.passwordCurrent,
+            password: data.password || undefined,
+            confirmPassword: data.passwordConfirmation || undefined,
+          },
+        },
+      });
     } catch (error) {
       console.error(error);
+      enqueueSnackbar(error instanceof Error ? error.message : 'Failed to update profile', {
+        variant: 'error',
+      });
     }
   });
 
@@ -159,18 +212,21 @@ export function AccountGeneral({  agent }: { agent: TUser }) {
               <Field.Text name="displayName" label="Name" />
               <Field.Text name="email" label="Email address" />
               <Field.Phone name="phoneNumber" label="Phone number" />
-              {/* <Field.Text name="address" label="Address" />
-
-              <Field.CountrySelect name="country" label="Country" placeholder="Choose a country" />
-
-              <Field.Text name="state" label="State/region" />
-              <Field.Text name="city" label="City" />
-              <Field.Text name="zipCode" label="Zip/code" /> */}
+              <Field.Text
+                name="passwordCurrent"
+                label="Current Password"
+                type="password"
+                required
+              />
+              <Field.Text name="password" label="New Password" type="password" />
+              <Field.Text
+                name="passwordConfirmation"
+                label="Confirm New Password"
+                type="password"
+              />
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              {/* <Field.Text name="about" multiline rows={4} label="About" /> */}
-
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save changes
               </LoadingButton>
