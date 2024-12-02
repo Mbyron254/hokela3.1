@@ -58,16 +58,20 @@ const agentNavData = [
   {
     subheader: 'Agent App',
     items: [
-      { title: 'Dashboard', path: paths.v2[ERole.AGENT].root, icon: ICONS.dashboard  },
-      {
-        title: 'Campaigns',
-        path: paths.v2[ERole.AGENT].campaigns.root,
-        icon: ICONS.analytics,
-        children: [
-          { title: 'Runs', path: paths.v2[ERole.AGENT].campaigns.root },
-          { title: 'Offers', path: paths.v2[ERole.AGENT].campaigns.offers.root },
-        ],
-      },
+      { title: 'Dashboard', path: paths.v2[ERole.AGENT].root, icon: ICONS.dashboard },
+      { title: 'Campaigns', path: paths.v2[ERole.AGENT].campaigns.root, icon: ICONS.analytics },
+      { title: 'Jobs', path: paths.v2[ERole.AGENT].campaigns.offers.root, icon: ICONS.job },
+      { title: 'Applications', path: paths.v2[ERole.AGENT].jobs.applications, icon: ICONS.file },
+
+      // {
+      //   title: 'Campaigns',
+      //   path: paths.v2[ERole.AGENT].campaigns.root,
+      //   icon: ICONS.analytics,
+      //   children: [
+      //     { title: 'Runs', path: paths.v2[ERole.AGENT].campaigns.root },
+      //     { title: 'Offers', path: paths.v2[ERole.AGENT].campaigns.offers.root },
+      //   ],
+      // },
     ],
   },
   // {
@@ -112,6 +116,17 @@ const marketingNavData = [
     subheader: 'Marketing Dashboard',
     items: [
       { title: 'Overview', path: paths.v2[ERole.MARKETING_AGENCY].root, icon: ICONS.dashboard },
+      {
+        title: 'User Management',
+        path: paths.v2[ERole.MARKETING_AGENCY].userManagement.users,
+        icon: ICONS.analytics,
+        children: [
+          { title: 'Users', path: paths.v2[ERole.MARKETING_AGENCY].userManagement.users },
+          { title: 'Roles', path: paths.v2[ERole.MARKETING_AGENCY].userManagement.roles },
+        ],
+      },
+      { title: 'Clients', path: paths.v2[ERole.MARKETING_AGENCY].clients, icon: ICONS.dashboard },
+      { title: 'Projects', path: paths.v2[ERole.MARKETING_AGENCY].projects, icon: ICONS.dashboard },
     ],
   },
 ];
