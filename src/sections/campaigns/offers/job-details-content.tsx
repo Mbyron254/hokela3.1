@@ -1,4 +1,4 @@
-import type { IJobItem } from 'src/types/job';
+import type { IJobDetails } from 'src/types/job';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -14,22 +14,22 @@ import { Markdown } from 'src/components/markdown';
 // ----------------------------------------------------------------------
 
 type Props = {
-  job?: IJobItem;
+  job?: IJobDetails;
 };
 
 export function JobDetailsContent({ job }: Props) {
   const renderContent = (
     <Card sx={{ p: 3, gap: 3, display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h4">{job?.campaign.name}</Typography>
+      <Typography variant="h4">{job?.campaign?.name}</Typography>
 
       <Stack spacing={2}>
         <Typography variant="h6">Job Description</Typography>
-        <Markdown children={job?.campaign.jobDescription} />
+        <Markdown children={job?.campaign?.jobDescription} />
       </Stack>
 
       <Stack spacing={2}>
-        <Typography variant="h6">Job Qualification</Typography>
-        <Markdown children={job?.campaign.jobQualification} />
+        <Typography variant="h6">Qualifications</Typography>
+        <Markdown children={job?.campaign?.jobQualification} />
       </Stack>
     </Card>
   );
@@ -38,14 +38,14 @@ export function JobDetailsContent({ job }: Props) {
     <Card sx={{ p: 3, gap: 2, display: 'flex', flexDirection: 'column' }}>
       {[
         {
-          label: 'Client',
-          value: job?.campaign.clientTier2.name,
-          icon: <Iconify icon="solar:user-id-bold" />,
+          label: 'Company',
+          value: job?.campaign?.clientTier2?.name,
+          icon: <Iconify icon="solar:buildings-2-bold" />,
         },
         {
           label: 'Parent Company',
-          value: job?.campaign.clientTier2.clientTier1.name,
-          icon: <Iconify icon="solar:buildings-2-bold" />,
+          value: job?.campaign?.clientTier2?.clientTier1?.name,
+          icon: <Iconify icon="solar:user-id-bold" />,
         },
         {
           label: 'Closing Date',
