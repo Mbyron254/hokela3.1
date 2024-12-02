@@ -1,7 +1,6 @@
 import { ERole } from '../types/client';
 
-
-const ROOTS = { 
+const ROOTS = {
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
   V2: '/v2',
@@ -12,14 +11,14 @@ const v2_paths = {
   [ERole.ADMIN]: {
     root: `${ROOTS.V2}/admin/dashboard`,
     users: `${ROOTS.V2}/admin/users`,
-    sessions: `${ROOTS.V2}/admin/sessions`
+    sessions: `${ROOTS.V2}/admin/sessions`,
   },
   [ERole.AGENT]: {
     root: `${ROOTS.V2}/agent/dashboard`,
     profile: `${ROOTS.V2}/agent/profile`,
     account: `${ROOTS.V2}/agent/dashboard/profile`,
     addProfile: `${ROOTS.V2}/agent/profile/add`,
-    settings: `${ROOTS.V2}/agent/settings`, 
+    settings: `${ROOTS.V2}/agent/settings`,
     editProfile: (id: string) => `${ROOTS.V2}/agent/profile/edit/${id}`,
     campaigns: {
       root: `${ROOTS.V2}/agent/dashboard/campaigns/runs`,
@@ -32,7 +31,7 @@ const v2_paths = {
     jobs: {
       root: `${ROOTS.V2}/agent/dashboard/job`,
       applications: `${ROOTS.V2}/agent/dashboard/job/applications`,
-      },
+    },
   },
   [ERole.PRODUCER]: {
     root: `${ROOTS.V2}/producer/dashboard`,
@@ -45,7 +44,13 @@ const v2_paths = {
   },
   [ERole.MARKETING_AGENCY]: {
     root: `${ROOTS.V2}/marketing/dashboard`,
-  }
+    userManagement: {
+      users: `${ROOTS.V2}/marketing/dashboard/user-management/users`,
+      roles: `${ROOTS.V2}/marketing/dashboard/user-management/roles`,
+    },
+    clients: `${ROOTS.V2}/marketing/dashboard/clients`,
+    projects: `${ROOTS.V2}/marketing/dashboard/projects`,
+  },
 };
 
 export const paths = {
@@ -85,7 +90,7 @@ export const paths = {
     },
   },
 
-  // admin:{   
+  // admin:{
   //   dashboard: {
   //     root: ROOTS.DASHBOARD,
   //     admin: `${ROOTS.DASHBOARD}/admin/dashboard`,
@@ -99,7 +104,5 @@ export const paths = {
   //     },
   //   },
   // },
-  v2: v2_paths
-
-
+  v2: v2_paths,
 };
