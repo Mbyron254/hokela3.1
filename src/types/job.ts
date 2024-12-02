@@ -30,9 +30,30 @@ export type IJobSalary = {
 
 export interface IJobItem {
   id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  experience: string;
+  role: string;
+  locations: string[];
+  employmentTypes: string[];
+  benefits: string[];
+  totalViews: number;
+  company: {
+    name: string;
+    logo: string;
+  };
+  salary: {
+    negotiable: boolean;
+    price: number;
+  };
+  candidates: any[]; // You might want to define a more specific type for candidates
+}
+
+export type IJobDetails = {
+  id: string;
   closeAdvertOn: string;
   campaign: {
-    id: string;
     name: string;
     jobDescription: string;
     jobQualification: string;
@@ -43,5 +64,4 @@ export interface IJobItem {
       };
     };
   };
-  candidates?: any[]; // Add proper type if you have candidate data structure
-}
+};
