@@ -6,10 +6,12 @@ import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
 import CardHeader from '@mui/material/CardHeader';
+import Typography from '@mui/material/Typography';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
 import { paths } from 'src/routes/paths';
 
+import { fDateTime } from 'src/utils/format-time';
 import { fPercent } from 'src/utils/format-number';
 
 import { varAlpha } from 'src/theme/styles';
@@ -91,13 +93,9 @@ export function CourseContinue({ title, subheader, runs, list, ...other }: Props
 
       <Box sx={{ p: 3, gap: 3, display: 'flex', flexDirection: 'column' }}>
         {runs?.length ? (
-          runs.map((run) => (
-            <Item key={run.id} run={run} />
-          ))
+          runs.map((run) => <Item key={run.id} run={run} />)
         ) : (
-          <Box sx={{ textAlign: 'center', color: 'text.secondary' }}>
-            No active runs available
-          </Box>
+          <Box sx={{ textAlign: 'center', color: 'text.secondary' }}>No active runs available</Box>
         )}
       </Box>
     </Card>
@@ -116,7 +114,7 @@ function Item({ run, sx, ...other }: ItemProps) {
   const percent = (completedTasks / totalTasks) * 100;
 
   return (
-    <Box sx={{ gap: 2, display: 'flex', alignItems: 'center', ...sx }} {...other}>
+    <Box sx={{ gap: 2, display: 'flex', alignItems: 'flex-start', ...sx }} {...other}>
       <Avatar
         alt={run.agent.user.name}
         src={run.agent.user.profile.photo || ''}
@@ -125,14 +123,27 @@ function Item({ run, sx, ...other }: ItemProps) {
       />
 
       <Box sx={{ minWidth: 0, display: 'flex', flex: '1 1 auto', flexDirection: 'column' }}>
-        <Link 
+        <Link
           href={paths.v2.agent.campaigns.details(run.id)}
-          color="inherit" 
-          noWrap 
+          color="inherit"
+          noWrap
           sx={{ mb: 0.5, typography: 'subtitle2' }}
         >
           {run.campaignRun.campaign.name}
         </Link>
+
+        <Typography variant="caption" sx={{ color: 'text.secondary', mb: 0.5 }}>
+          Project: {run.campaignRun.project.name}
+        </Typography>
+
+        <Typography variant="caption" sx={{ color: 'text.secondary', mb: 0.5 }}>
+          Client: {run.campaignRun.campaign.clientTier2.clientTier1.name} -{' '}
+          {run.campaignRun.campaign.clientTier2.name}
+        </Typography>
+
+        <Typography variant="caption" sx={{ color: 'text.secondary', mb: 1 }}>
+          Started: {fDateTime(run.created)}
+        </Typography>
 
         <Box component="span" sx={{ color: 'text.secondary', typography: 'caption' }}>
           Tasks: {completedTasks}/{totalTasks}

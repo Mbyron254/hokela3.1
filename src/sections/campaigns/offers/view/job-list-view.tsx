@@ -46,9 +46,9 @@ type TCampaignRun = {
       name: string;
       clientTier1: {
         name: string;
-      }
-    }
-  }
+      };
+    };
+  };
 };
 
 type TJobsResponse = {
@@ -71,11 +71,13 @@ export function JobListView() {
     getJobs({ variables: { input: { page, pageSize } } });
   };
 
-  useEffect(() => {
-    loadRunsActive();
-  }, 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  []);
+  useEffect(
+    () => {
+      loadRunsActive();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   console.log('JOBS  ', jobs);
 
@@ -92,27 +94,28 @@ export function JobListView() {
     employmentTypes: [],
   });
 
-  const transformedJobs = jobs?.rows?.map((job: TCampaignRun) => ({
-    id: job.id,
-    title: job.campaign.name,
-    description: job.campaign.jobDescription,
-    createdAt: new Date().toISOString(),
-    experience: 'Junior',
-    role: 'Developer',
-    locations: ['Remote'],
-    employmentTypes: ['Full-time'],
-    benefits: ['Healthcare', 'Annual Leave'],
-    totalViews: 0,
-    company: {
-      name: job.campaign.clientTier2.name,
-      logo: '/assets/images/company/company_1.png',
-    },
-    salary: {
-      negotiable: true,
-      price: 0,
-    },
-    candidates: [],
-  })) || [];
+  const transformedJobs =
+    jobs?.rows?.map((job: TCampaignRun) => ({
+      id: job.id,
+      title: job.campaign.name,
+      description: job.campaign.jobDescription,
+      createdAt: new Date().toISOString(),
+      experience: 'Junior',
+      role: 'Developer',
+      locations: ['Remote'],
+      employmentTypes: ['Full-time'],
+      benefits: ['Healthcare', 'Annual Leave'],
+      totalViews: 0,
+      company: {
+        name: job.campaign.clientTier2.name,
+        logo: '/assets/images/company/company_1.png',
+      },
+      salary: {
+        negotiable: true,
+        price: 0,
+      },
+      candidates: [],
+    })) || [];
 
   const dataFiltered = applyFilter({ inputData: transformedJobs, filters: filters.state, sortBy });
 
@@ -135,7 +138,8 @@ export function JobListView() {
 
       if (inputValue) {
         const results = transformedJobs.filter(
-          (job: { title: string; }) => job.title.toLowerCase().indexOf(search.state.query.toLowerCase()) !== -1
+          (job: { title: string }) =>
+            job.title.toLowerCase().indexOf(search.state.query.toLowerCase()) !== -1
         );
 
         search.setState({ results });
@@ -182,10 +186,9 @@ export function JobListView() {
         heading="List"
         links={[
           { name: 'Dashboard', href: '/dashboard' },
-          { name: 'Job',href: '/dashboard/job' },
+          { name: 'Job', href: '/dashboard/job' },
           { name: 'List' },
         ]}
-
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
@@ -215,45 +218,37 @@ const applyFilter = ({ inputData, filters, sortBy }: ApplyFilterProps) => {
 
   // Sort by
   if (sortBy === 'latest') {
-    // @ts-expect-error
     inputData = orderBy(inputData, ['createdAt'], ['desc']);
   }
 
   if (sortBy === 'oldest') {
-     // @ts-expect-error
     inputData = orderBy(inputData, ['createdAt'], ['asc']);
   }
 
   if (sortBy === 'popular') {
-     // @ts-expect-error
     inputData = orderBy(inputData, ['totalViews'], ['desc']);
   }
 
   // Filters
   if (employmentTypes.length) {
     inputData = inputData.filter((job) =>
-       // @ts-expect-error
       job.employmentTypes.some((item) => employmentTypes.includes(item))
     );
   }
 
   if (experience !== 'all') {
-     // @ts-expect-error
     inputData = inputData.filter((job) => job.experience === experience);
   }
 
   if (roles.length) {
-     // @ts-expect-error
     inputData = inputData.filter((job) => roles.includes(job.role));
   }
 
   if (locations.length) {
-     // @ts-expect-error
     inputData = inputData.filter((job) => job.locations.some((item) => locations.includes(item)));
   }
 
   if (benefits.length) {
-     // @ts-expect-error
     inputData = inputData.filter((job) => job.benefits.some((item) => benefits.includes(item)));
   }
 

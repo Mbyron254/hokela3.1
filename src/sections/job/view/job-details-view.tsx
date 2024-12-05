@@ -1,11 +1,11 @@
 'use client';
 
-
 import { redirect } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import Button from '@mui/material/Button';
 
 import { paths } from 'src/routes/paths';
 
@@ -19,6 +19,7 @@ import { M_OPEN_JOB } from 'src/lib/mutations/campaign-run.mutation';
 import { M_CAMPAIGN_RUN_APPLY } from 'src/lib/mutations/campaign-run-application.mutation';
 
 import { Label } from 'src/components/label';
+import { Iconify } from 'src/components/iconify';
 
 import { JobDetailsToolbar } from '../job-details-toolbar';
 import { JobDetailsContent } from '../job-details-content';
@@ -113,9 +114,53 @@ export function JobDetailsView({ params }: Props) {
       />
       {renderTabs}
 
-      {tabs.value === 'content' && <JobDetailsContent job={job} />}
+      {tabs.value === 'content' && (
+        <>
+          <JobDetailsContent job={job} />
+          <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            onClick={handleApply}
+            disabled={applying}
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            sx={{
+              mt: 3,
+              position: 'relative',
+              zIndex: 1,
+              width: 'auto',
+              display: 'flex',
+              margin: '24px auto',
+            }}
+          >
+            {applying ? 'Applying...' : 'Apply for this Position'}
+          </Button>
+        </>
+      )}
 
-      {tabs.value === 'candidates' && <JobDetailsCandidates candidates={job?.candidates ?? []} />}
+      {tabs.value === 'candidates' && (
+        <>
+          <JobDetailsCandidates candidates={job?.candidates ?? []} />
+          <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            onClick={handleApply}
+            disabled={applying}
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            sx={{
+              mt: 3,
+              position: 'relative',
+              zIndex: 1,
+              width: 'auto',
+              display: 'flex',
+              margin: '24px auto',
+            }}
+          >
+            {applying ? 'Applying...' : 'Apply for this Position'}
+          </Button>
+        </>
+      )}
     </DashboardContent>
   );
 }

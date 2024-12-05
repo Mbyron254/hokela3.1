@@ -24,7 +24,7 @@ export function JobEditView({ job }: Props) {
         links={[
           { name: 'Dashboard', href: paths?.v2?.agent.root },
           { name: 'Job', href: paths?.v2?.agent.campaigns.offers.root },
-          { name: job?.campaign?.name },
+          // { name: job?.campaign?.name ?? '' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

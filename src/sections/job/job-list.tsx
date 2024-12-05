@@ -48,8 +48,8 @@ export function JobList({ jobs }: Props) {
             key={job.id}
             job={job}
             onView={() => handleView(job.id)}
-              // onEdit={() => handleEdit(job.id)}
-              // onDelete={() => handleDelete(job.id)}
+            // onEdit={() => handleEdit(job.id)}
+            // onDelete={() => handleDelete(job.id)}
           />
         ))}
       </Box>

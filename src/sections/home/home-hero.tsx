@@ -19,12 +19,14 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { HEADER } from 'src/layouts/config-layout';
 import { bgBlur, bgGradient, textGradient } from 'src/theme/css';
 
-import {Iconify} from 'src/components/iconify';
+import { Iconify } from 'src/components/iconify';
 import { varFade, MotionContainer } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 
-const StyledRoot = styled('div')(({ theme }) => ({
+const StyledRoot = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'theme',
+})(({ theme }) => ({
   ...bgGradient({
     color: alpha(theme.palette.background.default, theme.palette.mode === 'light' ? 0.9 : 0.94),
     imgUrl: '/assets/background/overlay_3.jpg',
@@ -39,7 +41,9 @@ const StyledRoot = styled('div')(({ theme }) => ({
   },
 }));
 
-const StyledWrapper = styled('div')(({ theme }) => ({
+const StyledWrapper = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'theme',
+})(({ theme }) => ({
   height: '100%',
   overflow: 'hidden',
   position: 'relative',
@@ -48,7 +52,9 @@ const StyledWrapper = styled('div')(({ theme }) => ({
   },
 }));
 
-const StyledTextGradient = styled(m.h1)(({ theme }) => ({
+const StyledTextGradient = styled(m.h1, {
+  shouldForwardProp: (prop) => prop !== 'theme',
+})(({ theme }) => ({
   ...textGradient(
     `300deg, ${theme.palette.primary.main} 0%, ${theme.palette.warning.main} 25%, ${theme.palette.primary.main} 50%, ${theme.palette.warning.main} 75%, ${theme.palette.primary.main} 100%`
   ),
@@ -67,62 +73,68 @@ const StyledTextGradient = styled(m.h1)(({ theme }) => ({
   },
 }));
 
-const StyledEllipseTop = styled('div')(({ theme }) => ({
-  top: -80,
-  width: 480,
-  right: -80,
-  height: 480,
-  borderRadius: '50%',
-  position: 'absolute',
-  filter: 'blur(100px)',
-  WebkitFilter: 'blur(100px)',
-  backgroundColor: alpha(theme.palette.primary.darker, 0.12),
-}));
+const StyledEllipseTop = styled('div')(
+  ({ theme }) => ({
+    top: -80,
+    width: 480,
+    right: -80,
+    height: 480,
+    borderRadius: '50%',
+    position: 'absolute',
+    filter: 'blur(100px)',
+    WebkitFilter: 'blur(100px)',
+    backgroundColor: alpha(theme.palette.primary.darker, 0.12),
+  }),
+  { label: 'StyledEllipseTop' }
+);
 
-const StyledEllipseBottom = styled('div')(({ theme }) => ({
-  height: 400,
-  bottom: -200,
-  left: '10%',
-  right: '10%',
-  borderRadius: '50%',
-  position: 'absolute',
-  filter: 'blur(100px)',
-  WebkitFilter: 'blur(100px)',
-  backgroundColor: alpha(theme.palette.primary.darker, 0.12),
-}));
+const StyledEllipseBottom = styled('div')(
+  ({ theme }) => ({
+    height: 400,
+    bottom: -200,
+    left: '10%',
+    right: '10%',
+    borderRadius: '50%',
+    position: 'absolute',
+    filter: 'blur(100px)',
+    WebkitFilter: 'blur(100px)',
+    backgroundColor: alpha(theme.palette.primary.darker, 0.12),
+  }),
+  { label: 'StyledEllipseBottom' }
+);
 
 type StyledPolygonProps = {
   opacity?: number;
   anchor?: 'left' | 'right';
 };
 
-const StyledPolygon = styled('div')<StyledPolygonProps>(
-  ({ opacity = 1, anchor = 'left', theme }) => ({
-    ...bgBlur({
-      opacity,
-      color: theme.palette.background.default,
+const StyledPolygon = styled('div', {
+  shouldForwardProp: (prop) => !['opacity', 'anchor', 'theme'].includes(prop as string),
+})<StyledPolygonProps>(({ opacity = 1, anchor = 'left', theme }) => ({
+  ...bgBlur({
+    opacity,
+    color: theme.palette.background.default,
+  }),
+  zIndex: 9,
+  bottom: 0,
+  height: 80,
+  width: '50%',
+  position: 'absolute',
+  clipPath: 'polygon(0% 0%, 100% 100%, 0% 100%)',
+  ...(anchor === 'left' && {
+    left: 0,
+    ...(theme.direction === 'rtl' && {
+      transform: 'scale(-1, 1)',
     }),
-    zIndex: 9,
-    bottom: 0,
-    height: 80,
-    width: '50%',
-    position: 'absolute',
-    clipPath: 'polygon(0% 0%, 100% 100%, 0% 100%)',
-    ...(anchor === 'left' && {
-      left: 0,
-      ...(theme.direction === 'rtl' && {
-        transform: 'scale(-1, 1)',
-      }),
+  }),
+  ...(anchor === 'right' && {
+    right: 0,
+    transform: 'scaleX(-1)',
+    ...(theme.direction === 'rtl' && {
+      transform: 'scaleX(1)',
     }),
-    ...(anchor === 'right' && {
-      right: 0,
-      transform: 'scaleX(-1)',
-      ...(theme.direction === 'rtl' && {
-        transform: 'scaleX(1)',
-      }),
-    }),
-  })
-);
+  }),
+}));
 
 // ----------------------------------------------------------------------
 
@@ -189,8 +201,9 @@ export default function HomeHero() {
             textAlign: 'center',
           }}
         >
-          Welcome to your professional<br />
-           community
+          Welcome to your professional
+          <br />
+          community
         </Typography>
       </m.div>
 
@@ -210,7 +223,7 @@ export default function HomeHero() {
 
       <m.div variants={varFade().in}>
         <Typography variant="body2" sx={{ textAlign: 'center' }}>
-        Your all-in-one marketing powerhouse, designed for remote teams and their managers.
+          Your all-in-one marketing powerhouse, designed for remote teams and their managers.
         </Typography>
       </m.div>
 

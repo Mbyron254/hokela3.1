@@ -19,23 +19,29 @@ export default function Page({ params }: Props) {
   if (!currentJob) {
     return null;
   }
+  const closeAdvertOn = new Date().toISOString();
 
-  return <JobEditView job={{
-    ...currentJob,
-    closeAdvertOn: new Date().toISOString(),
-    campaign: {
-      id: '',
-      name: '',
-      jobDescription: '',
-      jobQualification: '',
-      clientTier2: {
-        name: '',
-        clientTier1: {
-          name: ''
-        }
-      }
-    },
-  }} />;
+  return (
+    <JobEditView
+      job={{
+        ...currentJob,
+        closeAdvertOn,
+        description: '',
+        campaign: {
+          id: '',
+          name: '',
+          jobDescription: '',
+          jobQualification: '',
+          clientTier2: {
+            name: '',
+            clientTier1: {
+              name: '',
+            },
+          },
+        },
+      }}
+    />
+  );
 }
 
 // ----------------------------------------------------------------------

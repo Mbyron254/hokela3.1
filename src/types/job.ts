@@ -32,7 +32,8 @@ export interface IJobItem {
   id: string;
   title: string;
   description: string;
-  createdAt: string;
+  createdAt?: string;
+  closeAdvertOn: string;
   experience: string;
   role: string;
   locations: string[];
@@ -46,6 +47,18 @@ export interface IJobItem {
   salary: {
     negotiable: boolean;
     price: number;
+  };
+  campaign: {
+    id: string;
+    name: string;
+    jobDescription: string;
+    jobQualification: string;
+    clientTier2: {
+      name: string;
+      clientTier1: {
+        name: string;
+      };
+    };
   };
   candidates: any[]; // You might want to define a more specific type for candidates
 }

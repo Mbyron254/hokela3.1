@@ -56,7 +56,6 @@ interface TCampaignRuns {
 }
 
 export function OverviewCourseView() {
-
   const { data: session } = GQLQuery({
     query: Q_SESSION_SELF,
     queryAction: 'sessionSelf',
@@ -104,16 +103,21 @@ export function OverviewCourseView() {
     }
   };
 
-  useEffect(() =>
-     loadOffers(), 
-// eslint-disable-next-line react-hooks/exhaustive-deps
-  [session?.user?.agent?.id]);
-  useEffect(() => loadRunsActive(), 
-// eslint-disable-next-line react-hooks/exhaustive-deps
-  []);
-  useEffect(() => loadApplications(), 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  [session?.user?.agent?.id]);
+  useEffect(
+    () => loadOffers(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [session?.user?.agent?.id]
+  );
+  useEffect(
+    () => loadRunsActive(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+  useEffect(
+    () => loadApplications(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [session?.user?.agent?.id]
+  );
   console.log(offers, 'offers');
   console.log(session, 'session');
   console.log('JOBS  ', jobs);
@@ -154,9 +158,7 @@ export function OverviewCourseView() {
             <Typography variant="h4" sx={{ mb: 1 }}>
               Hi, {session?.user?.name || 'Agent'} 👋
             </Typography>
-            <Typography
-              sx={{ color: 'text.secondary' }}
-            >Welcome back to Hokela 3.1!</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>Welcome back to Hokela 3.1!</Typography>
           </Box>
 
           <Box
@@ -229,10 +231,14 @@ export function OverviewCourseView() {
               }}
             />
 
-            <CourseContinue title="Continue With Active Runs" runs={offers?.rows} list={_coursesContinue} />
+            <CourseContinue
+              title="Continue With Active Runs"
+              runs={offers?.rows}
+              list={_coursesContinue}
+            />
           </Box>
 
-          <CourseFeatured title="Featured Campaign Offers" jobs={jobs?.rows}   />
+          <CourseFeatured title="Featured Campaign Offers" jobs={jobs?.rows} />
         </Box>
 
         <Box

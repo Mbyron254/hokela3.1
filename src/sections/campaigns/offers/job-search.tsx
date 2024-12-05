@@ -37,7 +37,6 @@ export function JobSearch({ search, onSearch }: Props) {
     if (search.state.query) {
       if (event.key === 'Enter') {
         const selectProduct = search.state.results.filter(
-          // @ts-expect-error
           (job) => job.title === search.state.query
         )[0];
 
@@ -53,7 +52,6 @@ export function JobSearch({ search, onSearch }: Props) {
       popupIcon={null}
       options={search.state.results}
       onInputChange={(event, newValue) => onSearch(newValue)}
-      // @ts-expect-error
       getOptionLabel={(option) => option.title}
       noOptionsText={<SearchNotFound query={search.state.query} />}
       isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -73,9 +71,7 @@ export function JobSearch({ search, onSearch }: Props) {
         />
       )}
       renderOption={(props, job, { inputValue }) => {
-        // @ts-expect-error
         const matches = match(job.title, inputValue);
-        // @ts-expect-error
         const parts = parse(job.title, matches);
 
         return (
