@@ -34,10 +34,7 @@ import { FormHead } from '../../components/form-head';
 export type SignInSchemaType = zod.infer<typeof SignInSchema>;
 
 export const SignInSchema = zod.object({
-  email: zod
-    .string()
-    .min(1, { message: '📧 Email is required!' })
-    .email({ message: '❌ Please enter a valid email address!' }),
+  email: zod.string().min(1, { message: '📧 Email/Phone/Account number is required!' }),
   password: zod
     .string()
     .min(1, { message: '🔑 Password is required!' })
@@ -46,9 +43,11 @@ export const SignInSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-type ErrorType = {
-  message: string;
-} | string;
+type ErrorType =
+  | {
+      message: string;
+    }
+  | string;
 
 interface UserRole {
   name: string;
@@ -101,29 +100,27 @@ export function JwtSignInView() {
     formState: { isSubmitting },
   } = methods;
 
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       setErrorMsg('');
-      
+
       await signin({
         variables: {
           input: {
             keyPublic: data.email,
             keyPrivate: data.password,
-          }
+          },
         },
         onCompleted: async (response: any) => {
           try {
             console.log('response', response);
-            
-            if (response?.login?.message === "Welcome !") {
+
+            if (response?.login?.message === 'Welcome !') {
               await checkUserSession?.();
               router.push(PATH_AFTER_LOGIN);
             } else {
               throw new Error('Invalid login response');
             }
-  
           } catch (error) {
             console.error('Login error:', error);
             setErrorMsg('Failed to login');
@@ -132,17 +129,17 @@ export function JwtSignInView() {
         onError: (error: { message: string }) => {
           console.error('Sign in error:', error);
           setErrorMsg(error.message || 'Invalid credentials. Please try again.');
-        }
+        },
       });
     } catch (error) {
       console.error('Sign in error:', error);
       setErrorMsg(error instanceof Error ? error.message : String(error));
     }
   });
-    const renderForm = (
-    <Box 
-      gap={3} 
-      display="flex" 
+  const renderForm = (
+    <Box
+      gap={3}
+      display="flex"
       flexDirection="column"
       sx={{
         '& .MuiTextField-root': {
@@ -154,15 +151,15 @@ export function JwtSignInView() {
         },
       }}
     >
-      <Field.Text 
-        name="email" 
-        label="Email address" 
+      <Field.Text
+        name="email"
+        label="Email / Phone / Account number"
         InputLabelProps={{ shrink: true }}
-        sx={{ 
+        sx={{
           '& .MuiInputBase-root': {
             borderRadius: 2,
             bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-          }
+          },
         }}
       />
 
@@ -172,11 +169,11 @@ export function JwtSignInView() {
           href="#"
           variant="body2"
           color="primary.main"
-          sx={{ 
+          sx={{
             alignSelf: 'flex-end',
             fontWeight: 600,
             transition: 'opacity 0.2s',
-            '&:hover': { opacity: 0.72 }
+            '&:hover': { opacity: 0.72 },
           }}
         >
           Forgot password?
@@ -188,20 +185,16 @@ export function JwtSignInView() {
           placeholder="6+ characters"
           type={password.value ? 'text' : 'password'}
           InputLabelProps={{ shrink: true }}
-          sx={{ 
+          sx={{
             '& .MuiInputBase-root': {
               borderRadius: 2,
               bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-            }
+            },
           }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton 
-                  onClick={password.onToggle} 
-                  edge="end"
-                  sx={{ color: 'primary.main' }}
-                >
+                <IconButton onClick={password.onToggle} edge="end" sx={{ color: 'primary.main' }}>
                   <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
                 </IconButton>
               </InputAdornment>
@@ -243,9 +236,9 @@ export function JwtSignInView() {
         description={
           <>
             {`Don't have an account? `}
-            <Link 
-              component={RouterLink} 
-              href={paths.auth.main.signIn} 
+            <Link
+              component={RouterLink}
+              href={paths.auth.main.signIn}
               variant="subtitle2"
               sx={{
                 color: 'primary.main',
@@ -260,16 +253,16 @@ export function JwtSignInView() {
             </Link>
           </>
         }
-        sx={{ 
+        sx={{
           textAlign: { xs: 'center', md: 'left' },
           mb: 5,
         }}
       />
 
       {!!errorMsg && (
-        <Alert 
-          severity="error" 
-          sx={{ 
+        <Alert
+          severity="error"
+          sx={{
             mb: 3,
             borderRadius: 2,
             '& .MuiAlert-icon': {
