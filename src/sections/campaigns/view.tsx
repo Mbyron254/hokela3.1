@@ -140,9 +140,6 @@ export function CampaignsView({ title = 'Blank' }: Props) {
     [session?.user?.agent?.id]
   );
 
-  // Remove debug log in production
-  // console.log(offers, 'offers');
-
   const handleCampaignClick = (campaignId: string): void => {
     router.push(paths.v2[ERole.AGENT].campaigns.details(campaignId));
   };
@@ -151,34 +148,9 @@ export function CampaignsView({ title = 'Blank' }: Props) {
     setTabValue(newValue);
   };
 
-  const statsCards = [
-    {
-      title: 'Total Campaigns',
-      total: offers?.count || 0,
-      icon: 'mdi:bullhorn',
-      color: 'primary',
-    },
-    {
-      title: 'Active Runs',
-      total: offers?.count,
-      icon: 'mdi:play-circle-outline',
-      color: 'info',
-    },
-    {
-      title: 'Active Applications',
-      total: 0, // Replace with actual data
-      icon: 'mdi:send',
-      color: 'warning',
-    },
-    {
-      title: 'Approved Applications',
-      total: 0, // Replace with actual data
-      icon: 'mdi:check-circle-outline',
-      color: 'success',
-    },
-  ];
-
-  const activeCampaigns = offers?.rows?.filter((campaign: any) => campaign.status === 'active');
+  // const activeCampaigns = offers?.rows?.filter((campaign: any) => campaign.status === 'active');
+  const activeCampaigns = offers?.rows;
+  console.log(activeCampaigns, 'ACTIVE CAMPAIGNS');
   const completedCampaigns = offers?.rows?.filter(
     (campaign: any) => campaign.status === 'completed'
   );
