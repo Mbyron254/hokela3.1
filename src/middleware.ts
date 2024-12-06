@@ -16,7 +16,7 @@ import {
 } from './lib/constant';
 
 export async function middleware(request: NextRequest) {
-  const isRecover = request.nextUrl.pathname.startsWith(`/auth/main/recover`);
+  const isRecover = request.nextUrl.pathname.startsWith(`/auth/main/forgot-password`);
   const isReset = request.nextUrl.pathname.startsWith(`/auth/main/reset`);
   const isSignUp = request.nextUrl.pathname.startsWith(`/auth/main/sign-up`);
   const isSignIn = request.nextUrl.pathname === '/auth/main/sign-in/';
@@ -32,19 +32,11 @@ export async function middleware(request: NextRequest) {
   const isRetail = request.nextUrl.pathname.startsWith(`/v2/retailer`);
 
   const isAccount =
-    isAdmin ||
-    isAgent ||
-    isDistribution ||
-    isMarketting ||
-    isProduction ||
-    isRetail;
+    isAdmin || isAgent || isDistribution || isMarketting || isProduction || isRetail;
   const headers = new Headers(request.headers);
-
-
 
   headers.set('isAuth', String(isAuth));
   headers.set('isAccount', String(isAccount));
-
 
   const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
   //  console.log(sessionId, 'SESSION ID')
@@ -58,7 +50,7 @@ export async function middleware(request: NextRequest) {
     }
 
     const data = await serverGateway(Q_SESSION, { input: { id: sessionId } });
-    console.log(data, 'DATA')
+    console.log(data, 'DATA');
     const session = data?.sessionAlien;
     console.log('Session Data:', session);
 
@@ -144,7 +136,7 @@ export async function middleware(request: NextRequest) {
               user: session?.user,
               accountLabel,
               isActiveAccount: session?.user?.state === USER_AC_STATE.active,
-              isLocked: session?.locked
+              isLocked: session?.locked,
             })
           );
         }
