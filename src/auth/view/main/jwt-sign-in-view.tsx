@@ -166,7 +166,7 @@ export function JwtSignInView() {
       <Box gap={1.5} display="flex" flexDirection="column">
         <Link
           component={RouterLink}
-          href="#"
+          href={paths.auth.main.forgotPassword}
           variant="body2"
           color="primary.main"
           sx={{
@@ -238,7 +238,7 @@ export function JwtSignInView() {
             {`Don't have an account? `}
             <Link
               component={RouterLink}
-              href={paths.auth.main.signIn}
+              href={paths.auth.main.signUp}
               variant="subtitle2"
               sx={{
                 color: 'primary.main',
