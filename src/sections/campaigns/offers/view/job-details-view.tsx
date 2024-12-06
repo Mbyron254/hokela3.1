@@ -1,6 +1,5 @@
 'use client';
 
-
 import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
@@ -14,6 +13,9 @@ import { DashboardContent } from 'src/layouts/dashboard';
 // import {  JOB_PUBLISH_OPTIONS } from 'src/_mock';
 
 import { redirect } from 'next/navigation';
+
+import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
 
 import { GQLMutation } from 'src/lib/client';
 import { formatDate } from 'src/lib/helpers';
@@ -29,9 +31,7 @@ import { JobDetailsCandidates } from '../job-details-candidates';
 // ----------------------------------------------------------------------
 
 export function JobDetailsView({ id }: { id: string }) {
-  const JOB_DETAILS_TABS = [
-    { label: 'Job content', value: 'content' },
-  ];
+  const JOB_DETAILS_TABS = [{ label: 'Job content', value: 'content' }];
   const JOB_PUBLISH_OPTIONS = [
     { value: 'Apply', label: 'Apply' },
     { value: 'Save as Draft', label: 'Save as Draft' },
@@ -47,7 +47,7 @@ export function JobDetailsView({ id }: { id: string }) {
     resolver: 'openJob',
     toastmsg: false,
   });
-  
+
   const {
     action: apply,
     loading: applying,
@@ -128,7 +128,22 @@ export function JobDetailsView({ id }: { id: string }) {
       />
       {renderTabs}
 
-      {tabs.value === 'content' && <JobDetailsContent job={job} />}
+      {tabs.value === 'content' && (
+        <>
+          <JobDetailsContent job={job} />
+          <Box sx={{ mt: 3 }}>
+            <Button
+              size="large"
+              variant="contained"
+              onClick={handleApply}
+              disabled={applying}
+              sx={{ width: '100%' }}
+            >
+              {applying ? 'Applying...' : 'Apply Now'}
+            </Button>
+          </Box>
+        </>
+      )}
 
       {tabs.value === 'candidates' && <JobDetailsCandidates candidates={job?.candidates ?? []} />}
     </DashboardContent>
