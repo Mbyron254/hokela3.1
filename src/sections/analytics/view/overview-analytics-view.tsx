@@ -34,7 +34,7 @@ import { AnalyticsTrafficBySite } from '../analytics-traffic-by-site';
 import { AnalyticsCurrentSubject } from '../analytics-current-subject';
 
 // ----------------------------------------------------------------------
-1;
+
 export function OverviewAnalyticsView() {
   const { data: session } = GQLQuery({
     query: Q_SESSION_SELF,

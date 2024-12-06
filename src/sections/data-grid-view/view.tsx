@@ -35,8 +35,7 @@ const _dataGrid = [...Array(20)].map((_, index) => {
 
 export function DataGridView() {
   return (
-    <>
-      <Container sx={{ my: 10 }}>
+    <Container sx={{ my: 10 }}>
         <Stack spacing={5}>
           <Card>
             <CardHeader title="Custom" sx={{ mb: 2 }} />
@@ -46,6 +45,5 @@ export function DataGridView() {
           </Card>
         </Stack>
       </Container>
-    </>
   );
 }
