@@ -64,6 +64,8 @@ export const paths = {
       signUp: `${ROOTS.AUTH}/main/sign-up`,
       updatePassword: `${ROOTS.AUTH}/main/update-password`,
       resetPassword: `${ROOTS.AUTH}/main/reset-password`,
+      forgotPassword: `${ROOTS.AUTH}/main/forgot-password`,
+      unlock: `${ROOTS.AUTH}/main/unlock`,
     },
     amplify: {
       signIn: `${ROOTS.AUTH}/amplify/sign-in`,
