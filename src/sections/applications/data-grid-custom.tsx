@@ -1,8 +1,8 @@
 import type { RatingProps } from '@mui/material/Rating';
 import type {
-  GridSlots,
   GridColDef,
   GridFilterItem,
+  GridToolbarProps,
   GridFilterOperator,
   GridRowSelectionModel,
   GridColumnVisibilityModel,
@@ -127,13 +127,13 @@ export function DataGridCustom({ data }: { data: DataGridRow[] }) {
       columnVisibilityModel={columnVisibilityModel}
       onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
       slots={{
-        toolbar: CustomToolbar as GridSlots['toolbar'],
+        toolbar: (props) => <CustomToolbar {...props} setFilterButtonEl={setFilterButtonEl} />,
         noRowsOverlay: () => <EmptyContent />,
         noResultsOverlay: () => <EmptyContent title="No results found" />,
       }}
       slotProps={{
         panel: { anchorEl: filterButtonEl },
-        toolbar: { setFilterButtonEl, showQuickFilter: true },
+        toolbar: { showQuickFilter: true },
         columnsManagement: { getTogglableColumns },
       }}
       sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
@@ -143,7 +143,7 @@ export function DataGridCustom({ data }: { data: DataGridRow[] }) {
 
 // ----------------------------------------------------------------------
 
-interface CustomToolbarProps {
+interface CustomToolbarProps extends GridToolbarProps {
   setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
 }
 

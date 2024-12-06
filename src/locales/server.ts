@@ -1,5 +1,5 @@
-import { cache } from 'react';
 import { createInstance } from 'i18next';
+import { unstable_cache as cache } from 'next/cache';
 import { cookies as getCookies } from 'next/headers';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next/initReactI18next';

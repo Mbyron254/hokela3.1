@@ -1,10 +1,10 @@
 import type {
-    IChoice,
-    IQuestionnairField,
-    InputSurveyResponse,
-    IAnswerDropdownOption,
-    InputSalesGiveawaySurveyReportCreate,
-  } from 'src/lib/interface/general.interface';
+  IChoice,
+  IQuestionnairField,
+  InputSurveyResponse,
+  IAnswerDropdownOption,
+  InputSalesGiveawaySurveyReportCreate,
+} from 'src/lib/interface/general.interface';
 
 import React, { useState, useEffect } from 'react';
 
@@ -24,13 +24,24 @@ interface Allocation {
   quantityAllocated: number;
   quantitySold: number;
 }
+interface GiveawayConfig {
+  id: string;
+  giveaway: {
+    packaging: {
+      product: {
+        name: string;
+      };
+    };
+    totalUnlocked: number;
+    totalIssued: number;
+  };
+}
 
 interface SalesGiveAwayViewProps {
   campaignRunId: string;
 }
 
 const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) => {
-    
   const { action: getSalesConfigs, data: configs } = GQLMutation({
     mutation: AGENT_SALES_GIVEAWAY_CONFIGURATIONS,
     resolver: 'agentSalesGiveawayConfigs',
@@ -51,7 +62,7 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
     toastmsg: true,
   });
 
-  console.log("CONFIGS",configs);
+  console.log('CONFIGS', configs);
   const [input, setInput] = useState<InputSalesGiveawaySurveyReportCreate>({
     salesGiveawayConfigId: undefined,
     quantityGiven: undefined,
@@ -59,9 +70,7 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
     respondentPhone: undefined,
     respondentEmail: undefined,
   });
-  const [questionnaireFields, setQuestionnaireFields] = useState<
-    IQuestionnairField[]
-  >([]);
+  const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
 
   const loadSalesConfigs = () => {
     if (campaignRunId) {
@@ -69,7 +78,6 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
     }
   };
 
-  
   const loadSurvey = () => {
     if (campaignRunId) {
       getSurvey({ variables: { input: { campaignRunId } } });
@@ -88,8 +96,8 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
         if (Array.isArray(questionnaireFields[i].feedback)) {
           _stringArray = questionnaireFields[i].feedback as string[];
         } else if (questionnaireFields[i].feedback) {
-            _string = questionnaireFields[i].feedback as string;
-          }
+          _string = questionnaireFields[i].feedback as string;
+        }
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: { _string, _stringArray },
@@ -99,12 +107,14 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
     }
   };
 
-  useEffect(() => {
-    loadSurvey();
-    loadSalesConfigs();
-  }, 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  [campaignRunId]);
+  useEffect(
+    () => {
+      loadSurvey();
+      loadSalesConfigs();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [campaignRunId]
+  );
   useEffect(() => {
     if (survey) {
       const _fields = [];
@@ -114,35 +124,21 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (
-          let k = 0;
-          k < survey.questionnaireFields[i].optionsChoiceSingle.length;
-          k += 1
-        ) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k += 1) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
-            documentId:
-              survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
+            documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (
-          let k = 0;
-          k < survey.questionnaireFields[i].optionsChoiceMultiple.length;
-          k += 1
-        ) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k += 1) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
-            documentId:
-              survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
+            documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (
-          let k = 0;
-          k < survey.questionnaireFields[i].optionsDropdown.length;
-          k += 1
-        ) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k += 1) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
             label: survey.questionnaireFields[i].optionsDropdown[k].label,
@@ -152,40 +148,46 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
         _fields.push({
           id: survey.questionnaireFields[i].id,
           isRequired: survey.questionnaireFields[i].isRequired,
-          noDuplicateResponse:
-            survey.questionnaireFields[i].noDuplicateResponse,
+          noDuplicateResponse: survey.questionnaireFields[i].noDuplicateResponse,
           question: survey.questionnaireFields[i].question,
           optionsChoiceSingle: _singlechoice,
           optionsChoiceMultiple: _multichoice,
           optionsDropdown: _dropdown,
           feedbackType: survey.questionnaireFields[i].feedbackType,
-          allowMultipleFileUploads:
-            survey.questionnaireFields[i].allowMultipleFileUploads,
+          allowMultipleFileUploads: survey.questionnaireFields[i].allowMultipleFileUploads,
         });
       }
       setQuestionnaireFields(_fields);
     }
   }, [survey]);
-  useEffect(() => {
-    const _questionnaireFields = questionnaireFields;
+  useEffect(
+    () => {
+      const _questionnaireFields = questionnaireFields;
 
-    for (let i = 0; i < _questionnaireFields.length; i += 1) {
-      _questionnaireFields[i].feedback = undefined;
-    }
-    setQuestionnaireFields(_questionnaireFields);
-    loadSalesConfigs();
-    loadSurvey();
-  },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-   [created]);
+      for (let i = 0; i < _questionnaireFields.length; i += 1) {
+        _questionnaireFields[i].feedback = undefined;
+      }
+      setQuestionnaireFields(_questionnaireFields);
+      loadSalesConfigs();
+      loadSurvey();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [created]
+  );
   return (
     <Box sx={{ mb: 4 }}>
       <Typography variant="subtitle1" sx={{ mb: 2, color: 'text.primary', fontWeight: 600 }}>
         Sales Giveaways
       </Typography>
       {configs?.length ? (
-        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-          {configs.map((config: { id: React.Key | null | undefined; giveaway: { packaging: { product: { name: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined; }; }; totalUnlocked: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<React.AwaitedReactNode> | null | undefined; totalIssued: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<React.AwaitedReactNode> | null | undefined; }; }) => (
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
+          {configs.map((config: GiveawayConfig) => (
             <Box
               key={config.id}
               sx={{
@@ -232,4 +234,3 @@ const SalesGiveAwayView: React.FC<SalesGiveAwayViewProps> = ({ campaignRunId }) 
 };
 
 export default SalesGiveAwayView;
-

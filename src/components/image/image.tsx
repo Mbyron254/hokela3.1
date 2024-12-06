@@ -54,8 +54,9 @@ const Image = forwardRef<HTMLSpanElement, ImageProps>(
 
     const content = (
       <Box
+        // @ts-ignore
+
         component={LazyLoadImage}
-        //
         alt={alt}
         src={src}
         afterLoad={afterLoad}
@@ -71,10 +72,9 @@ const Image = forwardRef<HTMLSpanElement, ImageProps>(
         useIntersectionObserver={useIntersectionObserver}
         wrapperClassName={wrapperClassName || 'component-image-wrapper'}
         placeholderSrc={disabledEffect ? '/assets/transparent.png' : '/assets/placeholder.svg'}
-        //
-        sx={{
-          width: 1,
-          height: 1,
+        style={{
+          width: '100%',
+          height: '100%',
           objectFit: 'cover',
           verticalAlign: 'bottom',
           ...(!!ratio && {
