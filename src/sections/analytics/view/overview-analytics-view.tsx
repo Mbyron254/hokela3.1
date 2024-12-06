@@ -34,7 +34,7 @@ import { AnalyticsTrafficBySite } from '../analytics-traffic-by-site';
 import { AnalyticsCurrentSubject } from '../analytics-current-subject';
 
 // ----------------------------------------------------------------------
-
+1;
 export function OverviewAnalyticsView() {
   const { data: session } = GQLQuery({
     query: Q_SESSION_SELF,
@@ -155,46 +155,7 @@ export function OverviewAnalyticsView() {
           /> */}
           <CourseContinue
             title="Continue With Active Runs"
-            runs={[
-              {
-                id: '1',
-                index: 1,
-                created: '2024-01-15',
-                agent: {
-                  user: {
-                    name: 'John Doe',
-                    profile: {
-                      photo: null,
-                      __typename: 'TUserProfile',
-                    },
-                    __typename: 'TUser',
-                  },
-                  __typename: 'TAgent',
-                },
-                campaignRun: {
-                  id: 'cr1',
-                  code: 'CR001',
-                  project: {
-                    name: 'Project Alpha',
-                    __typename: 'TProject',
-                  },
-                  campaign: {
-                    name: 'Sales Campaign 2024',
-                    clientTier2: {
-                      name: 'Tier 2 Client',
-                      clientTier1: {
-                        name: 'Tier 1 Client',
-                        __typename: 'TClientTier1',
-                      },
-                      __typename: 'TClientTier2',
-                    },
-                    __typename: 'TCampaign',
-                  },
-                  __typename: 'TCampaignRun',
-                },
-                __typename: 'TCampaignRunOffer',
-              },
-            ]}
+            runs={offers?.rows || []}
             list={_coursesContinue}
           />
         </Grid>
