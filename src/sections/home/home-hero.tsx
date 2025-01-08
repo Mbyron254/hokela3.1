@@ -24,9 +24,7 @@ import { varFade, MotionContainer } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 
-const StyledRoot = styled('div', {
-  shouldForwardProp: (prop) => prop !== 'theme',
-})(({ theme }) => ({
+const StyledRoot = styled('div')(({ theme }) => ({
   ...bgGradient({
     color: alpha(theme.palette.background.default, theme.palette.mode === 'light' ? 0.9 : 0.94),
     imgUrl: '/assets/background/overlay_3.jpg',
@@ -41,9 +39,7 @@ const StyledRoot = styled('div', {
   },
 }));
 
-const StyledWrapper = styled('div', {
-  shouldForwardProp: (prop) => prop !== 'theme',
-})(({ theme }) => ({
+const StyledWrapper = styled('div')(({ theme }) => ({
   height: '100%',
   overflow: 'hidden',
   position: 'relative',
@@ -52,9 +48,7 @@ const StyledWrapper = styled('div', {
   },
 }));
 
-const StyledTextGradient = styled(m.h1, {
-  shouldForwardProp: (prop) => prop !== 'theme',
-})(({ theme }) => ({
+const StyledTextGradient = styled(m.h1)(({ theme }) => ({
   ...textGradient(
     `300deg, ${theme.palette.primary.main} 0%, ${theme.palette.warning.main} 25%, ${theme.palette.primary.main} 50%, ${theme.palette.warning.main} 75%, ${theme.palette.primary.main} 100%`
   ),
@@ -73,68 +67,62 @@ const StyledTextGradient = styled(m.h1, {
   },
 }));
 
-const StyledEllipseTop = styled('div')(
-  ({ theme }) => ({
-    top: -80,
-    width: 480,
-    right: -80,
-    height: 480,
-    borderRadius: '50%',
-    position: 'absolute',
-    filter: 'blur(100px)',
-    WebkitFilter: 'blur(100px)',
-    backgroundColor: alpha(theme.palette.primary.darker, 0.12),
-  }),
-  { label: 'StyledEllipseTop' }
-);
+const StyledEllipseTop = styled('div')(({ theme }) => ({
+  top: -80,
+  width: 480,
+  right: -80,
+  height: 480,
+  borderRadius: '50%',
+  position: 'absolute',
+  filter: 'blur(100px)',
+  WebkitFilter: 'blur(100px)',
+  backgroundColor: alpha(theme.palette.primary.darker, 0.12),
+}));
 
-const StyledEllipseBottom = styled('div')(
-  ({ theme }) => ({
-    height: 400,
-    bottom: -200,
-    left: '10%',
-    right: '10%',
-    borderRadius: '50%',
-    position: 'absolute',
-    filter: 'blur(100px)',
-    WebkitFilter: 'blur(100px)',
-    backgroundColor: alpha(theme.palette.primary.darker, 0.12),
-  }),
-  { label: 'StyledEllipseBottom' }
-);
+const StyledEllipseBottom = styled('div')(({ theme }) => ({
+  height: 400,
+  bottom: -200,
+  left: '10%',
+  right: '10%',
+  borderRadius: '50%',
+  position: 'absolute',
+  filter: 'blur(100px)',
+  WebkitFilter: 'blur(100px)',
+  backgroundColor: alpha(theme.palette.primary.darker, 0.12),
+}));
 
 type StyledPolygonProps = {
   opacity?: number;
   anchor?: 'left' | 'right';
 };
 
-const StyledPolygon = styled('div', {
-  shouldForwardProp: (prop) => !['opacity', 'anchor', 'theme'].includes(prop as string),
-})<StyledPolygonProps>(({ opacity = 1, anchor = 'left', theme }) => ({
-  ...bgBlur({
-    opacity,
-    color: theme.palette.background.default,
-  }),
-  zIndex: 9,
-  bottom: 0,
-  height: 80,
-  width: '50%',
-  position: 'absolute',
-  clipPath: 'polygon(0% 0%, 100% 100%, 0% 100%)',
-  ...(anchor === 'left' && {
-    left: 0,
-    ...(theme.direction === 'rtl' && {
-      transform: 'scale(-1, 1)',
+const StyledPolygon = styled('div')<StyledPolygonProps>(
+  ({ opacity = 1, anchor = 'left', theme }) => ({
+    ...bgBlur({
+      opacity,
+      color: theme.palette.background.default,
     }),
-  }),
-  ...(anchor === 'right' && {
-    right: 0,
-    transform: 'scaleX(-1)',
-    ...(theme.direction === 'rtl' && {
-      transform: 'scaleX(1)',
+    zIndex: 9,
+    bottom: 0,
+    height: 80,
+    width: '50%',
+    position: 'absolute',
+    clipPath: 'polygon(0% 0%, 100% 100%, 0% 100%)',
+    ...(anchor === 'left' && {
+      left: 0,
+      ...(theme.direction === 'rtl' && {
+        transform: 'scale(-1, 1)',
+      }),
     }),
-  }),
-}));
+    ...(anchor === 'right' && {
+      right: 0,
+      transform: 'scaleX(-1)',
+      ...(theme.direction === 'rtl' && {
+        transform: 'scaleX(1)',
+      }),
+    }),
+  })
+);
 
 // ----------------------------------------------------------------------
 
@@ -201,9 +189,8 @@ export default function HomeHero() {
             textAlign: 'center',
           }}
         >
-          Welcome to your professional
-          <br />
-          community
+          All-in-one <br />
+          marketing solution
         </Typography>
       </m.div>
 
@@ -250,13 +237,13 @@ export default function HomeHero() {
           <Stack alignItems="center" spacing={2}>
             <Button
               component={RouterLink}
-              href={paths.auth.main.signUp}
+              href={paths.auth.main.signIn}
               color="primary"
               size="large"
               variant="contained"
               startIcon={<Iconify icon="eva:flash-fill" width={24} />}
             >
-              Join Now
+              Get started
             </Button>
           </Stack>
         </Stack>

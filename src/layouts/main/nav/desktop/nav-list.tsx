@@ -20,6 +20,7 @@ import type { NavListProps, NavSubListProps } from '../types';
 // ----------------------------------------------------------------------
 
 export default function NavList({ data }: NavListProps) {
+  console.log('data', data);
   const theme = useTheme();
 
   const pathname = usePathname();

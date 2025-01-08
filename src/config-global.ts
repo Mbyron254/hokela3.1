@@ -3,11 +3,13 @@ import packageJson from '../package.json';
 // import { ERole } from './types/client';
 // ----------------------------------------------------------------------
 
+export const VERSION = process.env.NEXT_VERSION ?? '3.1.0';
+
 export type ConfigValue = {
   appName: string;
   appVersion: string;
   serverUrl: string;
-  assetsDir: string; 
+  assetsDir: string;
   isStaticExport: boolean;
   auth: {
     method: 'main' | 'amplify' | 'firebase' | 'supabase' | 'auth0';
@@ -54,7 +56,7 @@ export const CONFIG: ConfigValue = {
   /**
    * Firebase
    */
-  
+
   firebase: {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? '',
@@ -67,17 +69,17 @@ export const CONFIG: ConfigValue = {
   amplify: {
     userPoolId: '',
     userPoolWebClientId: '',
-    region: ''
+    region: '',
   },
   auth0: {
     clientId: '',
     domain: '',
-    callbackUrl: ''
+    callbackUrl: '',
   },
   supabase: {
     url: '',
-    key: ''
-  }
+    key: '',
+  },
 };
 
 export const PATH_AFTER_LOGIN = paths.v2.agent.root; // as '/dashboard'

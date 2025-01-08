@@ -26,13 +26,10 @@ export default function SalesReport({ campaignRunId }: Props) {
     }
   };
   useEffect(() => {
-    if (campaignRunId) {
-      loadSurvey();
-    } else {
-      throw new Error('Campaign Run ID is required');
-    }
+    loadSurvey();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadSurvey]);
+  }, [campaignRunId]);
 
   console.log('SURVEY', survey);
   return (

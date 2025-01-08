@@ -13,9 +13,10 @@ import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { bgBlur } from 'src/theme/css';
+import { VERSION } from 'src/config-global';
 
-import {Logo} from 'src/components/logo';
-import {Label} from 'src/components/label';
+import { Logo } from 'src/components/logo';
+import { Label } from 'src/components/label';
 
 import NavMobile from './nav/mobile';
 import NavDesktop from './nav/desktop';
@@ -74,7 +75,7 @@ export default function Header() {
                 sx={{ ml: 1 }}
               >
                 <Label color="info" sx={{ textTransform: 'unset', height: 22, px: 0.5 }}>
-                  3.1.1
+                  {VERSION}
                 </Label>
               </Link>
             }
@@ -87,7 +88,6 @@ export default function Header() {
           {mdUp && <NavDesktop data={navConfig} />}
 
           <Stack alignItems="center" direction={{ xs: 'row', md: 'row-reverse' }}>
-
             {mdUp && <LoginButton />}
 
             <SettingsButton
