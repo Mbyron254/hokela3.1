@@ -1,7 +1,7 @@
 export const CLIENT_HOST_DEV = 'http://localhost:3001';
 export const CLIENT_HOST_PRO = 'https://hokela-test-oc4vu.ondigitalocean.app';
 export const SERVER_HOST_DEV = 'http://localhost:3000';
-export const SERVER_HOST_PRO = 'https://hokela-api-9uucl.ondigitalocean.app';
+export const SERVER_HOST_PRO = 'https://hokela-test-oc4vu.ondigitalocean.app';
 export const DO_SPACE_ORIGIN = 'https://hokela360.blr1.digitaloceanspaces.com';
 export const SERVER_API_DEV_GQL = `${SERVER_HOST_DEV}/graphql`;
 export const SERVER_API_PRO_GQL = `${SERVER_HOST_PRO}/graphql`;
