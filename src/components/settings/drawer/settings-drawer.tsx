@@ -119,20 +119,8 @@ export function SettingsDrawer({
   );
 
   const renderPresets = (
-    // <PresetsOptions
-    //   value={settings.primaryColor}
-    //   onClickOption={(newValue) => settings.onUpdateField('primaryColor', newValue)}
-    //   options={[
-    //     { name: 'default', value: COLORS.primary.main },
-    //     { name: 'cyan', value: PRIMARY_COLOR.cyan.main },
-    //     { name: 'purple', value: PRIMARY_COLOR.purple.main },
-    //     { name: 'blue', value: PRIMARY_COLOR.blue.main },
-    //     { name: 'orange', value: PRIMARY_COLOR.orange.main },
-    //     { name: 'red', value: PRIMARY_COLOR.red.main },
-    //   ]}
-    // />
     <PresetsOptions
-      value="blue"
+      value={settings.primaryColor}
       onClickOption={(newValue) => settings.onUpdateField('primaryColor', newValue)}
       options={[
         { name: 'default', value: COLORS.primary.main },
