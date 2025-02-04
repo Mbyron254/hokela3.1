@@ -41,8 +41,34 @@ export function AuthGuard({ children }: Props) {
 
   console.log('AUTHENTICATED GUARD', authenticated);
 
-  const checkPermissions = useCallback(async (): Promise<void> => {
-    if (loading) return;
+  // const checkPermissions = useCallback(async (): Promise<void> => {
+  //   if (loading) return;
+
+  //   if (!authenticated) {
+  //     // const returnTo = encodeURIComponent(pathname);
+  //     console.log('GOT YOU');
+  //     router.replace(`${paths.auth.main.signIn}?returnTo=${returnTo}`);
+  //     return;
+  //   }
+
+  //   const userRole = getUserRole(user);
+  //   const hasAccess = checkRouteAccess(pathname, userRole);
+
+  //   if (!hasAccess) {
+  //     router.replace(getRoleHomePath(userRole));
+  //     return;
+  //   }
+
+  //   setIsChecking(false);
+  // }, [authenticated, loading, router, pathname, user]);
+
+  // useEffect(() => {
+  //   checkPermissions();
+  // }, [checkPermissions]);
+  const checkPermissions = async (): Promise<void> => {
+    if (loading) {
+      return;
+    }
 
     if (authenticated) {
       let homePath = '/';
@@ -80,27 +106,13 @@ export function AuthGuard({ children }: Props) {
       return;
     }
 
-    // if (!authenticated) {
-    //   // const returnTo = encodeURIComponent(pathname);
-    //   console.log('GOT YOU');
-    //   router.replace(`${paths.auth.main.signIn}?returnTo=${returnTo}`);
-    //   return;
-    // }
-
-    const userRole = getUserRole(user);
-    const hasAccess = checkRouteAccess(pathname, userRole);
-
-    if (!hasAccess) {
-      router.replace(getRoleHomePath(userRole));
-      return;
-    }
-
     setIsChecking(false);
-  }, [authenticated, loading, router, pathname, user]);
+  };
 
   useEffect(() => {
     checkPermissions();
-  }, [checkPermissions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authenticated, loading]);
 
   if (isChecking) {
     return <SplashScreen />;
