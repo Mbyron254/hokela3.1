@@ -6,7 +6,6 @@ import { enqueueSnackbar } from 'notistack';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -188,7 +187,7 @@ export function AccountGeneral({ agent }: { agent: TUser }) {
               }
             />
 
-            <Field.Switch
+            {/* <Field.Switch
               name="isPublic"
               labelPlacement="start"
               label="Public profile"
@@ -197,7 +196,7 @@ export function AccountGeneral({ agent }: { agent: TUser }) {
 
             <Button variant="soft" color="error" sx={{ mt: 3 }}>
               Delete user
-            </Button>
+            </Button> */}
           </Card>
         </Grid>
 
