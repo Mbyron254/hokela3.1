@@ -116,17 +116,76 @@ const marketingNavData = [
     subheader: 'Marketing Dashboard',
     items: [
       { title: 'Overview', path: paths.v2[ERole.MARKETING_AGENCY].root, icon: ICONS.dashboard },
+      { title: 'Clients', path: paths.v2[ERole.MARKETING_AGENCY].clients, icon: ICONS.label },
+      { title: 'Projects', path: paths.v2[ERole.MARKETING_AGENCY].projects, icon: ICONS.folder },
       {
-        title: 'User Management',
-        path: paths.v2[ERole.MARKETING_AGENCY].userManagement.users,
-        icon: ICONS.analytics,
+        title: 'Campaigns',
+        path: paths.v2[ERole.MARKETING_AGENCY].campaigns,
+        icon: ICONS.calendar,
+      },
+      { title: 'Runs', path: paths.v2[ERole.MARKETING_AGENCY].runs, icon: ICONS.external },
+      {
+        title: 'Surveys',
+        path: paths.v2[ERole.MARKETING_AGENCY].surveys,
+        icon: ICONS.chat,
+      },
+
+      {
+        title: 'Jobs',
+        path: paths.v2[ERole.MARKETING_AGENCY].jobs.overview,
+        icon: ICONS.job,
         children: [
-          { title: 'Users', path: paths.v2[ERole.MARKETING_AGENCY].userManagement.users },
-          { title: 'Roles', path: paths.v2[ERole.MARKETING_AGENCY].userManagement.roles },
+          {
+            title: 'Overview',
+            path: paths.v2[ERole.MARKETING_AGENCY].jobs.overview,
+            icon: ICONS.dashboard,
+          },
+          {
+            title: 'Applications',
+            path: paths.v2[ERole.MARKETING_AGENCY].jobs.applications,
+            icon: ICONS.course,
+          },
+          {
+            title: 'Run Offers',
+            path: paths.v2[ERole.MARKETING_AGENCY].jobs.offers,
+            icon: ICONS.file,
+          },
         ],
       },
-      { title: 'Clients', path: paths.v2[ERole.MARKETING_AGENCY].clients, icon: ICONS.dashboard },
-      { title: 'Projects', path: paths.v2[ERole.MARKETING_AGENCY].projects, icon: ICONS.dashboard },
+      {
+        title: 'Products',
+        path: paths.v2[ERole.MARKETING_AGENCY].products.overview,
+        icon: ICONS.order,
+        children: [
+          {
+            title: 'Overview',
+            path: paths.v2[ERole.MARKETING_AGENCY].products.overview,
+            icon: ICONS.dashboard,
+          },
+          {
+            title: 'Reciepts',
+            path: paths.v2[ERole.MARKETING_AGENCY].products.reciepts,
+            icon: ICONS.invoice,
+          },
+        ],
+      },
+      {
+        title: 'Access Controll',
+        path: paths.v2[ERole.MARKETING_AGENCY].userManagement.users,
+        icon: ICONS.lock,
+        children: [
+          {
+            title: 'Users',
+            path: paths.v2[ERole.MARKETING_AGENCY].userManagement.users,
+            icon: ICONS.user,
+          },
+          {
+            title: 'Roles',
+            path: paths.v2[ERole.MARKETING_AGENCY].userManagement.roles,
+            icon: ICONS.file,
+          },
+        ],
+      },
     ],
   },
 ];
