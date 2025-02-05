@@ -44,12 +44,24 @@ const v2_paths = {
   },
   [ERole.MARKETING_AGENCY]: {
     root: `${ROOTS.V2}/marketing/dashboard`,
+    clients: `${ROOTS.V2}/marketing/dashboard/clients`,
+    projects: `${ROOTS.V2}/marketing/dashboard/projects`,
+    campaigns: `${ROOTS.V2}/marketing/dashboard/campaigns`,
+    runs: `${ROOTS.V2}/marketing/dashboard/runs`,
+    surveys: `${ROOTS.V2}/marketing/dashboard/surveys`,
+    jobs: {
+      overview: `${ROOTS.V2}/marketing/dashboard/jobs/overview`,
+      applications: `${ROOTS.V2}/marketing/dashboard/jobs/applications`,
+      offers: `${ROOTS.V2}/marketing/dashboard/jobs/offers`,
+    },
+    products: {
+      overview: `${ROOTS.V2}/marketing/dashboard/user-management/users`,
+      reciepts: `${ROOTS.V2}/marketing/dashboard/user-management/roles`,
+    },
     userManagement: {
       users: `${ROOTS.V2}/marketing/dashboard/user-management/users`,
       roles: `${ROOTS.V2}/marketing/dashboard/user-management/roles`,
     },
-    clients: `${ROOTS.V2}/marketing/dashboard/clients`,
-    projects: `${ROOTS.V2}/marketing/dashboard/projects`,
   },
 };
 
