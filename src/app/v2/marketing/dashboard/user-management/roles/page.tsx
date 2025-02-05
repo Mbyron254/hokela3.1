@@ -1,11 +1,9 @@
-import { CONFIG } from 'src/config-global';
-
-import { DataGridView } from 'src/sections/data-grid-view';
+import { BlankView } from 'src/sections/blank/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = { title: `DataGrid | MUI - ${CONFIG.appName}` };
+export const metadata = { title: `Roles@Hokela 3.1` };
 
 export default function Page() {
-  return <DataGridView />;
+  return <BlankView title="Roles" />;
 }
