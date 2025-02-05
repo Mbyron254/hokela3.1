@@ -50,16 +50,16 @@ const v2_paths = {
     runs: `${ROOTS.V2}/marketing/dashboard/runs`,
     surveys: `${ROOTS.V2}/marketing/dashboard/surveys`,
     jobs: {
-      overview: `${ROOTS.V2}/marketing/dashboard/jobs/overview`,
+      overview: `${ROOTS.V2}/marketing/dashboard/jobs`,
       applications: `${ROOTS.V2}/marketing/dashboard/jobs/applications`,
       offers: `${ROOTS.V2}/marketing/dashboard/jobs/offers`,
     },
     products: {
-      overview: `${ROOTS.V2}/marketing/dashboard/user-management/users`,
-      reciepts: `${ROOTS.V2}/marketing/dashboard/user-management/roles`,
+      overview: `${ROOTS.V2}/marketing/dashboard/products`,
+      reciepts: `${ROOTS.V2}/marketing/dashboard/products/reciepts`,
     },
     userManagement: {
-      users: `${ROOTS.V2}/marketing/dashboard/user-management/users`,
+      users: `${ROOTS.V2}/marketing/dashboard/user-management`,
       roles: `${ROOTS.V2}/marketing/dashboard/user-management/roles`,
     },
   },
