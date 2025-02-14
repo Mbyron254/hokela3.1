@@ -70,6 +70,9 @@ export const Q_AGENT = gql`
           fileName
         }
       }
+      agent {
+        id
+      }
     }
   }
 `;

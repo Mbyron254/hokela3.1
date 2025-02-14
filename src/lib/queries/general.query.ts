@@ -37,3 +37,21 @@ export const Q_PERMISSIONS_MINI = gql`
     }
   }
 `;
+
+export const Q_PAYMENT_DURATIONS = gql`
+  query paymentDurations {
+    paymentDurations {
+      code
+      label
+    }
+  }
+`;
+
+export const Q_PAYMENT_INTERVALS = gql`
+  query paymentIntervals {
+    paymentIntervals {
+      code
+      label
+    }
+  }
+`;

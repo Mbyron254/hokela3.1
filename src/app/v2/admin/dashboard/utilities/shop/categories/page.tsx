@@ -1,0 +1,310 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Paper from '@mui/material/Paper';
+import { DataGrid } from '@mui/x-data-grid';
+import { Typography, Button, Stack, Modal, Box } from '@mui/material';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { GQLMutation, GQLQuery } from 'src/lib/client';
+import {
+  Q_SHOP_CATEGORIES_ACTIVE,
+  Q_SHOP_CATEGORIES_RECYCLED,
+} from 'src/lib/queries/shop-category.query';
+import {
+  SHOP_CATEGORY,
+  SHOP_CATEGORY_CREATE,
+  SHOP_CATEGORY_RECYCLE,
+  SHOP_CATEGORY_RESTORE,
+  SHOP_CATEGORY_UPDATE,
+} from 'src/lib/mutations/shop-category.mutation';
+import {
+  IShopCategoryCreate,
+  IShopCategoryUpdate,
+} from 'src/lib/interface/shop-category.interface';
+
+// Modal style
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 1,
+};
+
+export default function Page() {
+  const [currentTab, setCurrentTab] = useState('active');
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [openNew, setOpenNew] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [inputCreate, setInputCreate] = useState<IShopCategoryCreate>({
+    name: undefined,
+  });
+  const [inputUpdate, setInputUpdate] = useState<IShopCategoryUpdate>({
+    id: undefined,
+    name: undefined,
+  });
+
+  const queryFilters = { page: 0, pageSize: 10 };
+  const {
+    refetch: refetchCategoriesActive,
+    data: categoriesActive,
+    loading: loadingCategoriesActive,
+  } = GQLQuery({
+    query: Q_SHOP_CATEGORIES_ACTIVE,
+    queryAction: 'shopCategories',
+    variables: { input: queryFilters },
+  });
+  const {
+    refetch: refetchCategoriesRecycled,
+    data: categoriesRecycled,
+    loading: loadingCategoriesRecycled,
+  } = GQLQuery({
+    query: Q_SHOP_CATEGORIES_RECYCLED,
+    queryAction: 'shopCategoriesRecycled',
+    variables: { input: queryFilters },
+  });
+  const {
+    action: getCategory,
+    loading: loadingCategory,
+    data: category,
+  } = GQLMutation({
+    mutation: SHOP_CATEGORY,
+    resolver: 'm_shopCategory',
+    toastmsg: false,
+  });
+  const {
+    action: create,
+    loading: creating,
+    data: created,
+  } = GQLMutation({
+    mutation: SHOP_CATEGORY_CREATE,
+    resolver: 'shopCategoryCreate',
+    toastmsg: true,
+  });
+  const {
+    action: update,
+    loading: updating,
+    data: updated,
+  } = GQLMutation({
+    mutation: SHOP_CATEGORY_UPDATE,
+    resolver: 'shopCategoryUpdate',
+    toastmsg: true,
+  });
+  const {
+    action: recycle,
+    loading: recycling,
+    data: recycled,
+  } = GQLMutation({
+    mutation: SHOP_CATEGORY_RECYCLE,
+    resolver: 'shopCategoryRecycle',
+    toastmsg: true,
+  });
+  const {
+    action: restore,
+    loading: restoring,
+    data: restored,
+  } = GQLMutation({
+    mutation: SHOP_CATEGORY_RESTORE,
+    resolver: 'shopCategoryRestore',
+    toastmsg: true,
+  });
+
+  const handleCreate = () => {
+    create({ variables: { input: inputCreate } });
+  };
+  const handleUpdate = () => {
+    update({ variables: { input: inputUpdate } });
+  };
+  const handleRecycle = () => {
+    if (selectedRows.length) {
+      recycle({ variables: { input: { ids: selectedRows } } });
+    }
+  };
+  const handleRestore = () => {
+    if (selectedRows.length) {
+      restore({ variables: { input: { ids: selectedRows } } });
+    }
+  };
+  const loadCategory = (id: string) => {
+    getCategory({ variables: { input: { id } } });
+  };
+
+  const activeColumns = [
+    { field: 'index', headerName: '#', width: 60 },
+    { field: 'name', headerName: 'NAME', flex: 1 },
+    { field: 'shops', headerName: 'SHOPS', width: 100, valueGetter: (params: any) => params.row.shops?.length },
+    { field: 'created', headerName: 'CREATED', width: 180 },
+    {
+      field: 'actions',
+      headerName: 'ACTIONS',
+      width: 100,
+      renderCell: (params: any) => (
+        <Button
+          size="small"
+          onClick={() => {
+            loadCategory(params.row.id);
+            setInputUpdate({
+              id: params.row.id,
+              name: params.row.name,
+            });
+            setOpenEdit(true);
+          }}
+        >
+          Edit
+        </Button>
+      ),
+    }
+  ];
+
+  const recycledColumns = activeColumns.filter(col => col.field !== 'actions');
+
+  useEffect(() => {
+    if (category) {
+      setInputUpdate({
+        id: category.id,
+        name: category.name,
+      });
+    }
+  }, [category]);
+
+  return (
+    <DashboardContent maxWidth="xl">
+      <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
+        Shop Categories
+      </Typography>
+
+      <Paper sx={{ p: 3 }}>
+        <Tabs value={currentTab} onChange={(e, val) => setCurrentTab(val)}>
+          <Tab value="active" label="Active Records" />
+          <Tab value="recycled" label="Recycled Records" />
+        </Tabs>
+
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            my: 2,
+            py: 1,
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}
+        >
+          {currentTab === 'active' ? (
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenNew(true)}
+              >
+                New Category
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                disabled={selectedRows.length === 0}
+                onClick={handleRecycle}
+              >
+                Recycle
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outlined"
+              color="primary"
+              disabled={selectedRows.length === 0}
+              onClick={handleRestore}
+            >
+              Restore
+            </Button>
+          )}
+        </Stack>
+
+        <div style={{ height: 600, width: '100%' }}>
+          <DataGrid
+            rows={currentTab === 'active' ? categoriesActive?.rows || [] : categoriesRecycled?.rows || []}
+            columns={currentTab === 'active' ? activeColumns : recycledColumns}
+            checkboxSelection
+            disableRowSelectionOnClick
+            loading={currentTab === 'active' ? loadingCategoriesActive : loadingCategoriesRecycled}
+            slots={{
+              noRowsOverlay: () => <div>No data available</div>,
+            }}
+            pageSizeOptions={[5, 10, 25]}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 10 } },
+            }}
+            onRowSelectionModelChange={(newSelection) => setSelectedRows(newSelection as string[])}
+          />
+        </div>
+      </Paper>
+
+      {/* Create Modal */}
+      <Modal open={openNew} onClose={() => setOpenNew(false)}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+            New Shop Category
+          </Typography>
+          <Stack spacing={2}>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Category Name"
+              value={inputCreate.name || ''}
+              onChange={(e) => setInputCreate({ name: e.target.value })}
+            />
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button onClick={() => setOpenNew(false)}>Cancel</Button>
+              <Button
+                variant="contained"
+                onClick={handleCreate}
+                disabled={creating}
+              >
+                Create
+              </Button>
+            </Stack>
+          </Stack>
+        </Box>
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+            Edit Shop Category
+          </Typography>
+          {loadingCategory ? (
+            <Typography>Loading...</Typography>
+          ) : (
+            <Stack spacing={2}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Category Name"
+                value={inputUpdate.name || ''}
+                onChange={(e) =>
+                  setInputUpdate({ ...inputUpdate, name: e.target.value })
+                }
+              />
+              <Stack direction="row" spacing={2} justifyContent="flex-end">
+                <Button onClick={() => setOpenEdit(false)}>Cancel</Button>
+                <Button
+                  variant="contained"
+                  onClick={handleUpdate}
+                  disabled={updating}
+                >
+                  Update
+                </Button>
+              </Stack>
+            </Stack>
+          )}
+        </Box>
+      </Modal>
+    </DashboardContent>
+  );
+}

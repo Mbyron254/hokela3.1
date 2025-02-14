@@ -48,8 +48,145 @@ const adminNavData = [
     subheader: 'Admin Dashboard',
     items: [
       { title: 'Overview', path: paths.v2[ERole.ADMIN].root, icon: ICONS.dashboard },
-      { title: 'Users', path: paths.v2[ERole.ADMIN].users, icon: ICONS.user },
-      { title: 'Sessions', path: paths.v2[ERole.ADMIN].sessions, icon: ICONS.analytics },
+      {
+        title: 'Access Control',
+        path: paths.v2[ERole.ADMIN].accessControl,
+        icon: ICONS.lock,
+        children: [
+          {
+            title: 'Sessions',
+            path: paths.v2[ERole.ADMIN].sessions,
+            icon: ICONS.external,
+          },
+          {
+            title: 'Accounts',
+            path: paths.v2[ERole.ADMIN].users,
+            icon: ICONS.user,
+            children: [
+              {
+                title: 'Admins',
+                path: paths.v2[ERole.ADMIN].users + '/admins',
+                icon: ICONS.menuItem,
+              },
+              {
+                title: 'Agents',
+                path: paths.v2[ERole.ADMIN].users + '/agents',
+                icon: ICONS.menuItem,
+              },
+              {
+                title: 'Guests',
+                path: paths.v2[ERole.ADMIN].users + '/guests',
+                icon: ICONS.menuItem,
+              },
+              {
+                title: 'Tier One',
+                path: paths.v2[ERole.ADMIN].users + '/t1',
+                icon: ICONS.menuItem,
+              },
+              {
+                title: 'Tier Two',
+                path: paths.v2[ERole.ADMIN].users + '/t2',
+                icon: ICONS.menuItem,
+              },
+            ],
+          },
+          {
+            title: 'Roles',
+            path: paths.v2[ERole.ADMIN].roles,
+            icon: ICONS.lock,
+            children: [
+              {
+                title: 'Agent & Admins',
+                path: paths.v2[ERole.ADMIN].roles + '/t0',
+                icon: ICONS.menuItem,
+              },
+              {
+                title: 'Tier One',
+                path: paths.v2[ERole.ADMIN].roles + '/t1',
+                icon: ICONS.menuItem,
+              },
+              {
+                title: 'Tier Two',
+                path: paths.v2[ERole.ADMIN].roles + '/t2',
+                icon: ICONS.menuItem,
+              },
+            ],
+          },
+          {
+            title: 'Permissions',
+            path: paths.v2[ERole.ADMIN].permissions,
+            icon: ICONS.parameter,
+          },
+        ],
+      },
+      {
+        title: 'Clients',
+        path: paths.v2[ERole.ADMIN].clients.t1,
+        icon: ICONS.ecommerce,
+        children: [
+          {
+            title: 'Tier 1',
+            path: paths.v2[ERole.ADMIN].clients.t1,
+            icon: ICONS.menuItem,
+          },
+          {
+            title: 'Tier 2',
+            path: paths.v2[ERole.ADMIN].clients.t2,
+            icon: ICONS.menuItem,
+          },
+        ],
+      },
+      {
+        title: 'Shop',
+        path: paths.v2[ERole.ADMIN].shops.root,
+        icon: ICONS.banking,
+        children: [
+          {
+            title: 'Shops',
+            path: paths.v2[ERole.ADMIN].shops.root,
+            icon: ICONS.banking,
+          },
+          {
+            title: 'Sectors',
+            path: paths.v2[ERole.ADMIN].shops.sectors,
+            icon: ICONS.folder,
+          },
+          {
+            title: 'Categories',
+            path: paths.v2[ERole.ADMIN].shops.categories,
+            icon: ICONS.label,
+          },
+        ],
+      },
+      {
+        title: 'Utilities',
+        path: paths.v2[ERole.ADMIN].utilities.units,
+        icon: ICONS.parameter,
+        children: [
+          {
+            title: 'Units of Measure',
+            path: paths.v2[ERole.ADMIN].utilities.units,
+            icon: ICONS.analytics,
+          },
+          {
+            title: 'Product',
+            path: paths.v2[ERole.ADMIN].utilities.product.categories,
+            icon: ICONS.parameter,
+            children: [
+              {
+                title: 'Categories',
+                path: paths.v2[ERole.ADMIN].utilities.product.categories,
+                icon: ICONS.label,
+              },
+              {
+                title: 'Sub-categories',
+                path: paths.v2[ERole.ADMIN].utilities.product.subCategories,
+                icon: ICONS.folder,
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
 ];

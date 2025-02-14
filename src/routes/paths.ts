@@ -10,9 +10,29 @@ const ROOTS = {
 const v2_paths = {
   [ERole.ADMIN]: {
     root: `${ROOTS.V2}/admin/dashboard`,
-    users: `${ROOTS.V2}/admin/users`,
-    sessions: `${ROOTS.V2}/admin/sessions`,
+    users: `${ROOTS.V2}/admin/dashboard/users`,
+    sessions: `${ROOTS.V2}/admin/dashboard/sessions`,
+    accessControl: `${ROOTS.V2}/admin/access-control`,
+    permissions: `${ROOTS.V2}/admin/access-control/permissions`,
+    roles: `${ROOTS.V2}/admin/access-control/roles`,
+    clients: {
+      t1: `${ROOTS.V2}/admin/dashboard/clients-t1`,
+      t2: `${ROOTS.V2}/admin/dashboard/clients-t2`,
+    },
+    shops: {
+      root: `${ROOTS.V2}/admin/dashboard/shops`,
+      sectors: `${ROOTS.V2}/admin/dashboard/utilities/shop/sectors`,
+      categories: `${ROOTS.V2}/admin/dashboard/utilities/shop/categories`,
+    },
+    utilities: {
+      units: `${ROOTS.V2}/admin/dashboard/utilities/units`,
+      product: {
+        categories: `${ROOTS.V2}/admin/dashboard/utilities/product-categories`,
+        subCategories: `${ROOTS.V2}/admin/dashboard/utilities/product-sub-categories`,
+      }
+    },
   },
+
   [ERole.AGENT]: {
     root: `${ROOTS.V2}/agent/dashboard`,
     profile: `${ROOTS.V2}/agent/profile`,
