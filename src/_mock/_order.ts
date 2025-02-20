@@ -1,12 +1,118 @@
+import { id } from 'date-fns/locale';
 import { _mock } from './_mock';
 
 // ----------------------------------------------------------------------
 
-export const ORDER_STATUS_OPTIONS = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'cancelled', label: 'Cancelled' },
-  { value: 'refunded', label: 'Refunded' },
+export const STATUS_OPTION = [
+  { value: 'active', label: 'Active' },
+  { value: 'suspended', label: 'Suspended' },
+  { value: 'complete', label: 'Complete' },
+];
+
+export const ALL_CLIENTS = [
+  {
+    id: '1',
+    name: 'Acme Corporation',
+  },
+  {
+    id: '2',
+    name: 'Globex Industries',
+  },
+  {
+    id: '3',
+    name: 'Initech Solutions',
+  },
+  {
+    id: '4',
+    name: 'Umbrella Corp',
+  },
+  {
+    id: '5',
+    name: 'Wayne Enterprises',
+  },
+  {
+    id: '6',
+    name: 'Stark Industries',
+  },
+  {
+    id: '7',
+    name: 'Cyberdyne Systems',
+  },
+  {
+    id: '8',
+    name: 'Tyrell Corporation',
+  },
+  {
+    id: '9',
+    name: 'Wonka Industries',
+  },
+  {
+    id: '10',
+    name: 'Hooli',
+  },
+];
+
+export const ALL_MANAGERS = [
+  {
+    id: '1',
+    name: 'Alice Johnson',
+    email: 'alice.johnson@example.com',
+    department: 'Sales',
+  },
+  {
+    id: '2',
+    name: 'Bob Smith',
+    email: 'bob.smith@example.com',
+    department: 'Marketing',
+  },
+  {
+    id: '3',
+    name: 'Charlie Brown',
+    email: 'charlie.brown@example.com',
+    department: 'Operations',
+  },
+  {
+    id: '4',
+    name: 'Diana Prince',
+    email: 'diana.prince@example.com',
+    department: 'HR',
+  },
+  {
+    id: '5',
+    name: 'Ethan Hunt',
+    email: 'ethan.hunt@example.com',
+    department: 'Security',
+  },
+  {
+    id: '6',
+    name: 'Fiona Gallagher',
+    email: 'fiona.gallagher@example.com',
+    department: 'Finance',
+  },
+  {
+    id: '7',
+    name: 'George Costanza',
+    email: 'george.costanza@example.com',
+    department: 'Logistics',
+  },
+  {
+    id: '8',
+    name: 'Hannah Abbott',
+    email: 'hannah.abbott@example.com',
+    department: 'Customer Support',
+  },
+  {
+    id: '9',
+    name: 'Isaac Clarke',
+    email: 'isaac.clarke@example.com',
+    department: 'Engineering',
+  },
+  {
+    id: '10',
+    name: 'Julia Roberts',
+    email: 'julia.roberts@example.com',
+    department: 'Product Management',
+  },
 ];
 
 const ITEMS = [...Array(3)].map((_, index) => ({
@@ -17,6 +123,54 @@ const ITEMS = [...Array(3)].map((_, index) => ({
   coverUrl: _mock.image.product(index),
   price: _mock.number.price(index),
 }));
+
+export const projects = [
+  {
+    id: '1',
+    name: 'Field Sales Optimization',
+    client: 'ABC Corp',
+    createdAt: '2024-01-15',
+    campaigns: 5,
+    startDate: '2024-02-01',
+    endDate: '2024-06-30',
+  },
+  {
+    id: '2',
+    name: 'Retail POS Upgrade',
+    client: 'XYZ Retail',
+    createdAt: '2024-03-10',
+    campaigns: 3,
+    startDate: '2024-04-01',
+    endDate: '2024-09-30',
+  },
+  {
+    id: '3',
+    name: 'Gamified Sales Platform',
+    client: 'Hokela Ltd',
+    createdAt: '2024-05-20',
+    campaigns: 7,
+    startDate: '2024-06-15',
+    endDate: '2024-12-31',
+  },
+  {
+    id: '4',
+    name: 'Survey & Reporting System',
+    client: 'Data Insights Inc.',
+    createdAt: '2024-02-05',
+    campaigns: 4,
+    startDate: '2024-02-20',
+    endDate: '2024-07-31',
+  },
+  {
+    id: '5',
+    name: 'Telegram Mini App Integration',
+    client: 'Social Connect',
+    createdAt: '2024-06-01',
+    campaigns: 6,
+    startDate: '2024-07-10',
+    endDate: '2024-12-01',
+  },
+];
 
 export const _orders = [...Array(20)].map((_, index) => {
   const shipping = 10;

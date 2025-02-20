@@ -4,6 +4,7 @@ export const CLIENT_TYPE = [
   { label: 'Distributor', value: 'distributor' },
   { label: 'Retailer', value: 'retailer' },
 ];
+
 export const CLIENTS_STATUS = [
   {
     label: 'Active',
@@ -12,6 +13,48 @@ export const CLIENTS_STATUS = [
   {
     label: 'Suspended',
     value: 'suspended',
+  },
+];
+export const CLIENTS = [
+  {
+    id: '1821',
+    name: 'Acme Corporation',
+    clientType: 'Enterprise',
+    noOfProjects: 12,
+    createdAt: '2023-05-12T10:30:00Z',
+    status: 'active',
+  },
+  {
+    id: '2445',
+    name: 'Beta Solutions',
+    clientType: 'Startup',
+    noOfProjects: 5,
+    createdAt: '2024-01-15T14:45:00Z',
+    status: 'active',
+  },
+  {
+    id: '3545',
+    name: 'Gamma Industries',
+    clientType: 'SME',
+    noOfProjects: 8,
+    createdAt: '2022-11-07T09:15:00Z',
+    status: 'suspended',
+  },
+  {
+    id: '4346',
+    name: 'Delta Innovations',
+    clientType: 'Enterprise',
+    noOfProjects: 20,
+    createdAt: '2021-08-23T16:20:00Z',
+    status: 'active',
+  },
+  {
+    id: '5433',
+    name: 'Epsilon Tech',
+    clientType: 'Startup',
+    noOfProjects: 3,
+    createdAt: '2023-09-30T12:10:00Z',
+    status: 'suspended',
   },
 ];
 
