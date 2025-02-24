@@ -12,6 +12,7 @@ import { SnackbarProvider } from 'notistack';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 
 import { primary } from 'src/theme/core/palette';
+import { LocalizationProvider } from 'src/locales';
 import { schemeConfig } from 'src/theme/scheme-config';
 import { ThemeProvider } from 'src/theme/theme-provider';
 
@@ -50,19 +51,20 @@ export default function RootLayout({ children }: Props) {
           defaultMode={schemeConfig.defaultMode}
           modeStorageKey={schemeConfig.modeStorageKey}
         />
-
-        <AuthProvider>
-          <SettingsProvider settings={defaultSettings}>
-            <ThemeProvider>
-              <MotionLazy>
-                <ProgressBar />
-                <SettingsDrawer />
-                <SnackbarProvider />
-                {children}
-              </MotionLazy>
-            </ThemeProvider>
-          </SettingsProvider>
-        </AuthProvider>
+        <LocalizationProvider>
+          <AuthProvider>
+            <SettingsProvider settings={defaultSettings}>
+              <ThemeProvider>
+                <MotionLazy>
+                  <ProgressBar />
+                  <SettingsDrawer />
+                  <SnackbarProvider />
+                  {children}
+                </MotionLazy>
+              </ThemeProvider>
+            </SettingsProvider>
+          </AuthProvider>
+        </LocalizationProvider>
       </body>
     </html>
   );
