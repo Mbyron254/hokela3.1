@@ -116,8 +116,23 @@ const marketingNavData = [
     subheader: 'Marketing Dashboard',
     items: [
       { title: 'Overview', path: paths.v2[ERole.MARKETING_AGENCY].root, icon: ICONS.dashboard },
-      { title: 'Clients', path: paths.v2[ERole.MARKETING_AGENCY].clients, icon: ICONS.label },
-      { title: 'Projects', path: paths.v2[ERole.MARKETING_AGENCY].projects, icon: ICONS.folder },
+      {
+        title: 'Clients',
+        path: paths.v2[ERole.MARKETING_AGENCY].clients.list,
+        icon: ICONS.label,
+        // children: [
+        //   { title: 'List', path: paths.v2[ERole.MARKETING_AGENCY].clients.list },
+        //   {
+        //     title: 'Details',
+        //     path: paths.v2[ERole.MARKETING_AGENCY].clients.list,
+        //   },
+        // ],
+      },
+      {
+        title: 'Projects',
+        path: paths.v2[ERole.MARKETING_AGENCY].projects.list,
+        icon: ICONS.folder,
+      },
       {
         title: 'Campaigns',
         path: paths.v2[ERole.MARKETING_AGENCY].campaigns,
