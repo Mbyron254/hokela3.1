@@ -1,12 +1,7 @@
 'use client';
 
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type {
-  TClientsTier2,
-  TClientType,
-  IProductTableFilters,
-  TClientTier2,
-} from 'src/types/client';
+import type { IProductItem, IProductTableFilters } from 'src/types/client';
 import type {
   GridSlots,
   GridColDef,
@@ -14,7 +9,7 @@ import type {
   GridColumnVisibilityModel,
 } from '@mui/x-data-grid';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -50,21 +45,7 @@ import { useSetState } from 'src/hooks/use-set-state';
 import { varAlpha } from 'src/theme/styles';
 import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
-
-import { Q_CLIENTS_T2_ACTIVE, Q_CLIENTS_T2_RECYCLED } from 'src/lib/queries/client-t2.query';
-import { GQLMutation, GQLQuery } from 'src/lib/client';
-
-import { Q_CLIENT_TYPES_MINI } from 'src/lib/queries/client.query';
-
 import { CLIENTS, CLIENT_TYPE, CLIENTS_STATUS } from 'src/_mock/marketing/_clients';
-
-import {
-  CLIENT_T2_CREATE,
-  CLIENT_T2_RECYCLE,
-  CLIENT_T2_RESTORE,
-  CLIENT_T2_UPDATE,
-  M_CLIENT_T2,
-} from 'src/lib/mutations/client-t2.mutation';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -93,7 +74,6 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // Add this interface near the top with other interfaces
 interface IClient {
   id: string;
-  clientNo: string;
   name: string;
   clientType: string;
   noOfProjects: number;
@@ -101,7 +81,7 @@ interface IClient {
   status?: string;
 }
 
-export function ClientListView() {
+export function ProductCategoryView() {
   const confirmRows = useBoolean();
 
   const router = useRouter();
@@ -127,186 +107,59 @@ export function ClientListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
-  const [clientsType, setClientsType] = useState<TClientType[]>([]);
-
-  const usersQueryFilters = { page: 0, pageSize: 10 };
-
-  const {
-    refetch: refetchClientsActive,
-    data: clientsActive,
-    loading: loadingClientsActive,
-  } = GQLQuery({
-    query: Q_CLIENTS_T2_ACTIVE,
-    queryAction: 'tier2Clients',
-    variables: { input: usersQueryFilters },
-  });
-
-  const {
-    refetch: refetchClientsRecycled,
-    data: clientsRecycled,
-    loading: loadingClientsRecycled,
-  } = GQLQuery({
-    query: Q_CLIENTS_T2_RECYCLED,
-    queryAction: 'tier2ClientsRecycled',
-    variables: { input: usersQueryFilters },
-  });
-
-  const { data: clientTypes } = GQLQuery({
-    query: Q_CLIENT_TYPES_MINI,
-    queryAction: 'clientTypes',
-    variables: { input: {} },
-  });
-
-  const {
-    action: create,
-    loading: creating,
-    data: created,
-  } = GQLMutation({
-    mutation: CLIENT_T2_CREATE,
-    resolver: 'tier2ClientCreate',
-    toastmsg: true,
-  });
-
-  const {
-    action: update,
-    loading: updating,
-    data: updated,
-  } = GQLMutation({
-    mutation: CLIENT_T2_UPDATE,
-    resolver: 'tier2ClientUpdate',
-    toastmsg: true,
-  });
-
-  const {
-    action: recycle,
-    loading: recycling,
-    data: recycled,
-  } = GQLMutation({
-    mutation: CLIENT_T2_RECYCLE,
-    resolver: 'tier2ClientRecycle',
-    toastmsg: true,
-  });
-  const {
-    action: restore,
-    loading: restoring,
-    data: restored,
-  } = GQLMutation({
-    mutation: CLIENT_T2_RESTORE,
-    resolver: 'tier2ClientRestore',
-    toastmsg: true,
-  });
-  // console.log(clientTypes, 'Client Types');
-
-  // console.log(clientsActive, 'Clients Active');
-
-  // console.log(clientsRecycled, 'Clients Recycled');
-
   // Add these new states
   const [editingClient, setEditingClient] = useState<IClient | null>(null);
   const [formData, setFormData] = useState({
-    id: '',
     name: '',
     clientType: '',
   });
 
-  // useEffect(() => {
-  //   if (clients.length) {
-  //     setTableData(clients);
-  //   }
-  // }, []);
-  console.log(clientsActive, 'Clients Active');
   useEffect(() => {
-    if (clientsActive && clientsRecycled && clientTypes) {
-      const activeClients = transformClientData(clientsActive.rows);
-      const recycledClients = transformRecycledClientData(clientsRecycled.rows);
-      const clientsType = transformClientTypesData(clientTypes.rows);
-      setTableData([...activeClients, ...recycledClients]);
-
-      setClientsType(clientsType);
+    if (clients.length) {
+      setTableData(clients);
     }
-  }, [clientsActive, clientsRecycled, clientTypes]);
-
-  console.log(clientsType, 'Clients Type');
+  }, []);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
-  const dataFiltered = useMemo(() => {
-    if (tabsFilter === 'all') {
-      return tableData;
-    }
-    return tableData.filter((client) => client.status === tabsFilter);
-  }, [tableData, tabsFilter]);
+  const dataFiltered = applyFilter({ inputData: tableData, filters: tabsFilter });
 
   const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...CLIENTS_STATUS];
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      // const deleteRow = tableData.filter((row) => row.id !== id);
-      let rows = new Array();
-      rows.push(id);
-      console.log(id, 'Delete Row ID');
-      recycle({ variables: { input: { ids: rows } } });
+      const deleteRow = tableData.filter((row) => row.id !== id);
 
       toast.success('Delete success!');
 
-      // setTableData(deleteRow);
+      setTableData(deleteRow);
     },
     [tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
-    console.log(selectedRowIds, 'Selected Row IDs');
+    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
 
-    if (selectedRowIds.length) {
-      recycle({ variables: { input: { ids: selectedRowIds } } });
-    }
-    // const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
+    toast.success('Delete success!');
 
-    // toast.success('Delete success!');
-
-    // setTableData(deleteRows);
+    setTableData(deleteRows);
   }, [selectedRowIds, tableData]);
 
-  const handleEditRow = (id: string) => {
-    const client = tableData.find((row) => row.id === id);
-    const type = clientsType.find(
-      (option) => option.name.toLowerCase() === client?.clientType.toLowerCase()
-    );
-    if (client) {
-      console.log(client.clientType, 'Client Type');
-      setEditingClient(client);
-      const client_type = clientsType.find((option) => option.name === client.clientType);
-      console.log(client_type, 'Client Type');
-      setFormData({
-        id: client.id,
-        name: client.name,
-        clientType: type?.id || '',
-      });
-      isEdit.onTrue();
-      dialog.onTrue();
-    }
-  };
-  // useCallback(
-  //   (id: string) => {
-  //     console.log(id, 'ID');
-  //     const client = tableData.find((row) => row.id === id);
-
-  //     console.log('Client');
-  //     if (client) {
-  //       console.log(client.clientType, 'Client Type');
-  //       setEditingClient(client);
-  //      const client_type = clientsType.find((option) => option.name === client.clientType);
-  //       console.log(client_type, 'Client Type');
-  //       setFormData({
-  //         name: client.name,
-  //         clientType: client.clientType.toLowerCase(),
-  //       });
-  //       isEdit.onTrue();
-  //       dialog.onTrue();
-  //     }
-  //   },
-  //   [tableData]
-  // );
+  const handleEditRow = useCallback(
+    (id: string) => {
+      const client = tableData.find((row) => row.id === id);
+      if (client) {
+        setEditingClient(client);
+        setFormData({
+          name: client.name,
+          clientType: client.clientType.toLowerCase(),
+        });
+        isEdit.onTrue();
+        dialog.onTrue();
+      }
+    },
+    [tableData]
+  );
 
   const handleNewRow = useCallback(() => {
     isEdit.onFalse();
@@ -333,57 +186,41 @@ export function ClientListView() {
   const handleClientTypeChange = (_: any, value: any) => {
     setFormData({
       ...formData,
-      clientType: value?.id || '',
+      clientType: value?.value || '',
     });
   };
 
   const handleSubmit = () => {
     if (isEdit.value && editingClient) {
-      console.log(formData, 'Form Data');
       // Update existing client
-      // const inputUpdate = tableData.map((item) =>
-      //   item.id === editingClient.id
-      //     ? {
-      //         ...item,
-      //         name: formData.name,
-      //         clientTypeId: formData.clientType,
-      //       }
-      //     : item
-      // );
-      // console.log(formData, 'Input Update');
-      const inputUpdate = {
-        id: formData.id,
-        clientTypeId: formData.clientType,
-        name: formData.name,
-      };
-      update({ variables: { input: inputUpdate } });
-
-      // setTableData(inputUpdate);
+      const updatedData = tableData.map((item) =>
+        item.id === editingClient.id
+          ? {
+              ...item,
+              name: formData.name,
+              clientType: formData.clientType,
+            }
+          : item
+      );
+      setTableData(updatedData);
       toast.success('Client updated successfully!');
     } else {
-      console.log(formData, 'Form Data Create');
-      const inputCreate = {
-        clientTypeId: formData.clientType,
-        name: formData.name,
-      };
-      create({ variables: { input: inputCreate } });
-
       // Create new client
-      // const newClient = {
-      //   id: String(tableData.length + 1),
-      //   name: formData.name,
-      //   clientType: formData.clientType,
-      //   noOfProjects: 0,
-      //   createdAt: new Date().toISOString(),
-      // };
-      // setTableData([...tableData, newClient]);
+      const newClient = {
+        id: String(tableData.length + 1),
+        name: formData.name,
+        clientType: formData.clientType,
+        noOfProjects: 0,
+        createdAt: new Date().toISOString(),
+      };
+      setTableData([...tableData, newClient]);
       toast.success('Client created successfully!');
     }
     handleDialogClose();
   };
 
   const handleDialogClose = () => {
-    setFormData({ id: '', name: '', clientType: '' });
+    setFormData({ name: '', clientType: '' });
     setEditingClient(null);
     dialog.onFalse();
   };
@@ -404,7 +241,7 @@ export function ClientListView() {
   );
 
   const columns: GridColDef[] = [
-    { field: 'clientNo', headerName: 'Client No', filterable: false },
+    { field: 'id', headerName: 'Client No', filterable: false },
 
     {
       field: 'name',
@@ -487,14 +324,11 @@ export function ClientListView() {
 
   return (
     <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <DashboardContent
+        sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100vh' }}
+      >
         <CustomBreadcrumbs
-          heading="List"
-          links={[
-            { name: 'Dashboard', href: paths.v2.marketing.root },
-            { name: 'Clients', href: paths.v2.marketing.clients.list },
-            { name: 'List' },
-          ]}
+          links={[]}
           action={
             <Button
               // component={RouterLink}
@@ -525,14 +359,14 @@ export function ClientListView() {
             <Box sx={{ my: 2 }} />
             <Autocomplete
               fullWidth
-              options={clientsType}
-              value={clientsType.find((option) => option.id === formData.clientType) || null}
+              options={CLIENT_TYPE}
+              value={CLIENT_TYPE.find((option) => option.value === formData.clientType) || null}
               onChange={handleClientTypeChange}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => option.label}
               renderInput={(params) => <TextField {...params} label="Client Type" margin="none" />}
               renderOption={(props, option) => (
-                <li {...props} key={option.id}>
-                  {option.name}
+                <li {...props} key={option.value}>
+                  {option.label}
                 </li>
               )}
             />
@@ -595,7 +429,7 @@ export function ClientListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={loadingClientsActive || loadingClientsRecycled}
+            loading={productsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 25]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
@@ -718,35 +552,3 @@ function applyFilter({ inputData, filters }: ApplyFilterProps) {
 
   return inputData.filter((client) => client?.status === filters);
 }
-
-// Transform clientsActive data
-const transformClientData = (clients: Array<TClientTier2>) => {
-  return clients.map((client) => ({
-    id: client.id,
-    clientNo: client.clientNo, // Add clientNo field
-    name: client.name,
-    clientType: client.clientType.name,
-    noOfProjects: client.projects.length,
-    createdAt: client.created,
-    status: 'active', // Add status field
-  }));
-};
-
-// Transform clientsRecycled data
-const transformRecycledClientData = (clients: Array<TClientTier2>) => {
-  return clients.map((client) => ({
-    id: client.id,
-    clientNo: client.clientNo, // Add clientNo field
-    name: client.name,
-    clientType: client.clientType.name,
-    noOfProjects: client.projects.length,
-    createdAt: client.created,
-    status: 'suspended', // Add status field
-  }));
-};
-const transformClientTypesData = (clientTypes: Array<TClientType>) => {
-  return clientTypes.map((clientType) => ({
-    id: clientType.id,
-    name: clientType.name,
-  }));
-};

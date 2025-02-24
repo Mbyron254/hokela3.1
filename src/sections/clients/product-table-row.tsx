@@ -7,8 +7,8 @@ import Avatar from '@mui/material/Avatar';
 import ListItemText from '@mui/material/ListItemText';
 import LinearProgress from '@mui/material/LinearProgress';
 
+import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
-import { fTime, fDate } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
@@ -34,10 +34,37 @@ export function RenderCellCreatedAt({ params }: ParamsProps) {
   return (
     <Stack spacing={0.5}>
       <Box component="span">{fDate(params.row.createdAt)}</Box>
-      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
         {fTime(params.row.createdAt)}
-      </Box>
+      </Box> */}
     </Stack>
+  );
+}
+export function RenderCellClientType({ params }: ParamsProps) {
+  return (
+    // <Box component="span">{params.row.clientType}</Box>
+    <Label
+      variant="soft"
+      color={
+        (params.row.clientType === 'producer' && 'primary') ||
+        (params.row.clientType === 'marketing' && 'info') ||
+        (params.row.clientType === 'distributor' && 'warning') ||
+        (params.row.clientType === 'retailer' && 'success') ||
+        'default'
+      }
+    >
+      {params.row.clientType}
+    </Label>
+  );
+}
+export function RenderCellNoOfProjects({ params }: ParamsProps) {
+  return (
+    // <Stack spacing={0.5}>
+    <Box component="span">{params.row.noOfProjects}</Box>
+    // <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+    //   {fTime(params.row.noOfProjects)}
+    // </Box>
+    // </Stack>
   );
 }
 
@@ -67,12 +94,7 @@ export function RenderCellProduct({
 }) {
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
-      <Avatar
-        alt={params.row.name}
-        src={params.row.coverUrl}
-        variant="rounded"
-        sx={{ width: 64, height: 64, mr: 2 }}
-      />
+      <Avatar alt={params.row.name} src={params.row.coverUrl} variant="rounded" sx={{ mr: 2 }} />
 
       <ListItemText
         disableTypography

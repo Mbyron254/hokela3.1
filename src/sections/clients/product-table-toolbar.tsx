@@ -24,14 +24,14 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 type Props = {
   filters: UseSetStateReturn<IProductTableFilters>;
   options: {
-    stocks: {
+    status: {
       value: string;
       label: string;
     }[];
-    publishs: {
-      value: string;
-      label: string;
-    }[];
+    // publishs: {
+    //   value: string;
+    //   label: string;
+    // }[];
   };
 };
 
@@ -76,7 +76,7 @@ export function ProductTableToolbar({ filters, options }: Props) {
   return (
     <>
       <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
-        <InputLabel htmlFor="product-filter-stock-select-label">Stock</InputLabel>
+        <InputLabel htmlFor="product-filter-stock-select-label">Status</InputLabel>
 
         <Select
           multiple
@@ -88,7 +88,7 @@ export function ProductTableToolbar({ filters, options }: Props) {
           inputProps={{ id: 'product-filter-stock-select-label' }}
           sx={{ textTransform: 'capitalize' }}
         >
-          {options.stocks.map((option) => (
+          {options.status.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               <Checkbox
                 disableRipple
@@ -113,7 +113,7 @@ export function ProductTableToolbar({ filters, options }: Props) {
         </Select>
       </FormControl>
 
-      <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
+      {/* <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
         <InputLabel htmlFor="product-filter-publish-select-label">Publish</InputLabel>
         <Select
           multiple
@@ -151,7 +151,7 @@ export function ProductTableToolbar({ filters, options }: Props) {
             Apply
           </MenuItem>
         </Select>
-      </FormControl>
+      </FormControl> */}
 
       <CustomPopover
         open={popover.open}
