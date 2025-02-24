@@ -99,7 +99,7 @@ export function ProductDetailsSummary({
         onAddCart?.({ ...data, colors: [values.colors], subtotal: data.price * data.quantity });
       }
       onGotoStep?.(0);
-      router.push(paths.product.checkout);
+      // router.push(paths.product.checkout);
     } catch (error) {
       console.error(error);
     }
@@ -196,7 +196,7 @@ export function ProductDetailsSummary({
           [`& .${formHelperTextClasses.root}`]: { mx: 0, mt: 1, textAlign: 'right' },
         }}
       >
-        {sizes.map((size) => (
+        {sizes.map((size: any) => (
           <MenuItem key={size} value={size}>
             {size}
           </MenuItem>

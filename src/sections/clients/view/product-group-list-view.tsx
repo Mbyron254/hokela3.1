@@ -1,27 +1,27 @@
 import type { IDateValue } from 'src/types/common';
 import type { GridColDef } from '@mui/x-data-grid';
 
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-
-import { Iconify } from 'src/components/iconify';
-import { DashboardContent } from 'src/layouts/dashboard';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { TextField } from '@mui/material';
-import { useBoolean } from 'src/hooks/use-boolean';
 import { useState } from 'react';
-import { Grid } from '@mui/material';
-import { GQLMutation } from 'src/lib/client';
 
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { Box , Grid , Button, Dialog, TextField, DialogTitle, DialogActions, DialogContent } from '@mui/material';
+
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import { GQLMutation } from 'src/lib/client';
+import { DashboardContent } from 'src/layouts/dashboard';
 import {
-  M_PRODUCT_GROUPS,
-  M_PRODUCT_GROUPS_RECYCLED,
   PRODUCT_GROUP,
+  M_PRODUCT_GROUPS,
   PRODUCT_GROUP_CREATE,
+  PRODUCT_GROUP_UPDATE,
   PRODUCT_GROUP_RECYCLE,
   PRODUCT_GROUP_RESTORE,
-  PRODUCT_GROUP_UPDATE,
+  M_PRODUCT_GROUPS_RECYCLED,
 } from 'src/lib/mutations/product-group.mutation';
+
+import { Iconify } from 'src/components/iconify';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 // ----------------------------------------------------------------------
 
@@ -224,8 +224,7 @@ export function ProductGroupList({ clientTier2Id, data }: Props) {
     console.log('Submit', formData);
   };
   return (
-    <>
-      <DashboardContent>
+    <DashboardContent>
         <CustomBreadcrumbs
           heading="Product Groups"
           links={[{ name: 'List', href: '/dashboard' }]}
@@ -296,6 +295,5 @@ export function ProductGroupList({ clientTier2Id, data }: Props) {
         </Dialog>
         <DataGrid columns={columns} rows={data} checkboxSelection disableRowSelectionOnClick />;
       </DashboardContent>
-    </>
   );
 }

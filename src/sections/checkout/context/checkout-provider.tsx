@@ -193,12 +193,16 @@ function Container({ children }: Props) {
   );
 
   // Reset
-  const onReset = useCallback(() => {
-    if (completed) {
-      resetState();
-      router.push(paths.product.root);
-    }
-  }, [completed, resetState, router]);
+  const onReset = useCallback(
+    () => {
+      if (completed) {
+        resetState();
+        // router.push(paths.product.root);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [completed, resetState, router]
+  );
 
   const memoizedValue = useMemo(
     () => ({
@@ -258,5 +262,5 @@ function createUrl(type: 'back' | 'next' | 'go', activeStep: number) {
 
   const stepParams = new URLSearchParams({ step: `${step}` }).toString();
 
-  return `${paths.product.checkout}?${stepParams}`;
+  return `${paths.v2.marketing.root}?${stepParams}`;
 }

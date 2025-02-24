@@ -1,17 +1,17 @@
 import type { IDateValue } from 'src/types/common';
 import type { GridColDef } from '@mui/x-data-grid';
 
+import { useState } from 'react';
+
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { Box , Grid , Button , Dialog, TextField, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
-import { DashboardContent } from 'src/layouts/dashboard';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Button, Dialog, DialogActions, DialogTitle, Grid } from '@mui/material';
-import { DialogContent } from '@mui/material';
-import { TextField } from '@mui/material';
-import { Box } from '@mui/material';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -123,8 +123,7 @@ export function ProductList({ data }: Props) {
     console.log('Submit', formData);
   };
   return (
-    <>
-      <DashboardContent>
+    <DashboardContent>
         <CustomBreadcrumbs
           heading="Products"
           links={[{ name: 'List', href: '/dashboard' }]}
@@ -193,6 +192,5 @@ export function ProductList({ data }: Props) {
         </Dialog>
         <DataGrid columns={columns} rows={data} checkboxSelection disableRowSelectionOnClick />;
       </DashboardContent>
-    </>
   );
 }

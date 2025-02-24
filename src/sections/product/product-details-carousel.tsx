@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 
-import { Image } from 'src/components/image';
+import Image from 'src/components/image';
 import { Lightbox, useLightBox } from 'src/components/lightbox';
 import {
   Carousel,

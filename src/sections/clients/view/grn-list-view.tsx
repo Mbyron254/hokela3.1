@@ -1,12 +1,13 @@
 import type { IDateValue } from 'src/types/common';
 import type { GridColDef } from '@mui/x-data-grid';
 
+import { Button } from '@mui/material';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 
-import { Iconify } from 'src/components/iconify';
 import { DashboardContent } from 'src/layouts/dashboard';
+
+import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Button } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +34,7 @@ const columns: GridColDef[] = [
     align: 'center',
     headerAlign: 'center',
   },
-  //Add created by in future
+  // Add created by in future
   {
     field: 'createdAt',
     headerName: 'Created At',
@@ -100,8 +101,7 @@ export function GrnList({ data }: Props) {
     console.log('New Row');
   };
   return (
-    <>
-      <DashboardContent>
+    <DashboardContent>
         <CustomBreadcrumbs
           heading="GRN List"
           links={[{ name: 'List', href: '/dashboard' }]}
@@ -120,6 +120,5 @@ export function GrnList({ data }: Props) {
         />
         <DataGrid columns={columns} rows={data} checkboxSelection disableRowSelectionOnClick />;
       </DashboardContent>
-    </>
   );
 }

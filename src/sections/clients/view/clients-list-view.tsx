@@ -1,12 +1,7 @@
 'use client';
 
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type {
-  TClientsTier2,
-  TClientType,
-  IProductTableFilters,
-  TClientTier2,
-} from 'src/types/client';
+import type { TClientType, TClientTier2, IProductTableFilters } from 'src/types/client';
 import type {
   GridSlots,
   GridColDef,
@@ -14,7 +9,7 @@ import type {
   GridColumnVisibilityModel,
 } from '@mui/x-data-grid';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -49,21 +44,16 @@ import { useSetState } from 'src/hooks/use-set-state';
 
 import { varAlpha } from 'src/theme/styles';
 import { useGetProducts } from 'src/actions/product';
+import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
-
-import { Q_CLIENTS_T2_ACTIVE, Q_CLIENTS_T2_RECYCLED } from 'src/lib/queries/client-t2.query';
-import { GQLMutation, GQLQuery } from 'src/lib/client';
-
 import { Q_CLIENT_TYPES_MINI } from 'src/lib/queries/client.query';
-
-import { CLIENTS, CLIENT_TYPE, CLIENTS_STATUS } from 'src/_mock/marketing/_clients';
-
+import { CLIENTS, CLIENTS_STATUS } from 'src/_mock/marketing/_clients';
+import { Q_CLIENTS_T2_ACTIVE, Q_CLIENTS_T2_RECYCLED } from 'src/lib/queries/client-t2.query';
 import {
   CLIENT_T2_CREATE,
+  CLIENT_T2_UPDATE,
   CLIENT_T2_RECYCLE,
   CLIENT_T2_RESTORE,
-  CLIENT_T2_UPDATE,
-  M_CLIENT_T2,
 } from 'src/lib/mutations/client-t2.mutation';
 
 import { Label } from 'src/components/label';
@@ -219,10 +209,10 @@ export function ClientListView() {
     if (clientsActive && clientsRecycled && clientTypes) {
       const activeClients = transformClientData(clientsActive.rows);
       const recycledClients = transformRecycledClientData(clientsRecycled.rows);
-      const clientsType = transformClientTypesData(clientTypes.rows);
+      const clientsTypeTransformed = transformClientTypesData(clientTypes.rows);
       setTableData([...activeClients, ...recycledClients]);
 
-      setClientsType(clientsType);
+      setClientsType(clientsTypeTransformed);
     }
   }, [clientsActive, clientsRecycled, clientTypes]);
 
@@ -242,7 +232,7 @@ export function ClientListView() {
   const handleDeleteRow = useCallback(
     (id: string) => {
       // const deleteRow = tableData.filter((row) => row.id !== id);
-      let rows = new Array();
+      const rows = [];
       rows.push(id);
       console.log(id, 'Delete Row ID');
       recycle({ variables: { input: { ids: rows } } });
@@ -251,21 +241,26 @@ export function ClientListView() {
 
       // setTableData(deleteRow);
     },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
     [tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    console.log(selectedRowIds, 'Selected Row IDs');
+  const handleDeleteRows = useCallback(
+    () => {
+      console.log(selectedRowIds, 'Selected Row IDs');
 
-    if (selectedRowIds.length) {
-      recycle({ variables: { input: { ids: selectedRowIds } } });
-    }
-    // const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
+      if (selectedRowIds.length) {
+        recycle({ variables: { input: { ids: selectedRowIds } } });
+      }
+      // const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
 
-    // toast.success('Delete success!');
+      // toast.success('Delete success!');
 
-    // setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+      // setTableData(deleteRows);
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedRowIds, tableData]
+  );
 
   const handleEditRow = (id: string) => {
     const client = tableData.find((row) => row.id === id);
@@ -308,12 +303,16 @@ export function ClientListView() {
   //   [tableData]
   // );
 
-  const handleNewRow = useCallback(() => {
-    isEdit.onFalse();
-    dialog.onTrue();
+  const handleNewRow = useCallback(
+    () => {
+      isEdit.onFalse();
+      dialog.onTrue();
 
-    // router.push(paths.dashboard.product.edit(id));
-  }, []);
+      // router.push(paths.dashboard.product.edit(id));
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const handleViewRow = useCallback(
     (id: string) => {
@@ -720,8 +719,8 @@ function applyFilter({ inputData, filters }: ApplyFilterProps) {
 }
 
 // Transform clientsActive data
-const transformClientData = (clients: Array<TClientTier2>) => {
-  return clients.map((client) => ({
+const transformClientData = (clients: Array<TClientTier2>) =>
+  clients.map((client) => ({
     id: client.id,
     clientNo: client.clientNo, // Add clientNo field
     name: client.name,
@@ -730,11 +729,10 @@ const transformClientData = (clients: Array<TClientTier2>) => {
     createdAt: client.created,
     status: 'active', // Add status field
   }));
-};
 
 // Transform clientsRecycled data
-const transformRecycledClientData = (clients: Array<TClientTier2>) => {
-  return clients.map((client) => ({
+const transformRecycledClientData = (clients: Array<TClientTier2>) =>
+  clients.map((client) => ({
     id: client.id,
     clientNo: client.clientNo, // Add clientNo field
     name: client.name,
@@ -743,10 +741,8 @@ const transformRecycledClientData = (clients: Array<TClientTier2>) => {
     createdAt: client.created,
     status: 'suspended', // Add status field
   }));
-};
-const transformClientTypesData = (clientTypes: Array<TClientType>) => {
-  return clientTypes.map((clientType) => ({
+const transformClientTypesData = (clientTypes: Array<TClientType>) =>
+  clientTypes.map((clientType) => ({
     id: clientType.id,
     name: clientType.name,
   }));
-};

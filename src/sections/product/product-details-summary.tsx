@@ -99,7 +99,7 @@ export function ProductDetailsSummary({
         onAddCart?.({ ...data, colors: [values.colors], subtotal: data.price * data.quantity });
       }
       onGotoStep?.(0);
-      router.push(paths.product.checkout);
+      // router.push(paths.product.checkout);
     } catch (error) {
       console.error(error);
     }

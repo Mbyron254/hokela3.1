@@ -22,8 +22,8 @@ export function ProductEditView({ product }: Props) {
       <CustomBreadcrumbs
         heading="Edit"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Product', href: paths.dashboard.product.root },
+          // { name: 'Dashboard', href: paths.dashboard.root },
+          // { name: 'Product', href: paths.dashboard.product.root },
           { name: product?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

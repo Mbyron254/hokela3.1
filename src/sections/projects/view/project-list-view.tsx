@@ -1,8 +1,10 @@
 'use client';
 
-import type { IProjectItem, IOrderTableFilters, TProject, TClientTier2 } from 'src/types/project';
+import type { IDatePickerControl } from 'src/types/common';
+import type { TProject, IProjectItem, TClientTier2, IOrderTableFilters } from 'src/types/project';
 
-import { useState, useCallback, useEffect } from 'react';
+import dayjs from 'dayjs';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -13,6 +15,16 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import {
+  Grid,
+  Dialog,
+  TextField,
+  DialogTitle,
+  Autocomplete,
+  DialogActions,
+  DialogContent,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -20,16 +32,17 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
-import { Q_PROJECTS_ACTIVE, Q_PROJECTS_RECYCLED } from 'src/lib/queries/project.query';
-import { Q_CLIENTS_T2_MINI } from 'src/lib/queries/client-t2.query';
-
-import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
-
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
-import { varAlpha } from 'src/theme/styles';
-import { DashboardContent } from 'src/layouts/dashboard';
 import { STATUS_OPTION } from 'src/_mock';
+import { varAlpha } from 'src/theme/styles';
+import { GQLQuery, GQLMutation } from 'src/lib/client';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { Q_CLIENTS_T2_MINI } from 'src/lib/queries/client-t2.query';
+import { Q_PROJECTS_ACTIVE, Q_PROJECTS_RECYCLED } from 'src/lib/queries/project.query';
+import { PROJECT_CREATE, PROJECT_UPDATE } from 'src/lib/mutations/project.mutation';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -52,22 +65,6 @@ import {
 import { OrderTableRow } from '../project-table-row';
 // import { ProjectTableToolbar } from '../project-table-toolbar';
 import { OrderTableFiltersResult } from '../project-table-filters-result';
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { TextField } from '@mui/material';
-import { MobileDatePicker } from '@mui/x-date-pickers';
-import { IDatePickerControl } from 'src/types/common';
-import dayjs from 'dayjs';
-import { Grid } from '@mui/material';
-import { GQLMutation, GQLQuery } from 'src/lib/client';
-import { transform } from 'lodash';
-import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-
-import {
-  PROJECT_CREATE,
-  PROJECT_RECYCLE,
-  PROJECT_RESTORE,
-  PROJECT_UPDATE,
-} from 'src/lib/mutations/project.mutation';
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...STATUS_OPTION];
@@ -107,7 +104,7 @@ export function ProjectListView() {
   const [clients, setClients] = useState<TClientTier2[]>([]);
   const [usersData, setUsersData] = useState<any[]>([]);
 
-  const [value, setValue] = useState<IDatePickerControl>(dayjs());
+  // const [value, setValue] = useState<IDatePickerControl>(dayjs());
 
   const [formData, setFormData] = useState({
     name: '',
@@ -185,26 +182,24 @@ export function ProjectListView() {
     }
   };
 
-  useEffect(() => loadUsersMini(), [session?.user?.role?.clientTier1?.id]);
-  // useEffect(() => {
-  //   if (users) {
-  //     const usersData = transformUsersData(users?.rows || []);
-  //     setUsersData(usersData);
-  //   }
-  // }, [users]);
+  useEffect(
+    () => loadUsersMini(),
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    [session?.user?.role?.clientTier1?.id]
+  );
 
   useEffect(() => {
     if (projectsActive && projectsRecycled) {
       const activeProjects = transformProjectData(projectsActive?.rows || []);
       const recycledProjects = transformRecycledProjectData(projectsRecycled?.rows || []);
 
-      const clients = transformClientData(t2Clients?.rows || []);
+      const clientsTransformed = transformClientData(t2Clients?.rows || []);
 
-      setClients(clients);
+      setClients(clientsTransformed);
 
-      const usersData = transformUsersData(users?.rows || []);
+      const usersDataTransFormed = transformUsersData(users?.rows || []);
 
-      setUsersData(usersData);
+      setUsersData(usersDataTransFormed);
 
       setTableData([...activeProjects, ...recycledProjects]);
     }
@@ -237,12 +232,16 @@ export function ProjectListView() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const handleNewRow = useCallback(() => {
-    // isEdit.onFalse();
-    dialog.onTrue();
+  const handleNewRow = useCallback(
+    () => {
+      // isEdit.onFalse();
+      dialog.onTrue();
 
-    // router.push(paths.dashboard.product.edit(id));
-  }, []);
+      // router.push(paths.dashboard.product.edit(id));
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   const handleEditRow = (id: string) => {
     console.log(id, 'IDENTIFICATION');
     const project = tableData.find((item) => item.id === id);
@@ -250,14 +249,14 @@ export function ProjectListView() {
     console.log(project, 'PROJECT');
 
     if (project) {
-      setFormData({
-        name: project.name,
-        client: project.clientTier2Id,
-        startDate: dayjs(project.startDate),
-        endDate: dayjs(project.endDate),
-        manager: project.managerId, // manager?.id || '',
-        description: project.description,
-      });
+      // setFormData({
+      //   name: project.name,
+      //   client: project.clientTier2Id,
+      //   startDate: dayjs(project.startDate),
+      //   endDate: dayjs(project.endDate),
+      //   manager: project.managerId, // manager?.id || '',
+      //   description: project.description,
+      // });
     }
 
     // setFormData({
@@ -285,22 +284,30 @@ export function ProjectListView() {
     [dataInPage.length, table, tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+  const handleDeleteRows = useCallback(
+    () => {
+      const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
 
-    toast.success('Delete success!');
+      toast.success('Delete success!');
 
-    setTableData(deleteRows);
+      setTableData(deleteRows);
 
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+      table.onUpdatePageDeleteRows({
+        totalRowsInPage: dataInPage.length,
+        totalRowsFiltered: dataFiltered.length,
+      });
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    [dataFiltered.length, dataInPage.length, table, tableData]
+  );
 
-  const handleViewRow = useCallback((id: string) => {
-    router.push(paths.v2.marketing.projects.details(id));
-  }, []);
+  const handleViewRow = useCallback(
+    (id: string) => {
+      router.push(paths.v2.marketing.projects.details(id));
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
@@ -525,9 +532,9 @@ export function ProjectListView() {
                       orientation="portrait"
                       label="Start Date"
                       value={formData.startDate}
-                      onChange={(newValue) => {
-                        setValue(newValue);
-                      }}
+                      // onChange={(newValue) => {
+                      //   setValue(newValue);
+                      // }}
                       slotProps={{ textField: { fullWidth: true } }}
                     />
                   </Grid>
@@ -536,9 +543,9 @@ export function ProjectListView() {
                       orientation="portrait"
                       label="End Date"
                       value={formData.endDate}
-                      onChange={(newValue) => {
-                        setValue(newValue);
-                      }}
+                      // onChange={(newValue) => {
+                      //   setValue(newValue);
+                      // }}
                       slotProps={{ textField: { fullWidth: true } }}
                     />
                   </Grid>
@@ -674,55 +681,47 @@ type ApplyFilterProps = {
 };
 
 const transformProjectData = (projects: Array<TProject>) => {
-  const activeProjects = projects.map((project) => {
-    return {
-      id: project.id,
-      name: project.name,
-      client: project.clientTier2.name,
-      campaigns: project.campaignRuns.length,
-      startDate: project.dateStart,
-      endDate: project.dateStop,
-      clientTier2Id: project.clientTier2.id,
-      managerId: project.manager.id,
-      status: 'active', // Add status field
-    };
-  });
+  const activeProjects = projects.map((project) => ({
+    id: project.id,
+    name: project.name,
+    client: project.clientTier2.name,
+    campaigns: project.campaignRuns.length,
+    startDate: project.dateStart,
+    endDate: project.dateStop,
+    clientTier2Id: project.clientTier2.id,
+    managerId: project.manager.id,
+    status: 'active', // Add status field
+  }));
   return activeProjects;
 };
 const transformRecycledProjectData = (projects: Array<TProject>) => {
-  const recycledProjects = projects.map((project) => {
-    return {
-      id: project.id,
-      name: project.name,
-      client: project.clientTier2.name,
-      campaigns: project.campaignRuns.length,
-      startDate: project.dateStart,
-      endDate: project.dateStop,
-      clientTier2Id: project.clientTier2.id,
-      managerId: project.manager.id,
-      status: 'suspended', // Add status field
-    };
-  });
+  const recycledProjects = projects.map((project) => ({
+    id: project.id,
+    name: project.name,
+    client: project.clientTier2.name,
+    campaigns: project.campaignRuns.length,
+    startDate: project.dateStart,
+    endDate: project.dateStop,
+    clientTier2Id: project.clientTier2.id,
+    managerId: project.manager.id,
+    status: 'suspended', // Add status field
+  }));
   return recycledProjects;
 };
 
 const transformClientData = (clients: Array<TClientTier2>) => {
-  const transformedClients = clients.map((client) => {
-    return {
-      id: client.id,
-      name: client.name,
-    };
-  });
+  const transformedClients = clients.map((client) => ({
+    id: client.id,
+    name: client.name,
+  }));
   return transformedClients;
 };
 
 const transformUsersData = (users: Array<any>) => {
-  const transformedUsers = users.map((user) => {
-    return {
-      id: user.id,
-      name: user.name,
-    };
-  });
+  const transformedUsers = users.map((user) => ({
+    id: user.id,
+    name: user.name,
+  }));
   return transformedUsers;
 };
 

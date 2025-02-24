@@ -1,7 +1,7 @@
 'use client';
 
+import type { IProductTableFilters } from 'src/types/client';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type { IProductItem, IProductTableFilters } from 'src/types/client';
 import type {
   GridSlots,
   GridColDef,
@@ -114,11 +114,15 @@ export function ProductCategoryView() {
     clientType: '',
   });
 
-  useEffect(() => {
-    if (clients.length) {
-      setTableData(clients);
-    }
-  }, []);
+  useEffect(
+    () => {
+      if (clients.length) {
+        setTableData(clients);
+      }
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
@@ -158,15 +162,20 @@ export function ProductCategoryView() {
         dialog.onTrue();
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [tableData]
   );
 
-  const handleNewRow = useCallback(() => {
-    isEdit.onFalse();
-    dialog.onTrue();
+  const handleNewRow = useCallback(
+    () => {
+      isEdit.onFalse();
+      dialog.onTrue();
 
-    // router.push(paths.dashboard.product.edit(id));
-  }, []);
+      // router.push(paths.dashboard.product.edit(id));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const handleViewRow = useCallback(
     (id: string) => {

@@ -16,7 +16,7 @@ export function CartIcon({ totalItems }: Props) {
   return (
     <Box
       component={RouterLink}
-      href={paths.product.checkout}
+      href={paths.v2.marketing.root}
       sx={{
         right: 0,
         top: 112,

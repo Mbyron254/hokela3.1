@@ -64,7 +64,7 @@ export function ProductShopDetailsView({ product }: Props) {
       <CustomBreadcrumbs
         links={[
           { name: 'Home', href: '/' },
-          { name: 'Shop', href: paths.product.root },
+          // { name: 'Shop', href: paths.product.root },
           { name: product?.name },
         ]}
         sx={{ mb: 5 }}

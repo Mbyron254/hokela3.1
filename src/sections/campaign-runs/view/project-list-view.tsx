@@ -1,18 +1,31 @@
 'use client';
 
+import type { IDatePickerControl } from 'src/types/common';
 import type { IOrderItem, IOrderTableFilters } from 'src/types/project';
 
+import dayjs from 'dayjs';
 import { useState, useCallback } from 'react';
 
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import Tabs from '@mui/material/Tabs';
-import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+// import { ProjectTableToolbar } from '../project-table-toolbar';
+import {
+  Dialog,
+  DialogTitle,
+  Autocomplete,
+  DialogActions,
+  DialogContent,
+  Tab,
+  Box,
+  Tabs,
+  Card,
+  Table,
+  Button,
+  Tooltip,
+  TableBody,
+  Grid,
+  TextField,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -24,7 +37,7 @@ import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, STATUS_OPTION, ALL_CLIENTS, ALL_MANAGERS } from 'src/_mock';
+import { _orders, ALL_CLIENTS, ALL_MANAGERS, STATUS_OPTION } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -44,13 +57,6 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-// import { ProjectTableToolbar } from '../project-table-toolbar';
-import { Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { TextField } from '@mui/material';
-import { MobileDatePicker } from '@mui/x-date-pickers';
-import { IDatePickerControl } from 'src/types/common';
-import dayjs from 'dayjs';
-import { Grid } from '@mui/material';
 import { OrderTableRow } from '../project-table-row';
 import { OrderTableFiltersResult } from '../project-table-filters-result';
 
@@ -119,12 +125,16 @@ export function ProjectListView() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const handleNewRow = useCallback(() => {
-    // isEdit.onFalse();
-    dialog.onTrue();
+  const handleNewRow = useCallback(
+    () => {
+      // isEdit.onFalse();
+      dialog.onTrue();
 
-    // router.push(paths.dashboard.product.edit(id));
-  }, []);
+      // router.push(paths.dashboard.product.edit(id));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   const handleEditRow = (id: string) => {
     console.log(id, 'IDENTIFICATION');
 
@@ -144,22 +154,30 @@ export function ProjectListView() {
     [dataInPage.length, table, tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+  const handleDeleteRows = useCallback(
+    () => {
+      const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
 
-    toast.success('Delete success!');
+      toast.success('Delete success!');
 
-    setTableData(deleteRows);
+      setTableData(deleteRows);
 
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+      table.onUpdatePageDeleteRows({
+        totalRowsInPage: dataInPage.length,
+        totalRowsFiltered: dataFiltered.length,
+      });
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    [dataFiltered.length, dataInPage.length, table, tableData]
+  );
 
-  const handleViewRow = useCallback((id: string) => {
-    router.push(paths.v2.marketing.projects.details(id));
-  }, []);
+  const handleViewRow = useCallback(
+    (id: string) => {
+      router.push(paths.v2.marketing.projects.details(id));
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {

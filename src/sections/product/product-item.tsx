@@ -13,7 +13,7 @@ import { RouterLink } from 'src/routes/components';
 import { fCurrency } from 'src/utils/format-number';
 
 import { Label } from 'src/components/label';
-import { Image } from 'src/components/image';
+import Image from 'src/components/image';
 import { Iconify } from 'src/components/iconify';
 import { ColorPreview } from 'src/components/color-utils';
 
@@ -31,7 +31,7 @@ export function ProductItem({ product }: Props) {
   const { id, name, coverUrl, price, colors, available, sizes, priceSale, newLabel, saleLabel } =
     product;
 
-  const linkTo = paths.product.details(id);
+  const linkTo = paths.v2.marketing.clients.details(id);
 
   const handleAddCart = async () => {
     const newProduct = {

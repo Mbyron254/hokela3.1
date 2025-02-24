@@ -257,12 +257,14 @@ export function DataGridCustom({ data: rows }: Props) {
       columnVisibilityModel={columnVisibilityModel}
       onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
       slots={{
+        // @ts-expect-error
         toolbar: CustomToolbar as GridSlots['toolbar'],
         noRowsOverlay: () => <EmptyContent />,
         noResultsOverlay: () => <EmptyContent title="No results found" />,
       }}
       slotProps={{
         panel: { anchorEl: filterButtonEl },
+        // @ts-expect-errors
         toolbar: { setFilterButtonEl, showQuickFilter: true },
         columnsManagement: { getTogglableColumns },
       }}

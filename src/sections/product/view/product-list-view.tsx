@@ -114,15 +114,17 @@ export function ProductListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
+      // router.push(paths.dashboard.product.edit(id));
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [router]
   );
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.details(id));
+      // router.push(paths.dashboard.product.details(id));
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [router]
   );
 
@@ -230,14 +232,14 @@ export function ProductListView() {
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Dashboard', href: paths.v2.marketing.clients },
-            { name: 'Clients', href: paths.v2.marketing.clients },
+            // { name: 'Dashboard', href: paths.v2.marketing.clients },
+            // { name: 'Clients', href: paths.v2.marketing.clients },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.v2.marketing.clients}
+              href={paths.v2.marketing.clients.list}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
@@ -274,6 +276,7 @@ export function ProductListView() {
             }}
             slotProps={{
               panel: { anchorEl: filterButtonEl },
+              // @ts-expect-error
               toolbar: { setFilterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}

@@ -71,9 +71,9 @@ export function ProductDetailsView({ product }: Props) {
   return (
     <DashboardContent>
       <ProductDetailsToolbar
-        backLink={paths.dashboard.product.root}
-        editLink={paths.dashboard.product.edit(`${product?.id}`)}
-        liveLink={paths.product.details(`${product?.id}`)}
+        backLink={paths.v2.marketing.root}
+        editLink={paths.v2.marketing.root}
+        liveLink={paths.v2.marketing.root}
         publish={publish}
         onChangePublish={handleChangePublish}
         publishOptions={PRODUCT_PUBLISH_OPTIONS}

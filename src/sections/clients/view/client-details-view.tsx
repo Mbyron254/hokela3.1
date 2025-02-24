@@ -1,27 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
+
+import { Tab, Tabs, Paper, Typography } from '@mui/material';
+
 import { paths } from 'src/routes/paths';
+
+import { GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Tab, Tabs, Typography } from '@mui/material';
-import { Paper } from '@mui/material';
-import { Fragment } from 'react';
-import { Iconify } from 'src/components/iconify';
-
-import { ProductGroupList } from './product-group-list-view';
-
-import { GQLMutation, GQLQuery } from 'src/lib/client';
-
 import { M_CLIENT_T2 } from 'src/lib/mutations/client-t2.mutation';
 
-import {
-  M_PRODUCT_GROUPS,
-  M_PRODUCT_GROUPS_RECYCLED,
-  PRODUCT_GROUP,
-} from 'src/lib/mutations/product-group.mutation';
-import { ProductList } from './product-list-view';
+import { Iconify } from 'src/components/iconify';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import { GrnList } from './grn-list-view';
+import { ProductList } from './product-list-view';
+import { ProductGroupList } from './product-group-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -60,9 +54,13 @@ export function ClientDetailsView({ id }: { id: string }) {
     setCurrentTab(newValue);
   };
 
-  useEffect(() => {
-    loadClient();
-  }, []);
+  useEffect(
+    () => {
+      loadClient();
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   console.log('client', client);
   return (
@@ -85,28 +83,16 @@ export function ClientDetailsView({ id }: { id: string }) {
 
       <Paper variant="outlined" sx={{ p: 2.5, typography: 'body2', borderRadius: 1.5 }}>
         {currentTab === 'overview' && (
-          <Fragment>
+          <>
             <Typography variant="h6" gutterBottom>
               TEIBNM
             </Typography>
             Overview Content
-          </Fragment>
+          </>
         )}
-        {currentTab === 'groups' && (
-          <Fragment>
-            <ProductGroupList data={[]} clientTier2Id={clientTier2Id} />
-          </Fragment>
-        )}
-        {currentTab === 'products' && (
-          <Fragment>
-            <ProductList data={[]} />
-          </Fragment>
-        )}
-        {currentTab === 'grn' && (
-          <Fragment>
-            <GrnList data={[]} />
-          </Fragment>
-        )}
+        {currentTab === 'groups' && <ProductGroupList data={[]} clientTier2Id={clientTier2Id} />}
+        {currentTab === 'products' && <ProductList data={[]} />}
+        {currentTab === 'grn' && <GrnList data={[]} />}
       </Paper>
     </DashboardContent>
   );

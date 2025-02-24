@@ -1,8 +1,30 @@
 'use client';
 
+import type { IDatePickerControl } from 'src/types/common';
 import type { IOrderItem, IOrderTableFilters } from 'src/types/project';
 
+import dayjs from 'dayjs';
 import { useState, useCallback } from 'react';
+
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import {
+  Tab,
+  Box,
+  Grid,
+  Tabs,
+  Card,
+  Table,
+  Dialog,
+  Button,
+  Tooltip,
+  TextField,
+  TableBody,
+  IconButton,
+  DialogTitle,
+  Autocomplete,
+  DialogActions,
+  DialogContent,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -14,7 +36,7 @@ import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, STATUS_OPTION, ALL_CLIENTS, ALL_MANAGERS } from 'src/_mock';
+import { _orders, ALL_CLIENTS, ALL_MANAGERS, STATUS_OPTION } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -33,28 +55,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-
-import {
-  Autocomplete,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  Tab,
-  Box,
-  Tabs,
-  Card,
-  Table,
-  Button,
-  Tooltip,
-  TableBody,
-  IconButton,
-} from '@mui/material';
-import { MobileDatePicker } from '@mui/x-date-pickers';
-import { IDatePickerControl } from 'src/types/common';
-import dayjs from 'dayjs';
 
 import { OrderTableRow } from '../project-table-row';
 import { OrderTableFiltersResult } from '../project-table-filters-result';
@@ -124,12 +124,16 @@ export function ProjectListView() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const handleNewRow = useCallback(() => {
-    // isEdit.onFalse();
-    dialog.onTrue();
+  const handleNewRow = useCallback(
+    () => {
+      // isEdit.onFalse();
+      dialog.onTrue();
 
-    // router.push(paths.dashboard.product.edit(id));
-  }, []);
+      // router.push(paths.dashboard.product.edit(id));
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   const handleEditRow = (id: string) => {
     console.log(id, 'IDENTIFICATION');
 
@@ -149,22 +153,30 @@ export function ProjectListView() {
     [dataInPage.length, table, tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+  const handleDeleteRows = useCallback(
+    () => {
+      const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
 
-    toast.success('Delete success!');
+      toast.success('Delete success!');
 
-    setTableData(deleteRows);
+      setTableData(deleteRows);
 
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+      table.onUpdatePageDeleteRows({
+        totalRowsInPage: dataInPage.length,
+        totalRowsFiltered: dataFiltered.length,
+      });
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    [dataFiltered.length, dataInPage.length, table, tableData]
+  );
 
-  const handleViewRow = useCallback((id: string) => {
-    router.push(paths.v2.marketing.projects.details(id));
-  }, []);
+  const handleViewRow = useCallback(
+    (id: string) => {
+      router.push(paths.v2.marketing.projects.details(id));
+    },
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {

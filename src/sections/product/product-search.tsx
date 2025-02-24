@@ -29,7 +29,7 @@ export function ProductSearch({ query, results, onSearch, loading }: Props) {
   const router = useRouter();
 
   const handleClick = (id: string) => {
-    router.push(paths.product.details(id));
+    // router.push(paths.product.details(id));
   };
 
   const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
