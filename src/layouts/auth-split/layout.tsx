@@ -101,26 +101,6 @@ export function AuthSplitLayout({ sx, section, children, header }: AuthSplitLayo
               path: paths.auth.main.signIn,
               icon: `${CONFIG.assetsDir}/assets/icons/platforms/ic-jwt.svg`,
             },
-            {
-              label: 'Firebase',
-              path: paths.auth.firebase.signIn,
-              icon: `${CONFIG.assetsDir}/assets/icons/platforms/ic-firebase.svg`,
-            },
-            {
-              label: 'Amplify',
-              path: paths.auth.amplify.signIn,
-              icon: `${CONFIG.assetsDir}/assets/icons/platforms/ic-amplify.svg`,
-            },
-            {
-              label: 'Auth0',
-              path: paths.auth.auth0.signIn,
-              icon: `${CONFIG.assetsDir}/assets/icons/platforms/ic-auth0.svg`,
-            },
-            {
-              label: 'Supabase',
-              path: paths.auth.supabase.signIn,
-              icon: `${CONFIG.assetsDir}/assets/icons/platforms/ic-supabase.svg`,
-            },
           ]}
         />
         <Content layoutQuery={layoutQuery}>{children}</Content>

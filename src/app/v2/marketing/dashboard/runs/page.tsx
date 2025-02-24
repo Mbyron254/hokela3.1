@@ -1,9 +1,9 @@
-import { BlankView } from 'src/sections/blank/view';
+import { ProjectListView } from 'src/sections/campaign-runs/view';
 
 // ----------------------------------------------------------------------
 
 export const metadata = { title: `Campaigns Runs@Hokela 3.1` };
 
 export default function Page() {
-  return <BlankView title="Campaigns Runs" />;
+  return <ProjectListView />;
 }
