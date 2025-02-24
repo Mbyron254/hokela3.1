@@ -44,8 +44,15 @@ const v2_paths = {
   },
   [ERole.MARKETING_AGENCY]: {
     root: `${ROOTS.V2}/marketing/dashboard`,
-    clients: `${ROOTS.V2}/marketing/dashboard/clients`,
-    projects: `${ROOTS.V2}/marketing/dashboard/projects`,
+    clients: {
+      list: `${ROOTS.V2}/marketing/dashboard/clients`,
+      new: `${ROOTS.V2}/marketing/dashboard/clients/new`,
+      details: (id: string) => `${ROOTS.V2}/marketing/dashboard/clients/${id}`,
+    },
+    projects: {
+      list: `${ROOTS.V2}/marketing/dashboard/projects`,
+      details: (id: string) => `${ROOTS.V2}/marketing/dashboard/projects/${id}/details`,
+    },
     campaigns: `${ROOTS.V2}/marketing/dashboard/campaigns`,
     runs: `${ROOTS.V2}/marketing/dashboard/runs`,
     surveys: `${ROOTS.V2}/marketing/dashboard/surveys`,
@@ -79,44 +86,6 @@ export const paths = {
       forgotPassword: `${ROOTS.AUTH}/main/forgot-password`,
       unlock: `${ROOTS.AUTH}/main/unlock`,
     },
-    amplify: {
-      signIn: `${ROOTS.AUTH}/amplify/sign-in`,
-      verify: `${ROOTS.AUTH}/amplify/verify`,
-      signUp: `${ROOTS.AUTH}/amplify/sign-up`,
-      updatePassword: `${ROOTS.AUTH}/amplify/update-password`,
-      resetPassword: `${ROOTS.AUTH}/amplify/reset-password`,
-    },
-    firebase: {
-      signIn: `${ROOTS.AUTH}/firebase/sign-in`,
-      verify: `${ROOTS.AUTH}/firebase/verify`,
-      signUp: `${ROOTS.AUTH}/firebase/sign-up`,
-      resetPassword: `${ROOTS.AUTH}/firebase/reset-password`,
-    },
-    auth0: {
-      signIn: `${ROOTS.AUTH}/auth0/sign-in`,
-    },
-    supabase: {
-      signIn: `${ROOTS.AUTH}/supabase/sign-in`,
-      verify: `${ROOTS.AUTH}/supabase/verify`,
-      signUp: `${ROOTS.AUTH}/supabase/sign-up`,
-      updatePassword: `${ROOTS.AUTH}/supabase/update-password`,
-      resetPassword: `${ROOTS.AUTH}/supabase/reset-password`,
-    },
   },
-
-  // admin:{
-  //   dashboard: {
-  //     root: ROOTS.DASHBOARD,
-  //     admin: `${ROOTS.DASHBOARD}/admin/dashboard`,
-  //     user: `${ROOTS.DASHBOARD}/user/dashboard`,
-  //     two: `${ROOTS.DASHBOARD}/two`,
-  //     three: `${ROOTS.DASHBOARD}/three`,
-  //     group: {
-  //       root: `${ROOTS.DASHBOARD}/group`,
-  //       five: `${ROOTS.DASHBOARD}/group/five`,
-  //       six: `${ROOTS.DASHBOARD}/group/six`,
-  //     },
-  //   },
-  // },
   v2: v2_paths,
 };
