@@ -5,7 +5,13 @@ import { enqueueSnackbar } from 'notistack';
 import { onError } from '@apollo/client/link/error';
 import { from, HttpLink, useQuery, useMutation, ApolloClient, InMemoryCache } from '@apollo/client';
 
-import { HEADER_KEY_CLIENT, HEADER_VAL_CLIENT, SERVER_API_DEV_GQL, SERVER_API_PRO_RST, QUERY_REVALIDATE_INTERVAL_MS } from './constant';
+import {
+  HEADER_KEY_CLIENT,
+  HEADER_VAL_CLIENT,
+  SERVER_API_DEV_GQL,
+  SERVER_API_PRO_RST,
+  QUERY_REVALIDATE_INTERVAL_MS,
+} from './constant';
 
 import type {
   IGQLQuery,
@@ -19,7 +25,7 @@ let client: ApolloClient<any> | null = null;
 const getClient = () => {
   if (!client || typeof window === undefined) {
     const uri = process.env.NODE_ENV === 'production' ? SERVER_API_PRO_RST : SERVER_API_DEV_GQL;
-    
+
     client = new ApolloClient({
       link: from([
         onError(({ graphQLErrors, networkError }) => {
