@@ -105,6 +105,12 @@ export type TProjects = {
   count: number;
   rows: TProject[];
 };
+
+type IClientTier2Id = {
+  __typename: 'TClientTier2';
+  id: string;
+  name: string;
+};
 export type IProjectItem = {
   id: string;
   name: string;
@@ -114,6 +120,11 @@ export type IProjectItem = {
   startDate: IDateValue;
   endDate: IDateValue;
   status?: string;
+  clientTier2Id: string;
+  manager: string | null;
+  managerId: string;
+  description: string;
+  // clientTier2: IClientTier2Id;
   // totalAmount: number;
   // totalQuantity: number;
   // createdAt: IDateValue;
