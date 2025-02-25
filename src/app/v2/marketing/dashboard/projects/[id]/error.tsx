@@ -23,11 +23,11 @@ export default function Error({
     <DashboardContent sx={{ pt: 5 }}>
       <EmptyContent
         filled
-        title="Product not found!"
+        title="Project details not found!"
         action={
           <Button
             component={RouterLink}
-            href={paths.v2.marketing.root}
+            href={paths.v2.marketing.projects.list}
             startIcon={<Iconify width={16} icon="eva:arrow-ios-back-fill" />}
             sx={{ mt: 3 }}
           >
