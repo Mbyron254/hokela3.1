@@ -42,7 +42,11 @@ import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { Q_CLIENTS_T2_MINI } from 'src/lib/queries/client-t2.query';
 import { Q_PROJECTS_ACTIVE, Q_PROJECTS_RECYCLED } from 'src/lib/queries/project.query';
-import { PROJECT_CREATE, PROJECT_UPDATE } from 'src/lib/mutations/project.mutation';
+import {
+  PROJECT_CREATE,
+  PROJECT_UPDATE,
+  PROJECT_RECYCLE,
+} from 'src/lib/mutations/project.mutation';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -174,6 +178,16 @@ export function ProjectListView() {
     toastmsg: true,
   });
 
+  const {
+    action: recycle,
+    loading: recycling,
+    data: recycled,
+  } = GQLMutation({
+    mutation: PROJECT_RECYCLE,
+    resolver: 'projectRecycle',
+    toastmsg: true,
+  });
+
   const loadUsersMini = () => {
     if (session?.user?.role?.clientTier1?.id) {
       getUsersMini({
@@ -276,11 +290,17 @@ export function ProjectListView() {
   };
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+      // const deleteRow = tableData.filter((row) => row.id !== id);
+
+      const rows = [];
+
+      rows.push(id);
+
+      recycle({ variables: { input: { ids: rows } } });
 
       toast.success('Delete success!');
 
-      setTableData(deleteRow);
+      // setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
@@ -289,11 +309,15 @@ export function ProjectListView() {
 
   const handleDeleteRows = useCallback(
     () => {
-      const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+      console.log(table.selected, 'SELECTED');
+      if (table.selected.length) {
+        recycle({ variables: { input: { ids: table.selected } } });
+      }
+      // const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
 
-      toast.success('Delete success!');
+      // toast.success('Delete success!');
 
-      setTableData(deleteRows);
+      // setTableData(deleteRows);
 
       table.onUpdatePageDeleteRows({
         totalRowsInPage: dataInPage.length,
