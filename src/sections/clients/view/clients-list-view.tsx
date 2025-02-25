@@ -456,15 +456,27 @@ export function ClientListView() {
           label="Edit"
           onClick={() => handleEditRow(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => {
-            handleDeleteRow(params.row.id);
-          }}
-          sx={{ color: 'error.main' }}
-        />,
+        params.row.status === 'active' ? (
+          <GridActionsCellItem
+            showInMenu
+            icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+            label="Recycle"
+            onClick={() => {
+              recycle({ variables: { input: { ids: [params.row.id] } } });
+            }}
+            sx={{ color: 'error.main' }}
+          />
+        ) : (
+          <GridActionsCellItem
+            showInMenu
+            icon={<Iconify icon="solar:archive-up-minimlistic-bold" />}
+            label="Restore"
+            onClick={() => {
+              restore({ variables: { input: { ids: [params.row.id] } } });
+            }}
+            sx={{ color: 'success.main' }}
+          />
+        ),
       ],
     },
   ];
