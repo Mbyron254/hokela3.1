@@ -104,6 +104,8 @@ export function ProjectListView() {
   const [clients, setClients] = useState<TClientTier2[]>([]);
   const [usersData, setUsersData] = useState<any[]>([]);
 
+  const [editProjectId, setEditProjectId] = useState<string | null>(null);
+
   // const [value, setValue] = useState<IDatePickerControl>(dayjs());
 
   const [formData, setFormData] = useState({
@@ -249,14 +251,15 @@ export function ProjectListView() {
     console.log(project, 'PROJECT');
 
     if (project) {
-      // setFormData({
-      //   name: project.name,
-      //   client: project.clientTier2Id,
-      //   startDate: dayjs(project.startDate),
-      //   endDate: dayjs(project.endDate),
-      //   manager: project.managerId, // manager?.id || '',
-      //   description: project.description,
-      // });
+      setEditProjectId(project.id);
+      setFormData({
+        name: project.name,
+        client: project.clientTier2Id,
+        startDate: dayjs(project.startDate),
+        endDate: dayjs(project.endDate),
+        manager: project.managerId, // manager?.id || '',
+        description: project.description,
+      });
     }
 
     // setFormData({
@@ -318,36 +321,20 @@ export function ProjectListView() {
   );
   const handleSubmit = () => {
     if (isEdit.value) {
-      console.log(formData, 'FORM DATA Edit');
-      // Update existing project
-      // const updatedData = tableData.map((item) =>
-      //   item.id === editingProject.id
-      //     ? {
-      //         ...item,
-      //         name: formData.name,
-      //         client: formData.client,
-      //         startDate: formData.startDate,
-      //         endDate: formData.endDate,
-      //         manager: formData.manager,
-      //         description: formData.description,
-      //       }
-      //     : item
-      // );
-      // setTableData(updatedData);
+      const inputUpdate = {
+        id: editProjectId,
+        clientTier2Id: formData.client,
+        managerId: formData.manager,
+        name: formData.name,
+        dateStart: formData.startDate,
+        dateStop: formData.endDate,
+        description: formData.description,
+      };
+
+      update({ variables: { input: inputUpdate } });
+
       toast.success('Project updated successfully!');
     } else {
-      // Create new project
-      // const newProject: IProjectItem = {
-      //   id: String(tableData.length + 1),
-      //   name: formData.name,
-      //   client: formData.client || '',
-      //   startDate: formData.startDate,
-      //   endDate: formData.endDate,
-      //   manager: formData.manager || '',
-      //   description: formData.description,
-      // };
-      // setTableData([...tableData, newProject]);
-
       const inputCreate = {
         clientTier2Id: formData.client,
         managerId: formData.manager,
@@ -357,11 +344,11 @@ export function ProjectListView() {
         description: formData.description,
       };
 
-      console.log(inputCreate, 'FORM DATA CREATE');
-
       create({ variables: { input: inputCreate } });
+
       toast.success('Project created successfully!');
     }
+
     handleDialogClose();
   };
   const handleDialogClose = () => {
@@ -690,6 +677,8 @@ const transformProjectData = (projects: Array<TProject>) => {
     endDate: project.dateStop,
     clientTier2Id: project.clientTier2.id,
     managerId: project.manager.id,
+    manager: project.manager.name,
+    description: project.description,
     status: 'active', // Add status field
   }));
   return activeProjects;
@@ -704,6 +693,8 @@ const transformRecycledProjectData = (projects: Array<TProject>) => {
     endDate: project.dateStop,
     clientTier2Id: project.clientTier2.id,
     managerId: project.manager.id,
+    manager: project.manager.name,
+    description: project.description,
     status: 'suspended', // Add status field
   }));
   return recycledProjects;
