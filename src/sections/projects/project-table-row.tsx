@@ -20,6 +20,8 @@ import { fDate, fTime } from 'src/utils/format-time';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
+import { PROJECT_RESTORE } from 'src/lib/mutations/project.mutation';
+import { GQLMutation } from 'src/lib/client';
 
 // ----------------------------------------------------------------------
 
@@ -171,7 +173,15 @@ export function OrderTableRow({
       </TableCell>
     </TableRow>
   );
-
+  const {
+    action: restore,
+    loading: restoring,
+    data: restored,
+  } = GQLMutation({
+    mutation: PROJECT_RESTORE,
+    resolver: 'projectRestore',
+    toastmsg: true,
+  });
   return (
     <>
       {renderPrimary}
@@ -185,21 +195,6 @@ export function OrderTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem onClick={onEditRow}>
-            <Iconify icon="solar:pen-bold" />
-            Edit
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
-
           <MenuItem
             onClick={() => {
               onViewRow();
@@ -209,6 +204,34 @@ export function OrderTableRow({
             <Iconify icon="solar:eye-bold" />
             View
           </MenuItem>
+          <MenuItem onClick={onEditRow}>
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+          {row.status === 'active' && (
+            <MenuItem
+              onClick={() => {
+                confirm.onTrue();
+                popover.onClose();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              Recycle
+            </MenuItem>
+          )}
+          {row.status === 'suspended' && (
+            <MenuItem
+              onClick={() => {
+                restore({ variables: { input: { ids: [row.id] } } });
+                popover.onClose();
+              }}
+              sx={{ color: 'success.main' }}
+            >
+              <Iconify icon="solar:archive-up-minimlistic-bold" />
+              Restore
+            </MenuItem>
+          )}
         </MenuList>
       </CustomPopover>
 
