@@ -51,7 +51,7 @@ const v2_paths = {
     },
     projects: {
       list: `${ROOTS.V2}/marketing/dashboard/projects`,
-      details: (id: string) => `${ROOTS.V2}/marketing/dashboard/projects/${id}/details`,
+      details: (id: string) => `${ROOTS.V2}/marketing/dashboard/projects/${id}`,
     },
     campaigns: `${ROOTS.V2}/marketing/dashboard/campaigns`,
     runs: `${ROOTS.V2}/marketing/dashboard/runs`,
