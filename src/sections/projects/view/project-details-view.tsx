@@ -1,20 +1,19 @@
 'use client';
 
-import type { IOrderItem } from 'src/types/project';
+import { useState, useEffect } from 'react';
 
-import { useEffect, useState } from 'react';
+import { Box, Tab, Tabs, Paper, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 
-import { DashboardContent } from 'src/layouts/dashboard';
-
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { PROJECT } from 'src/lib/mutations/project.mutation';
 import { GQLMutation } from 'src/lib/client';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { PROJECT } from 'src/lib/mutations/project.mutation';
+import { M_CAMPAIGNS_ACTIVE, M_CAMPAIGNS_RECYCLED } from 'src/lib/mutations/campaign.mutation';
+
 import { Iconify } from 'src/components/iconify';
-import { Tab, Tabs } from '@mui/material';
-import { Paper } from '@mui/material';
-import { Typography } from '@mui/material';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import { CampaignListView } from './campaign-list-view';
 
 // ----------------------------------------------------------------------
@@ -41,11 +40,42 @@ export function ProjectDetailsView({ id }: Props) {
     toastmsg: false,
   });
 
+  const {
+    action: getCampaignsActive,
+    data: campaignsActive,
+    loading: loadingCampaignsActive,
+  } = GQLMutation({
+    mutation: M_CAMPAIGNS_ACTIVE,
+    resolver: 'm_campaigns',
+    toastmsg: false,
+  });
+  const {
+    action: getCampaignsRecycled,
+    data: campaignsRecycled,
+    loading: loadingCampaignsRecycled,
+  } = GQLMutation({
+    mutation: M_CAMPAIGNS_RECYCLED,
+    resolver: 'm_campaignsRecycled',
+    toastmsg: false,
+  });
+
+  console.log('campaignsActive', campaignsActive);
+
   const loadProject = () => {
-    if (id) getProject({ variables: { input: { id } } });
+    if (id) {
+      getProject({ variables: { input: { id } } });
+      const page = 1;
+      const pageSize = 10;
+      getCampaignsActive({ variables: { input: { id, page, pageSize } } });
+      getCampaignsRecycled({ variables: { input: { id, page, pageSize } } });
+    }
   };
   // const { product } = await getProduct(id);
-  useEffect(() => loadProject(), []);
+  useEffect(
+    () => loadProject(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   console.log('project', project);
 
@@ -69,7 +99,10 @@ export function ProjectDetailsView({ id }: Props) {
           <Tab key={tab.value} value={tab.value} label={tab.label} />
         ))}
       </Tabs>
-      <Paper variant="outlined" sx={{ p: 2.5, typography: 'body2', borderRadius: 1.5 }}>
+      <Paper
+        variant="outlined"
+        sx={{ p: 2.5, typography: 'body2', borderRadius: 1.5, height: '85vh' }}
+      >
         {currentTab === 'overview' && (
           <>
             <Typography variant="h6" gutterBottom>
@@ -78,7 +111,11 @@ export function ProjectDetailsView({ id }: Props) {
             Overview Content
           </>
         )}
-        {currentTab === 'campaigns' && <CampaignListView id={id} />}
+        {currentTab === 'campaigns' && (
+          <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CampaignListView id={id} />
+          </Box>
+        )}
       </Paper>
     </DashboardContent>
   );

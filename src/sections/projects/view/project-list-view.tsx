@@ -1,6 +1,5 @@
 'use client';
 
-import type { IDatePickerControl } from 'src/types/common';
 import type { TProject, IProjectItem, TClientTier2, IOrderTableFilters } from 'src/types/project';
 
 import dayjs from 'dayjs';
@@ -304,6 +303,7 @@ export function ProjectListView() {
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dataInPage.length, table, tableData]
   );
 

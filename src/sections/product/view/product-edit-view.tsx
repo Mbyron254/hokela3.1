@@ -2,8 +2,6 @@
 
 import type { IProductItem } from 'src/types/product';
 
-import { paths } from 'src/routes/paths';
-
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';

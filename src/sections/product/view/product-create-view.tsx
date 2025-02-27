@@ -1,6 +1,5 @@
 'use client';
 
-import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
