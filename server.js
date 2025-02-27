@@ -8,8 +8,8 @@ const HEADER_VAL_CLIENT = 'APP_WEBSITE';
 const dev = process.env.NODE_ENV !== 'production';
 
 const SCHEME = dev ? 'http' : 'https';
-const HOST_SERVER = dev ? 'localhost' : 'https://hokela-api-test-xhutk.ondigitalocean.app';
-const HOST_CLIENT = dev ? 'localhost' : 'https://octopus-app-888up.ondigitalocean.app';
+const HOST_SERVER = dev ? 'localhost' : 'hokela-api-test-xhutk.ondigitalocean.app';
+const HOST_CLIENT = dev ? 'localhost' : 'octopus-app-888up.ondigitalocean.app';
 const PORT = dev ? 3001 : 8080;
 const BLOB_ORIGIN_DEV = 'http://localhost:3000';
 const BLOB_ORIGIN_PRO = 'https://hokela360.blr1.digitaloceanspaces.com';

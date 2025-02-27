@@ -9,12 +9,12 @@ import { paths } from 'src/routes/paths';
 import { GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PROJECT } from 'src/lib/mutations/project.mutation';
-import { M_CAMPAIGNS_ACTIVE, M_CAMPAIGNS_RECYCLED } from 'src/lib/mutations/campaign.mutation';
 
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { CampaignListView } from './campaign-list-view';
+import { use } from 'i18next';
 
 // ----------------------------------------------------------------------
 
@@ -34,40 +34,17 @@ type Props = {
 export function ProjectDetailsView({ id }: Props) {
   const [currentTab, setCurrentTab] = useState('overview');
 
+  const [projectId, setProjectId] = useState<string>('');
+
   const { action: getProject, data: project } = GQLMutation({
     mutation: PROJECT,
     resolver: 'project',
     toastmsg: false,
   });
 
-  const {
-    action: getCampaignsActive,
-    data: campaignsActive,
-    loading: loadingCampaignsActive,
-  } = GQLMutation({
-    mutation: M_CAMPAIGNS_ACTIVE,
-    resolver: 'm_campaigns',
-    toastmsg: false,
-  });
-  const {
-    action: getCampaignsRecycled,
-    data: campaignsRecycled,
-    loading: loadingCampaignsRecycled,
-  } = GQLMutation({
-    mutation: M_CAMPAIGNS_RECYCLED,
-    resolver: 'm_campaignsRecycled',
-    toastmsg: false,
-  });
-
-  console.log('campaignsActive', campaignsActive);
-
   const loadProject = () => {
     if (id) {
       getProject({ variables: { input: { id } } });
-      const page = 1;
-      const pageSize = 10;
-      getCampaignsActive({ variables: { input: { id, page, pageSize } } });
-      getCampaignsRecycled({ variables: { input: { id, page, pageSize } } });
     }
   };
   // const { product } = await getProduct(id);
@@ -78,6 +55,12 @@ export function ProjectDetailsView({ id }: Props) {
   );
 
   console.log('project', project);
+
+  useEffect(() => {
+    if (project) {
+      setProjectId(project.id);
+    }
+  }, [project]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
@@ -113,7 +96,7 @@ export function ProjectDetailsView({ id }: Props) {
         )}
         {currentTab === 'campaigns' && (
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CampaignListView id={id} />
+            <CampaignListView projectId={projectId} />
           </Box>
         )}
       </Paper>
