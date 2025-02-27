@@ -10,7 +10,7 @@ import type {
 
 import { useState, useCallback } from 'react';
 
-import { Box , Stack, Button, Typography } from '@mui/material';
+import { Box, Stack, Button, Typography } from '@mui/material';
 import {
   DataGrid,
   gridClasses,
@@ -164,50 +164,51 @@ export function CampaignListView({ id }: { id: string }) {
 
   return (
     <DashboardContent
-        sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%' }}
-      >
-        <CustomBreadcrumbs
-          links={
-            [
-              // { name: 'Dashboard', href: paths.v2.marketing.root },
-              // { name: 'Projects', href: paths.v2.marketing.projects.list },
-              // { name: '' },
-            ]
-          }
-          action={
-            <Button
-              onClick={handleNewRow}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New Campaign
-            </Button>
-          }
-          // sx={{ mb: { xs: 3, md: 5 } }}
-        />
-        <DataGrid
-          checkboxSelection
-          disableRowSelectionOnClick
-          rows={rows}
-          columns={columns}
-          onRowSelectionModelChange={(newSelectionModel) => {
-            setSelectedRows(newSelectionModel);
-          }}
-          columnVisibilityModel={columnVisibilityModel}
-          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-          slots={{
-            toolbar: CustomToolbar as unknown as GridSlots['toolbar'],
-            noRowsOverlay: () => <EmptyContent />,
-            noResultsOverlay: () => <EmptyContent title="No results found" />,
-          }}
-          slotProps={{
-            panel: { anchorEl: filterButtonEl },
-            toolbar: { setFilterButtonEl, showQuickFilter: true },
-            columnsManagement: { getTogglableColumns },
-          }}
-          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-        />
-      </DashboardContent>
+      sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <CustomBreadcrumbs
+        links={
+          [
+            // { name: 'Dashboard', href: paths.v2.marketing.root },
+            // { name: 'Projects', href: paths.v2.marketing.projects.list },
+            // { name: '' },
+          ]
+        }
+        action={
+          <Button
+            onClick={handleNewRow}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            New Campaign
+          </Button>
+        }
+        // sx={{ mb: { xs: 3, md: 5 } }}
+      />
+      <DataGrid
+        checkboxSelection
+        disableRowSelectionOnClick
+        rows={rows}
+        columns={columns}
+        onRowSelectionModelChange={(newSelectionModel) => {
+          setSelectedRows(newSelectionModel);
+        }}
+        columnVisibilityModel={columnVisibilityModel}
+        onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+        slots={{
+          toolbar: CustomToolbar as unknown as GridSlots['toolbar'],
+          noRowsOverlay: () => <EmptyContent />,
+          noResultsOverlay: () => <EmptyContent title="No results found" />,
+        }}
+        slotProps={{
+          panel: { anchorEl: filterButtonEl },
+          // @ts-expect-error
+          toolbar: { setFilterButtonEl, showQuickFilter: true },
+          columnsManagement: { getTogglableColumns },
+        }}
+        sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+      />
+    </DashboardContent>
   );
 }
 
