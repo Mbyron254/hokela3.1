@@ -133,7 +133,7 @@ function Item({ run, sx, ...other }: ItemProps) {
         </Link>
 
         <Typography variant="caption" sx={{ color: 'text.secondary', mb: 0.5 }}>
-          Project: {run.campaignRun.project.name}
+          Project: {run.campaignRun.project?.name ?? ''}
         </Typography>
 
         <Typography variant="caption" sx={{ color: 'text.secondary', mb: 0.5 }}>
