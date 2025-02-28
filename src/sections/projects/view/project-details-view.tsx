@@ -14,7 +14,6 @@ import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { CampaignListView } from './campaign-list-view';
-import { use } from 'i18next';
 
 // ----------------------------------------------------------------------
 
