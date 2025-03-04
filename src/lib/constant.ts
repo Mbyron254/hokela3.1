@@ -1,5 +1,5 @@
 export const CLIENT_HOST_DEV = 'http://localhost:3001';
-export const CLIENT_HOST_PRO = 'https://octopus-app-888up.ondigitalocean.app';
+export const CLIENT_HOST_PRO = 'https://hokela360-srld9.ondigitalocean.app';
 export const SERVER_HOST_DEV = 'http://localhost:3000';
 export const SERVER_HOST_PRO = 'https://hokela-api-test-xhutk.ondigitalocean.app';
 export const DO_SPACE_ORIGIN = 'https://hokela360.blr1.digitaloceanspaces.com';
@@ -47,6 +47,7 @@ export const RATING = 'rating';
 export const DROPDOWN = 'dropdown';
 export const CHOICE_SINGLE = 'single_choice';
 export const CHOICE_MULTIPLE = 'multiple_choice';
+export const PICTURE = 'picture';
 export const MULTIMEDIA = 'multimedia';
 export const GEOLOCATION = 'geolocation';
 
@@ -62,6 +63,7 @@ export type TAnswerType =
   | typeof CHOICE_SINGLE
   | typeof CHOICE_MULTIPLE
   | typeof DROPDOWN
+  | typeof PICTURE
   | typeof MULTIMEDIA
   | typeof GEOLOCATION;
 
@@ -77,6 +79,21 @@ export const FORM_ANSWER_TYPES = [
   { value: CHOICE_SINGLE, label: 'Single Choice' },
   { value: CHOICE_MULTIPLE, label: 'Multiple Choice' },
   { value: DROPDOWN, label: 'Dropdown' },
+  { value: PICTURE, label: 'Picture' },
   { value: MULTIMEDIA, label: 'Multimedia' },
   { value: GEOLOCATION, label: 'Geolocation' },
 ];
+
+export const DRIVING_MODES = ['BICYCLING', 'DRIVING', 'TRANSIT', 'WALKING'];
+
+export const LOCATION_PING_INTERVAL_MS = 5000;
+
+export const RUN_ACTIVITY_SALES = 'Sales';
+
+export const RUN_ACTIVITY_SAMPLING = 'Sampling';
+
+export const RUN_ACTIVITY_SURVEY = 'Survey';
+
+export const RUN_ACTIVITY_ROAD_SHOW = 'Road Show';
+
+export const RUN_ACTIVITY_STOCK_MAPPING = 'Stock Mapping';
