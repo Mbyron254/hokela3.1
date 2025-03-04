@@ -24,7 +24,7 @@ let client: ApolloClient<any> | null = null;
 
 const getClient = () => {
   if (!client || typeof window === undefined) {
-    const uri = process.env.NODE_ENV === 'production' ? SERVER_API_PRO_RST : SERVER_API_DEV_GQL;
+    // const uri = process.env.NODE_ENV === 'production' ? SERVER_API_PRO_RST : SERVER_API_DEV_GQL;
 
     client = new ApolloClient({
       link: from([
@@ -37,7 +37,7 @@ const getClient = () => {
           }
         }),
         new HttpLink({
-          uri,
+          uri: '/graphql',
           credentials: 'include',
         }),
       ]),
