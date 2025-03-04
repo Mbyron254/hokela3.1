@@ -85,7 +85,7 @@ export function JwtSignInView() {
     mutation: USER_LOGIN,
     resolver: 'login',
     toastmsg: true,
-    // callback: () => window.location.reload(),
+    callback: () => window.location.reload(),
   });
 
   const methods = useForm<SignInSchemaType>({
