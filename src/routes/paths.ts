@@ -10,8 +10,38 @@ const ROOTS = {
 const v2_paths = {
   [ERole.ADMIN]: {
     root: `${ROOTS.V2}/admin/dashboard`,
-    users: `${ROOTS.V2}/admin/users`,
-    sessions: `${ROOTS.V2}/admin/sessions`,
+    session: `${ROOTS.V2}/admin/dashboard/sessions`,
+    permissions: `${ROOTS.V2}/admin/dashboard/permissions`,
+
+    clients: {
+      enterprise: `${ROOTS.V2}/admin/dashboard/clients`,
+      sme: `${ROOTS.V2}/admin/dashboard/clients/sme`,
+    },
+    shop: {
+      shops: `${ROOTS.V2}/admin/dashboard/shops`,
+      sectors: `${ROOTS.V2}/admin/dashboard/shops/sectors`,
+      category: `${ROOTS.V2}/admin/dashboard/shops/category`,
+    },
+    utilities: {
+      root: `${ROOTS.V2}/admin/dashboard/utilities`,
+      products: {
+        category: `${ROOTS.V2}/admin/dashboard/utilities/category`,
+        sub_category: `${ROOTS.V2}/admin/dashboard/utilities/sub-category`,
+      },
+    },
+
+    accounts: {
+      admin: `${ROOTS.V2}/admin/dashboard/accounts/admin`,
+      agent: `${ROOTS.V2}/admin/dashboard/accounts/agent`,
+      guest: `${ROOTS.V2}/admin/dashboard/accounts/guest`,
+      enterprise: `${ROOTS.V2}/admin/dashboard/accounts/enterprise`,
+      sme: `${ROOTS.V2}/admin/dashboard/accounts/sme`,
+    },
+    roles: {
+      agentsAndAdmins: `${ROOTS.V2}/admin/dashboard/roles/admin`,
+      enterprise: `${ROOTS.V2}/admin/dashboard/roles/enterprise`,
+      sme: `${ROOTS.V2}/admin/dashboard/roles/sme`,
+    },
   },
   [ERole.AGENT]: {
     root: `${ROOTS.V2}/agent/dashboard`,
