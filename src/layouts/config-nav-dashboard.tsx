@@ -5,6 +5,7 @@ import { CONFIG } from 'src/config-global';
 import { SvgColor } from 'src/components/svg-color';
 
 import { ERole } from 'src/types/client';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,13 @@ const ICONS = {
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
   parameter: icon('ic-parameter'),
+  clients: <Iconify icon={'fluent:people-28-filled'} />,
+  shop: <Iconify icon={'solar:shop-linear'} />,
+  utilities: <Iconify icon={'material-symbols:inbox-customize-rounded'} />,
+  account: <Iconify icon={'fluent:person-16-filled'} />,
+  roles: <Iconify icon={'oui:app-users-roles'} />,
+  permission: <Iconify icon={'ic:baseline-lock'} />,
+  sessions: <Iconify icon={'majesticons:list-box'} />,
 };
 
 // ----------------------------------------------------------------------
@@ -48,8 +56,79 @@ const adminNavData = [
     subheader: 'Admin Dashboard',
     items: [
       { title: 'Overview', path: paths.v2[ERole.ADMIN].root, icon: ICONS.dashboard },
-      { title: 'Users', path: paths.v2[ERole.ADMIN].users, icon: ICONS.user },
-      { title: 'Sessions', path: paths.v2[ERole.ADMIN].sessions, icon: ICONS.analytics },
+      {
+        title: 'Clients',
+        path: paths.v2[ERole.ADMIN].clients.enterprise,
+        icon: ICONS.clients,
+        children: [
+          { title: 'Enterprise Clients', path: paths.v2[ERole.ADMIN].clients.enterprise }, //Tire 1 Clients
+          { title: 'SME Clients', path: paths.v2[ERole.ADMIN].clients.sme }, //Tire 2 Clients
+        ],
+      },
+      {
+        title: 'Shop',
+        path: paths.v2[ERole.ADMIN].shop.shops,
+        icon: ICONS.shop,
+        children: [
+          { title: 'Shops', path: paths.v2[ERole.ADMIN].shop.shops },
+          { title: 'Sectors', path: paths.v2[ERole.ADMIN].shop.sectors },
+          { title: 'Category', path: paths.v2[ERole.ADMIN].shop.category },
+        ],
+      },
+      {
+        title: 'Utilities',
+        path: paths.v2[ERole.ADMIN].utilities.root,
+        icon: ICONS.utilities,
+        children: [
+          { title: 'Unit Of Measure', path: paths.v2[ERole.ADMIN].utilities.root },
+          {
+            title: 'Products',
+            path: paths.v2[ERole.ADMIN].utilities.products.category,
+            children: [
+              { title: 'Category', path: paths.v2[ERole.ADMIN].utilities.products.category },
+              { title: 'Subcategory', path: paths.v2[ERole.ADMIN].utilities.products.sub_category },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    subheader: 'Access Control',
+    items: [
+      {
+        title: 'Account',
+        path: paths.v2[ERole.ADMIN].accounts.admin,
+        icon: ICONS.account,
+        children: [
+          { title: 'Admin', path: paths.v2[ERole.ADMIN].accounts.admin },
+          { title: 'Agents', path: paths.v2[ERole.ADMIN].accounts.agent },
+          { title: 'Guests', path: paths.v2[ERole.ADMIN].accounts.guest },
+          {
+            title: 'Enterprise Clients',
+            path: paths.v2[ERole.ADMIN].accounts.enterprise,
+          },
+          { title: 'SME Clients', path: paths.v2[ERole.ADMIN].accounts.sme },
+        ],
+      },
+      {
+        title: 'Roles',
+        path: paths.v2[ERole.ADMIN].roles.agentsAndAdmins,
+        icon: ICONS.roles,
+        children: [
+          {
+            title: 'Agents & Admins',
+            path: paths.v2[ERole.ADMIN].roles.agentsAndAdmins,
+          },
+          {
+            title: 'Enterprise Clients',
+            path: paths.v2[ERole.ADMIN].roles.enterprise,
+          },
+          { title: 'SME Clients', path: paths.v2[ERole.ADMIN].roles.sme },
+        ],
+      },
+      { title: 'Sessions', path: paths.v2[ERole.ADMIN].session, icon: ICONS.sessions },
+      { title: 'Permissions', path: paths.v2[ERole.ADMIN].permissions, icon: ICONS.permission },
     ],
   },
 ];
@@ -62,32 +141,8 @@ const agentNavData = [
       { title: 'Campaigns', path: paths.v2[ERole.AGENT].campaigns.root, icon: ICONS.analytics },
       { title: 'Jobs', path: paths.v2[ERole.AGENT].campaigns.offers.root, icon: ICONS.job },
       { title: 'Applications', path: paths.v2[ERole.AGENT].jobs.applications, icon: ICONS.file },
-
-      // {
-      //   title: 'Campaigns',
-      //   path: paths.v2[ERole.AGENT].campaigns.root,
-      //   icon: ICONS.analytics,
-      //   children: [
-      //     { title: 'Runs', path: paths.v2[ERole.AGENT].campaigns.root },
-      //     { title: 'Offers', path: paths.v2[ERole.AGENT].campaigns.offers.root },
-      //   ],
-      // },
     ],
   },
-  // {
-  //   // subheader: 'Jobs',
-  //   items: [
-  //     {
-  //       title: 'Jobs',
-  //       path: paths.v2[ERole.AGENT].root,
-  //       icon: ICONS.job,
-  //       children: [
-  //         { title: 'Adverts', path: paths.v2[ERole.AGENT].jobs.Adverts },
-  //         { title: 'Applications', path: paths.v2[ERole.AGENT].jobs.Applications },
-  //       ],
-  //     },
-  //   ],
-  // },
 ];
 
 const producerNavData = [
