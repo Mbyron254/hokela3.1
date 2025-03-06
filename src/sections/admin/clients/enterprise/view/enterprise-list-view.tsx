@@ -29,6 +29,7 @@ import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { DataGridCustom } from '../data-grid-custom';
+import { useRouter } from 'next/navigation';
 
 const _dataGrid = [...Array(20)].map((_, index) => {
   const status =
@@ -85,6 +86,7 @@ type TClientsTier1 = {
 };
 
 export default function EnterpriseListView() {
+  const router = useRouter();
   const [tableData, setTableData] = useState<IClient[]>([]);
 
   const usersQueryFilters = { page: 0, pageSize: 10 };
@@ -156,7 +158,7 @@ export default function EnterpriseListView() {
 
   const handleViewRow = (row: any) => {
     if (row) {
-      console.log('VIEW', row);
+      router.replace(paths.v2.admin.clients.enterprise.details(row?.id));
     }
   };
 
