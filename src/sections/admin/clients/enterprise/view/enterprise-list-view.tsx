@@ -149,19 +149,15 @@ export default function EnterpriseListView() {
   const handleEditRow = (row: any) => {
     if (row) {
       console.log('Editing row with ID:', row);
-      // setFormData(
-      //   {
-      //     id: row.id,
-      //     name:row.name,
-      //     client_type:
-      //   }
-      // )
 
-      // const client = tableData.find((row) => row?.id === id);
       console.log(tableData, 'Client');
     }
+  };
 
-    // dialog.onTrue();
+  const handleViewRow = (row: any) => {
+    if (row) {
+      console.log('VIEW', row);
+    }
   };
 
   const handleDialogClose = () => {
@@ -209,7 +205,7 @@ export default function EnterpriseListView() {
             heading="Enterprise Clients"
             links={[
               { name: 'Dashboard', href: paths.v2.admin.root },
-              { name: 'Enterprise Clients', href: paths.v2.admin.clients.enterprise },
+              { name: 'Enterprise Clients', href: paths.v2.admin.clients.enterprise.root },
               { name: 'List' },
             ]}
             action={
