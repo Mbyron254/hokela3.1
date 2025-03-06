@@ -10,5 +10,5 @@ export default function Page({ params }: Props) {
   const { id } = params;
 
   console.log('id', id);
-  return <EnterpriseDetailsView clientId={id} />;
+  return <EnterpriseDetailsView id={id} />;
 }

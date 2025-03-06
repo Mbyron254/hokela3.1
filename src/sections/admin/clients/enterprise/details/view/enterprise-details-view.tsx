@@ -12,9 +12,9 @@ import { M_CLIENT_T1 } from 'src/lib/mutations/client-t1.mutation';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 type Props = {
-  clientId: string;
+  id: string;
 };
-export default function EnterpriseDetailsView({ clientId }: Props) {
+export default function EnterpriseDetailsView({ id }: Props) {
   // ------------------------------------------------------------------------
   const { action: getClient, data: client } = GQLMutation({
     mutation: M_CLIENT_T1,
@@ -26,14 +26,14 @@ export default function EnterpriseDetailsView({ clientId }: Props) {
     queryAction: 'clientAccountManagers',
     variables: {
       input: {
-        clientTier1Id: clientId,
+        clientTier1Id: id,
       },
     },
   });
 
   const loadClient = () => {
-    if (clientId) {
-      getClient({ variables: { input: { clientId } } });
+    if (id) {
+      getClient({ variables: { input: { id } } });
     }
   };
 
