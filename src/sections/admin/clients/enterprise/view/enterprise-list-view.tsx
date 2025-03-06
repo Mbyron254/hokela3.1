@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import {
   Box,
@@ -29,7 +30,6 @@ import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { DataGridCustom } from '../data-grid-custom';
-import { useRouter } from 'next/navigation';
 
 const _dataGrid = [...Array(20)].map((_, index) => {
   const status =

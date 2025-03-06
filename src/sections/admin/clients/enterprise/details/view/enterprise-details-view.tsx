@@ -1,11 +1,15 @@
 'use client';
 
 import { useEffect } from 'react';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { DashboardContent } from 'src/layouts/dashboard';
-import { GQLMutation } from 'src/lib/client';
-import { M_CLIENT_T1 } from 'src/lib/mutations/client-t1.mutation';
+
 import { paths } from 'src/routes/paths';
+
+import { GQLQuery, GQLMutation } from 'src/lib/client';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { Q_ACCOUNT_MANAGERS } from 'src/lib/queries/client.query';
+import { M_CLIENT_T1 } from 'src/lib/mutations/client-t1.mutation';
+
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 type Props = {
   clientId: string;
@@ -17,6 +21,15 @@ export default function EnterpriseDetailsView({ clientId }: Props) {
     resolver: 'tier1Client',
     toastmsg: false,
   });
+  const { data: managers } = GQLQuery({
+    query: Q_ACCOUNT_MANAGERS,
+    queryAction: 'clientAccountManagers',
+    variables: {
+      input: {
+        clientTier1Id: clientId,
+      },
+    },
+  });
 
   const loadClient = () => {
     if (clientId) {
@@ -24,11 +37,16 @@ export default function EnterpriseDetailsView({ clientId }: Props) {
     }
   };
 
-  useEffect(() => {
-    loadClient();
-  }, []);
+  useEffect(
+    () => {
+      loadClient();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   console.log(client, 'CLIENT');
+  console.log(managers, 'Managers');
 
   // ------------------------------------------------------------------------
 

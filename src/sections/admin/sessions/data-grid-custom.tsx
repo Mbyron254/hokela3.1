@@ -1,14 +1,13 @@
 import type { IDateValue } from 'src/types/common';
 import type { RatingProps } from '@mui/material/Rating';
 import type {
-  GridSlots,
   GridColDef,
   GridFilterItem,
+  GridToolbarProps,
   GridFilterOperator,
   GridRowSelectionModel,
   GridColumnVisibilityModel,
   GridFilterInputValueProps,
-  GridToolbarProps,
 } from '@mui/x-data-grid';
 
 import { useRef, useMemo, useState, useImperativeHandle } from 'react';

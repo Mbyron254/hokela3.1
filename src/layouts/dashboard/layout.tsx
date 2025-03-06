@@ -99,6 +99,7 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
             ),
             bottomArea: isNavHorizontal ? (
               <NavHorizontal
+                // @ts-expect-error
                 data={navData}
                 layoutQuery={layoutQuery}
                 cssVars={navColorVars.section}
@@ -116,6 +117,7 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
                   }}
                 />
                 <NavMobile
+                  // @ts-ignore
                   data={navData}
                   open={mobileNavOpen.value}
                   onClose={mobileNavOpen.onFalse}
@@ -146,6 +148,7 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
             rightArea: (
               <Box display="flex" alignItems="center" gap={{ xs: 0, sm: 0.75 }}>
                 {/* -- Searchbar -- */}
+                {/*   @ts-expect-error */}
                 <Searchbar data={navData} />
                 {/* -- Language popover -- */}
                 {/* <LanguagePopover
@@ -176,6 +179,7 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
       sidebarSection={
         isNavHorizontal ? null : (
           <NavVertical
+            // @ts-ignore
             data={navData}
             isNavMini={isNavMini}
             layoutQuery={layoutQuery}

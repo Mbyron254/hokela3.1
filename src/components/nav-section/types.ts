@@ -57,7 +57,6 @@ export type NavItemBaseProps = {
   info?: string[] | React.ReactNode;
 };
 
-
 export type NavItemProps = ButtonBaseProps & NavItemStateProps & NavItemBaseProps;
 
 export type NavListProps = {

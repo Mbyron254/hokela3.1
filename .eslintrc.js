@@ -43,6 +43,8 @@ module.exports = {
     '@typescript-eslint/consistent-type-exports': 1,
     '@typescript-eslint/consistent-type-imports': 1,
     '@typescript-eslint/no-unused-vars': [1, { args: 'none' }],
+    'spaced-comment': ['error', 'always', { markers: ['/'] }],
+
     // react
     'react/no-children-prop': 0,
     'react/react-in-jsx-scope': 0,

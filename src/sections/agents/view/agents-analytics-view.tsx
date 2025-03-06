@@ -7,8 +7,8 @@ import { useState, useEffect } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
-import { getGeoLocation } from 'src/lib/helpers';
 import { _coursesContinue } from 'src/_mock';
+import { getGeoLocation } from 'src/lib/helpers';
 import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { LOCATION_PING_INTERVAL_MS } from 'src/lib/constant';
