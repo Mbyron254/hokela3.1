@@ -2,7 +2,7 @@ import EnterpriseListView from 'src/sections/admin/clients/enterprise/view/enter
 
 // ----------------------------------------------------------------------
 
-export const metadata = { title: `Page two | Dashboard - Hokela 3.1` };
+export const metadata = { title: `Enterprise Clients` };
 
 export default function Page() {
   return <EnterpriseListView />;
