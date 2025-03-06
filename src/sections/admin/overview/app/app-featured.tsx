@@ -93,7 +93,7 @@ function CarouselItem({ item, ...other }: CarouselItemProps) {
 
       <Image
         alt={item.title}
-        src={item.coverUrl}
+        src={item.coverUrl || '/assets/images/mock/cover/cover-4.webp'}
         // @ts-expect-error
         slotProps={{
           overlay: {
