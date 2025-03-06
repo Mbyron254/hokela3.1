@@ -268,7 +268,11 @@ export default function EnterpriseListView() {
               </Button>
             </DialogActions>
           </Dialog>
-          <DataGridCustom data={tableData ?? []} handleEditRow={handleEditRow} />
+          <DataGridCustom
+            data={tableData ?? []}
+            handleEditRow={handleEditRow}
+            handleViewRow={handleViewRow}
+          />
         </Box>
       </Card>
     </DashboardContent>
