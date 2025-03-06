@@ -61,7 +61,7 @@ const adminNavData = [
         path: paths.v2[ERole.ADMIN].clients.enterprise,
         icon: ICONS.clients,
         children: [
-          { title: 'Enterprise Clients', path: paths.v2[ERole.ADMIN].clients.enterprise }, // Tire 1 Clients
+          { title: 'Enterprise Clients', path: paths.v2[ERole.ADMIN].clients.enterprise.root }, // Tire 1 Clients
           { title: 'SME Clients', path: paths.v2[ERole.ADMIN].clients.sme }, // Tire 2 Clients
         ],
       },
