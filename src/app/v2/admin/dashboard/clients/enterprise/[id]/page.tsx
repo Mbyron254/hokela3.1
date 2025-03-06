@@ -2,6 +2,13 @@ import EnterpriseDetailsView from 'src/sections/admin/clients/enterprise/details
 
 export const metadata = { title: `Enterprise Details` };
 
-export default function Page() {
-  return <EnterpriseDetailsView />;
+type Props = {
+  params: { id: string };
+};
+
+export default function Page({ params }: Props) {
+  const { id } = params;
+
+  console.log('id', id);
+  return <EnterpriseDetailsView clientId={id} />;
 }
