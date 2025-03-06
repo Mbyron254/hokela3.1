@@ -14,7 +14,10 @@ const v2_paths = {
     permissions: `${ROOTS.V2}/admin/dashboard/permissions`,
 
     clients: {
-      enterprise: `${ROOTS.V2}/admin/dashboard/clients/enterprise`,
+      enterprise: {
+        root: `${ROOTS.V2}/admin/dashboard/clients/enterprise`,
+        details: (id: string) => `${ROOTS.V2}/admin/dashboard/clients/enterprise/${id}`,
+      },
       sme: `${ROOTS.V2}/admin/dashboard/clients/sme`,
     },
     shop: {
