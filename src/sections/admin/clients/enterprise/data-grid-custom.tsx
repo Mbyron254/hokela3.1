@@ -49,14 +49,15 @@ type Props = {
     status?: string;
     // lastLogin: IDateValue;
   }[];
-  handleEditRow: (id: string) => void;
+  handleEditRow: (id: any) => void;
+  handleViewRow: (id: any) => void;
 };
 
 const HIDE_COLUMNS = { id: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['id', 'actions'];
 
-export function DataGridCustom({ data, handleEditRow }: Props) {
+export function DataGridCustom({ data, handleEditRow, handleViewRow }: Props) {
   const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
 
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
@@ -169,7 +170,7 @@ export function DataGridCustom({ data, handleEditRow }: Props) {
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
           label="View"
-          onClick={() => console.info('VIEW', params.row.id)}
+          onClick={() => handleViewRow(params.row)}
         />,
         <GridActionsCellItem
           showInMenu
