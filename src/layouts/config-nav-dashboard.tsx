@@ -2,10 +2,10 @@ import { paths } from 'src/routes/paths';
 
 import { CONFIG } from 'src/config-global';
 
+import { Iconify } from 'src/components/iconify';
 import { SvgColor } from 'src/components/svg-color';
 
 import { ERole } from 'src/types/client';
-import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -40,13 +40,13 @@ const ICONS = {
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
   parameter: icon('ic-parameter'),
-  clients: <Iconify icon={'fluent:people-28-filled'} />,
-  shop: <Iconify icon={'solar:shop-linear'} />,
-  utilities: <Iconify icon={'material-symbols:inbox-customize-rounded'} />,
-  account: <Iconify icon={'fluent:person-16-filled'} />,
-  roles: <Iconify icon={'oui:app-users-roles'} />,
-  permission: <Iconify icon={'ic:baseline-lock'} />,
-  sessions: <Iconify icon={'majesticons:list-box'} />,
+  clients: <Iconify icon="fluent:people-28-filled" />,
+  shop: <Iconify icon="solar:shop-linear" />,
+  utilities: <Iconify icon="material-symbols:inbox-customize-rounded" />,
+  account: <Iconify icon="fluent:person-16-filled" />,
+  roles: <Iconify icon="oui:app-users-roles" />,
+  permission: <Iconify icon="ic:baseline-lock" />,
+  sessions: <Iconify icon="majesticons:list-box" />,
 };
 
 // ----------------------------------------------------------------------
@@ -61,8 +61,8 @@ const adminNavData = [
         path: paths.v2[ERole.ADMIN].clients.enterprise,
         icon: ICONS.clients,
         children: [
-          { title: 'Enterprise Clients', path: paths.v2[ERole.ADMIN].clients.enterprise }, //Tire 1 Clients
-          { title: 'SME Clients', path: paths.v2[ERole.ADMIN].clients.sme }, //Tire 2 Clients
+          { title: 'Enterprise Clients', path: paths.v2[ERole.ADMIN].clients.enterprise }, // Tire 1 Clients
+          { title: 'SME Clients', path: paths.v2[ERole.ADMIN].clients.sme }, // Tire 2 Clients
         ],
       },
       {

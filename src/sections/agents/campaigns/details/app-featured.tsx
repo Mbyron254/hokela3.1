@@ -94,8 +94,10 @@ function CarouselItem({ item, ...other }: CarouselItemProps) {
       <Image
         alt={item.title}
         src={item.coverUrl}
+        // @ts-expect-error
         slotProps={{
           overlay: {
+            // @ts-expect-error
             background: (theme) =>
               `linear-gradient(to bottom, ${varAlpha(theme.vars.palette.common.blackChannel, 0)} 0%, ${theme.vars.palette.common.black} 75%)`,
           },

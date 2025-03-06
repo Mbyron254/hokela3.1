@@ -4,6 +4,7 @@ import type { ChartOptions } from 'src/components/chart';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import { fNumber, fPercent, fShortenNumber } from 'src/utils/format-number';
@@ -14,8 +15,8 @@ import { varAlpha, bgGradient } from 'src/theme/styles';
 import { Iconify } from 'src/components/iconify';
 import { SvgColor } from 'src/components/svg-color';
 import { Chart, useChart } from 'src/components/chart';
+
 import { AnalyticsWidgetSummarySmall } from './analytics-widget-summary-small';
-import { useMediaQuery } from '@mui/material';
 
 // ----------------------------------------------------------------------
 

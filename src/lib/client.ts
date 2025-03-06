@@ -8,8 +8,6 @@ import { from, HttpLink, useQuery, useMutation, ApolloClient, InMemoryCache } fr
 import {
   HEADER_KEY_CLIENT,
   HEADER_VAL_CLIENT,
-  SERVER_API_DEV_GQL,
-  SERVER_API_PRO_RST,
   QUERY_REVALIDATE_INTERVAL_MS,
 } from './constant';
 

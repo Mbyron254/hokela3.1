@@ -6,7 +6,6 @@ import { fShortenNumber } from 'src/utils/format-number';
 
 import { varAlpha, bgGradient } from 'src/theme/styles';
 
-
 type Props = {
   title: string;
   total: number;
@@ -21,6 +20,7 @@ export function AnalyticsWidgetSummarySmall({ icon, title, total, color = 'prima
     <Card
       sx={{
         ...bgGradient({
+          // @ts-expect-error
           color: `135deg, ${varAlpha(theme.vars.palette[color].lighterChannel, 0.48)}, ${varAlpha(theme.vars.palette[color].lightChannel, 0.48)}`,
         }),
         p: 1,

@@ -1,7 +1,7 @@
 import type { IJobItem } from 'src/types/job';
 
 import { useMemo } from 'react';
-import { Controller } from 'react-hook-form';
+import { Controller, FormProvider } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -18,14 +18,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { useRouter } from 'src/routes/hooks';
 
-import {
-  _roles,
-  JOB_BENEFIT_OPTIONS,
-  JOB_EMPLOYMENT_TYPE_OPTIONS,
-} from 'src/_mock';
+import { _roles, JOB_BENEFIT_OPTIONS, JOB_EMPLOYMENT_TYPE_OPTIONS } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
-import FormProvider, { RHFEditor, RHFSwitch, RHFTextField, RHFMultiCheckbox } from 'src/components/hook-form-copy';
+import { RHFEditor, RHFSwitch, RHFTextField, RHFMultiCheckbox } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 // export type NewJobSchemaType = zod.infer<typeof NewJobSchema>;
@@ -63,7 +59,7 @@ export function JobNewEditForm({ currentJob }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      title:  '',
+      title: '',
       content: '',
       employmentTypes: [],
       experience: '1 year exp',
@@ -72,7 +68,7 @@ export function JobNewEditForm({ currentJob }: Props) {
       workingSchedule: [],
       locations: [],
       expiredDate: null,
-      salary:{ type: 'Hourly', price: 0, negotiable: false },
+      salary: { type: 'Hourly', price: 0, negotiable: false },
       benefits: [],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,7 +146,7 @@ export function JobNewEditForm({ currentJob }: Props) {
             sx={{ gap: 4 }}
           />
         </Stack>
-{/* 
+        {/* 
         <Stack spacing={1}>
           <Typography variant="subtitle2">Experience</Typography>
           <RHFRadioGroup
@@ -305,7 +301,7 @@ export function JobNewEditForm({ currentJob }: Props) {
 
         <Stack spacing={1}>
           <Typography variant="subtitle2">Benefits</Typography>
-            <RHFMultiCheckbox
+          <RHFMultiCheckbox
             name="benefits"
             options={JOB_BENEFIT_OPTIONS}
             sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}

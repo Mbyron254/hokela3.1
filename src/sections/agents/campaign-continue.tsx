@@ -120,7 +120,7 @@ function Item({ run, sx, ...other }: ItemProps) {
     <Box sx={{ gap: 2, display: 'flex', alignItems: 'flex-start', ...sx }} {...other}>
       <Avatar
         alt={run.agent.user.name}
-        src={run.agent.user.profile.photo || 'assets\icons\components\ic_extra_image.svg'}
+        src={run.agent.user.profile.photo || 'assets/icons/components/ic_extra_image.svg'}
         variant="rounded"
         sx={{ width: 56, height: 56 }}
       />

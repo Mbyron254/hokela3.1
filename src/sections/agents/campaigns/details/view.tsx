@@ -7,7 +7,9 @@ import { useRouter } from 'next/navigation';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import { Box ,  Card ,
+import {
+  Box,
+  Card,
   Grid,
   Stack,
   Button,
@@ -31,8 +33,7 @@ import { M_CAMPAIGN_RUN_OFFER } from 'src/lib/mutations/campaign-run-offer.mutat
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
-import { RHFCamera } from 'src/components/hook-form';
-
+// import RHFCamera from 'src/components/hook-form';
 
 type Props = {
   campaignId?: string;
@@ -122,9 +123,13 @@ export function CampaignDetailsView({ campaignId }: Props) {
 
   // -------------------------------------------------
 
-  useEffect(() => {
-    loadOffer();
-  }, []);
+  useEffect(
+    () => {
+      loadOffer();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   // console.log('OFFER', offer);
   useEffect(() => {
@@ -205,7 +210,7 @@ export function CampaignDetailsView({ campaignId }: Props) {
 
         <CardContent component={Stack} justifyContent="center" alignItems="center" rowGap={2}>
           <Typography color="success" sx={{ width: '100%', fontWeight: 'bold' }} variant="body2">
-            Location : 'Nairobi'
+            Location : Nairobi
           </Typography>
           <Label color="primary">
             <span>Accuracy : </span> 60%
@@ -231,13 +236,13 @@ export function CampaignDetailsView({ campaignId }: Props) {
           <DialogTitle>Checkin</DialogTitle>
           <DialogContent>
             <Typography>Agent Photo On Site</Typography>
-            <FormProvider {...methods}>
+            {/* <FormProvider {...methods}>
               <RHFCamera
                 name="checkin"
                 title="CheckIn"
                 action={(photo: string) => takePhoto(photo)}
               />
-            </FormProvider>
+            </FormProvider> */}
           </DialogContent>
         </Dialog>
       </Card>
@@ -246,18 +251,18 @@ export function CampaignDetailsView({ campaignId }: Props) {
 
   return (
     <DashboardContent>
-        <Box
-          sx={{
-            p: 2,
-            width: 1,
-            // height: 600,
-            borderRadius: 2,
-            bgcolor: (theme) => varAlpha(theme.vars.palette.grey['500Channel'], 0.04),
-          }}
-        >
-          {renderTitle}
-          {renderCheckin}
-          {/* <TabContext value={tabValue}>
+      <Box
+        sx={{
+          p: 2,
+          width: 1,
+          // height: 600,
+          borderRadius: 2,
+          bgcolor: (theme) => varAlpha(theme.vars.palette.grey['500Channel'], 0.04),
+        }}
+      >
+        {renderTitle}
+        {renderCheckin}
+        {/* <TabContext value={tabValue}>
             <Tabs value={tabValue} onChange={handleTabChange}>
               <Tab label="Overview" value="overview" />
               <Tab label="Sales" value="sales" />
@@ -277,7 +282,7 @@ export function CampaignDetailsView({ campaignId }: Props) {
               <Typography>Surveys</Typography>
             </TabPanel>
           </TabContext> */}
-        </Box>
-      </DashboardContent>
+      </Box>
+    </DashboardContent>
   );
 }

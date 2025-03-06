@@ -20,7 +20,6 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { GQLMutation } from 'src/lib/client';
-import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { USER_LOGIN } from 'src/lib/mutations/user.mutation';
 
 import { Iconify } from 'src/components/iconify';

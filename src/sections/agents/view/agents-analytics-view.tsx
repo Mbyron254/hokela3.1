@@ -1,35 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import type { IGeoLocation } from 'src/lib/interface/general.interface';
 
-import { Box } from '@mui/material';
+import { useState, useEffect } from 'react';
+
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
+import { getGeoLocation } from 'src/lib/helpers';
+import { _coursesContinue } from 'src/_mock';
 import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { LOCATION_PING_INTERVAL_MS } from 'src/lib/constant';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-import { M_OPEN_JOBS } from 'src/lib/mutations/campaign-run.mutation';
 // import { M_JANTAS } from 'src/lib/mutations/run-offer.mutation';
 import { M_CAMPAIGN_RUN_OFFERS } from 'src/lib/mutations/campaign-run-offer.mutation';
 
-import { getGeoLocation } from 'src/lib/helpers';
-import { IGeoLocation } from 'src/lib/interface/general.interface';
-import { LOCATION_PING_INTERVAL_MS } from 'src/lib/constant';
-
-import {
-  _analyticTasks,
-  _analyticPosts,
-  _analyticTraffic,
-  _coursesContinue,
-  _bookingsOverview,
-  _analyticOrderTimeline,
-} from 'src/_mock';
+import { Iconify } from 'src/components/iconify';
 
 import { CampaignContinue } from '../campaign-continue';
 import { AnalyticsWebsiteVisits } from '../analytics-website-visits';
 import { AnalyticsWidgetSummary } from '../analytics-widget-summary';
-import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -87,18 +78,18 @@ export function AgentsAnalyticsView() {
       <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
         Hi, Welcome back 👋
       </Typography>
-      {(!offers?.rows?.length || !geoLocation?.lat || !geoLocation?.lng) && (
+      {(!offers?.rows?.length || !geoLocation?.latitude || !geoLocation?.longitude) && (
         <div className="alert alert-secondary pb-0" role="alert">
           <ol className="font-12">
             <li>
               <i
                 className={`mdi me-2 mdi-${
-                  geoLocation?.lat && geoLocation?.lng
+                  geoLocation?.latitude && geoLocation?.longitude
                     ? 'check-decagram text-success'
                     : 'cancel text-danger'
                 }`}
               />
-              {geoLocation?.lat && geoLocation?.lng
+              {geoLocation?.latitude && geoLocation?.longitude
                 ? 'Confirmed your location.'
                 : 'Confirming your location. Please wait...'}
             </li>
