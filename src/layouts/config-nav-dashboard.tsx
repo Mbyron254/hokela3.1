@@ -121,6 +121,14 @@ const adminNavData = [
             path: paths.v2[ERole.ADMIN].roles.agentsAndAdmins,
           },
           {
+            title: 'Tier 1',
+            path: paths.v2[ERole.ADMIN].roles.t1,
+          },
+          {
+            title: 'Tier 2',
+            path: paths.v2[ERole.ADMIN].roles.t2,
+          },
+          {
             title: 'Enterprise Clients',
             path: paths.v2[ERole.ADMIN].roles.enterprise,
           },

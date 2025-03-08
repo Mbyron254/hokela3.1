@@ -41,7 +41,9 @@ const v2_paths = {
       sme: `${ROOTS.V2}/admin/dashboard/accounts/sme`,
     },
     roles: {
-      agentsAndAdmins: `${ROOTS.V2}/admin/dashboard/roles/admin`,
+      agentsAndAdmins: `${ROOTS.V2}/admin/dashboard/roles/t0`,
+      t1: `${ROOTS.V2}/admin/dashboard/roles/t1`,
+      t2: `${ROOTS.V2}/admin/dashboard/roles/t2`,
       enterprise: `${ROOTS.V2}/admin/dashboard/roles/enterprise`,
       sme: `${ROOTS.V2}/admin/dashboard/roles/sme`,
     },
