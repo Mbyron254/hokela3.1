@@ -1,44 +1,43 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { formatDate } from 'date-fns';
+import { useState, useEffect } from 'react';
+import MuiPhoneNumber from 'mui-phone-number';
+
+import { alpha } from '@mui/system';
+import {
+  Box,
+  Grid,
+  Menu,
+  Card,
+  Paper,
+  styled,
+  Button,
+  Dialog,
+  MenuItem,
+  TextField,
+  Typography,
+  IconButton,
+  DialogTitle,
+  Autocomplete,
+  DialogActions,
+  DialogContent,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 
+import { useBoolean } from 'src/hooks/use-boolean';
+
 import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { Q_GUESTS_MINI } from 'src/lib/queries/user.query';
 import { Q_ACCOUNT_MANAGERS } from 'src/lib/queries/client.query';
 import { M_CLIENT_T1 } from 'src/lib/mutations/client-t1.mutation';
-
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import {
-  Box,
-  Card,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  IconButton,
-  MenuItem,
-  TextField,
-} from '@mui/material';
-import { Typography } from '@mui/material';
-import { Stack } from '@mui/material';
-import { formatTimeTo12Hr } from 'src/lib/helpers';
-import { alpha } from '@mui/system';
-import { formatDate } from 'date-fns';
-import { Grid } from '@mui/material';
-import { styled } from '@mui/material';
-import { Paper } from '@mui/material';
-import { Iconify } from 'src/components/iconify';
-import { Button } from '@mui/material';
-import { Menu } from '@mui/material';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { Dialog } from '@mui/material';
-import MuiPhoneNumber from 'mui-phone-number';
-import { Q_GUESTS_MINI } from 'src/lib/queries/user.query';
-import { Autocomplete } from '@mui/material';
-import { ADD_GUEST_AS_ACCOUNT_MANAGER } from 'src/lib/mutations/client.mutation';
 import { USER_CREATE_ALIEN } from 'src/lib/mutations/user.mutation';
+import { ADD_GUEST_AS_ACCOUNT_MANAGER } from 'src/lib/mutations/client.mutation';
+
+import { Iconify } from 'src/components/iconify';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 type Props = {
   id: string;
@@ -367,27 +366,24 @@ export default function EnterpriseDetailsView({ id }: Props) {
                     </DialogTitle>
                     <DialogContent>
                       {isGuest.value ? (
-                        <>
-                          <Autocomplete
-                            fullWidth
-                            options={guests?.rows ?? []}
-                            value={
-                              guests?.rows?.find(
-                                (client: { id: string }) => client.id === formData.guest
-                              ) || null
-                            }
-                            getOptionLabel={(option) => option.name}
-                            onChange={handleGuestsChange}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Guests" margin="none" />
-                            )}
-                            renderOption={(props, option) => (
-                              <li {...props} key={option.id}>
-                                {option.name}
-                              </li>
-                            )}
-                          />
-                        </>
+                        <Autocomplete
+                          fullWidth
+                          options={guests?.rows ?? []}
+                          value={
+                            guests?.rows?.find((x: { id: string }) => x.id === formData.guest) ||
+                            null
+                          }
+                          getOptionLabel={(option) => option.name}
+                          onChange={handleGuestsChange}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Guests" margin="none" />
+                          )}
+                          renderOption={(props, option) => (
+                            <li {...props} key={option.id}>
+                              {option.name}
+                            </li>
+                          )}
+                        />
                       ) : (
                         <>
                           <TextField
