@@ -7,21 +7,26 @@ import MuiPhoneNumber from 'mui-phone-number';
 import { alpha } from '@mui/system';
 import {
   Box,
+  List,
   Grid,
   Menu,
   Card,
   Paper,
+  Avatar,
   styled,
   Button,
   Dialog,
   MenuItem,
+  ListItem,
   TextField,
   Typography,
   IconButton,
   DialogTitle,
   Autocomplete,
+  ListItemText,
   DialogActions,
   DialogContent,
+  ListItemAvatar,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -48,6 +53,27 @@ type inputCreateAdmin = {
   email: string;
   clientTier1Id: string;
 };
+
+type TUsers = {
+  __typename: 'TUsers';
+  count: number;
+  rows: TUser[];
+};
+
+type TUser = {
+  __typename: 'TUser';
+  id: string;
+  name: string;
+  accountNo: string;
+  state: number;
+  profile: TUserProfile;
+};
+
+type TUserProfile = {
+  __typename: 'TUserProfile';
+  photo: string | null;
+};
+
 export default function EnterpriseDetailsView({ id }: Props) {
   // ------------------------------------------------------------------------
   const { action: getClient, data: client } = GQLMutation({
@@ -432,6 +458,21 @@ export default function EnterpriseDetailsView({ id }: Props) {
                     </DialogActions>
                   </Dialog>
                 </Box>
+                <List>
+                  {managers?.rows.map(({ manager }: any) => (
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar>
+                          <Iconify icon="carbon:user-avatar-filled" width={24} />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={manager?.name ?? ''}
+                        secondary={manager?.accountNo ?? ''}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
               </Paper>
             </Grid>
             <Grid item xs={8}>
