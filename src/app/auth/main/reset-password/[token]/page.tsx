@@ -28,9 +28,7 @@ const ResetPasswordSchema = zod
       .string()
       .min(1, { message: '🔑 Password is required!' })
       .min(6, { message: '⚠️ Password must be at least 6 characters!' }),
-    passwordConfirmartion: zod
-      .string()
-      .min(1, { message: '🔑 Confirm password is required!' }),
+    passwordConfirmartion: zod.string().min(1, { message: '🔑 Confirm password is required!' }),
   })
   .refine((data) => data.password === data.passwordConfirmartion, {
     message: "⚠️ Passwords don't match!",
@@ -50,7 +48,7 @@ function ResetPasswordView() {
     mutation: USER_AC_RESET,
     resolver: 'resetPassword',
     toastmsg: true,
-    callback: () => router.push('/dashboard'),
+    callback: () => router.replace('/'),
   });
 
   const methods = useForm<ResetPasswordSchemaType>({
@@ -83,7 +81,7 @@ function ResetPasswordView() {
             passwordConfirmartion: data.passwordConfirmartion,
           },
         },
-        onError: ({error}: any) => {
+        onError: ({ error }: any) => {
           console.error('🚫 Reset password error:', error);
           setErrorMsg(error.message);
         },
@@ -95,11 +93,7 @@ function ResetPasswordView() {
   });
 
   const renderForm = (
-    <Box
-      gap={3}
-      display="flex"
-      flexDirection="column"
-    >
+    <Box gap={3} display="flex" flexDirection="column">
       <Field.Text
         name="password"
         label="New Password"
@@ -153,12 +147,12 @@ function ResetPasswordView() {
         <Link
           href="/auth/main/sign-in"
           component={NextLink}
-          sx={{ 
+          sx={{
             color: 'text.secondary',
             textDecoration: 'underline',
             '&:hover': {
               color: 'primary.main',
-            }
+            },
           }}
         >
           Return to Login
@@ -169,10 +163,7 @@ function ResetPasswordView() {
 
   return (
     <>
-      <FormHead
-        title="Reset Password"
-        description="Enter your new password below"
-      />
+      <FormHead title="Reset Password" description="Enter your new password below" />
 
       <Form methods={methods} onSubmit={onSubmit}>
         {renderForm}
