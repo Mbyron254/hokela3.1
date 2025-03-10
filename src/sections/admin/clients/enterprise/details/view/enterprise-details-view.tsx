@@ -1,7 +1,7 @@
 'use client';
 
 import { formatDate } from 'date-fns';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import MuiPhoneNumber from 'mui-phone-number';
 
 import { alpha } from '@mui/system';
@@ -73,6 +73,12 @@ type TUserProfile = {
   __typename: 'TUserProfile';
   photo: string | null;
 };
+type AdminsListType = {
+  id: string;
+  name: string;
+  photo: string | null;
+  isGuest: boolean;
+};
 
 export default function EnterpriseDetailsView({ id }: Props) {
   // ------------------------------------------------------------------------
@@ -122,9 +128,22 @@ export default function EnterpriseDetailsView({ id }: Props) {
     []
   );
 
-  console.log(client, 'CLIENT');
-  console.log(managers, 'Managers');
-  console.log(guests, 'GUESTS');
+  const [adminsList, setAdminsList] = useState<AdminsListType[]>([]);
+  useMemo(() => {
+    if (managers && guests) {
+      if (managers?.rows.length > 0) {
+        const admins = tranformedAdmins(managers.rows);
+        setAdminsList([...admins]);
+      } else if (guests?.rows.length > 9) {
+        const adminsGuest = tranformedGuestAdmins(managers.rows);
+        setAdminsList([...adminsGuest]);
+      } else if (managers?.rows.length > 0 && guests?.rows.length > 9) {
+        const admins = tranformedAdmins(managers.rows);
+        const adminsGuest = tranformedGuestAdmins(managers.rows);
+        setAdminsList([...admins, ...adminsGuest]);
+      }
+    }
+  }, [managers, guests]);
 
   // ------------------------------------------------------------------------
   const Item = styled(Paper)(({ theme }) => ({
@@ -215,6 +234,72 @@ export default function EnterpriseDetailsView({ id }: Props) {
       handleAddManager();
     }
   };
+  const GuestAndAdminForm = () => (
+    <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="sm">
+      <DialogTitle>{isGuest.value ? 'Onboard Guest Manager' : 'Onboard New Manager'}</DialogTitle>
+      <DialogContent>
+        {isGuest.value ? (
+          <Autocomplete
+            fullWidth
+            options={guests?.rows ?? []}
+            value={guests?.rows?.find((x: { id: string }) => x.id === formData.guest) || null}
+            getOptionLabel={(option) => option.name}
+            onChange={handleGuestsChange}
+            renderInput={(params) => <TextField {...params} label="Guests" margin="none" />}
+            renderOption={(props, option) => (
+              <li {...props} key={option.id}>
+                {option.name}
+              </li>
+            )}
+          />
+        ) : (
+          <>
+            <TextField
+              autoFocus
+              fullWidth
+              name="name"
+              margin="dense"
+              variant="outlined"
+              label="Full Name"
+              value={formData.name}
+              onChange={handleInputChange}
+            />
+            <Box sx={{ my: 2 }} />
+            <TextField
+              autoFocus
+              fullWidth
+              name="email"
+              margin="dense"
+              variant="outlined"
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+            <Box sx={{ my: 2 }} />
+
+            <MuiPhoneNumber
+              name="phone"
+              label="Phone Number"
+              defaultCountry="ke"
+              variant="outlined"
+              fullWidth
+              onChange={(e) => handlePhoneChange(e as unknown as string)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleDialogClose} variant="outlined" color="inherit">
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} variant="contained">
+          {isGuest.value ? 'Onboard Guest' : 'Onboard Manager'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
   return (
     <DashboardContent>
       <Card sx={{ p: 5 }}>
@@ -356,10 +441,10 @@ export default function EnterpriseDetailsView({ id }: Props) {
           <Grid container spacing={2}>
             <Grid item xs={4}>
               {/* <Item>xs=4</Item> */}
-              <Paper
+              <Item
                 sx={{
                   textAlign: 'center',
-                  backgroundColor: '#1A2027',
+
                   height: '50vh',
                 }}
               >
@@ -386,97 +471,33 @@ export default function EnterpriseDetailsView({ id }: Props) {
                       New Guest Manager
                     </MenuItem>
                   </Menu>
-                  <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="sm">
-                    <DialogTitle>
-                      {isGuest.value ? 'Onboard Guest Manager' : 'Onboard New Manager'}
-                    </DialogTitle>
-                    <DialogContent>
-                      {isGuest.value ? (
-                        <Autocomplete
-                          fullWidth
-                          options={guests?.rows ?? []}
-                          value={
-                            guests?.rows?.find((x: { id: string }) => x.id === formData.guest) ||
-                            null
-                          }
-                          getOptionLabel={(option) => option.name}
-                          onChange={handleGuestsChange}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Guests" margin="none" />
-                          )}
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.id}>
-                              {option.name}
-                            </li>
-                          )}
-                        />
-                      ) : (
-                        <>
-                          <TextField
-                            autoFocus
-                            fullWidth
-                            name="name"
-                            margin="dense"
-                            variant="outlined"
-                            label="Full Name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                          />
-                          <Box sx={{ my: 2 }} />
-                          <TextField
-                            autoFocus
-                            fullWidth
-                            name="email"
-                            margin="dense"
-                            variant="outlined"
-                            label="Email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                          />
-                          <Box sx={{ my: 2 }} />
-
-                          <MuiPhoneNumber
-                            name="phone"
-                            label="Phone Number"
-                            defaultCountry="ke"
-                            variant="outlined"
-                            fullWidth
-                            onChange={(e) => handlePhoneChange(e as unknown as string)}
-                            InputLabelProps={{ shrink: true }}
-                          />
-                        </>
-                      )}
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleDialogClose} variant="outlined" color="inherit">
-                        Cancel
-                      </Button>
-                      <Button onClick={handleSubmit} variant="contained">
-                        {isGuest.value ? 'Onboard Guest' : 'Onboard Manager'}
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
                 </Box>
                 <List>
-                  {managers?.rows.map(({ manager }: any) => (
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar>
-                          <Iconify icon="carbon:user-avatar-filled" width={24} />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={manager?.name ?? ''}
-                        secondary={manager?.accountNo ?? ''}
-                      />
-                    </ListItem>
-                  ))}
+                  {adminsList.length > 0 &&
+                    adminsList.map((manager) => (
+                      <ListItem key={manager.id}>
+                        <ListItemAvatar>
+                          {manager.photo ? (
+                            <Avatar src={manager.photo} />
+                          ) : (
+                            <Avatar>
+                              <Iconify icon="carbon:user-avatar-filled" width={24} />
+                            </Avatar>
+                          )}
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={manager.name}
+                          secondary={manager.isGuest ? 'Guest' : 'Manager'}
+                        />
+                      </ListItem>
+                    ))}
                 </List>
-              </Paper>
+              </Item>
             </Grid>
             <Grid item xs={8}>
-              <Item>xs=8</Item>
+              <Item>
+                <GuestAndAdminForm />
+              </Item>
             </Grid>
           </Grid>
         </Box>
@@ -484,3 +505,20 @@ export default function EnterpriseDetailsView({ id }: Props) {
     </DashboardContent>
   );
 }
+
+const tranformedAdmins = (admins: Array<TUser>) => {
+  return admins.map((admin) => ({
+    id: admin.id,
+    name: admin.name,
+    photo: admin.profile.photo,
+    isGuest: false,
+  }));
+};
+const tranformedGuestAdmins = (guests: Array<TUser>) => {
+  return guests.map((guest) => ({
+    id: guest.id,
+    name: guest.name,
+    photo: guest.profile.photo,
+    isGuest: true,
+  }));
+};
