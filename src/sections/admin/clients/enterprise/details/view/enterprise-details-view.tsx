@@ -131,16 +131,19 @@ export default function EnterpriseDetailsView({ id }: Props) {
   const [adminsList, setAdminsList] = useState<AdminsListType[]>([]);
   useMemo(() => {
     if (managers && guests) {
-      if (managers?.rows.length > 0) {
+      if (managers?.rows.length > 0 && guests?.rows.length > 0) {
+        // Both managers and guests exist
+        const admins = tranformedAdmins(managers.rows);
+        const adminsGuest = tranformedGuestAdmins(guests.rows);
+        setAdminsList([...admins, ...adminsGuest]);
+      } else if (managers?.rows.length > 0) {
+        // Only managers exist
         const admins = tranformedAdmins(managers.rows);
         setAdminsList([...admins]);
-      } else if (guests?.rows.length > 9) {
-        const adminsGuest = tranformedGuestAdmins(managers.rows);
+      } else if (guests?.rows.length > 0) {
+        // Only guests exist
+        const adminsGuest = tranformedGuestAdmins(guests.rows);
         setAdminsList([...adminsGuest]);
-      } else if (managers?.rows.length > 0 && guests?.rows.length > 9) {
-        const admins = tranformedAdmins(managers.rows);
-        const adminsGuest = tranformedGuestAdmins(managers.rows);
-        setAdminsList([...admins, ...adminsGuest]);
       }
     }
   }, [managers, guests]);
@@ -519,19 +522,17 @@ export default function EnterpriseDetailsView({ id }: Props) {
   );
 }
 
-const tranformedAdmins = (admins: Array<TUser>) => {
-  return admins.map((admin) => ({
+const tranformedAdmins = (admins: Array<TUser>) =>
+  admins.map((admin) => ({
     id: admin.id,
     name: admin.name,
     photo: admin.profile.photo,
     isGuest: false,
   }));
-};
-const tranformedGuestAdmins = (guests: Array<TUser>) => {
-  return guests.map((guest) => ({
+const tranformedGuestAdmins = (guests: Array<TUser>) =>
+  guests.map((guest) => ({
     id: guest.id,
     name: guest.name,
     photo: guest.profile.photo,
     isGuest: true,
   }));
-};
