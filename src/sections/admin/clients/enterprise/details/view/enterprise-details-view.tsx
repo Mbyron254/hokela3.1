@@ -300,6 +300,184 @@ export default function EnterpriseDetailsView({ id }: Props) {
       </DialogActions>
     </Dialog>
   );
+
+  const AddMenu = () => (
+    <>
+      {' '}
+      <Typography sx={{ m: 1 }}>Managers</Typography>
+      <IconButton onClick={handleClick}>
+        <Iconify icon="mingcute:add-line" />
+      </IconButton>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem onClick={handleNewManager} sx={{ display: 'flex', gap: 1 }}>
+          <Iconify icon="mingcute:add-line" />
+          New Manager
+        </MenuItem>
+        <MenuItem onClick={handleNewGuestManager} sx={{ display: 'flex', gap: 1 }}>
+          <Iconify icon="ic:round-link" />
+          New Guest Manager
+        </MenuItem>
+      </Menu>
+    </>
+  );
+  const GuestAndAdminList = () => (
+    <List>
+      {adminsList.length > 0 &&
+        adminsList.map((manager) => (
+          <ListItem key={manager.id}>
+            <ListItemAvatar>
+              {manager.photo ? (
+                <Avatar src={manager.photo} />
+              ) : (
+                <Avatar>
+                  <Iconify icon="carbon:user-avatar-filled" width={24} />
+                </Avatar>
+              )}
+            </ListItemAvatar>
+            <ListItemText
+              primary={manager.name}
+              secondary={manager.isGuest ? 'Guest' : 'Manager'}
+            />
+          </ListItem>
+        ))}
+    </List>
+  );
+
+  const HeadingSection = () => (
+    <Box
+      sx={{
+        p: 2.5,
+        borderRadius: 2,
+        bgcolor: 'background.paper',
+        boxShadow: (theme) => theme.customShadows.z16,
+        mb: 3,
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2.5 }}>
+        <Box
+          sx={{
+            width: 48,
+            height: 48,
+            borderRadius: '12px',
+            background: (theme) =>
+              `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.08)} 0%, ${alpha(theme.palette.primary.dark, 0.24)} 100%)`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'primary.main',
+            fontWeight: 700,
+            fontSize: '1.25rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          }}
+        >
+          {client?.name.charAt(0) ?? ''}
+        </Box>
+
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+            {client?.name ?? ''}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {/* Code: {offer?.campaignRun?.code}  */}
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(4, 1fr)',
+          },
+          gap: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              p: 1,
+              borderRadius: 1,
+              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+            }}
+          >
+            <Box sx={{ width: 20, height: 20, color: 'primary.main' }}>🏣</Box>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Organization
+            </Typography>
+            <Typography variant="subtitle2">{client?.name ?? ''}</Typography>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              p: 1,
+              borderRadius: 1,
+              bgcolor: (theme) => alpha(theme.palette.success.main, 0.08),
+            }}
+          >
+            <Box sx={{ width: 20, height: 20, color: 'success.main' }}>📅</Box>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Start Date
+            </Typography>
+            <Typography variant="subtitle2">
+              {formatDate(client?.created ?? new Date(), 'MMM dd, yyyy') || '2024 Nov 21'}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              p: 1,
+              borderRadius: 1,
+              bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+            }}
+          >
+            <Box sx={{ width: 20, height: 20, color: 'error.main' }}>🎯</Box>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Type
+            </Typography>
+            <Typography variant="subtitle2">{client?.clientType.name ?? ''}</Typography>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              p: 1,
+              borderRadius: 1,
+              bgcolor: (theme) => alpha(theme.palette.warning.main, 0.08),
+            }}
+          >
+            <Box sx={{ width: 20, height: 20, color: 'warning.main' }}>⏰</Box>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Client No
+            </Typography>
+            <Typography variant="subtitle2">{client?.clientNo}</Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
   return (
     <DashboardContent>
       <Card sx={{ p: 5 }}>
@@ -312,135 +490,10 @@ export default function EnterpriseDetailsView({ id }: Props) {
               { name: 'Details' },
             ]}
           />
-          <Box
-            sx={{
-              p: 2.5,
-              borderRadius: 2,
-              bgcolor: 'background.paper',
-              boxShadow: (theme) => theme.customShadows.z16,
-              mb: 3,
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2.5 }}>
-              <Box
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: '12px',
-                  background: (theme) =>
-                    `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.08)} 0%, ${alpha(theme.palette.primary.dark, 0.24)} 100%)`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'primary.main',
-                  fontWeight: 700,
-                  fontSize: '1.25rem',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                }}
-              >
-                {client?.name.charAt(0) ?? ''}
-              </Box>
-
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
-                  {client?.name ?? ''}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {/* Code: {offer?.campaignRun?.code}  */}
-                </Typography>
-              </Box>
-            </Box>
-
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  sm: 'repeat(2, 1fr)',
-                  md: 'repeat(4, 1fr)',
-                },
-                gap: 2,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box
-                  sx={{
-                    p: 1,
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                  }}
-                >
-                  <Box sx={{ width: 20, height: 20, color: 'primary.main' }}>🏣</Box>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Organization
-                  </Typography>
-                  <Typography variant="subtitle2">{client?.name ?? ''}</Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box
-                  sx={{
-                    p: 1,
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.success.main, 0.08),
-                  }}
-                >
-                  <Box sx={{ width: 20, height: 20, color: 'success.main' }}>📅</Box>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Start Date
-                  </Typography>
-                  <Typography variant="subtitle2">
-                    {formatDate(client?.created ?? new Date(), 'MMM dd, yyyy') || '2024 Nov 21'}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box
-                  sx={{
-                    p: 1,
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
-                  }}
-                >
-                  <Box sx={{ width: 20, height: 20, color: 'error.main' }}>🎯</Box>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Type
-                  </Typography>
-                  <Typography variant="subtitle2">{client?.clientType.name ?? ''}</Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box
-                  sx={{
-                    p: 1,
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.warning.main, 0.08),
-                  }}
-                >
-                  <Box sx={{ width: 20, height: 20, color: 'warning.main' }}>⏰</Box>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Client No
-                  </Typography>
-                  <Typography variant="subtitle2">{client?.clientNo}</Typography>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
+          <HeadingSection />
 
           <Grid container spacing={2}>
             <Grid item xs={4}>
-              {/* <Item>xs=4</Item> */}
               <Item
                 sx={{
                   textAlign: 'center',
@@ -449,49 +502,9 @@ export default function EnterpriseDetailsView({ id }: Props) {
                 }}
               >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
-                  <Typography sx={{ m: 1 }}>Managers</Typography>
-                  <IconButton onClick={handleClick}>
-                    <Iconify icon="mingcute:add-line" />
-                  </IconButton>
-                  <Menu
-                    id="basic-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    MenuListProps={{
-                      'aria-labelledby': 'basic-button',
-                    }}
-                  >
-                    <MenuItem onClick={handleNewManager} sx={{ display: 'flex', gap: 1 }}>
-                      <Iconify icon="mingcute:add-line" />
-                      New Manager
-                    </MenuItem>
-                    <MenuItem onClick={handleNewGuestManager} sx={{ display: 'flex', gap: 1 }}>
-                      <Iconify icon="ic:round-link" />
-                      New Guest Manager
-                    </MenuItem>
-                  </Menu>
+                  <AddMenu />
                 </Box>
-                <List>
-                  {adminsList.length > 0 &&
-                    adminsList.map((manager) => (
-                      <ListItem key={manager.id}>
-                        <ListItemAvatar>
-                          {manager.photo ? (
-                            <Avatar src={manager.photo} />
-                          ) : (
-                            <Avatar>
-                              <Iconify icon="carbon:user-avatar-filled" width={24} />
-                            </Avatar>
-                          )}
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={manager.name}
-                          secondary={manager.isGuest ? 'Guest' : 'Manager'}
-                        />
-                      </ListItem>
-                    ))}
-                </List>
+                <GuestAndAdminList />
               </Item>
             </Grid>
             <Grid item xs={8}>
