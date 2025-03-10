@@ -6,7 +6,9 @@ import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
 import Drawer from '@mui/material/Drawer';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -15,9 +17,8 @@ import IconButton from '@mui/material/IconButton';
 import { paths } from 'src/routes/paths';
 import { useRouter, usePathname } from 'src/routes/hooks';
 
-import {GQLQuery } from 'src/lib/client';
+import { _mock } from 'src/_mock';
 import { varAlpha } from 'src/theme/styles';
-import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
@@ -26,6 +27,7 @@ import { AnimateAvatar } from 'src/components/animate';
 
 import { useMockedUser } from 'src/auth/hooks';
 
+import { UpgradeBlock } from './nav-upgrade';
 import { AccountButton } from './account-button';
 import { SignOutButton } from './sign-out-button';
 
@@ -51,11 +53,6 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
 
   const [open, setOpen] = useState(false);
 
-  const { data: session } = GQLQuery({
-    query: Q_SESSION_SELF,
-    queryAction: 'sessionSelf',
-  });
-
   const handleOpenDrawer = useCallback(() => {
     setOpen(true);
   }, []);
@@ -76,7 +73,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
     <AnimateAvatar
       width={96}
       slotProps={{
-        avatar: { src: session?.user?.profile?.photo, alt: session?.user?.name || 'Agent' },
+        avatar: { src: user?.photoURL, alt: user?.displayName },
         overlay: {
           border: 2,
           spacing: 3,
@@ -84,7 +81,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
         },
       }}
     >
-      {session?.user?.name?.charAt(0).toUpperCase()}
+      {user?.displayName?.charAt(0).toUpperCase()}
     </AnimateAvatar>
   );
 
@@ -92,8 +89,8 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
     <>
       <AccountButton
         onClick={handleOpenDrawer}
-        photoURL={session?.user?.profile?.photo}
-        displayName={session?.user?.name}
+        photoURL={user?.photoURL}
+        displayName={user?.displayName}
         sx={sx}
         {...other}
       />
@@ -117,15 +114,15 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
             {renderAvatar}
 
             <Typography variant="subtitle1" noWrap sx={{ mt: 2 }}>
-              {session?.user?.name}
+              {user?.displayName}
             </Typography>
 
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }} noWrap>
-              {session?.user?.email}
+              {user?.email}
             </Typography>
           </Stack>
 
-          {/* <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="center" sx={{ p: 3 }}>
+          <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="center" sx={{ p: 3 }}>
             {[...Array(3)].map((_, index) => (
               <Tooltip
                 key={_mock.fullName(index + 1)}
@@ -149,7 +146,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
                 <Iconify icon="mingcute:add-line" />
               </IconButton>
             </Tooltip>
-          </Stack> */}
+          </Stack>
 
           <Stack
             sx={{
@@ -162,7 +159,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
             {data.map((option) => {
               const rootLabel = pathname.includes('/dashboard') ? 'Home' : 'Dashboard';
 
-              const rootHref = pathname.includes('/dashboard') ? '/' : paths.v2.agent.root;
+              const rootHref = pathname.includes('/dashboard') ? '/' : paths.dashboard.root;
 
               return (
                 <MenuItem
@@ -191,9 +188,9 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
             })}
           </Stack>
 
-          {/* <Box sx={{ px: 2.5, py: 3 }}>
+          <Box sx={{ px: 2.5, py: 3 }}>
             <UpgradeBlock />
-          </Box> */}
+          </Box>
         </Scrollbar>
 
         <Box sx={{ p: 2.5 }}>

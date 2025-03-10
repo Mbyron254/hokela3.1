@@ -10,6 +10,9 @@ import { iconButtonClasses } from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { allLangs } from 'src/locales';
+import { _contacts, _notifications } from 'src/_mock';
+
 import { Logo } from 'src/components/logo';
 import { useSettingsContext } from 'src/components/settings';
 
@@ -20,15 +23,18 @@ import { NavVertical } from './nav-vertical';
 import { NavHorizontal } from './nav-horizontal';
 import { _account } from '../config-nav-account';
 import { Searchbar } from '../components/searchbar';
-// import { _workspaces } from '../config-nav-workspace';
+import { _workspaces } from '../config-nav-workspace';
 import { MenuButton } from '../components/menu-button';
 import { LayoutSection } from '../core/layout-section';
 import { HeaderSection } from '../core/header-section';
 import { StyledDivider, useNavColorVars } from './styles';
 import { AccountDrawer } from '../components/account-drawer';
 import { SettingsButton } from '../components/settings-button';
-// import { WorkspacesPopover } from '../components/workspaces-popover';
+import { LanguagePopover } from '../components/language-popover';
+import { ContactsPopover } from '../components/contacts-popover';
+import { WorkspacesPopover } from '../components/workspaces-popover';
 import { navData as dashboardNavData } from '../config-nav-dashboard';
+import { NotificationsDrawer } from '../components/notifications-drawer';
 
 // ----------------------------------------------------------------------
 
@@ -99,7 +105,6 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
             ),
             bottomArea: isNavHorizontal ? (
               <NavHorizontal
-                // @ts-expect-error
                 data={navData}
                 layoutQuery={layoutQuery}
                 cssVars={navColorVars.section}
@@ -117,7 +122,6 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
                   }}
                 />
                 <NavMobile
-                  // @ts-ignore
                   data={navData}
                   open={mobileNavOpen.value}
                   onClose={mobileNavOpen.onFalse}
@@ -139,31 +143,22 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
                   />
                 )}
                 {/* -- Workspace popover -- */}
-                {/* <WorkspacesPopover
+                <WorkspacesPopover
                   data={_workspaces}
                   sx={{ color: 'var(--layout-nav-text-primary-color)' }}
-                /> */}
+                />
               </>
             ),
             rightArea: (
               <Box display="flex" alignItems="center" gap={{ xs: 0, sm: 0.75 }}>
                 {/* -- Searchbar -- */}
-                {/*   @ts-expect-error */}
                 <Searchbar data={navData} />
                 {/* -- Language popover -- */}
-                {/* <LanguagePopover
-                  data={[
-                    { value: 'en', label: 'English', countryCode: 'GB' },
-                    { value: 'fr', label: 'French', countryCode: 'FR' },
-                    { value: 'vi', label: 'Vietnamese', countryCode: 'VN' },
-                    { value: 'cn', label: 'Chinese', countryCode: 'CN' },
-                    { value: 'ar', label: 'Arabic', countryCode: 'SA' },
-                  ]}
-                /> */}
+                <LanguagePopover data={allLangs} />
                 {/* -- Notifications popover -- */}
-                {/* <NotificationsDrawer data={_notifications} /> */}
+                <NotificationsDrawer data={_notifications} />
                 {/* -- Contacts popover -- */}
-                {/* <ContactsPopover data={_contacts} /> */}
+                <ContactsPopover data={_contacts} />
                 {/* -- Settings button -- */}
                 <SettingsButton />
                 {/* -- Account drawer -- */}
@@ -179,7 +174,6 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
       sidebarSection={
         isNavHorizontal ? null : (
           <NavVertical
-            // @ts-ignore
             data={navData}
             isNavMini={isNavMini}
             layoutQuery={layoutQuery}

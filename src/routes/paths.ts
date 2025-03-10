@@ -106,9 +106,16 @@ const v2_paths = {
 };
 
 export const paths = {
+  trending: '/coming-soon',
+  articles: '/coming-soon',
+
+  people: '/coming-soon',
+  learning: '/coming-soon',
+  jobs: '/coming-soon',
+
   faqs: '/faqs',
-  changelog: 'https://docs.minimals.cc/changelog',
-  minimalStore: 'https://mui.com/store/items/minimal-dashboard/',
+  changelog: 'https://docs.localhost.cc/changelog',
+  minimalStore: 'http://localhost:3000/minimalstore',
   // AUTH
   auth: {
     main: {

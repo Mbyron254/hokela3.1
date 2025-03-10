@@ -9,10 +9,10 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { alpha as hexAlpha } from '@mui/material/styles';
 
+import { paths } from 'src/routes/paths';
+
 import { CONFIG } from 'src/config-global';
-import { GQLMutation } from 'src/lib/client';
 import { varAlpha, bgGradient } from 'src/theme/styles';
-import { USER_LOGOUT } from 'src/lib/mutations/user.mutation';
 
 import { Label } from 'src/components/label';
 
@@ -22,15 +22,6 @@ import { useMockedUser } from 'src/auth/hooks';
 
 export function NavUpgrade({ sx, ...other }: StackProps) {
   const { user } = useMockedUser();
-
-  const { action: signout, loading: signingOut } = GQLMutation({
-    mutation: USER_LOGOUT,
-    resolver: 'logout',
-    toastmsg: true,
-    callback: () => window.location.replace('/'),
-  });
-
-  const handleSignOut = () => signout();
 
   return (
     <Stack sx={{ px: 2, py: 5, textAlign: 'center', ...sx }} {...other}>
@@ -74,12 +65,8 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
           </Typography>
         </Stack>
 
-        <Button 
-          variant="contained" 
-          onClick={handleSignOut}
-          disabled={signingOut}
-        >
-          Logout
+        <Button variant="contained" href={paths.minimalStore} target="_blank" rel="noopener">
+          Upgrade to Pro
         </Button>
       </Stack>
     </Stack>
@@ -89,15 +76,6 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
 // ----------------------------------------------------------------------
 
 export function UpgradeBlock({ sx, ...other }: StackProps) {
-  const { action: signout, loading: signingOut } = GQLMutation({
-    mutation: USER_LOGOUT,
-    resolver: 'logout',
-    toastmsg: true,
-    callback: () => window.location.replace('/'),
-  });
-
-  const handleSignOut = () => signout();
-
   return (
     <Stack
       sx={{
@@ -151,14 +129,8 @@ export function UpgradeBlock({ sx, ...other }: StackProps) {
           Power up Productivity!
         </Box>
 
-        <Button 
-          variant="contained" 
-          size="small" 
-          color="warning"
-          onClick={handleSignOut}
-          disabled={signingOut}
-        >
-          Logout
+        <Button variant="contained" size="small" color="warning">
+          Upgrade to Pro
         </Button>
       </Stack>
     </Stack>

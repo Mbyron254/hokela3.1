@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 
 import { varFade, MotionViewport } from 'src/components/animate';
 
-import FaqsCategory from 'src/sections/faqs/faqs-category-copy';
+import FaqsCategory from 'src/sections/faqs/faqs-category';
 
 // ----------------------------------------------------------------------
 
@@ -54,18 +54,17 @@ export default function HomeMinimal() {
 
         <m.div variants={varFade().inDown}>
           <Typography variant="h2">
-            All the features you need  <br /> in one place.
+            All the features you need <br /> in one place.
           </Typography>
-         
         </m.div>
         <Typography sx={{ color: 'text.secondary' }}>
-            We offer packages consisting of various complete services, <br />Choose acording to your needs. 
-          </Typography>
+          We offer packages consisting of various complete services, <br />
+          Choose acording to your needs.
+        </Typography>
       </Stack>
-      
+
       <FaqsCategory />
       {/* <AboutWhat/> */}
-      
     </Container>
   );
 }

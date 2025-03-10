@@ -4,7 +4,7 @@ import { useScroll } from 'framer-motion';
 
 import Box from '@mui/material/Box';
 
-import MainLayout from 'src/layouts/main';
+import { MainLayout } from 'src/layouts/main';
 
 import ScrollProgress from 'src/components/scroll-progress';
 
