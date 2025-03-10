@@ -1,9 +1,12 @@
 'use client';
 
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
+
+import { useOverviewData } from 'src/hooks/use-overview-data';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { SeoIllustration } from 'src/assets/illustrations';
@@ -30,29 +33,9 @@ export function OverviewAppView() {
   const { user } = useMockedUser();
 
   const theme = useTheme();
-  const _appFeatured = [
-    {
-      id: 'e99f09a7-dd88-49d5-b1c8-1daf80c2d7b4',
-      title: 'The Rise of Remote Work: Benefits, Challenges, and Future Trends',
-      description: 'The aroma of freshly brewed coffee filled the air, awakening my senses.',
-      coverUrl: '/assets/images/mock/cover/cover-4.webp',
-    },
-    {
-      id: 'e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5',
-      title: 'Understanding Blockchain Technology: Beyond Cryptocurrency',
-      description:
-        'The children giggled with joy as they ran through the sprinklers on a hot summer day.',
-      coverUrl: '/assets/images/mock/cover/cover-5.webp',
-    },
-    {
-      id: 'e99f09a7-dd88-49d5-b1c8-1daf80c2d7b6',
-      title: 'Mental Health in the Digital Age: Navigating Social Media and Well-being',
-      description:
-        'He carefully crafted a beautiful sculpture out of clay, his hands skillfully shaping the intricate details.',
-      coverUrl: '/assets/images/mock/cover/cover-6.webp',
-    },
-  ];
-  console.log(_appFeatured, '_appFeatured');
+
+  const { data } = useOverviewData();
+
   return (
     <DashboardContent maxWidth="xl">
       <Grid container spacing={3}>
@@ -70,7 +53,7 @@ export function OverviewAppView() {
         </Grid>
 
         <Grid xs={12} md={4}>
-          <AppFeatured list={_appFeatured} />
+          <AppFeatured list={data?.featured ?? []} />
         </Grid>
 
         <Grid xs={12} md={4}>
