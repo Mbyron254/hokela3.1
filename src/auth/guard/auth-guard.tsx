@@ -65,6 +65,49 @@ export function AuthGuard({ children }: Props) {
   // useEffect(() => {
   //   checkPermissions();
   // }, [checkPermissions]);
+  // const checkPermissions = async (): Promise<void> => {
+  //   if (loading) {
+  //     return;
+  //   }
+
+  //   if (authenticated) {
+  //     let homePath = '/';
+
+  //     if (user?.role?.name === 'AGENT') {
+  //       homePath = paths.v2.agent.root;
+  //     } else if (!user?.role?.clientTier1 && !user?.role?.clientTier2) {
+  //       homePath = paths.v2.admin.root;
+  //     } else {
+  //       const clientType =
+  //         user?.role?.clientTier1?.clientType?.name ||
+  //         user?.role?.clientTier2?.clientType?.name ||
+  //         'Hokela Interactive';
+
+  //       switch (clientType) {
+  //         case 'PRODUCER':
+  //           homePath = paths.v2.producer.root;
+  //           break;
+  //         case 'DISTRIBUTOR':
+  //           homePath = paths.v2.distributor.root;
+  //           break;
+  //         case 'RETAILER':
+  //           homePath = paths.v2.retailer.root;
+  //           break;
+  //         case 'MARKETING_AGENCY':
+  //           homePath = paths.v2.marketing.root;
+  //           break;
+  //         default:
+  //           homePath = '/';
+  //           break;
+  //       }
+  //     }
+
+  //     router.replace(returnTo || homePath);
+  //     return;
+  //   }
+
+  //   setIsChecking(false);
+  // };
   const checkPermissions = async (): Promise<void> => {
     if (loading) {
       return;

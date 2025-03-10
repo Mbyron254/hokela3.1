@@ -1,7 +1,7 @@
 // import { CONFIG } from 'src/config-global';
 import { DashboardLayout } from 'src/layouts/dashboard';
 
-import { GuestGuard } from 'src/auth/guard';
+import { AuthGuard } from 'src/auth/guard';
 
 // ----------------------------------------------------------------------
 
@@ -15,8 +15,8 @@ export default function Layout({ children }: Props) {
   // }
 
   return (
-    <GuestGuard>
+    <AuthGuard>
       <DashboardLayout>{children}</DashboardLayout>
-    </GuestGuard>
+    </AuthGuard>
   );
 }
