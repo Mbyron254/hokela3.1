@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { SeoIllustration } from 'src/assets/illustrations';
@@ -23,159 +25,351 @@ import { AppAreaInstalled } from '../app-area-installed';
 import { AppWidgetSummary } from '../app-widget-summary';
 import { AppCurrentDownload } from '../app-current-download';
 import { AppTopInstalledCountries } from '../app-top-installed-countries';
+import { Q_SESSIONS } from 'src/lib/queries/session.query';
+import { GQLMutation } from 'src/lib/client';
+import { GQLQuery } from 'src/lib/client';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { M_CAMPAIGN_RUN_OFFERS } from 'src/lib/mutations/campaign-run-offer.mutation';
+import { M_OPEN_JOBS } from 'src/lib/mutations/campaign-run.mutation';
+import { Q_CLIENTS_T1 } from 'src/lib/queries/client-t1.query';
+import { Q_CLIENTS_T2_ACTIVE } from 'src/lib/queries/client-t2.query';
+import { Q_SHOPS_ACTIVE } from 'src/lib/queries/shop.query';
+import { Q_SHOPS_RECYCLED } from 'src/lib/queries/shop.query';
+import { useState } from 'react';
+import { ShopLocationsMap } from '../shop-locations-map';
+
+// Add these dummy data constants after imports
+const DUMMY_SHOPS = [
+  {
+    id: '1',
+    name: 'Nairobi Central Market',
+    lat: -1.2921,
+    lng: 36.8219,
+    approved: true,
+    user: { name: 'John Kamau' },
+    category: { name: 'Market' }
+  },
+  {
+    id: '2',
+    name: 'Mombasa Beach Shop',
+    lat: -4.0435,
+    lng: 39.6682,
+    approved: true,
+    user: { name: 'Sarah Omar' },
+    category: { name: 'Retail' }
+  },
+  {
+    id: '3',
+    name: 'Kisumu Lake Market',
+    lat: -0.1022,
+    lng: 34.7617,
+    approved: true,
+    user: { name: 'Michael Ochieng' },
+    category: { name: 'Market' }
+  },
+  {
+    id: '4',
+    name: 'Dar es Salaam Central',
+    lat: -6.7924,
+    lng: 39.2083,
+    approved: true,
+    user: { name: 'Hassan Mohamed' },
+    category: { name: 'Retail' }
+  },
+  {
+    id: '5',
+    name: 'Kampala City Mall',
+    lat: 0.3476,
+    lng: 32.5825,
+    approved: true,
+    user: { name: 'David Mukasa' },
+    category: { name: 'Mall' }
+  },
+  {
+    id: '6',
+    name: 'Addis Merkato',
+    lat: 9.0342,
+    lng: 38.7497,
+    approved: true,
+    user: { name: 'Abebe Bekele' },
+    category: { name: 'Market' }
+  },
+  {
+    id: '7',
+    name: 'Kigali Heights',
+    lat: -1.9437,
+    lng: 30.0594,
+    approved: true,
+    user: { name: 'Marie Uwase' },
+    category: { name: 'Mall' }
+  },
+  {
+    id: '8',
+    name: 'Arusha Craft Market',
+    lat: -3.3869,
+    lng: 36.6830,
+    approved: false,
+    user: { name: 'James Mollel' },
+    category: { name: 'Craft' }
+  }
+];
+
+// Add dummy session data
+const DUMMY_SESSIONS = {
+  total: 156,
+  items: [
+    { count: 45, locked: false, expires: '2024-04-10' },
+    { count: 38, locked: true, expires: '2024-04-09' },
+    { count: 52, locked: false, expires: '2024-04-11' },
+    { count: 21, locked: true, expires: '2024-04-08' },
+    { count: 35, locked: false, expires: '2024-04-12' },
+    { count: 42, locked: true, expires: '2024-04-13' },
+    { count: 28, locked: false, expires: '2024-04-14' },
+    { count: 31, locked: true, expires: '2024-04-15' },
+  ]
+};
+
+// Add dummy client data
+const DUMMY_CLIENTS = {
+  t1: Array.from({ length: 25 }, (_, i) => ({
+    id: `t1-${i + 1}`,
+    name: `T1 Client ${i + 1}`,
+    status: i % 3 === 0 ? 'active' : 'inactive'
+  })),
+  t2: Array.from({ length: 18 }, (_, i) => ({
+    id: `t2-${i + 1}`,
+    name: `T2 Client ${i + 1}`,
+    status: 'active'
+  }))
+};
 
 // ----------------------------------------------------------------------
 
 export function OverviewAppView() {
-  const { user } = useMockedUser();
+  const { data: session } = GQLQuery({
+    query: Q_SESSION_SELF,
+    queryAction: 'sessionSelf',
+  });
+  const { action: getOffers, data: offers } = GQLMutation({
+    mutation: M_CAMPAIGN_RUN_OFFERS,
+    resolver: 'm_campaignRunOffers',
+    toastmsg: false,
+  });
+  const { action: getJobs, data: jobs } = GQLMutation({
+    mutation: M_OPEN_JOBS,
+    resolver: 'openJobs',
+    toastmsg: false,
+  });
+
+  const { data: allClients, loading: loadingClients } = GQLQuery({
+    query: Q_CLIENTS_T1,
+    queryAction: 'tier1Clients',
+    variables: {
+      input: {
+        page: 0,
+        pageSize: 1000  // Set this to a number larger than total clients
+      }
+    },
+  });
+
+  const { data: clientsActive, loading: loadingClientsActive } = GQLQuery({
+    query: Q_CLIENTS_T2_ACTIVE,
+    queryAction: 'tier2Clients',
+    variables: { input: { page: 0, pageSize: 1000 } },
+  });
+
+  console.log('clientsActive:', clientsActive);
+  console.log('allClients:', allClients);
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const { data: sessions } = GQLQuery({
+    query: Q_SESSIONS,
+    queryAction: 'sessions',
+    variables: {
+      input: {
+        page,
+        pageSize
+      }
+    }
+  });
+
+  console.log('sessions:', sessions);
+
+  const loadRunsActive = (page?: number, pageSize?: number) => {
+    getJobs({ variables: { input: { page, pageSize } } });
+  };
+
+  const loadOffers = () => {
+    if (session?.user?.agent?.id) {
+      getOffers({
+        variables: {
+          input: { agentId: session.user.agent.id },
+        },
+      });
+    }
+  };
+
+  const queryFilters = { page: 0, pageSize: 10 };
+
+  // Fetch active shops
+  const {
+    refetch: refetchShopsActive,
+    data: shopsActive,
+    loading: loadingShopsActive,
+  } = GQLQuery({
+    query: Q_SHOPS_ACTIVE,
+    queryAction: 'shops',
+    variables: { input: queryFilters },
+  });
+
+  // Fetch recycled shops
+  const {
+    refetch: refetchShopsRecycled,
+    data: shopsRecycled,
+    loading: loadingShopsRecycled,
+  } = GQLQuery({
+    query: Q_SHOPS_RECYCLED,
+    queryAction: 'shopsRecycled',
+    variables: { input: queryFilters },
+  });
+
+  useEffect(
+    () => loadOffers(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [session?.user?.agent?.id]
+  );
+  useEffect(
+    () => loadRunsActive(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  console.log(offers, 'offers');
+  console.log(session, 'session');
+  console.log('JOBS  ', jobs);
 
   const theme = useTheme();
-  const _appFeatured = [
-    {
-      id: 'e99f09a7-dd88-49d5-b1c8-1daf80c2d7b4',
-      title: 'The Rise of Remote Work: Benefits, Challenges, and Future Trends',
-      description: 'The aroma of freshly brewed coffee filled the air, awakening my senses.',
-      coverUrl: '/assets/images/mock/cover/cover-4.webp',
-    },
-    {
-      id: 'e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5',
-      title: 'Understanding Blockchain Technology: Beyond Cryptocurrency',
-      description:
-        'The children giggled with joy as they ran through the sprinklers on a hot summer day.',
-      coverUrl: '/assets/images/mock/cover/cover-5.webp',
-    },
-    {
-      id: 'e99f09a7-dd88-49d5-b1c8-1daf80c2d7b6',
-      title: 'Mental Health in the Digital Age: Navigating Social Media and Well-being',
-      description:
-        'He carefully crafted a beautiful sculpture out of clay, his hands skillfully shaping the intricate details.',
-      coverUrl: '/assets/images/mock/cover/cover-6.webp',
-    },
+
+  // Calculate some useful metrics
+  const totalT1Clients = allClients?.length || DUMMY_CLIENTS.t1.length;
+  const totalActiveT2 = clientsActive?.length || DUMMY_CLIENTS.t2.length;
+  const totalSessions = sessions?.total || DUMMY_SESSIONS.total;
+  const totalOffers = offers?.length || 45; // Example dummy value
+  const totalJobs = jobs?.length || 23; // Example dummy value
+
+  // Calculate percentage changes (example calculation - adjust as needed)
+  const calculatePercentChange = (current: number, previous: number) =>
+    previous ? ((current - previous) / previous) * 100 : 0;
+
+  // Calculate session statistics
+  const sessionStats = {
+    active: 0,
+    expired: 0,
+    locked: 0,
+    unlocked: 0
+  };
+
+  const sessionsToProcess = sessions?.items || DUMMY_SESSIONS.items;
+  
+  sessionsToProcess.forEach((session: any) => {
+    const isExpired = new Date(session.expires) < new Date();
+    if (isExpired) {
+      sessionStats.expired++;
+    } else {
+      sessionStats.active++;
+    }
+
+    if (session.locked) {
+      sessionStats.locked++;
+    } else {
+      sessionStats.unlocked++;
+    }
+  });
+
+  // Modify the allShops combination to include dummy data when real data is not available
+  const allShops = [
+    ...(shopsActive?.rows || []),
+    ...(shopsRecycled?.rows || []),
+    ...((!shopsActive?.rows && !shopsRecycled?.rows) ? DUMMY_SHOPS : [])
   ];
-  console.log(_appFeatured, '_appFeatured');
+
+  if (loadingClients || loadingClientsActive) {
+    return (
+      <DashboardContent maxWidth="xl">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <CircularProgress />
+        </Box>
+      </DashboardContent>
+    );
+  }
+
   return (
     <DashboardContent maxWidth="xl">
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
-          <AppWelcome
-            title={`Welcome back 👋 \n ${user?.displayName}`}
-            description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
-            img={<SeoIllustration hideBackground />}
-            action={
-              <Button variant="contained" color="primary">
-                Go now
-              </Button>
-            }
-          />
-        </Grid>
-
-        <Grid xs={12} md={4}>
-          <AppFeatured list={_appFeatured} />
-        </Grid>
-
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total active users"
-            percent={2.6}
-            total={18765}
+            title="Total T1 Clients"
+            percent={calculatePercentChange(totalT1Clients, totalT1Clients - 2)} // Example change
+            total={totalT1Clients}
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [15, 18, 12, 51, 68, 11, 39, 37],
+              series: sessions?.items?.slice(0, 8)?.map((s: any) => s.count) || [],
             }}
           />
         </Grid>
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total installed"
-            percent={0.2}
-            total={4876}
+            title="Active T2 Clients"
+            percent={calculatePercentChange(totalActiveT2, totalActiveT2 - 1)}
+            total={totalActiveT2}
             chart={{
               colors: [theme.vars.palette.info.main],
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [20, 41, 63, 33, 28, 35, 50, 46],
+              series: sessions?.items?.slice(0, 8)?.map((s: any) => s.count) || [],
             }}
           />
         </Grid>
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total downloads"
-            percent={-0.1}
-            total={678}
+            title="Total Active Sessions"
+            percent={calculatePercentChange(totalSessions, totalSessions - 5)}
+            total={totalSessions}
             chart={{
               colors: [theme.vars.palette.error.main],
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [18, 19, 31, 8, 16, 37, 12, 33],
+              series: sessions?.items?.slice(0, 8)?.map((s: any) => s.count) || [],
             }}
           />
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
           <AppCurrentDownload
-            title="Current download"
-            subheader="Downloaded by operating system"
+            title="Session Statistics"
+            subheader="Active vs Expired & Locked vs Unlocked"
             chart={{
               series: [
-                { label: 'Mac', value: 12244 },
-                { label: 'Window', value: 53345 },
-                { label: 'iOS', value: 44313 },
-                { label: 'Android', value: 78343 },
+                { label: 'Active Sessions', value: sessionStats.active },
+                { label: 'Expired Sessions', value: sessionStats.expired },
+                { label: 'Locked Sessions', value: sessionStats.locked },
+                { label: 'Unlocked Sessions', value: sessionStats.unlocked },
               ],
             }}
           />
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>
-          <AppAreaInstalled
-            title="Area installed"
-            subheader="(+43%) than last year"
-            chart={{
-              categories: [
-                'Jan',
-                'Feb',
-                'Mar',
-                'Apr',
-                'May',
-                'Jun',
-                'Jul',
-                'Aug',
-                'Sep',
-                'Oct',
-                'Nov',
-                'Dec',
-              ],
-              series: [
-                {
-                  name: '2022',
-                  data: [
-                    { name: 'Asia', data: [12, 10, 18, 22, 20, 12, 8, 21, 20, 14, 15, 16] },
-                    { name: 'Europe', data: [12, 10, 18, 22, 20, 12, 8, 21, 20, 14, 15, 16] },
-                    { name: 'Americas', data: [12, 10, 18, 22, 20, 12, 8, 21, 20, 14, 15, 16] },
-                  ],
-                },
-                {
-                  name: '2023',
-                  data: [
-                    { name: 'Asia', data: [6, 18, 14, 9, 20, 6, 22, 19, 8, 22, 8, 17] },
-                    { name: 'Europe', data: [6, 18, 14, 9, 20, 6, 22, 19, 8, 22, 8, 17] },
-                    { name: 'Americas', data: [6, 18, 14, 9, 20, 6, 22, 19, 8, 22, 8, 17] },
-                  ],
-                },
-                {
-                  name: '2024',
-                  data: [
-                    { name: 'Asia', data: [6, 20, 15, 18, 7, 24, 6, 10, 12, 17, 18, 10] },
-                    { name: 'Europe', data: [6, 20, 15, 18, 7, 24, 6, 10, 12, 17, 18, 10] },
-                    { name: 'Americas', data: [6, 20, 15, 18, 7, 24, 6, 10, 12, 17, 18, 10] },
-                  ],
-                },
-              ],
-            }}
+          <ShopLocationsMap
+            title="Selected Shop Locations"
+            subheader={`Total Shops: ${allShops.length}`}
+            shops={allShops}
           />
         </Grid>
 
-        <Grid xs={12} lg={8}>
+        {/* <Grid xs={12} lg={8}>
           <AppNewInvoice
             title="New invoice"
             tableData={_appInvoices}
@@ -204,24 +398,24 @@ export function OverviewAppView() {
         <Grid xs={12} md={6} lg={4}>
           <Box sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
             <AppWidget
-              title="Conversion"
-              total={38566}
+              title="Total Offers"
+              total={totalOffers}
               icon="solar:user-rounded-bold"
-              chart={{ series: 48 }}
+              chart={{ series: (totalOffers / 100) * 100 }} // Adjust calculation as needed
             />
 
             <AppWidget
-              title="Applications"
-              total={55566}
+              title="Open Jobs"
+              total={totalJobs}
               icon="fluent:mail-24-filled"
               chart={{
-                series: 75,
+                series: (totalJobs / 100) * 100, // Adjust calculation as needed
                 colors: [theme.vars.palette.info.light, theme.vars.palette.info.main],
               }}
               sx={{ bgcolor: 'info.dark', [`& .${svgColorClasses.root}`]: { color: 'info.light' } }}
             />
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
     </DashboardContent>
   );
