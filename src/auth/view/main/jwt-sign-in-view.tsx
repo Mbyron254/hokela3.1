@@ -234,7 +234,7 @@ export function JwtSignInView() {
   return (
     <>
       <FormHead
-        title="Sign in to your account"
+        title="Sign in"
         description={
           <>
             {`Don't have an account? `}
