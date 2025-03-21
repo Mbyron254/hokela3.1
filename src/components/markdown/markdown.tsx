@@ -12,7 +12,7 @@ import Link from '@mui/material/Link';
 import { isExternalLink } from 'src/routes/utils';
 import { RouterLink } from 'src/routes/components';
 
-import  Image  from '../image';
+import { Image } from '../image';
 import { StyledRoot } from './styles';
 import { markdownClasses } from './classes';
 import { htmlToMarkdown, isMarkdownContent } from './html-to-markdown';

@@ -6,7 +6,7 @@ import { alpha } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import Image from 'src/components/image';
+import {Image} from 'src/components/image';
 import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------

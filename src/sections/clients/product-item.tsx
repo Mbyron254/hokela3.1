@@ -12,7 +12,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { fCurrency } from 'src/utils/format-number';
 
-import Image from 'src/components/image';
+import {Image} from 'src/components/image';
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ColorPreview } from 'src/components/color-utils';

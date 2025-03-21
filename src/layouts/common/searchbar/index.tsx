@@ -73,7 +73,6 @@ function Searchbar() {
   }, []);
 
   const dataFiltered = applyFilter({
-    // @ts-expect-error
     inputData: getAllItems({ data: navData }),
     query: searchQuery,
   });

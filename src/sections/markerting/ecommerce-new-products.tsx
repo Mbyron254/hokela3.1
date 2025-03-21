@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 
 import { varAlpha } from 'src/theme/styles';
 
-import Image from 'src/components/image';
+import {Image} from 'src/components/image';
 import { Carousel, useCarousel, CarouselDotButtons } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
@@ -83,7 +83,7 @@ function CarouselItem({ item, ...other }: CarouselItemProps) {
       <Image
         alt={item.name}
         src={item.coverUrl}
-        // @ts-expect-error
+        
         slotProps={{
           overlay: {
             backgroundImage: (theme: {

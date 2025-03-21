@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 
 import { varAlpha } from 'src/theme/styles';
 
-import  Image  from '../image';
+import { Image } from '../image';
 import { Iconify } from '../iconify';
 import { uploadClasses } from './classes';
 import { RejectionFiles } from './components/rejection-files';

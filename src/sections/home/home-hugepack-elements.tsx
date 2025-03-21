@@ -38,7 +38,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { _mock } from 'src/_mock';
 
-import Image from 'src/components/image';
+import {Image} from 'src/components/image';
 import {Label} from 'src/components/label';
 import {Iconify} from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';

@@ -10,7 +10,7 @@ import { paths } from 'src/routes/paths';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import Image from 'src/components/image';
+import {Image} from 'src/components/image';
 import {Iconify} from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
 
