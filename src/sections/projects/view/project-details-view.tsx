@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { Box, Tab, Tabs, Paper, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Paper, Typography, Grid } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 
@@ -86,12 +86,33 @@ export function ProjectDetailsView({ id }: Props) {
         sx={{ p: 2.5, typography: 'body2', borderRadius: 1.5, height: '85vh' }}
       >
         {currentTab === 'overview' && (
-          <>
-            <Typography variant="h6" gutterBottom>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h4" gutterBottom>
               {project?.name}
             </Typography>
-            Overview Content
-          </>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle1">Start Date:</Typography>
+                <Typography variant="body2">{project?.dateStart}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle1">End Date:</Typography>
+                <Typography variant="body2">{project?.dateStop}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="subtitle1">Description:</Typography>
+                <Typography variant="body2">{project?.description}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle1">Client:</Typography>
+                <Typography variant="body2">{project?.clientTier2?.name}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle1">Manager:</Typography>
+                <Typography variant="body2">{project?.manager?.name}</Typography>
+              </Grid>
+            </Grid>
+          </Box>
         )}
         {currentTab === 'campaigns' && (
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
