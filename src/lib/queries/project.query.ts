@@ -45,9 +45,6 @@ export const Q_PROJECTS_RECYCLED = gql`
           id
           name
         }
-        campaignRuns {
-          id
-        }
       }
     }
   }
