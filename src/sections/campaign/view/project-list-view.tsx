@@ -232,7 +232,7 @@ export function ProjectListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Campaign List"
           links={[
             { name: 'Dashboard', href: paths.v2.marketing.root },
             { name: 'Campaigns', href: paths.v2.marketing.projects.list },
