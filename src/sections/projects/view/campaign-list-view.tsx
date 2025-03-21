@@ -428,7 +428,7 @@ export function CampaignListView({ projectId }: { projectId: string }) {
           toolbar: () => (
             <CustomToolbar
               setFilterButtonEl={setFilterButtonEl}
-              showQuickFilter={true}
+              showQuickFilter
             />
           ),
           noRowsOverlay: () => <EmptyContent />,
