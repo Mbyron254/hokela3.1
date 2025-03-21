@@ -49,13 +49,6 @@ export const PROJECT = gql`
         id
         name
       }
-      campaigns {
-        id
-        name
-        status
-        startDate
-        endDate
-      }
     }
   }
 `;
