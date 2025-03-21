@@ -1,10 +1,10 @@
 'use client';
 
 import type { IDatePickerControl } from 'src/types/common';
-import type { IOrderItem, IOrderTableFilters } from 'src/types/project';
+import type { IProject } from 'src/lib/interface/project.interface';
 
 import dayjs from 'dayjs';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -32,17 +32,14 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
-import { fIsAfter, fIsBetween } from 'src/utils/format-time';
+import { fIsAfter } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, ALL_CLIENTS, ALL_MANAGERS, STATUS_OPTION } from 'src/_mock';
 
 import { Label } from 'src/components/label';
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -56,28 +53,57 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { OrderTableRow } from '../project-table-row';
 // import { ProjectTableToolbar } from '../project-table-toolbar';
-import { OrderTableFiltersResult } from '../project-table-filters-result';
+
+import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { ICampaignCreate } from 'src/lib/interface/campaign.interface';
+import {
+  M_CAMPAIGNS_ACTIVE,
+  CAMPAIGN_CREATE,
+  CAMPAIGN_UPDATE
+} from 'src/lib/mutations/campaign.mutation';
+import { Q_PROJECTS_ACTIVE } from 'src/lib/queries/project.query';
+import { 
+  PROJECT,
+  PROJECT_CREATE, 
+  PROJECT_UPDATE
+} from 'src/lib/mutations/project.mutation';
+import { IProjectCreate } from 'src/lib/interface/project.interface';
+import { Q_CLIENTS_T2_MINI } from 'src/lib/queries/client-t2.query';
+import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
+import { ProjectTableRow } from '../project-table-row';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...STATUS_OPTION];
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'recycled', label: 'Recycled' }
+];
 
 const TABLE_HEAD = [
-  { id: 'orderNumber', label: 'Order', width: 88 },
-  { id: 'name', label: 'Customer' },
-  { id: 'createdAt', label: 'Date', width: 140 },
-  {
-    id: 'totalQuantity',
-    label: 'Items',
-    width: 120,
-    align: 'center',
-  },
-  { id: 'totalAmount', label: 'Price', width: 140 },
-  { id: 'status', label: 'Status', width: 110 },
+  { id: 'name', label: 'Project Name' },
+  { id: 'clientTier2', label: 'Client' },
+  { id: 'manager', label: 'Manager' },
+  { id: 'dateStart', label: 'Start Date', width: 120 },
+  { id: 'dateStop', label: 'End Date', width: 120 },
   { id: '', width: 88 },
 ];
+
+// ----------------------------------------------------------------------
+
+type IProjectTableFilters = {
+  name: string;
+  status: string;
+  startDate: Date | null;
+  endDate: Date | null;
+};
+
+type ApplyFilterProps = {
+  dateError: boolean;
+  inputData: IProject[];
+  filters: IProjectTableFilters;
+  comparator: (a: any, b: any) => number;
+};
 
 // ----------------------------------------------------------------------
 
@@ -92,25 +118,50 @@ export function ProjectListView() {
 
   const isEdit = useBoolean();
 
-  const [tableData, setTableData] = useState<IOrderItem[]>(_orders);
+  const [tableData, setTableData] = useState([]);
 
   const [value, setValue] = useState<IDatePickerControl>(dayjs(new Date()));
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ICampaignCreate>({
     name: '',
+    jobDescription: '',
+    jobQualification: '',
+    clientTier2Id: '',
   });
 
-  const filters = useSetState<IOrderTableFilters>({
+  const filters = useSetState<IProjectTableFilters>({
     name: '',
-    status: 'all',
+    status: 'active',
     startDate: null,
     endDate: null,
   });
 
   const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
 
+  const { data: t2Clients } = GQLQuery({
+    query: Q_CLIENTS_T2_MINI,
+    queryAction: 'tier2Clients',
+    variables: { input: {} },
+  });
+
+  const { action: getUsersMini, data: users } = GQLMutation({
+    mutation: M_USERS_MINI,
+    resolver: 'm_usersActive',
+    toastmsg: false,
+  });
+  
+  const {
+    refetch: refetchProjectsActive,
+    data: projectsActive,
+    loading: loadingProjectsActive,
+  } = GQLQuery({
+    query: Q_PROJECTS_ACTIVE,
+    queryAction: 'projects',
+    variables: { input: { page: 0, pageSize: 10 } },
+  });
+
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: projectsActive?.rows || [],
     comparator: getComparator(table.order, table.orderBy),
     filters: filters.state,
     dateError,
@@ -141,35 +192,6 @@ export function ProjectListView() {
     isEdit.onTrue();
     dialog.onTrue();
   };
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, table, tableData]
-  );
-
-  const handleDeleteRows = useCallback(
-    () => {
-      const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRows);
-
-      table.onUpdatePageDeleteRows({
-        totalRowsInPage: dataInPage.length,
-        totalRowsFiltered: dataFiltered.length,
-      });
-    },
-    // eslint-disable-next-line
-    [dataFiltered.length, dataInPage.length, table, tableData]
-  );
 
   const handleViewRow = useCallback(
     (id: string) => {
@@ -186,41 +208,61 @@ export function ProjectListView() {
     },
     [filters, table]
   );
+
+  const {
+    action: getCampaignsActive,
+    data: campaignsActive,
+    loading: loadingCampaignsActive,
+  } = GQLMutation({
+    mutation: M_CAMPAIGNS_ACTIVE,
+    resolver: 'm_campaigns',
+    toastmsg: false,
+  });
+
+  const {
+    action: create,
+    loading: creating,
+  } = GQLMutation({
+    mutation: CAMPAIGN_CREATE,
+    resolver: 'campaignCreate',
+    toastmsg: true,
+  });
+
+  const {
+    action: update,
+    loading: updating,
+  } = GQLMutation({
+    mutation: CAMPAIGN_UPDATE,
+    resolver: 'campaignUpdate',
+    toastmsg: true,
+  });
+
   const handleSubmit = () => {
-    // if (isEdit.value && editingClient) {
-    //   // Update existing client
-    //   const updatedData = tableData.map((item) =>
-    //     item.id === editingClient.id
-    //       ? {
-    //           ...item,
-    //           name: formData.name,
-    //           clientType: formData.clientType,
-    //         }
-    //       : item
-    //   );
-    //   setTableData(updatedData);
-    //   toast.success('Client updated successfully!');
-    // } else {
-    //   // Create new client
-    //   const newClient = {
-    //     id: String(tableData.length + 1),
-    //     name: formData.name,
-    //     clientType: formData.clientType,
-    //     noOfProjects: 0,
-    //     createdAt: new Date().toISOString(),
-    //   };
-    //   // setTableData([...tableData, newClient]);
-    //   toast.success('Client created successfully!');
-    // }
+    if (isEdit.value) {
+      update({
+        variables: {
+          input: {
+            // id: formData.id,
+            name: formData.name,
+            jobDescription: formData.jobDescription,
+            jobQualification: formData.jobQualification,
+          },
+        },
+      });
+    } else {
+      create({
+        variables: {
+          input: formData,
+        },
+      });
+    }
     handleDialogClose();
   };
   const handleDialogClose = () => {
-    setFormData({ name: '' });
-    // setEditingClient(null);
+    setFormData({ name: '', jobDescription: '', jobQualification: '', clientTier2Id: '' });
     dialog.onFalse();
   };
 
-  // Add these new handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -228,11 +270,91 @@ export function ProjectListView() {
     });
   };
 
+  useEffect(() => {
+    getCampaignsActive({ variables: { input: { page: table.page, pageSize: table.rowsPerPage } } });
+  }, [table.page, table.rowsPerPage, getCampaignsActive]);
+
+  // Add new state for project data
+  const [projectData, setProjectData] = useState<IProjectCreate>({
+    name: '',
+    clientTier2Id: undefined,
+    managerId: undefined,
+    dateStart: undefined,
+    dateStop: undefined,
+    description: undefined
+  });
+
+  // Add GraphQL queries/mutations
+  const {
+    action: getProject,
+    data: project,
+    loading: loadingProject 
+  } = GQLMutation({
+    mutation: PROJECT,
+    resolver: 'project',
+    toastmsg: false
+  });
+
+  const {
+    action: createProject,
+    loading: creatingProject
+  } = GQLMutation({
+    mutation: PROJECT_CREATE,
+    resolver: 'projectCreate',
+    toastmsg: true
+  });
+
+  const {
+    action: updateProject,
+    loading: updatingProject
+  } = GQLMutation({
+    mutation: PROJECT_UPDATE,
+    resolver: 'projectUpdate', 
+    toastmsg: true
+  });
+
+  // Add handlers
+  const handleCreateProject = () => {
+    createProject({
+      variables: {
+        input: projectData
+      }
+    });
+    handleDialogClose();
+  };
+
+  const handleUpdateProject = () => {
+    updateProject({
+      variables: {
+        input: {
+          projectData
+        }
+      }
+    });
+    handleDialogClose(); 
+  };
+
+  const handleLoadProject = (id: string) => {
+    getProject({
+      variables: {
+        input: { id }
+      }
+    });
+  };
+
+  // Update useEffect to set table data when projects are loaded
+  useEffect(() => {
+    if (projectsActive?.rows) {
+      console.log('Fetched projects:', projectsActive.rows);
+      setTableData(projectsActive.rows);
+    }
+  }, [projectsActive]);
+
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Campaign List"
+          heading="Projects"
           links={[
             { name: 'Dashboard', href: paths.v2.marketing.root },
             { name: 'Campaigns', href: paths.v2.marketing.projects.list },
@@ -274,18 +396,15 @@ export function ProjectListView() {
                 icon={
                   <Label
                     variant={
-                      ((tab.value === 'all' || tab.value === filters.state.status) && 'filled') ||
-                      'soft'
+                      (tab.value === filters.state.status && 'filled') || 'soft'
                     }
                     color={
                       (tab.value === 'active' && 'success') ||
-                      (tab.value === 'suspended' && 'warning') ||
+                      (tab.value === 'recycled' && 'error') ||
                       'default'
                     }
                   >
-                    {['completed', 'pending', 'cancelled', 'refunded'].includes(tab.value)
-                      ? tableData.filter((user) => user.status === tab.value).length
-                      : tableData.length}
+                    {projectsActive?.count || 0}
                   </Label>
                 }
               />
@@ -298,14 +417,14 @@ export function ProjectListView() {
             dateError={dateError}
           /> */}
 
-          {canReset && (
+          {/* {canReset && (
             <OrderTableFiltersResult
               filters={filters}
               totalResults={dataFiltered.length}
               onResetPage={table.onResetPage}
               sx={{ p: 2.5, pt: 0 }}
             />
-          )}
+          )} */}
 
           <Box sx={{ position: 'relative' }}>
             <TableSelectedAction
@@ -326,88 +445,92 @@ export function ProjectListView() {
                 </Tooltip>
               }
             />
-            <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="sm">
-              <DialogTitle>{isEdit.value ? 'Edit Campaign' : 'New Campaign'}</DialogTitle>
-
+            <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="md">
+              <DialogTitle>
+                {isEdit.value ? 'Edit Project' : 'New Project'}
+              </DialogTitle>
               <DialogContent>
                 <TextField
-                  autoFocus
                   fullWidth
+                  label="Project Name"
                   name="name"
-                  margin="dense"
-                  variant="outlined"
-                  label="Campaign Name"
-                  value={formData.name}
-                  onChange={handleInputChange}
+                  value={projectData.name}
+                  onChange={(e) => setProjectData({...projectData, name: e.target.value})}
+                  sx={{ mb: 2 }}
                 />
-
-                <Box sx={{ my: 2 }} />
-
-                <Autocomplete
-                  fullWidth
-                  options={ALL_CLIENTS}
-                  getOptionLabel={(option) => option.name}
-                  renderInput={(params) => <TextField {...params} label="Client" margin="none" />}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.name}>
-                      {option.name}
-                    </li>
-                  )}
-                />
-                <Box sx={{ my: 2 }} />
+                
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <MobileDatePicker
-                      orientation="portrait"
-                      label="Start Date"
-                      value={value}
-                      onChange={(newValue) => {
-                        setValue(newValue);
+                  <Grid item xs={6}>
+                    <Autocomplete
+                      fullWidth
+                      options={t2Clients?.rows || []}
+                      getOptionLabel={(option: any) => option.name}
+                      value={t2Clients?.rows?.find((c: any) => c.id === projectData.clientTier2Id) || null}
+                      onChange={(_, newValue) => {
+                        setProjectData({
+                          ...projectData,
+                          clientTier2Id: newValue?.id
+                        });
                       }}
-                      slotProps={{ textField: { fullWidth: true } }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Client" />
+                      )}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <MobileDatePicker
-                      orientation="portrait"
-                      label="End Date"
-                      value={value}
-                      onChange={(newValue) => {
-                        setValue(newValue);
+
+                  <Grid item xs={6}>
+                    <Autocomplete
+                      fullWidth 
+                      options={users?.rows || []}
+                      getOptionLabel={(option: any) => option.name}
+                      value={users?.rows?.find((u: any) => u.id === projectData.managerId) || null}
+                      onChange={(_, newValue) => {
+                        setProjectData({
+                          ...projectData,
+                          managerId: newValue?.id
+                        });
                       }}
-                      slotProps={{ textField: { fullWidth: true } }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Manager" />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <MobileDatePicker
+                      label="Start Date"
+                      value={projectData.dateStart ? dayjs(projectData.dateStart) : null}
+                      onChange={(date) => setProjectData({...projectData, dateStart: date?.toDate()})}
+                    />
+                  </Grid>
+
+                  <Grid item xs={6}>  
+                    <MobileDatePicker
+                      label="End Date"
+                      value={projectData.dateStop ? dayjs(projectData.dateStop) : null}
+                      onChange={(date) => setProjectData({...projectData, dateStop: date?.toDate()})}
                     />
                   </Grid>
                 </Grid>
-                <Box sx={{ my: 2 }} />
-                <Autocomplete
-                  fullWidth
-                  options={ALL_MANAGERS}
-                  getOptionLabel={(option) => option.name}
-                  renderInput={(params) => <TextField {...params} label="Manager" margin="none" />}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.name}>
-                      {option.name} - {option.department}
-                    </li>
-                  )}
-                />
 
-                <Box sx={{ my: 2 }} />
                 <TextField
-                  variant="outlined"
-                  rows={4}
                   fullWidth
                   multiline
-                  label="Descrption"
-                  defaultValue="Default Value"
+                  rows={4}
+                  label="Description"
+                  value={projectData.description}
+                  onChange={(e) => setProjectData({...projectData, description: e.target.value})}
+                  sx={{ mt: 2 }}
                 />
               </DialogContent>
 
               <DialogActions>
-                <Button onClick={handleDialogClose} variant="outlined" color="inherit">
-                  Cancel
-                </Button>
-                <Button onClick={handleSubmit} variant="contained">
+                <Button onClick={handleDialogClose}>Cancel</Button>
+                <Button 
+                  variant="contained"
+                  onClick={isEdit.value ? handleUpdateProject : handleCreateProject}
+                  disabled={creatingProject || updatingProject}
+                >
                   {isEdit.value ? 'Update' : 'Create'}
                 </Button>
               </DialogActions>
@@ -436,13 +559,20 @@ export function ProjectListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <OrderTableRow
+                      <ProjectTableRow
                         key={row.id}
-                        row={row}
+                        row={{
+                          id: row.id,
+                          name: row.name,
+                          client: row.clientTier2?.name,
+                          manager: row.manager?.name,
+                          dateStart: row.dateStart,
+                          dateStop: row.dateStop,
+                        }}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onDeleteRow={() => {}}
                         onViewRow={() => handleViewRow(row.id)}
                       />
                     ))}
@@ -470,40 +600,11 @@ export function ProjectListView() {
         </Card>
       </DashboardContent>
 
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 }
 
 // ----------------------------------------------------------------------
-
-type ApplyFilterProps = {
-  dateError: boolean;
-  inputData: IOrderItem[];
-  filters: IOrderTableFilters;
-  comparator: (a: any, b: any) => number;
-};
 
 function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
   const { status, name, startDate, endDate } = filters;
@@ -518,23 +619,17 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (name) {
-    inputData = inputData.filter(
-      (order) =>
-        order.orderNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.customer.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.customer.email.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
+  // if (name) {
+  //   inputData = inputData.filter(
+  //     (project) =>
+  //       project.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+  //       project.clientTier2?.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+  //       project.manager?.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+  //   );
+  // }
 
   if (status !== 'all') {
-    inputData = inputData.filter((order) => order.status === status);
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter((order) => fIsBetween(order.createdAt, startDate, endDate));
-    }
+    inputData = inputData.filter((project) => project.status === status);
   }
 
   return inputData;

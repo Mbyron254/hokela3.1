@@ -20,9 +20,6 @@ export const Q_PROJECTS_ACTIVE = gql`
           id
           name
         }
-        campaignRuns {
-          id
-        }
       }
     }
   }
