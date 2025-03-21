@@ -8,7 +8,7 @@ import type {
   GridColumnVisibilityModel,
 } from '@mui/x-data-grid';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import { Box ,
   Card,
@@ -43,16 +43,31 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import {
   M_CAMPAIGNS_ACTIVE,
   M_CAMPAIGNS_RECYCLED,
-  // M_CAMPAIGN,
-  // CAMPAIGN_CREATE,
-  // CAMPAIGN_UPDATE,
-  // CAMPAIGN_RECYCLE,
-  // CAMPAIGN_RESTORE,
+  M_CAMPAIGN,
+  CAMPAIGN_CREATE,
+  CAMPAIGN_UPDATE,
+  CAMPAIGN_RECYCLE,
+  CAMPAIGN_RESTORE,
 } from 'src/lib/mutations/campaign.mutation';
 
 import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
+interface ICampaignCreate {
+  projectId?: string;
+  name?: string;
+  jobDescription?: string;
+  jobQualification?: string;
+}
+
+interface ICampaignUpdate {
+  id?: string;
+  projectId?: string;
+  name?: string;
+  jobDescription?: string;
+  jobQualification?: string;
+}
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'Id', filterable: false },
@@ -153,15 +168,10 @@ const HIDE_COLUMNS_TOGGLABLE = ['id', 'actions'];
 
 export function CampaignListView({ projectId }: { projectId: string }) {
   const isEdit = useBoolean();
-
   const dialog = useBoolean();
 
   const [rows, setData] = useState<Props['data']>([]);
-
-  const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
-
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
-
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
@@ -171,7 +181,6 @@ export function CampaignListView({ projectId }: { projectId: string }) {
     qualification: '',
   });
 
-  // -----------------------------------------------------------------------------------------------------------------------------------
   const {
     action: getCampaignsActive,
     data: campaignsActive,
@@ -190,33 +199,59 @@ export function CampaignListView({ projectId }: { projectId: string }) {
     resolver: 'm_campaignsRecycled',
     toastmsg: false,
   });
+  const {
+    action: create,
+    loading: creating,
+    data: created,
+  } = GQLMutation({
+    mutation: CAMPAIGN_CREATE,
+    resolver: 'campaignCreate',
+    toastmsg: true,
+  });
+  const {
+    action: update,
+    loading: updating,
+    data: updated,
+  } = GQLMutation({
+    mutation: CAMPAIGN_UPDATE,
+    resolver: 'campaignUpdate',
+    toastmsg: true,
+  });
+  const {
+    action: recycle,
+    loading: recycling,
+    data: recycled,
+  } = GQLMutation({
+    mutation: CAMPAIGN_RECYCLE,
+    resolver: 'campaignRecycle',
+    toastmsg: true,
+  });
+  const {
+    action: restore,
+    loading: restoring,
+    data: restored,
+  } = GQLMutation({
+    mutation: CAMPAIGN_RESTORE,
+    resolver: 'campaignRestore',
+    toastmsg: true,
+  });
 
-  const loadCampaignsActive = (page?: number, pageSize?: number) => {
-    if (projectId) {
-      getCampaignsActive({ variables: { input: { projectId, page, pageSize } } });
-    }
+  const _inputUpdate: ICampaignUpdate = {
+    id: undefined,
+    name: undefined,
+    jobDescription: undefined,
+    jobQualification: undefined,
   };
-  const loadCampaignsRecycled = (page?: number, pageSize?: number) => {
-    if (projectId) {
-      getCampaignsRecycled({ variables: { input: { projectId, page, pageSize } } });
-    }
-  };
+  const [inputCreate, setInputCreate] = useState<ICampaignCreate>({
+    name: undefined,
+    jobDescription: undefined,
+    jobQualification: undefined,
+  });
+  const [inputUpdate, setInputUpdate] = useState(_inputUpdate);
+  const [selectedActive, setSelectedActive] = useState<string[]>([]);
+  const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
 
-  useState(
-    () => {
-      const Page = 1;
-      const size = 10;
-      loadCampaignsActive(Page, size);
-      loadCampaignsRecycled(Page, size);
-    },
-    // @ts-expect-error
-    []
-  );
-
-  console.log('campaignsActive', campaignsActive);
-  console.log('campaignsRecycled', campaignsRecycled);
-
-  // -----------------------------------------------------------------------------------------------------------------------------------
+  const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
 
   const getTogglableColumns = () =>
     columns
@@ -243,30 +278,52 @@ export function CampaignListView({ projectId }: { projectId: string }) {
   };
 
   const handleDialogClose = () => {
-    // setFormData({
-    //   name: '',
-    //   client: '',
-    //   startDate: dayjs(),
-    //   endDate: dayjs(),
-    //   manager: '',
-    //   description: '',
-    // });
     dialog.onFalse();
   };
-  // -----------------------------------------------------------------------
 
-  const handleSubmit = () => {
-    // if (isEdit.value) {
-    //   updateProject(
+  const loadCampaignsActive = (page?: number, pageSize?: number) => {
+    if (projectId) {
+      getCampaignsActive({ variables: { input: { projectId, page, pageSize } } });
+    }
   };
+  const loadCampaignsRecycled = (page?: number, pageSize?: number) => {
+    if (projectId) {
+      getCampaignsRecycled({ variables: { input: { projectId, page, pageSize } } });
+    }
+  };
+
+  const handleCreate = () => {
+    if (projectId) {
+      create({ variables: { input: { ...inputCreate, projectId } } });
+    }
+  };
+  const handleUpdate = () => {
+    update({ variables: { input: inputUpdate } });
+  };
+  const handleRecycle = () => {
+    if (selectedActive.length) {
+      recycle({ variables: { input: { ids: selectedActive } } });
+    }
+  };
+  const handleRestore = () => {
+    if (selectedRecycled.length) {
+      restore({ variables: { input: { ids: selectedRecycled } } });
+    }
+  };
+
+  useEffect(() => {
+    const Page = 1;
+    const size = 10;
+    loadCampaignsActive(Page, size);
+    loadCampaignsRecycled(Page, size);
+  }, [projectId, created, updated, recycled, restored]);
+
   return (
     <DashboardContent
       sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%' }}
     >
       <CustomBreadcrumbs
         links={[
-          // { name: 'Dashboard', href: paths.v2.marketing.root },
-          // { name: 'Projects', href: paths.v2.marketing.projects.list },
           { name: '' },
         ]}
         action={
@@ -278,10 +335,9 @@ export function CampaignListView({ projectId }: { projectId: string }) {
             New Campaign
           </Button>
         }
-        // sx={{ mb: { xs: 3, md: 5 } }}
       />
       <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="sm">
-        <DialogTitle>{isEdit.value ? 'Edit Project' : 'New Project'}</DialogTitle>
+        <DialogTitle>{isEdit.value ? 'Edit Campaign' : 'New Campaign'}</DialogTitle>
 
         <DialogContent>
           <Card>
@@ -301,21 +357,47 @@ export function CampaignListView({ projectId }: { projectId: string }) {
                 margin="dense"
                 variant="outlined"
                 label="Campaign Title"
-                value={formData.name}
-                onChange={handleInputChange}
+                value={inputCreate.name}
+                onChange={(e) =>
+                  setInputCreate({
+                    ...inputCreate,
+                    name: e.target.value,
+                  })
+                }
               />
             </Stack>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Title</Typography>
+              <Typography variant="subtitle2">Job Description</Typography>
               <TextField
-                autoFocus
                 fullWidth
-                name="name"
+                name="jobDescription"
                 margin="dense"
                 variant="outlined"
-                label="Campaign Title"
-                value={formData.name}
-                onChange={handleInputChange}
+                label="Job Description"
+                value={inputCreate.jobDescription}
+                onChange={(e) =>
+                  setInputCreate({
+                    ...inputCreate,
+                    jobDescription: e.target.value,
+                  })
+                }
+              />
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Job Qualification</Typography>
+              <TextField
+                fullWidth
+                name="jobQualification"
+                margin="dense"
+                variant="outlined"
+                label="Job Qualification"
+                value={inputCreate.jobQualification}
+                onChange={(e) =>
+                  setInputCreate({
+                    ...inputCreate,
+                    jobQualification: e.target.value,
+                  })
+                }
               />
             </Stack>
           </Stack>
@@ -325,7 +407,7 @@ export function CampaignListView({ projectId }: { projectId: string }) {
           <Button onClick={handleDialogClose} variant="outlined" color="inherit">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} variant="contained">
+          <Button onClick={handleCreate} variant="contained">
             {isEdit.value ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -341,14 +423,17 @@ export function CampaignListView({ projectId }: { projectId: string }) {
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
         slots={{
-          toolbar: CustomToolbar as unknown as GridSlots['toolbar'],
+          toolbar: () => (
+            <CustomToolbar
+              setFilterButtonEl={setFilterButtonEl}
+              showQuickFilter={true}
+            />
+          ),
           noRowsOverlay: () => <EmptyContent />,
           noResultsOverlay: () => <EmptyContent title="No results found" />,
         }}
         slotProps={{
           panel: { anchorEl: filterButtonEl },
-          // @ts-expect-error
-          toolbar: { setFilterButtonEl, showQuickFilter: true },
           columnsManagement: { getTogglableColumns },
         }}
         sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
@@ -361,12 +446,13 @@ export function CampaignListView({ projectId }: { projectId: string }) {
 
 interface CustomToolbarProps {
   setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
+  showQuickFilter: boolean;
 }
 
-function CustomToolbar({ setFilterButtonEl }: CustomToolbarProps) {
+function CustomToolbar({ setFilterButtonEl, showQuickFilter }: CustomToolbarProps) {
   return (
     <GridToolbarContainer>
-      <GridToolbarQuickFilter />
+      {showQuickFilter && <GridToolbarQuickFilter />}
       <Box sx={{ flexGrow: 1 }} />
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton ref={setFilterButtonEl} />

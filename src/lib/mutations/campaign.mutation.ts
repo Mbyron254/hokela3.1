@@ -40,10 +40,6 @@ export const M_CAMPAIGN = gql`
       jobDescription
       jobQualification
       created
-      clientTier2 {
-        id
-        name
-      }
       runs {
         id
       }
@@ -62,10 +58,6 @@ export const M_CAMPAIGNS_ACTIVE = gql`
         jobDescription
         jobQualification
         created
-        clientTier2 {
-          id
-          name
-        }
         runs {
           id
         }
@@ -85,10 +77,6 @@ export const M_CAMPAIGNS_RECYCLED = gql`
         jobDescription
         jobQualification
         recycled
-        clientTier2 {
-          id
-          name
-        }
         runs {
           id
         }
