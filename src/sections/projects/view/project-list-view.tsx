@@ -407,6 +407,20 @@ export function ProjectListView() {
     });
   };
 
+  const handleStartDateChange = (newValue: any) => {
+    setFormData({
+      ...formData,
+      startDate: newValue,
+    });
+  };
+
+  const handleEndDateChange = (newValue: any) => {
+    setFormData({
+      ...formData,
+      endDate: newValue,
+    });
+  };
+
   return (
     <>
       <DashboardContent>
@@ -543,9 +557,7 @@ export function ProjectListView() {
                       orientation="portrait"
                       label="Start Date"
                       value={formData.startDate}
-                      // onChange={(newValue) => {
-                      //   setValue(newValue);
-                      // }}
+                      onChange={handleStartDateChange}
                       slotProps={{ textField: { fullWidth: true } }}
                     />
                   </Grid>
@@ -554,9 +566,7 @@ export function ProjectListView() {
                       orientation="portrait"
                       label="End Date"
                       value={formData.endDate}
-                      // onChange={(newValue) => {
-                      //   setValue(newValue);
-                      // }}
+                      onChange={handleEndDateChange}
                       slotProps={{ textField: { fullWidth: true } }}
                     />
                   </Grid>
@@ -695,15 +705,15 @@ const transformProjectData = (projects: Array<TProject>) => {
   const activeProjects = projects.map((project) => ({
     id: project.id,
     name: project.name,
-    client: project.clientTier2.name,
-    campaigns: project.campaignRuns.length,
+    client: project.clientTier2?.name || 'N/A',
+    campaigns: project.campaignRuns?.length || 0,
     startDate: project.dateStart,
     endDate: project.dateStop,
-    clientTier2Id: project.clientTier2.id,
-    managerId: project.manager.id,
-    manager: project.manager.name,
-    description: project.description,
-    status: 'active', // Add status field
+    clientTier2Id: project.clientTier2?.id || '',
+    managerId: project.manager?.id || '',
+    manager: project.manager?.name || 'N/A',
+    description: project.description || '',
+    status: 'active',
   }));
   return activeProjects;
 };
@@ -711,15 +721,15 @@ const transformRecycledProjectData = (projects: Array<TProject>) => {
   const recycledProjects = projects.map((project) => ({
     id: project.id,
     name: project.name,
-    client: project.clientTier2.name,
-    campaigns: project.campaignRuns.length,
+    client: project.clientTier2?.name || 'N/A',
+    campaigns: project.campaignRuns?.length || 0,
     startDate: project.dateStart,
     endDate: project.dateStop,
-    clientTier2Id: project.clientTier2.id,
-    managerId: project.manager.id,
-    manager: project.manager.name,
-    description: project.description,
-    status: 'suspended', // Add status field
+    clientTier2Id: project.clientTier2?.id || '',
+    managerId: project.manager?.id || '',
+    manager: project.manager?.name || 'N/A',
+    description: project.description || '',
+    status: 'suspended',
   }));
   return recycledProjects;
 };
