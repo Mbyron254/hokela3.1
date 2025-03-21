@@ -314,9 +314,11 @@ export function CampaignListView({ projectId }: { projectId: string }) {
   useEffect(() => {
     const Page = 1;
     const size = 10;
-    loadCampaignsActive(Page, size);
-    loadCampaignsRecycled(Page, size);
-  }, [projectId, created, updated, recycled, restored]);
+    if (projectId) {
+      getCampaignsActive({ variables: { input: { projectId, page: Page, pageSize: size } } });
+      getCampaignsRecycled({ variables: { input: { projectId, page: Page, pageSize: size } } });
+    }
+  }, [projectId, created, updated, recycled, restored, getCampaignsActive, getCampaignsRecycled]);
 
   return (
     <DashboardContent
