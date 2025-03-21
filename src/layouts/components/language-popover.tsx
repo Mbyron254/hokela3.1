@@ -56,7 +56,7 @@ export function LanguagePopover({ data = [], sx, ...other }: LanguagePopoverProp
         }}
         {...other}
       >
-        <FlagIcon code='KE' />
+        <FlagIcon code='GB' />
       </IconButton>
 
       <CustomPopover open={popover.open} anchorEl={popover.anchorEl} onClose={popover.onClose}>

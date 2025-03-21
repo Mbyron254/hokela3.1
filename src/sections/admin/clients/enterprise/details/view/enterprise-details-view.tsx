@@ -289,6 +289,7 @@ export default function EnterpriseDetailsView({ id }: Props) {
               fullWidth
               onChange={(e) => handlePhoneChange(e as unknown as string)}
               InputLabelProps={{ shrink: true }}
+              value={formData.phone}
             />
           </>
         )}
