@@ -4,7 +4,7 @@ import type { IDatePickerControl } from 'src/types/common';
 import type { IProject } from 'src/lib/interface/project.interface';
 
 import dayjs from 'dayjs';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Suspense, SyntheticEvent } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -160,6 +160,16 @@ export function ProjectListView() {
     variables: { input: { page: 0, pageSize: 10 } },
   });
 
+  const {
+    action: getCampaignsActive,
+    data: campaignsActive,
+    loading: loadingCampaignsActive,
+  } = GQLMutation({
+    mutation: M_CAMPAIGNS_ACTIVE,
+    resolver: 'm_campaigns',
+    toastmsg: false,
+  });
+
   const dataFiltered = applyFilter({
     inputData: projectsActive?.rows || [],
     comparator: getComparator(table.order, table.orderBy),
@@ -202,22 +212,18 @@ export function ProjectListView() {
   );
 
   const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
+    (event: SyntheticEvent, newValue: string) => {
       table.onResetPage();
       filters.setState({ status: newValue });
-    },
-    [filters, table]
-  );
 
-  const {
-    action: getCampaignsActive,
-    data: campaignsActive,
-    loading: loadingCampaignsActive,
-  } = GQLMutation({
-    mutation: M_CAMPAIGNS_ACTIVE,
-    resolver: 'm_campaigns',
-    toastmsg: false,
-  });
+      // Add logging to inspect the new status and data
+      console.log('Switching to status:', newValue);
+      if (newValue === 'recycled') {
+        console.log('Campaigns data:', campaignsActive);
+      }
+    },
+    [filters, table, campaignsActive]
+  );
 
   const {
     action: create,
@@ -351,7 +357,7 @@ export function ProjectListView() {
   }, [projectsActive]);
 
   return (
-    <>
+    <ErrorBoundary>
       <DashboardContent>
         <CustomBreadcrumbs
           heading="Projects"
@@ -599,8 +605,7 @@ export function ProjectListView() {
           />
         </Card>
       </DashboardContent>
-
-    </>
+    </ErrorBoundary>
   );
 }
 
@@ -633,4 +638,13 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   }
 
   return inputData;
+}
+
+// Add error boundary component
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      {children}
+    </Suspense>
+  );
 }
