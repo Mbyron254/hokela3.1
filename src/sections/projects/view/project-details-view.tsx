@@ -14,6 +14,7 @@ import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { CampaignListView } from './campaign-list-view';
+import { M_CAMPAIGNS_ACTIVE } from 'src/lib/mutations/campaign.mutation';
 
 // ----------------------------------------------------------------------
 
@@ -41,11 +42,22 @@ export function ProjectDetailsView({ id }: Props) {
     toastmsg: false,
   });
 
+  const {
+    action: getCampaignsActive,
+    data: campaignsActive,
+    loading: loadingCampaignsActive,
+  } = GQLMutation({
+    mutation: M_CAMPAIGNS_ACTIVE,
+    resolver: 'm_campaigns',
+    toastmsg: false,
+  });
+
   const loadProject = () => {
     if (id) {
       getProject({ variables: { input: { id } } });
     }
   };
+
   // const { product } = await getProduct(id);
   useEffect(
     () => loadProject(),
@@ -54,6 +66,14 @@ export function ProjectDetailsView({ id }: Props) {
   );
 
   console.log('project', project);
+
+  useEffect(() => {
+    if (project) {
+      getCampaignsActive({ variables: { input: { projectId: project.id } } });
+    }
+  }, [project]);
+
+  console.log('campaignsActive', campaignsActive);
 
   useEffect(() => {
     if (project) {
@@ -116,7 +136,7 @@ export function ProjectDetailsView({ id }: Props) {
         )}
         {currentTab === 'campaigns' && (
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CampaignListView projectId={projectId} />
+            <p>Campaigns</p>
           </Box>
         )}
       </Paper>
