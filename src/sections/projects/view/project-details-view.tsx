@@ -13,7 +13,7 @@ import { PROJECT } from 'src/lib/mutations/project.mutation';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { CampaignListView } from './campaign-list-view';
+// import { CampaignListView } from './campaign-list-view';
 import { M_CAMPAIGNS_ACTIVE } from 'src/lib/mutations/campaign.mutation';
 
 // ----------------------------------------------------------------------
@@ -42,11 +42,7 @@ export function ProjectDetailsView({ id }: Props) {
     toastmsg: false,
   });
 
-  const {
-    action: getCampaignsActive,
-    data: campaignsActive,
-    loading: loadingCampaignsActive,
-  } = GQLMutation({
+  const { action: getCampaignsActive, data: campaignsActive } = GQLMutation({
     mutation: M_CAMPAIGNS_ACTIVE,
     resolver: 'm_campaigns',
     toastmsg: false,
@@ -71,7 +67,7 @@ export function ProjectDetailsView({ id }: Props) {
     if (project) {
       getCampaignsActive({ variables: { input: { projectId: project.id } } });
     }
-  }, [project]);
+  }, [project, getCampaignsActive]);
 
   console.log('campaignsActive', campaignsActive);
 
