@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { Box, Tab, Tabs, Paper, Typography, Grid } from '@mui/material';
+import { Box, Tab, Tabs, Paper, Typography, Grid, Table, TableBody, TableCell, TableRow } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 
@@ -15,6 +15,13 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 // import { CampaignListView } from './campaign-list-view';
 import { M_CAMPAIGNS_ACTIVE } from 'src/lib/mutations/campaign.mutation';
+import { TableEmptyRows } from 'src/components/table/table-empty-rows';
+import { TableNoData } from 'src/components/table/table-no-data';
+import { Scrollbar } from 'src/components/scrollbar';
+import { TableHeadCustom } from 'src/components/table/table-head-custom';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { CAMPAIGN_CREATE } from 'src/lib/mutations/campaign.mutation';
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +38,15 @@ type Props = {
   id: string;
 };
 
+// Define the table head for campaigns
+const CAMPAIGN_TABLE_HEAD = [
+  { id: 'name', label: 'Campaign Name' },
+  { id: 'status', label: 'Status' },
+  { id: 'startDate', label: 'Start Date', width: 120 },
+  { id: 'endDate', label: 'End Date', width: 120 },
+  { id: '', width: 88 },
+];
+
 export function ProjectDetailsView({ id }: Props) {
   const [currentTab, setCurrentTab] = useState('overview');
 
@@ -46,6 +62,19 @@ export function ProjectDetailsView({ id }: Props) {
     mutation: M_CAMPAIGNS_ACTIVE,
     resolver: 'm_campaigns',
     toastmsg: false,
+  });
+
+  const dialog = useBoolean();
+  const [inputCreate, setInputCreate] = useState({
+    name: '',
+    jobDescription: '',
+    jobQualification: '',
+  });
+
+  const { action: create, loading: creating } = GQLMutation({
+    mutation: CAMPAIGN_CREATE,
+    resolver: 'campaignCreate',
+    toastmsg: true,
   });
 
   const loadProject = () => {
@@ -79,6 +108,16 @@ export function ProjectDetailsView({ id }: Props) {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
+  };
+
+  const handleCreate = () => {
+    if (projectId) {
+      create({ variables: { input: { ...inputCreate, projectId } } });
+    }
+  };
+
+  const handleDialogClose = () => {
+    dialog.onFalse();
   };
 
   return (
@@ -132,10 +171,113 @@ export function ProjectDetailsView({ id }: Props) {
         )}
         {currentTab === 'campaigns' && (
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <p>Campaigns</p>
+            <Button
+              onClick={() => dialog.onTrue()}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              sx={{ mb: 2 }}
+            >
+              New Campaign
+            </Button>
+            <Scrollbar sx={{ minHeight: 444 }}>
+              <Table size="medium" sx={{ minWidth: 960 }}>
+                <TableHeadCustom
+                  order="asc"
+                  orderBy="name"
+                  headLabel={CAMPAIGN_TABLE_HEAD}
+                  rowCount={campaignsActive?.length || 0}
+                  numSelected={0}
+                  onSort={() => {}}
+                  onSelectAllRows={() => {}}
+                />
+                <TableBody>
+                  {campaignsActive?.map((campaign: any) => (
+                    <TableRow key={campaign.id}>
+                      <TableCell>{campaign.name}</TableCell>
+                      <TableCell>{campaign.status}</TableCell>
+                      <TableCell>{campaign.startDate}</TableCell>
+                      <TableCell>{campaign.endDate}</TableCell>
+                      <TableCell>
+                        {/* Add any actions like edit/delete here */}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableEmptyRows
+                    height={56}
+                    emptyRows={0}
+                  />
+                  <TableNoData notFound={!campaignsActive?.length} />
+                </TableBody>
+              </Table>
+            </Scrollbar>
           </Box>
         )}
       </Paper>
+      <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="sm">
+        <DialogTitle>New Campaign</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            name="name"
+            margin="dense"
+            variant="outlined"
+            label="Campaign Name"
+            value={inputCreate.name}
+            onChange={(e) =>
+              setInputCreate({
+                ...inputCreate,
+                name: e.target.value,
+              })
+            }
+          />
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            name="jobDescription"
+            margin="dense"
+            variant="outlined"
+            label="Job Description"
+            value={inputCreate.jobDescription}
+            onChange={(e) =>
+              setInputCreate({
+                ...inputCreate,
+                jobDescription: e.target.value,
+              })
+            }
+          />
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            name="jobQualification"
+            margin="dense"
+            variant="outlined"
+            label="Job Qualification"
+            value={inputCreate.jobQualification}
+            onChange={(e) =>
+              setInputCreate({
+                ...inputCreate,
+                jobQualification: e.target.value,
+              })
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} variant="outlined" color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreate}
+            variant="contained"
+            color="primary"
+            disabled={creating}
+          >
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
     </DashboardContent>
   );
 }
