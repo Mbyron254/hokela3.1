@@ -170,21 +170,22 @@ export function ProjectListView() {
     toastmsg: false,
   });
 
-  const dataFiltered = applyFilter({
-    inputData: projectsActive?.rows || [],
-    comparator: getComparator(table.order, table.orderBy),
-    filters: filters.state,
-    dateError,
-  });
+  // Comment out the table displaying logic
+  // const dataFiltered = applyFilter({
+  //   inputData: projectsActive?.rows || [],
+  //   comparator: getComparator(table.order, table.orderBy),
+  //   filters: filters.state,
+  //   dateError,
+  // });
 
-  const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
+  // const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
-  const canReset =
-    !!filters.state.name ||
-    filters.state.status !== 'all' ||
-    (!!filters.state.startDate && !!filters.state.endDate);
+  // const canReset =
+  //   !!filters.state.name ||
+  //   filters.state.status !== 'all' ||
+  //   (!!filters.state.startDate && !!filters.state.endDate);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  // const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleNewRow = useCallback(
     () => {
@@ -433,7 +434,7 @@ export function ProjectListView() {
           )} */}
 
           <Box sx={{ position: 'relative' }}>
-            <TableSelectedAction
+            {/* <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
               rowCount={dataFiltered.length}
@@ -450,7 +451,7 @@ export function ProjectListView() {
                   </IconButton>
                 </Tooltip>
               }
-            />
+            /> */}
             <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="md">
               <DialogTitle>
                 {isEdit.value ? 'Edit Project' : 'New Project'}
@@ -541,6 +542,7 @@ export function ProjectListView() {
                 </Button>
               </DialogActions>
             </Dialog>
+            {/* Comment out the table rendering logic
             <Scrollbar sx={{ minHeight: 444 }}>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -591,10 +593,10 @@ export function ProjectListView() {
                   <TableNoData notFound={notFound} />
                 </TableBody>
               </Table>
-            </Scrollbar>
+            </Scrollbar> */}
           </Box>
 
-          <TablePaginationCustom
+          {/* <TablePaginationCustom
             page={table.page}
             dense={table.dense}
             count={dataFiltered.length}
@@ -602,7 +604,7 @@ export function ProjectListView() {
             onPageChange={table.onChangePage}
             onChangeDense={table.onChangeDense}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-          />
+          /> */}
         </Card>
       </DashboardContent>
     </ErrorBoundary>
