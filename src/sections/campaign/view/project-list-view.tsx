@@ -80,15 +80,6 @@ const STATUS_OPTIONS = [
   { value: 'recycled', label: 'Recycled' }
 ];
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Project Name' },
-  { id: 'clientTier2', label: 'Client' },
-  { id: 'manager', label: 'Manager' },
-  { id: 'dateStart', label: 'Start Date', width: 120 },
-  { id: 'dateStop', label: 'End Date', width: 120 },
-  { id: '', width: 88 },
-];
-
 // ----------------------------------------------------------------------
 
 type IProjectTableFilters = {
@@ -378,7 +369,7 @@ export function ProjectListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Campaign
+              New 
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -417,41 +408,7 @@ export function ProjectListView() {
               />
             ))}
           </Tabs>
-
-          {/* <ProjectTableToolbar
-            filters={filters}
-            onResetPage={table.onResetPage}
-            dateError={dateError}
-          /> */}
-
-          {/* {canReset && (
-            <OrderTableFiltersResult
-              filters={filters}
-              totalResults={dataFiltered.length}
-              onResetPage={table.onResetPage}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )} */}
-
           <Box sx={{ position: 'relative' }}>
-            {/* <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row.id)
-                )
-              }
-              action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              }
-            /> */}
             <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="md">
               <DialogTitle>
                 {isEdit.value ? 'Edit Project' : 'New Project'}
@@ -542,69 +499,7 @@ export function ProjectListView() {
                 </Button>
               </DialogActions>
             </Dialog>
-            {/* Comment out the table rendering logic
-            <Scrollbar sx={{ minHeight: 444 }}>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={dataFiltered.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row.id)
-                    )
-                  }
-                />
-
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <ProjectTableRow
-                        key={row.id}
-                        row={{
-                          id: row.id,
-                          name: row.name,
-                          client: row.clientTier2?.name,
-                          manager: row.manager?.name,
-                          dateStart: row.dateStart,
-                          dateStop: row.dateStop,
-                        }}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => {}}
-                        onViewRow={() => handleViewRow(row.id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar> */}
           </Box>
-
-          {/* <TablePaginationCustom
-            page={table.page}
-            dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-          /> */}
         </Card>
       </DashboardContent>
     </ErrorBoundary>

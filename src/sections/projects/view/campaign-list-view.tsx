@@ -174,7 +174,7 @@ export const CampaignListView: FC<{ projectId: string }> = ({ projectId }) => {
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New Campaign
+            Add New Campaign
           </Button>
         }
       />

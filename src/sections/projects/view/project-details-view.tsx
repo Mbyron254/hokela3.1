@@ -174,10 +174,10 @@ export function ProjectDetailsView({ id }: Props) {
               startIcon={<Iconify icon="mingcute:add-line" />}
               sx={{ mb: 2 }}
             >
-              New Campaign
+              New
             </Button>
             <Scrollbar sx={{ minHeight: 444 }}>
-              <Table size="medium" sx={{ minWidth: 960 }}>
+              {/* <Table size="medium" sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order="asc"
                   orderBy="name"
@@ -195,7 +195,6 @@ export function ProjectDetailsView({ id }: Props) {
                       <TableCell>{campaign.startDate}</TableCell>
                       <TableCell>{campaign.endDate}</TableCell>
                       <TableCell>
-                        {/* Add any actions like edit/delete here */}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -205,7 +204,7 @@ export function ProjectDetailsView({ id }: Props) {
                   />
                   <TableNoData notFound={!campaignsActive?.length} />
                 </TableBody>
-              </Table>
+              </Table> */}
             </Scrollbar>
           </Box>
         )}
