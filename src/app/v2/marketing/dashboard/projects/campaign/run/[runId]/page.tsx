@@ -1,3 +1,11 @@
+import React from 'react'
+
+export default function Page() {
+  return <div>page</div>;
+}
+
+/*
+
 'use client';
 
 import PageTitle from '@/components/PageTitle';
@@ -547,3 +555,6 @@ export default function Page({ params: { runId } }: any) {
     </>
   );
 }
+
+
+*/
