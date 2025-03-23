@@ -2,7 +2,22 @@
 
 import { useState, useEffect } from 'react';
 
-import { Box, Tab, Tabs, Paper, Typography, Grid, Table, TableBody, TableCell, TableRow, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Box,
+   Tab,
+   Tabs,
+   Paper,
+   Typography,
+   Grid,
+  //  Table,
+  //  TableBody,
+  //  TableCell,
+  //  TableRow,
+   Button,
+   Dialog,
+   DialogActions,
+   DialogContent,
+   DialogTitle,
+   TextField } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 
@@ -13,11 +28,12 @@ import { PROJECT } from 'src/lib/mutations/project.mutation';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { M_CAMPAIGNS_ACTIVE, CAMPAIGN_CREATE } from 'src/lib/mutations/campaign.mutation';
-import { TableEmptyRows } from 'src/components/table/table-empty-rows';
-import { TableNoData } from 'src/components/table/table-no-data';
-import { Scrollbar } from 'src/components/scrollbar';
-import { TableHeadCustom } from 'src/components/table/table-head-custom';
+import { M_CAMPAIGNS_ACTIVE,
+   CAMPAIGN_CREATE } from 'src/lib/mutations/campaign.mutation';
+// import { TableEmptyRows } from 'src/components/table/table-empty-rows';
+// import { TableNoData } from 'src/components/table/table-no-data';
+// import { Scrollbar } from 'src/components/scrollbar';
+// import { TableHeadCustom } from 'src/components/table/table-head-custom';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
@@ -174,38 +190,42 @@ export function ProjectDetailsView({ id }: Props) {
               startIcon={<Iconify icon="mingcute:add-line" />}
               sx={{ mb: 2 }}
             >
-              New
+              New Campaign
             </Button>
-            <Scrollbar sx={{ minHeight: 444 }}>
-              {/* <Table size="medium" sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order="asc"
-                  orderBy="name"
-                  headLabel={CAMPAIGN_TABLE_HEAD}
-                  rowCount={campaignsActive?.length || 0}
-                  numSelected={0}
-                  onSort={() => {}}
-                  onSelectAllRows={() => {}}
-                />
-                <TableBody>
-                  {campaignsActive?.map((campaign: any) => (
-                    <TableRow key={campaign.id}>
-                      <TableCell>{campaign.name}</TableCell>
-                      <TableCell>{campaign.status}</TableCell>
-                      <TableCell>{campaign.startDate}</TableCell>
-                      <TableCell>{campaign.endDate}</TableCell>
-                      <TableCell>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  <TableEmptyRows
-                    height={56}
-                    emptyRows={0}
-                  />
-                  <TableNoData notFound={!campaignsActive?.length} />
-                </TableBody>
-              </Table> */}
-            </Scrollbar>
+
+            {campaignsActive?.length > 1 && (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                {campaignsActive.map((campaign: any) => (
+                  <Paper
+                    key={campaign.id}
+                    sx={{
+                      p: 2,
+                      borderRadius: 2,
+                      width: 'calc(33.333% - 16px)',
+                      boxShadow: 1,
+                    }}
+                  >
+                    <Typography variant="h6" gutterBottom>
+                      {campaign.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Runs: {campaign.runs}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Created: {new Date(campaign.createdAt).toLocaleDateString()}
+                    </Typography>
+                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Button variant="outlined" size="small">
+                        Edit
+                      </Button>
+                      <Button variant="contained" size="small">
+                        View
+                      </Button>
+                    </Box>
+                  </Paper>
+                ))}
+              </Box>
+            )}
           </Box>
         )}
       </Paper>
