@@ -35,7 +35,7 @@ export default function Page({ params: { id } }: any) {
 
   useEffect(() => {
     if (id) getCampaign({ variables: { input: { id } } });
-  }, [id]);
+  }, [id, getCampaign]);
 
   return (
     <Box sx={{ p: 3 }}>
