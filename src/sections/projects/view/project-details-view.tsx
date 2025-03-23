@@ -91,7 +91,11 @@ export function ProjectDetailsView({ id }: Props) {
     }
   };
 
-  useEffect(() => loadProject(), [id]);
+  useEffect(() => {
+    if (id) {
+      getProject({ variables: { input: { id } } });
+    }
+  }, [id, getProject]);
 
   useEffect(() => {
     if (project) {
