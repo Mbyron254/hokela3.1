@@ -1,39 +1,35 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-import { Box,
-   Tab,
-   Tabs,
-   Paper,
-   Typography,
-   Grid,
-  //  Table,
-  //  TableBody,
-  //  TableCell,
-  //  TableRow,
-   Button,
-   Dialog,
-   DialogActions,
-   DialogContent,
-   DialogTitle,
-   TextField } from '@mui/material';
+import { useRouter } from 'next/router';
+import {
+  Box,
+  Tab,
+  Tabs,
+  Paper,
+  Typography,
+  Grid,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-
 import { GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PROJECT } from 'src/lib/mutations/project.mutation';
-
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-
-import { M_CAMPAIGNS_ACTIVE,
-   CAMPAIGN_CREATE } from 'src/lib/mutations/campaign.mutation';
-// import { TableEmptyRows } from 'src/components/table/table-empty-rows';
-// import { TableNoData } from 'src/components/table/table-no-data';
-// import { Scrollbar } from 'src/components/scrollbar';
-// import { TableHeadCustom } from 'src/components/table/table-head-custom';
+import { M_CAMPAIGNS_ACTIVE, CAMPAIGN_CREATE } from 'src/lib/mutations/campaign.mutation';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
@@ -62,15 +58,12 @@ const CAMPAIGN_TABLE_HEAD = [
 
 export function ProjectDetailsView({ id }: Props) {
   const [currentTab, setCurrentTab] = useState('overview');
-
   const [projectId, setProjectId] = useState<string>('');
-
   const { action: getProject, data: project } = GQLMutation({
     mutation: PROJECT,
     resolver: 'project',
     toastmsg: false,
   });
-
   const { action: getCampaignsActive, data: campaignsActive } = GQLMutation({
     mutation: M_CAMPAIGNS_ACTIVE,
     resolver: 'm_campaigns',
@@ -90,28 +83,21 @@ export function ProjectDetailsView({ id }: Props) {
     toastmsg: true,
   });
 
+  const router = useRouter();
+
   const loadProject = () => {
     if (id) {
       getProject({ variables: { input: { id } } });
     }
   };
 
-  // const { product } = await getProduct(id);
-  useEffect(
-    () => loadProject(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-
-  console.log('project', project);
+  useEffect(() => loadProject(), [id]);
 
   useEffect(() => {
     if (project) {
       getCampaignsActive({ variables: { input: { projectId: project.id } } });
     }
   }, [project, getCampaignsActive]);
-
-  console.log('campaignsActive', campaignsActive);
 
   useEffect(() => {
     if (project) {
@@ -193,39 +179,38 @@ export function ProjectDetailsView({ id }: Props) {
               New Campaign
             </Button>
 
-            {campaignsActive?.count > 1 && (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                {campaignsActive?.rows?.map((campaign: any) => (
-                  <Paper
-                    key={campaign.id}
-                    sx={{
-                      p: 2,
-                      borderRadius: 2,
-                      width: 'calc(33.333% - 16px)',
-                      boxShadow: 1,
-                    }}
-                  >
-                    <Typography variant="h6" gutterBottom>
-                      {campaign.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Runs: {campaign.runs}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Created: {new Date(campaign.createdAt).toLocaleDateString()}
-                    </Typography>
-                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Button variant="outlined" size="small">
-                        Edit
-                      </Button>
-                      <Button variant="contained" size="small">
-                        View
-                      </Button>
-                    </Box>
-                  </Paper>
-                ))}
-              </Box>
-            )}
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {CAMPAIGN_TABLE_HEAD.map((headCell) => (
+                      <TableCell key={headCell.id} style={{ width: headCell.width }}>
+                        {headCell.label}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {campaignsActive?.rows?.map((campaign: any) => (
+                    <TableRow key={campaign.id}>
+                      <TableCell>{campaign.name}</TableCell>
+                      <TableCell>{campaign.status}</TableCell>
+                      <TableCell>{new Date(campaign.startDate).toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(campaign.endDate).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => router.push(paths.v2.marketing.projects.campaign(campaign.id))}
+                        >
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Box>
         )}
       </Paper>
