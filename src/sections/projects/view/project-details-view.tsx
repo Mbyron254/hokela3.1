@@ -193,9 +193,9 @@ export function ProjectDetailsView({ id }: Props) {
               New Campaign
             </Button>
 
-            {campaignsActive?.length > 1 && (
+            {campaignsActive?.count > 1 && (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                {campaignsActive.map((campaign: any) => (
+                {campaignsActive?.rows?.map((campaign: any) => (
                   <Paper
                     key={campaign.id}
                     sx={{
