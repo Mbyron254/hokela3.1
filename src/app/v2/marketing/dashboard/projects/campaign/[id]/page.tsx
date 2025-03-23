@@ -1,10 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, Paper, Grid, Tab, Tabs } from '@mui/material';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, TablePagination } from '@mui/material';
+import { Box, Typography, Button, Paper, Grid, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableRow, Checkbox } from '@mui/material';
 import { useTable, TableNoData, TableEmptyRows, TableHeadCustom, TablePaginationCustom, emptyRows } from 'src/components/table';
 
 import { GQLMutation, GQLQuery } from 'src/lib/client';
@@ -16,7 +13,7 @@ import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { Iconify } from 'src/components/iconify';
 import { paths } from 'src/routes/paths';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { CAMPAIGN_RUN_CREATE, CAMPAIGN_RUN_RECYCLE, CAMPAIGN_RUN_RESTORE, CAMPAIGN_RUN_UPDATE, M_CAMPAIGN_RUNS_ACTIVE, M_CAMPAIGN_RUNS_RECYCLED } from 'src/lib/mutations/campaign-run.mutation';
+import { CAMPAIGN_RUN_CREATE, CAMPAIGN_RUN_RECYCLE, CAMPAIGN_RUN_RESTORE, M_CAMPAIGN_RUNS_ACTIVE, M_CAMPAIGN_RUNS_RECYCLED } from 'src/lib/mutations/campaign-run.mutation';
 
 // Define the tabs
 const TABS = [
