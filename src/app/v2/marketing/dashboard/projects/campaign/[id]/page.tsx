@@ -196,6 +196,7 @@ export default function Page({ params: { id } }: any) {
 
     if (id) {
       if (_runTypeIds.length > 0) {
+        console.log('Run inputCreate:', inputCreate);
         create({ variables: { input: { ...inputCreate, campaignId: id, runTypeIds: _runTypeIds } } });
       } else {
         alert('Please choose at least 1 run activity');
@@ -271,7 +272,7 @@ export default function Page({ params: { id } }: any) {
               variant="contained"
               sx={{ my: 3 }}
             >
-              New Run
+              Add New Run
             </Button>
             <TableContainer component={Paper}>
               <Table>
