@@ -195,7 +195,10 @@ export default function Page({ params: { id } }: any) {
     if (id) {
       if (_runTypeIds.length > 0) {
         console.log('Run inputCreate:', inputCreate);
-        create({ variables: { input: { ...inputCreate, campaignId: id, runTypeIds: _runTypeIds } } });
+        create({ variables: { input: { ...inputCreate, campaignId: id, runTypeIds: [
+          "3cc1c079-70e9-4a41-bf68-ca7b66a303dd",
+          "6b4cb1e2-f63c-46c8-a85b-91a26f02bc20"
+      ] } } });
       } else {
         alert('Please choose at least 1 run activity');
       }
