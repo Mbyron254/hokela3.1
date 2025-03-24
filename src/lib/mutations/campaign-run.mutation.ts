@@ -1,11 +1,11 @@
 import { gql } from '@apollo/client';
 
 export const CAMPAIGN_RUN_CREATE = gql`
-  mutation campaignRunCreate($input: InputCampaignRunCreate!) {
-    campaignRunCreate(input: $input) {
-      message
-    }
+mutation runCreate($input: InputRunCreate!) {
+  runCreate(input: $input) {
+    message
   }
+}
 `;
 
 export const CAMPAIGN_RUN_UPDATE = gql`
