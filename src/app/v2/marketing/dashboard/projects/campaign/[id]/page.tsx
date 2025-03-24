@@ -17,6 +17,7 @@ import { CAMPAIGN_RUN_CREATE, CAMPAIGN_RUN_RECYCLE, CAMPAIGN_RUN_RESTORE, M_CAMP
 import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
 // import { DropZone } from 'src/components/dropzone/DropZone';
 import { SelectMultiple } from 'src/components/SelectMultiple';
+import { M_RUN_TYPE_MINI } from 'src/lib/mutations/run-type.mutation';
 
 // Define the tabs
 const TABS = [
@@ -74,7 +75,12 @@ export default function Page({ params: { id } }: any) {
   });
 
   const [optionsCreate, setOptionsCreate] = useState<any>([]);
+  const [optionsAllCreate, setOptionsAllCreate] = useState<any[]>([]);
   const [optionsSelectedCreate, setOptionsSelectedCreate] = useState<any>([]);
+
+  const [optionsUpdate, setOptionsUpdate] = useState<any>([]);
+  const [optionsAllUpdate, setOptionsAllUpdate] = useState<any[]>([]);
+  const [optionsSelectedUpdate, setOptionsSelectedUpdate] = useState<any>([]);
 
   const [currentTab, setCurrentTab] = useState('overview');
 
@@ -108,6 +114,17 @@ export default function Page({ params: { id } }: any) {
     resolver: 'm_runs',
     toastmsg: false,
   });
+
+  const {
+    action: getRunTypes,
+    loading: loadingRunTypes,
+    data: runTypes,
+  } = GQLMutation({
+    mutation: M_RUN_TYPE_MINI,
+    resolver: 'm_runTypes',
+    toastmsg: false,
+  });
+
   const {
     action: getRunsRecycled,
     data: runsRecycled,
@@ -138,6 +155,19 @@ export default function Page({ params: { id } }: any) {
       });
     }
   }, [session?.user?.role?.clientTier1?.id, getUsersMini]);
+
+  useEffect(() => {
+    if (id) getRunTypes({ variables: { input: {} } });
+  }, [id, getRunTypes]);
+
+  useEffect(() => {
+    if (runTypes?.rows) {
+      setOptionsCreate(runTypes.rows);
+      setOptionsAllCreate(runTypes.rows);
+      setOptionsUpdate(runTypes.rows);
+      setOptionsAllUpdate(runTypes.rows);
+    }
+  }, [runTypes]);
 
   const handleRecycle = () => {
     if (selectedActive.length) {
