@@ -28,7 +28,7 @@ export default function Page({ params: { id } }: any) {
     queryAction: 'sessionSelf',
   });
 
-  console.log(session);
+  console.log('session:',session);
 
   const { action: getCampaign, data: campaign } = GQLMutation({
     mutation: M_CAMPAIGN,
