@@ -28,6 +28,8 @@ export default function Page({ params: { id } }: any) {
     queryAction: 'sessionSelf',
   });
 
+  console.log(session);
+
   const { action: getCampaign, data: campaign } = GQLMutation({
     mutation: M_CAMPAIGN,
     resolver: 'm_campaign',
@@ -103,8 +105,18 @@ export default function Page({ params: { id } }: any) {
 
   useEffect(() => {
     if (id) getCampaign({ variables: { input: { id } } });
-    getUsersMini();
-  }, [id, getCampaign, getUsersMini]);
+  }, [id, getCampaign, getUsersMini]);//Variable "$input" of required type "InputUsers!" was not provided.
+
+
+  useEffect(() => {
+    if (session?.user?.role?.clientTier1?.id) {
+      getUsersMini({
+        variables: {
+          input: { clientTier1Id: session.user.role.clientTier1.id },
+        },
+      });
+    }
+  }, [session?.user?.role?.clientTier1?.id, getUsersMini]);
 
   const handleRecycle = () => {
     if (selectedActive.length) {
@@ -197,7 +209,7 @@ export default function Page({ params: { id } }: any) {
             <Button
               onClick={handleOpenDialog}
               variant="contained"
-              sx={{ mt: 3 }}
+              sx={{ my: 3 }}
             >
               New Run
             </Button>
