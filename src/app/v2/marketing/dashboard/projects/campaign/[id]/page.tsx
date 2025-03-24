@@ -31,7 +31,7 @@ export default function Page({ params: { id } }: any) {
     queryAction: 'sessionSelf',
   });
 
-  console.log('session:',session);
+  console.log('session:', session);
 
   const { action: getCampaign, data: campaign } = GQLMutation({
     mutation: M_CAMPAIGN,
@@ -131,7 +131,7 @@ export default function Page({ params: { id } }: any) {
     mutation: M_CAMPAIGN_RUNS_RECYCLED,
     resolver: 'm_runsRecycled',
     toastmsg: false,
-  }); 
+  });
 
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -190,15 +190,17 @@ export default function Page({ params: { id } }: any) {
   const handleCreate = () => {
     // Ensure optionsSelectedCreate is correctly mapped to runTypeIds
     const _runTypeIds: string[] = optionsSelectedCreate.map((option: any) => option.id);
-    console.log('Run _runTypeIds:', _runTypeIds);
 
     if (id) {
       if (_runTypeIds.length > 0) {
-        console.log('Run inputCreate:', inputCreate);
-        create({ variables: { input: { ...inputCreate, campaignId: id, runTypeIds: [
-          "3cc1c079-70e9-4a41-bf68-ca7b66a303dd",
-          "6b4cb1e2-f63c-46c8-a85b-91a26f02bc20"
-      ] } } });
+        const data = {
+          ...inputCreate,
+          campaignId: id,
+          runTypeIds: _runTypeIds,
+        };
+        console.log('Run _runTypeIds:', _runTypeIds);
+        console.log('Run data:', data);
+        create({ variables: { input: data } });
       } else {
         alert('Please choose at least 1 run activity');
       }
@@ -228,15 +230,15 @@ export default function Page({ params: { id } }: any) {
   return (
     <Box sx={{ p: 3 }}>
       <CustomBreadcrumbs
-          heading="Campaign Details"
-          links={[
-            { name: 'Dashboard', href: paths.v2.marketing.root },
-            { name: 'Projects', href: paths.v2.marketing.projects.list },
-            { name: 'Campaign', href: paths.v2.marketing.projects.campaign(id) },
-            { name: 'Details' },
-          ]}
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
+        heading="Campaign Details"
+        links={[
+          { name: 'Dashboard', href: paths.v2.marketing.root },
+          { name: 'Projects', href: paths.v2.marketing.projects.list },
+          { name: 'Campaign', href: paths.v2.marketing.projects.campaign(id) },
+          { name: 'Details' },
+        ]}
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
       <Typography variant="h4" gutterBottom>
         {campaign?.name}
       </Typography>
