@@ -188,11 +188,9 @@ export default function Page({ params: { id } }: any) {
   };
 
   const handleCreate = () => {
-    const _runTypeIds: string[] = [];
-
-    for (let i = 0; i < optionsSelectedCreate.length; i+=1) {
-      _runTypeIds.push(optionsSelectedCreate[i].id);
-    }
+    // Ensure optionsSelectedCreate is correctly mapped to runTypeIds
+    const _runTypeIds: string[] = optionsSelectedCreate.map((option: any) => option.id);
+    console.log('Run _runTypeIds:', _runTypeIds);
 
     if (id) {
       if (_runTypeIds.length > 0) {
