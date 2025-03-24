@@ -105,7 +105,7 @@ export default function Page({ params: { id } }: any) {
 
   useEffect(() => {
     if (id) getCampaign({ variables: { input: { id } } });
-  }, [id, getCampaign, getUsersMini]);//Variable "$input" of required type "InputUsers!" was not provided.
+  }, [id, getCampaign, getUsersMini]);
 
 
   useEffect(() => {
