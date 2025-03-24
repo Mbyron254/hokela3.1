@@ -15,6 +15,8 @@ import { paths } from 'src/routes/paths';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { CAMPAIGN_RUN_CREATE, CAMPAIGN_RUN_RECYCLE, CAMPAIGN_RUN_RESTORE, M_CAMPAIGN_RUNS_ACTIVE, M_CAMPAIGN_RUNS_RECYCLED } from 'src/lib/mutations/campaign-run.mutation';
 import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
+// import { DropZone } from 'src/components/dropzone/DropZone';
+import { SelectMultiple } from 'src/components/SelectMultiple';
 
 // Define the tabs
 const TABS = [
@@ -43,17 +45,36 @@ export default function Page({ params: { id } }: any) {
   });
 
   const dialog = useBoolean();
+  // const [inputCreate, setInputCreate] = useState<ICampaignRunCreate>({
+  //   projectId: undefined,
+  //   campaignId: id,
+  //   runTypeId: undefined,
+  //   managerId: undefined,
+  //   dateStart: undefined,
+  //   dateStop: undefined,
+  //   checkInAt: undefined,
+  //   checkOutAt: undefined,
+  //   closeAdvertOn: undefined,
+  // });
+
   const [inputCreate, setInputCreate] = useState<ICampaignRunCreate>({
-    projectId: undefined,
-    campaignId: id,
-    runTypeId: undefined,
     managerId: undefined,
+    posterId: undefined,
+    runTypeIds: [],
+    name: undefined,
     dateStart: undefined,
     dateStop: undefined,
-    checkInAt: undefined,
-    checkOutAt: undefined,
+    clockType: undefined,
+    clockInPhotoLabel: undefined,
+    clockOutPhotoLabel: undefined,
+    clockInTime: undefined,
+    clockOutTime: undefined,
+    locationPingFrequency: undefined,
     closeAdvertOn: undefined,
   });
+
+  const [optionsCreate, setOptionsCreate] = useState<any>([]);
+  const [optionsSelectedCreate, setOptionsSelectedCreate] = useState<any>([]);
 
   const [currentTab, setCurrentTab] = useState('overview');
 
@@ -138,9 +159,20 @@ export default function Page({ params: { id } }: any) {
     setOpenDialog(false);
   };
 
-  const handleCreateRun = () => {
-    create({ variables: { input: inputCreate } });
-    handleCloseDialog();
+  const handleCreate = () => {
+    let _runTypeIds: string[] = [];
+
+    for (let i = 0; i < optionsSelectedCreate.length; i++) {
+      _runTypeIds.push(optionsSelectedCreate[i].id);
+    }
+
+    if (id) {
+      if (_runTypeIds.length > 0) {
+        create({ variables: { input: { ...inputCreate, campaignId: id, runTypeIds: _runTypeIds } } });
+      } else {
+        alert('Please choose at least 1 run activity');
+      }
+    }
   };
 
   const table = useTable({ defaultOrderBy: 'name' });
@@ -274,8 +306,8 @@ export default function Page({ params: { id } }: any) {
           <TextField
             fullWidth
             label="Run Name"
-            value={inputCreate.runTypeId || ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, runTypeId: e.target.value })}
+            value={inputCreate.name || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, name: e.target.value })}
             margin="normal"
           />
           <FormControl fullWidth margin="normal">
@@ -311,37 +343,48 @@ export default function Page({ params: { id } }: any) {
           />
           <TextField
             fullWidth
-            label="Check In At"
+            label="Clock In Time"
             type="time"
-            value={inputCreate.checkInAt || ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, checkInAt: e.target.value })}
+            value={inputCreate.clockInTime || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, clockInTime: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
           <TextField
             fullWidth
-            label="Check Out At"
+            label="Clock Out Time"
             type="time"
-            value={inputCreate.checkOutAt || ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, checkOutAt: e.target.value })}
+            value={inputCreate.clockOutTime || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, clockOutTime: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
-          <TextField
-            fullWidth
-            label="Close Advert On"
-            type="date"
-            value={inputCreate.closeAdvertOn ? inputCreate.closeAdvertOn.toISOString().split('T')[0] : ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, closeAdvertOn: new Date(e.target.value) })}
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
+          <SelectMultiple
+            asset="run activities"
+            disable={false}
+            checkbox={false}
+            disablePreselected={false}
+            allOptions={optionsCreate}
+            options={optionsCreate}
+            setOptions={setOptionsCreate}
+            selected={optionsSelectedCreate}
+            setSelected={setOptionsSelectedCreate}
           />
+          {/* <DropZone
+            name="photo (Max of 3, 230px by 230px)"
+            classes={`dropzone text-center mt-3`}
+            acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
+            multiple={true}
+            files={documentsCreate}
+            setFiles={setDocumentsCreate}
+            maxSize={1375000000} // 1GB
+          /> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleCreateRun} color="primary" disabled={creating}>
+          <Button onClick={handleCreate} color="primary" disabled={creating}>
             Create
           </Button>
         </DialogActions>

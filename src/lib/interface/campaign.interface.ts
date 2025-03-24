@@ -13,15 +13,32 @@ export interface ICampaignUpdate {
   jobQualification?: string;
 }
 
+// export interface ICampaignRunCreate {
+//   projectId?: string;
+//   campaignId?: string;
+//   runTypeId?: string;
+//   managerId?: string;
+//   dateStart?: Date;
+//   dateStop?: Date;
+//   checkInAt?: string;
+//   checkOutAt?: string;
+//   closeAdvertOn?: Date;
+// }
+
 export interface ICampaignRunCreate {
-  projectId?: string;
   campaignId?: string;
-  runTypeId?: string;
   managerId?: string;
+  posterId?: string;
+  runTypeIds: string[];
+  name?: string;
   dateStart?: Date;
   dateStop?: Date;
-  checkInAt?: string;
-  checkOutAt?: string;
+  clockType?: string;
+  clockInPhotoLabel?: string;
+  clockOutPhotoLabel?: string;
+  clockInTime?: string;
+  clockOutTime?: string;
+  locationPingFrequency?: number;
   closeAdvertOn?: Date;
 }
 
