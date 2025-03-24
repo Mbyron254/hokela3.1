@@ -61,9 +61,9 @@ const v2_paths = {
         details: (id: string) => `${ROOTS.V2}/agent/dashboard/campaigns/offers/${id}`,
       },
     },
-    jobs: {
-      root: `${ROOTS.V2}/agent/dashboard/job`,
-      applications: `${ROOTS.V2}/agent/dashboard/job/applications`,
+    janta: {
+      root: `${ROOTS.V2}/agent/dashboard/janta`,
+      applications: `${ROOTS.V2}/agent/dashboard/janta/applications`,
     },
   },
   [ERole.PRODUCER]: {
@@ -90,10 +90,10 @@ const v2_paths = {
     campaigns: `${ROOTS.V2}/marketing/dashboard/campaigns`,
     runs: `${ROOTS.V2}/marketing/dashboard/runs`,
     surveys: `${ROOTS.V2}/marketing/dashboard/surveys`,
-    jobs: {
-      overview: `${ROOTS.V2}/marketing/dashboard/jobs`,
-      applications: `${ROOTS.V2}/marketing/dashboard/jobs/applications`,
-      offers: `${ROOTS.V2}/marketing/dashboard/jobs/offers`,
+    janta: {
+      overview: `${ROOTS.V2}/marketing/dashboard/janta`,
+      applications: `${ROOTS.V2}/marketing/dashboard/janta/applications`,
+      offers: `${ROOTS.V2}/marketing/dashboard/janta/offers`,
     },
     products: {
       overview: `${ROOTS.V2}/marketing/dashboard/products`,

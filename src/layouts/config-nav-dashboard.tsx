@@ -2,9 +2,10 @@ import { paths } from 'src/routes/paths';
 
 import { CONFIG } from 'src/config-global';
 
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { SvgColor } from 'src/components/svg-color';
+
+import { ERole } from 'src/types/client';
 
 // ----------------------------------------------------------------------
 
@@ -39,214 +40,248 @@ const ICONS = {
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
   parameter: icon('ic-parameter'),
+  clients: <Iconify icon="fluent:people-28-filled" />,
+  shop: <Iconify icon="solar:shop-linear" />,
+  utilities: <Iconify icon="material-symbols:inbox-customize-rounded" />,
+  account: <Iconify icon="fluent:person-16-filled" />,
+  roles: <Iconify icon="oui:app-users-roles" />,
+  permission: <Iconify icon="ic:baseline-lock" />,
+  sessions: <Iconify icon="majesticons:list-box" />,
 };
 
 // ----------------------------------------------------------------------
 
-export const navData = [
-  /**
-   * Overview
-   */
+const adminNavData = [
   {
-    subheader: 'Overview',
+    subheader: 'Admin Dashboard',
     items: [
-      { title: 'App', path: paths.v2.admin.root, icon: ICONS.dashboard },
-      { title: 'Ecommerce', path: paths.v2.admin.root, icon: ICONS.ecommerce },
-      { title: 'Analytics', path: paths.v2.admin.root, icon: ICONS.analytics },
-      { title: 'Banking', path: paths.v2.admin.root, icon: ICONS.banking },
-      { title: 'Booking', path: paths.v2.admin.root, icon: ICONS.booking },
-      { title: 'File', path: paths.v2.admin.root, icon: ICONS.file },
-      { title: 'Course', path: paths.v2.admin.root, icon: ICONS.course },
-    ],
-  },
-  /**
-   * Management
-   */
-  {
-    subheader: 'Management',
-    items: [
+      { title: 'Overview', path: paths.v2[ERole.ADMIN].root, icon: ICONS.dashboard },
       {
-        title: 'User',
-        path: paths.v2.admin.root,
-        icon: ICONS.user,
+        title: 'Clients',
+        path: paths.v2[ERole.ADMIN].clients.enterprise,
+        icon: ICONS.clients,
         children: [
-          { title: 'Profile', path: paths.v2.admin.root },
-          { title: 'Cards', path: paths.v2.admin.root },
-          { title: 'List', path: paths.v2.admin.root },
-          { title: 'Create', path: paths.v2.admin.root },
-          { title: 'Edit', path: paths.v2.admin.root },
-          { title: 'Account', path: paths.v2.admin.root },
+          { title: 'Enterprise Clients', path: paths.v2[ERole.ADMIN].clients.enterprise.root }, // Tire 1 Clients
+          { title: 'SME Clients', path: paths.v2[ERole.ADMIN].clients.sme }, // Tire 2 Clients
         ],
       },
       {
-        title: 'Product',
-        path: paths.v2.admin.root,
-        icon: ICONS.product,
+        title: 'Shop',
+        path: paths.v2[ERole.ADMIN].shop.shops,
+        icon: ICONS.shop,
         children: [
-          { title: 'List', path: paths.v2.admin.root },
-          { title: 'Details', path: paths.v2.admin.root },
-          { title: 'Create', path: paths.v2.admin.root },
-          { title: 'Edit', path: paths.v2.admin.root },
+          { title: 'Shops', path: paths.v2[ERole.ADMIN].shop.shops },
+          { title: 'Sectors', path: paths.v2[ERole.ADMIN].shop.sectors },
+          { title: 'Category', path: paths.v2[ERole.ADMIN].shop.category },
         ],
       },
       {
-        title: 'Order',
-        path: paths.v2.admin.root,
-        icon: ICONS.order,
+        title: 'Utilities',
+        path: paths.v2[ERole.ADMIN].utilities.root,
+        icon: ICONS.utilities,
         children: [
-          { title: 'List', path: paths.v2.admin.root },
-          { title: 'Details', path: paths.v2.admin.root },
-        ],
-      },
-      {
-        title: 'Invoice',
-        path: paths.v2.admin.root,
-        icon: ICONS.invoice,
-        children: [
-          { title: 'List', path: paths.v2.admin.root },
-          { title: 'Details', path: paths.v2.admin.root },
-          { title: 'Create', path: paths.v2.admin.root },
-          { title: 'Edit', path: paths.v2.admin.root },
-        ],
-      },
-      {
-        title: 'Blog',
-        path: paths.v2.admin.root,
-        icon: ICONS.blog,
-        children: [
-          { title: 'List', path: paths.v2.admin.root },
-          { title: 'Details', path: paths.v2.admin.root },
-          { title: 'Create', path: paths.v2.admin.root },
-          { title: 'Edit', path: paths.v2.admin.root },
-        ],
-      },
-      {
-        title: 'Job',
-        path: paths.v2.admin.root,
-        icon: ICONS.job,
-        children: [
-          { title: 'List', path: paths.v2.admin.root },
-          { title: 'Details', path: paths.v2.admin.root },
-          { title: 'Create', path: paths.v2.admin.root },
-          { title: 'Edit', path: paths.v2.admin.root },
-        ],
-      },
-      {
-        title: 'Tour',
-        path: paths.v2.admin.root,
-        icon: ICONS.tour,
-        children: [
-          { title: 'List', path: paths.v2.admin.root },
-          { title: 'Details', path: paths.v2.admin.root },
-          { title: 'Create', path: paths.v2.admin.root },
-          { title: 'Edit', path: paths.v2.admin.root },
-        ],
-      },
-      { title: 'File manager', path: paths.v2.admin.root, icon: ICONS.folder },
-      {
-        title: 'Mail',
-        path: paths.v2.admin.root,
-        icon: ICONS.mail,
-        info: (
-          <Label color="error" variant="inverted">
-            +32
-          </Label>
-        ),
-      },
-      { title: 'Chat', path: paths.v2.admin.root, icon: ICONS.chat },
-      { title: 'Calendar', path: paths.v2.admin.root, icon: ICONS.calendar },
-      { title: 'Kanban', path: paths.v2.admin.root, icon: ICONS.kanban },
-    ],
-  },
-  /**
-   * Item State
-   */
-  {
-    subheader: 'Misc',
-    items: [
-      {
-        // default roles : All roles can see this entry.
-        // roles: ['user'] Only users can see this item.
-        // roles: ['admin'] Only admin can see this item.
-        // roles: ['admin', 'manager'] Only admin/manager can see this item.
-        // Reference from 'src/guards/RoleBasedGuard'.
-        title: 'Permission',
-        path: paths.v2.admin.root,
-        icon: ICONS.lock,
-        roles: ['admin', 'manager'],
-        caption: 'Only admin can see this item',
-      },
-      {
-        title: 'Level',
-        path: '#/dashboard/menu_level',
-        icon: ICONS.menuItem,
-        children: [
+          { title: 'Unit Of Measure', path: paths.v2[ERole.ADMIN].utilities.root },
           {
-            title: 'Level 1a',
-            path: '#/dashboard/menu_level/menu_level_1a',
+            title: 'Products',
+            path: paths.v2[ERole.ADMIN].utilities.products.category,
             children: [
-              {
-                title: 'Level 2a',
-                path: '#/dashboard/menu_level/menu_level_1a/menu_level_2a',
-              },
-              {
-                title: 'Level 2b',
-                path: '#/dashboard/menu_level/menu_level_1a/menu_level_2b',
-                children: [
-                  {
-                    title: 'Level 3a',
-                    path: '#/dashboard/menu_level/menu_level_1a/menu_level_2b/menu_level_3a',
-                  },
-                  {
-                    title: 'Level 3b',
-                    path: '#/dashboard/menu_level/menu_level_1a/menu_level_2b/menu_level_3b',
-                  },
-                ],
-              },
+              { title: 'Category', path: paths.v2[ERole.ADMIN].utilities.products.category },
+              { title: 'Subcategory', path: paths.v2[ERole.ADMIN].utilities.products.sub_category },
             ],
           },
-          { title: 'Level 1b', path: '#/dashboard/menu_level/menu_level_1b' },
+        ],
+      },
+    ],
+  },
+  {
+    subheader: 'Access Control',
+    items: [
+      {
+        title: 'Account',
+        path: paths.v2[ERole.ADMIN].accounts.admin,
+        icon: ICONS.account,
+        children: [
+          { title: 'Admin', path: paths.v2[ERole.ADMIN].accounts.admin },
+          { title: 'Agents', path: paths.v2[ERole.ADMIN].accounts.agent },
+          { title: 'Guests', path: paths.v2[ERole.ADMIN].accounts.guest },
+          {
+            title: 'Enterprise Clients',
+            path: paths.v2[ERole.ADMIN].accounts.enterprise,
+          },
+          { title: 'SME Clients', path: paths.v2[ERole.ADMIN].accounts.sme },
         ],
       },
       {
-        title: 'Disabled',
-        path: '#disabled',
-        icon: ICONS.disabled,
-        disabled: true,
+        title: 'Roles',
+        path: paths.v2[ERole.ADMIN].roles.agentsAndAdmins,
+        icon: ICONS.roles,
+        children: [
+          {
+            title: 'Agents & Admins',
+            path: paths.v2[ERole.ADMIN].roles.agentsAndAdmins,
+          },
+          {
+            title: 'Enterprise Clients',
+            path: paths.v2[ERole.ADMIN].roles.enterprise,
+          },
+          { title: 'SME Clients', path: paths.v2[ERole.ADMIN].roles.sme },
+        ],
       },
-      {
-        title: 'Label',
-        path: '#label',
-        icon: ICONS.label,
-        info: (
-          <Label
-            color="info"
-            variant="inverted"
-            startIcon={<Iconify icon="solar:bell-bing-bold-duotone" />}
-          >
-            NEW
-          </Label>
-        ),
-      },
-      {
-        title: 'Caption',
-        path: '#caption',
-        icon: ICONS.menuItem,
-        caption:
-          'Quisque malesuada placerat nisl. In hac habitasse platea dictumst. Cras id dui. Pellentesque commodo eros a enim. Morbi mollis tellus ac sapien.',
-      },
-      {
-        title: 'Params',
-        path: '/dashboard/params?id=e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1',
-        icon: ICONS.parameter,
-      },
-      {
-        title: 'External link',
-        path: 'https://www.google.com/',
-        icon: ICONS.external,
-        info: <Iconify width={18} icon="prime:external-link" />,
-      },
-      { title: 'Blank', path: paths.v2.admin.root, icon: ICONS.blank },
+      { title: 'Sessions', path: paths.v2[ERole.ADMIN].session, icon: ICONS.sessions },
+      { title: 'Permissions', path: paths.v2[ERole.ADMIN].permissions, icon: ICONS.permission },
     ],
   },
 ];
+
+const agentNavData = [
+  {
+    subheader: 'Agent App',
+    items: [
+      { title: 'Dashboard', path: paths.v2[ERole.AGENT].root, icon: ICONS.dashboard },
+      { title: 'Campaigns', path: paths.v2[ERole.AGENT].campaigns.root, icon: ICONS.analytics },
+      { title: 'Janta', path: paths.v2[ERole.AGENT].campaigns.offers.root, icon: ICONS.job },
+      { title: 'Applications', path: paths.v2[ERole.AGENT].janta.applications, icon: ICONS.file },
+    ],
+  },
+];
+
+const producerNavData = [
+  {
+    subheader: 'Producer Dashboard',
+    items: [{ title: 'Overview', path: paths.v2[ERole.PRODUCER].root, icon: ICONS.dashboard }],
+  },
+];
+
+const distributorNavData = [
+  {
+    subheader: 'Distributor Dashboard',
+    items: [{ title: 'Overview', path: paths.v2[ERole.DISTRIBUTOR].root, icon: ICONS.dashboard }],
+  },
+];
+
+const retailerNavData = [
+  {
+    subheader: 'Retailer Dashboard',
+    items: [{ title: 'Overview', path: paths.v2[ERole.RETAILER].root, icon: ICONS.dashboard }],
+  },
+];
+
+const marketingNavData = [
+  {
+    subheader: 'Marketing Dashboard',
+    items: [
+      { title: 'Overview', path: paths.v2[ERole.MARKETING_AGENCY].root, icon: ICONS.dashboard },
+      {
+        title: 'Janta',
+        path: paths.v2[ERole.MARKETING_AGENCY].janta.overview,
+        icon: ICONS.job,
+        children: [
+          {
+            title: 'Overview',
+            path: paths.v2[ERole.MARKETING_AGENCY].janta.overview,
+            icon: ICONS.dashboard,
+          },
+          {
+            title: 'Applications',
+            path: paths.v2[ERole.MARKETING_AGENCY].janta.applications,
+            icon: ICONS.course,
+          },
+          {
+            title: 'Run Offers',
+            path: paths.v2[ERole.MARKETING_AGENCY].janta.offers,
+            icon: ICONS.file,
+          },
+        ],
+      },
+      {
+        title: 'Clients',
+        path: paths.v2[ERole.MARKETING_AGENCY].clients.list,
+        icon: ICONS.label,
+        // children: [
+        //   { title: 'List', path: paths.v2[ERole.MARKETING_AGENCY].clients.list },
+        //   {
+        //     title: 'Details',
+        //     path: paths.v2[ERole.MARKETING_AGENCY].clients.list,
+        //   },
+        // ],
+      },
+      {
+        title: 'Projects',
+        path: paths.v2[ERole.MARKETING_AGENCY].projects.list,
+        icon: ICONS.folder,
+      },
+      { title: 'Runs', path: paths.v2[ERole.MARKETING_AGENCY].runs, icon: ICONS.external },
+      {
+        title: 'Surveys',
+        path: paths.v2[ERole.MARKETING_AGENCY].surveys,
+        icon: ICONS.chat,
+      },
+      {
+        title: 'Products',
+        path: paths.v2[ERole.MARKETING_AGENCY].products.overview,
+        icon: ICONS.order,
+        children: [
+          {
+            title: 'Overview',
+            path: paths.v2[ERole.MARKETING_AGENCY].products.overview,
+            icon: ICONS.dashboard,
+          },
+          {
+            title: 'Reciepts',
+            path: paths.v2[ERole.MARKETING_AGENCY].products.reciepts,
+            icon: ICONS.invoice,
+          },
+        ],
+      },
+      // {
+      //   title: 'Access Controll',
+      //   path: paths.v2[ERole.MARKETING_AGENCY].userManagement.users,
+      //   icon: ICONS.lock,
+      //   children: [
+      //     {
+      //       title: 'Users',
+      //       path: paths.v2[ERole.MARKETING_AGENCY].userManagement.users,
+      //       icon: ICONS.user,
+      //     },
+      //     {
+      //       title: 'Roles',
+      //       path: paths.v2[ERole.MARKETING_AGENCY].userManagement.roles,
+      //       icon: ICONS.file,
+      //     },
+      //   ],
+      // },
+    ],
+  },
+];
+
+// Determine role from current path
+const getCurrentRole = () => {
+  const path = window.location.pathname;
+  if (path.includes('/admin/')) return ERole.ADMIN;
+  if (path.includes('/agent/')) return ERole.AGENT;
+  if (path.includes('/producer/')) return ERole.PRODUCER;
+  if (path.includes('/distributor/')) return ERole.DISTRIBUTOR;
+  if (path.includes('/retailer/')) return ERole.RETAILER;
+  if (path.includes('/marketing/')) return ERole.MARKETING_AGENCY;
+  return ERole.AGENT; // Default to agent if no match
+};
+
+export const navData = (() => {
+  const role = getCurrentRole();
+  switch (role) {
+    case ERole.ADMIN:
+      return adminNavData;
+    case ERole.AGENT:
+      return agentNavData;
+    case ERole.PRODUCER:
+      return producerNavData;
+    case ERole.DISTRIBUTOR:
+      return distributorNavData;
+    case ERole.RETAILER:
+      return retailerNavData;
+    case ERole.MARKETING_AGENCY:
+      return marketingNavData;
+    default:
+      return agentNavData;
+  }
+})();
