@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, Paper, Grid, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableRow, Checkbox } from '@mui/material';
+import { Box, Typography, Button, Paper, Grid, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableRow, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { useTable, TableNoData, TableEmptyRows, TableHeadCustom, TablePaginationCustom, emptyRows } from 'src/components/table';
 
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { formatDate, formatTimeTo12Hr } from 'src/lib/helpers';
-import { ICampaignRunCreate, ICampaignRunUpdate } from 'src/lib/interface/campaign.interface';
+import { ICampaignRunCreate } from 'src/lib/interface/campaign.interface';
 import { M_CAMPAIGN } from 'src/lib/mutations/campaign.mutation';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
@@ -14,6 +14,7 @@ import { Iconify } from 'src/components/iconify';
 import { paths } from 'src/routes/paths';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { CAMPAIGN_RUN_CREATE, CAMPAIGN_RUN_RECYCLE, CAMPAIGN_RUN_RESTORE, M_CAMPAIGN_RUNS_ACTIVE, M_CAMPAIGN_RUNS_RECYCLED } from 'src/lib/mutations/campaign-run.mutation';
+import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
 
 // Define the tabs
 const TABS = [
@@ -33,12 +34,22 @@ export default function Page({ params: { id } }: any) {
     toastmsg: false,
   });
 
+  const { action: getUsersMini, data: users } = GQLMutation({
+    mutation: M_USERS_MINI,
+    resolver: 'm_usersActive',
+    toastmsg: false,
+  });
+
   const dialog = useBoolean();
   const [inputCreate, setInputCreate] = useState<ICampaignRunCreate>({
-    managerId: undefined,
+    projectId: undefined,
+    campaignId: id,
     runTypeId: undefined,
+    managerId: undefined,
     dateStart: undefined,
     dateStop: undefined,
+    checkInAt: undefined,
+    checkOutAt: undefined,
     closeAdvertOn: undefined,
   });
 
@@ -49,7 +60,7 @@ export default function Page({ params: { id } }: any) {
 
   const { action: create, loading: creating } = GQLMutation({
     mutation: CAMPAIGN_RUN_CREATE,
-    resolver: 'runCreate',
+    resolver: 'campaignRunCreate',
     toastmsg: true,
   });
 
@@ -84,13 +95,16 @@ export default function Page({ params: { id } }: any) {
     toastmsg: false,
   }); 
 
+  const [openDialog, setOpenDialog] = useState(false);
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   };
 
   useEffect(() => {
     if (id) getCampaign({ variables: { input: { id } } });
-  }, [id, getCampaign]);
+    getUsersMini();
+  }, [id, getCampaign, getUsersMini]);
 
   const handleRecycle = () => {
     if (selectedActive.length) {
@@ -102,6 +116,19 @@ export default function Page({ params: { id } }: any) {
     if (selectedRecycled.length) {
       restore({ variables: { input: { ids: selectedRecycled } } });
     }
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleCreateRun = () => {
+    create({ variables: { input: inputCreate } });
+    handleCloseDialog();
   };
 
   const table = useTable({ defaultOrderBy: 'name' });
@@ -168,7 +195,7 @@ export default function Page({ params: { id } }: any) {
         {currentTab === 'runs' && (
           <Box sx={{ p: 3 }}>
             <Button
-              onClick={() => dialog.onTrue()}
+              onClick={handleOpenDialog}
               variant="contained"
               sx={{ mt: 3 }}
             >
@@ -229,6 +256,84 @@ export default function Page({ params: { id } }: any) {
           </Box>
         )}
       </Paper>
+      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
+        <DialogTitle>New Run</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Run Name"
+            value={inputCreate.runTypeId || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, runTypeId: e.target.value })}
+            margin="normal"
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Run Manager</InputLabel>
+            <Select
+              value={inputCreate.managerId || ''}
+              onChange={(e) => setInputCreate({ ...inputCreate, managerId: e.target.value })}
+            >
+              {users?.rows.map((user: any) => (
+                <MenuItem key={user.id} value={user.id}>
+                  {user.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            fullWidth
+            label="Start Date"
+            type="date"
+            value={inputCreate.dateStart ? inputCreate.dateStart.toISOString().split('T')[0] : ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, dateStart: new Date(e.target.value) })}
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            fullWidth
+            label="Stop Date"
+            type="date"
+            value={inputCreate.dateStop ? inputCreate.dateStop.toISOString().split('T')[0] : ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, dateStop: new Date(e.target.value) })}
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            fullWidth
+            label="Check In At"
+            type="time"
+            value={inputCreate.checkInAt || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, checkInAt: e.target.value })}
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            fullWidth
+            label="Check Out At"
+            type="time"
+            value={inputCreate.checkOutAt || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, checkOutAt: e.target.value })}
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            fullWidth
+            label="Close Advert On"
+            type="date"
+            value={inputCreate.closeAdvertOn ? inputCreate.closeAdvertOn.toISOString().split('T')[0] : ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, closeAdvertOn: new Date(e.target.value) })}
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleCreateRun} color="primary" disabled={creating}>
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
