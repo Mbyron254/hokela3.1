@@ -143,6 +143,13 @@ export default function Page({ params: { id } }: any) {
     if (id) getCampaign({ variables: { input: { id } } });
   }, [id, getCampaign, getUsersMini]);
 
+  useEffect(() => {
+    if (id) {
+      getRunsActive({ variables: { input: { campaignId: id } } });
+    }
+  }, [id,getRunsActive]);
+
+  console.log('runsActive:', runsActive);
 
   useEffect(() => {
     if (session?.user?.role?.clientTier1?.id) {
