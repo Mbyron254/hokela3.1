@@ -79,35 +79,40 @@ export const M_CAMPAIGN_RUN = gql`
 `;
 
 export const M_CAMPAIGN_RUNS_ACTIVE = gql`
-  mutation m_campaignRuns($input: InputCampaignRuns!) {
-    m_campaignRuns(input: $input) {
+  mutation m_runs($input: InputRuns!) {
+    m_runs(input: $input) {
       count
       rows {
         index
         id
+        name
         code
         dateStart
         dateStop
-        checkInAt
-        checkOutAt
+        clockType
+        clockInPhotoLabel
+        clockOutPhotoLabel
+        clockInTime
+        clockOutTime
+        locationPingFrequency
         closeAdvertOn
         forceClose
         created
-        project {
-          id
-          name
-        }
         campaign {
           id
           name
         }
-        runType {
+        types {
           id
           name
         }
         manager {
           id
           name
+        }
+        poster {
+          id
+          fileName
         }
         applications {
           id
@@ -121,35 +126,40 @@ export const M_CAMPAIGN_RUNS_ACTIVE = gql`
 `;
 
 export const M_CAMPAIGN_RUNS_RECYCLED = gql`
-  mutation m_campaignRunsRecycled($input: InputCampaignRuns!) {
-    m_campaignRunsRecycled(input: $input) {
+  mutation m_runsRecycled($input: InputRuns!) {
+    m_runsRecycled(input: $input) {
       count
       rows {
         index
         id
+        name
         code
         dateStart
         dateStop
-        checkInAt
-        checkOutAt
+        clockType
+        clockInPhotoLabel
+        clockOutPhotoLabel
+        clockInTime
+        clockOutTime
+        locationPingFrequency
         closeAdvertOn
         forceClose
         recycled
-        project {
-          id
-          name
-        }
         campaign {
           id
           name
         }
-        runType {
+        types {
           id
           name
         }
         manager {
           id
           name
+        }
+        poster {
+          id
+          fileName
         }
         applications {
           id
