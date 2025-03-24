@@ -4,6 +4,7 @@ import { unallocatedAssets } from 'src/lib/helpers';
 import { ISelectMultiple } from 'src/lib/interface/general.interface';
 import Multiselect from 'multiselect-react-dropdown';
 import { FC } from 'react';
+import { Icon } from '@iconify/react';
 
 export const SelectMultiple: FC<ISelectMultiple> = (props) => {
   const {
@@ -22,7 +23,7 @@ export const SelectMultiple: FC<ISelectMultiple> = (props) => {
   return (
     <Multiselect
       caseSensitiveSearch={false}
-      isObject={true}
+      isObject
       disable={disable}
       displayValue={displayValue}
       showCheckbox={checkbox}
@@ -41,10 +42,11 @@ export const SelectMultiple: FC<ISelectMultiple> = (props) => {
       placeholder={`Search ${asset}`}
       emptyRecordMsg={`No  ${asset} in list`}
       customCloseIcon={
-        <i
-          className='mdi mdi-cancel fs-5'
+        <Icon
+          icon="mdi:cancel"
+          className="fs-5"
           style={{ marginLeft: '8px', color: 'rgb(158,163,181,.9)' }}
-        ></i>
+        />
       }
       style={{
         chips: {

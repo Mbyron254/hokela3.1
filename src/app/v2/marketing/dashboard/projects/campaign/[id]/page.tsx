@@ -160,9 +160,9 @@ export default function Page({ params: { id } }: any) {
   };
 
   const handleCreate = () => {
-    let _runTypeIds: string[] = [];
+    const _runTypeIds: string[] = [];
 
-    for (let i = 0; i < optionsSelectedCreate.length; i++) {
+    for (let i = 0; i < optionsSelectedCreate.length; i+=1) {
       _runTypeIds.push(optionsSelectedCreate[i].id);
     }
 
