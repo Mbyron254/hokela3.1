@@ -23,7 +23,7 @@ export function JobEditView({ job }: Props) {
         heading="Edit"
         links={[
           { name: 'Dashboard', href: paths.v2.agent.root },
-          { name: 'Job', href: paths.v2.agent.jobs.root },
+          { name: 'Job', href: paths.v2.agent.janta.applications },
           { name: job?.campaign.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
