@@ -66,8 +66,6 @@ export default function Page({ params: { id } }: any) {
     dateStart: undefined,
     dateStop: undefined,
     clockType: undefined,
-    clockInPhotoLabel: undefined,
-    clockOutPhotoLabel: undefined,
     clockInTime: undefined,
     clockOutTime: undefined,
     locationPingFrequency: undefined,
@@ -388,6 +386,24 @@ export default function Page({ params: { id } }: any) {
             onChange={(e) => setInputCreate({ ...inputCreate, clockOutTime: e.target.value })}
             margin="normal"
             InputLabelProps={{ shrink: true }}
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Clock Type</InputLabel>
+            <Select
+              value={inputCreate.clockType || ''}
+              onChange={(e) => setInputCreate({ ...inputCreate, clockType: e.target.value })}
+            >
+              <MenuItem value="DYNAMIC">DYNAMIC</MenuItem>
+              <MenuItem value="STATIC">STATIC</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            fullWidth
+            label="Location Ping Frequency"
+            type="number"
+            value={inputCreate.locationPingFrequency || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, locationPingFrequency: Number(e.target.value) })}
+            margin="normal"
           />
           <SelectMultiple
             asset="run activities"
