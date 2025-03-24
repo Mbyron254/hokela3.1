@@ -409,6 +409,15 @@ export default function Page({ params: { id } }: any) {
             onChange={(e) => setInputCreate({ ...inputCreate, locationPingFrequency: Number(e.target.value) })}
             margin="normal"
           />
+          <TextField
+            fullWidth
+            label="Close Advert On"
+            type="date"
+            value={inputCreate.closeAdvertOn ? inputCreate.closeAdvertOn.toISOString().split('T')[0] : ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, closeAdvertOn: new Date(e.target.value) })}
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+          />
           <SelectMultiple
             asset="run activities"
             disable={false}

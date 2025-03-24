@@ -101,10 +101,13 @@ export const GQLMutation: any = (input: InputGQLMutation): IGQLMutation => {
     },
     // eslint-disable-next-line @typescript-eslint/no-shadow
     onCompleted: (data) => {
-      if (data) {
+      console.log('MUTATION COMPLETED:', data);
+      if (data && data[resolver]) {
         // toastSuccess(data[resolver]?.message);
         if (toastmsg) enqueueSnackbar(data[resolver].message, { variant: 'success' });
         if (callback) callback();
+      } else {
+        console.warn(`No data found for resolver: ${resolver}`);
       }
     },
   });
