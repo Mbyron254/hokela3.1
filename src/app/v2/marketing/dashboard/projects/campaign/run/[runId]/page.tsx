@@ -75,7 +75,6 @@ export default function Page({ params: { runId } }: any) {
           <Box sx={{ p: 2 }}>
             <Typography variant="h6">Profile Content</Typography>
             {run && <RunProfile run={run} />}
-            {/* {run && <p>Run Profile</p>} */}
           </Box>
         )}
         {activeTab === 1 && (
