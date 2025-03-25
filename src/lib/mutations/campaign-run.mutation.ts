@@ -33,40 +33,47 @@ export const CAMPAIGN_RUN_RESTORE = gql`
 `;
 
 export const M_CAMPAIGN_RUN = gql`
-  mutation m_campaignRun($input: InputCampaignRun!) {
-    m_campaignRun(input: $input) {
+  mutation m_run($input: InputRun!) {
+    m_run(input: $input) {
       id
+      name
       code
       dateStart
       dateStop
-      checkInAt
-      checkOutAt
+      clockType
+      clockInPhotoLabel
+      clockOutPhotoLabel
+      clockInTime
+      clockOutTime
+      locationPingFrequency
       closeAdvertOn
       forceClose
       created
-      project {
-        id
-        name
-      }
       campaign {
         id
         name
-        clientTier2 {
-          id
-          name
-          clientTier1 {
+        project {
+          clientTier2 {
             id
             name
+            clientTier1 {
+              id
+              name
+            }
           }
         }
       }
-      runType {
+      types {
         id
         name
       }
       manager {
         id
         name
+      }
+      poster {
+        id
+        fileName
       }
       applications {
         id
@@ -77,6 +84,7 @@ export const M_CAMPAIGN_RUN = gql`
     }
   }
 `;
+
 
 export const M_CAMPAIGN_RUNS_ACTIVE = gql`
   mutation m_runs($input: InputRuns!) {
