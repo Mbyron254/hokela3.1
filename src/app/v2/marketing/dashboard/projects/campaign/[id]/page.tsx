@@ -18,6 +18,7 @@ import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
 // import { DropZone } from 'src/components/dropzone/DropZone';
 import { SelectMultiple } from 'src/components/SelectMultiple';
 import { M_RUN_TYPE_MINI } from 'src/lib/mutations/run-type.mutation';
+import { useRouter } from 'next/navigation';
 
 // Define the tabs
 const TABS = [
@@ -30,6 +31,8 @@ export default function Page({ params: { id } }: any) {
     query: Q_SESSION_SELF,
     queryAction: 'sessionSelf',
   });
+
+  const router = useRouter();
 
   console.log('session:', session);
 
@@ -236,7 +239,7 @@ export default function Page({ params: { id } }: any) {
 
   // Define empty functions for view, edit, and delete actions
   const handleView = (runId: string) => {
-    // Logic for viewing a campaign run will go here
+    router.push(paths.v2.marketing.projects.run(runId));
   };
 
   const handleEdit = (runid: string) => {
