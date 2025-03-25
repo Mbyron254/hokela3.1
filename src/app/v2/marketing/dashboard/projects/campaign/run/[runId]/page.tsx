@@ -35,13 +35,11 @@ export default function Page({ params: { runId } }: any) {
 
   const [activeTab, setActiveTab] = useState(0);
 
-  const loadRun = () => {
+  useEffect(() => {
     if (runId) {
       getRun({ variables: { input: { id: runId } } });
     }
-  };
-
-  useEffect(() => loadRun(), []);
+  }, [getRun, runId]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);

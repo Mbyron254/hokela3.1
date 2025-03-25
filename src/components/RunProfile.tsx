@@ -62,14 +62,13 @@ export const RunProfile: FC<{
   const [downloading, setDownloading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const loadReportSummary = () => {
-    if (run?.id) getRunReportSummary({ variables: { input: { runId: run.id } } });
-  };
   const handleDownloadCSVSurveyReport = () => {
     downloadCSVSurveyReport(inputReport, setDownloading);
   };
 
-  useEffect(() => loadReportSummary(), [run?.id]);
+  useEffect(() => {
+    if (run?.id) getRunReportSummary({ variables: { input: { runId: run.id } } });
+  }, [run?.id, getRunReportSummary]);
 
   return (
     <Container>
@@ -332,7 +331,7 @@ export const RunProfile: FC<{
                   onChange={(e) =>
                     setInputReport({
                       ...inputReport,
-                      page: e.target.value !== '' ? parseInt(e.target.value) : undefined,
+                      page: e.target.value !== '' ? parseInt(e.target.value, 10) : undefined,
                     })
                   }
                 />
@@ -346,7 +345,7 @@ export const RunProfile: FC<{
                   onChange={(e) =>
                     setInputReport({
                       ...inputReport,
-                      pageSize: e.target.value !== '' ? parseInt(e.target.value) : undefined,
+                      pageSize: e.target.value !== '' ? parseInt(e.target.value, 10) : undefined,
                     })
                   }
                 />
