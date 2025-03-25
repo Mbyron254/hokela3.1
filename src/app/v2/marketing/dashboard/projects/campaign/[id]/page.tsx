@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, Paper, Grid, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableRow, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Box, Typography, Button, Paper, Grid, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableRow, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Select, MenuItem, InputLabel, FormControl, Tooltip, IconButton } from '@mui/material';
 import { useTable, TableNoData, TableEmptyRows, TableHeadCustom, TablePaginationCustom, emptyRows } from 'src/components/table';
 
 import { GQLMutation, GQLQuery } from 'src/lib/client';
@@ -234,6 +234,19 @@ export default function Page({ params: { id } }: any) {
     { id: 'recycled', label: 'Recycled', align: 'center' },
   ];
 
+  // Define empty functions for view, edit, and delete actions
+  const handleView = (id: string) => {
+    // Logic for viewing a campaign run will go here
+  };
+
+  const handleEdit = (id: string) => {
+    // Logic for editing a campaign run will go here
+  };
+
+  const handleDelete = (id: string) => {
+    // Logic for deleting a campaign run will go here
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <CustomBreadcrumbs
@@ -282,7 +295,7 @@ export default function Page({ params: { id } }: any) {
               variant="contained"
               sx={{ my: 3 }}
             >
-              Add New Run
+              New Run
             </Button>
             <TableContainer component={Paper}>
               <Table>
@@ -315,7 +328,21 @@ export default function Page({ params: { id } }: any) {
                       <TableCell>{formatTimeTo12Hr(row.clockInTime)}</TableCell>
                       <TableCell>{formatTimeTo12Hr(row.clockOutTime)}</TableCell>
                       <TableCell align="center">
-                        {/* Add manage buttons here */}
+                        <Tooltip title="View">
+                          <IconButton onClick={() => handleView(row.id)}>
+                            <Iconify icon="mdi:eye" width={24} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit">
+                          <IconButton onClick={() => handleEdit(row.id)}>
+                            <Iconify icon="mdi:pencil" width={24} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton onClick={() => handleDelete(row.id)}>
+                            <Iconify icon="mdi:delete" width={24} />
+                          </IconButton>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}
