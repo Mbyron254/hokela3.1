@@ -25,7 +25,9 @@ import type {
   TState,
   IGeoLocation,
   IAgentOriginContext,
+  ISurveyReportBody,
 } from './interface/general.interface';
+import axios from 'axios';
 
 const short = require('short-uuid');
 
@@ -375,4 +377,39 @@ export const agentContext = (code: string): IAgentOriginContext => {
         },
       };
   }
+};
+
+export const downloadCSVSurveyReport = (
+  data: ISurveyReportBody,
+  setDownloading: Dispatch<SetStateAction<boolean>>,
+) => {
+  const _reportName = data._reportName;
+
+  delete data._reportName;
+
+  setDownloading(true);
+  axios({
+    url: `/excel/survey-reports`,
+    method: 'post',
+    responseType: 'blob',
+    timeout: 0,
+    data: { ...data, page: data.page! - 1 },
+  })
+    .then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.setAttribute('download', `${new Date().toISOString()}-hokela-report-${_reportName}.xlsx`);
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => {
+      console.error('::: Survey Report Download Error -------->');
+      console.error(error);
+    })
+    .finally(() => setDownloading(false));
 };

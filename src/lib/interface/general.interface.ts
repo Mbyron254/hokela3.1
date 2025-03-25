@@ -272,3 +272,15 @@ export interface InputFreeGiveawaySurveyReportCreate {
   freeGiveawayAllocationId?: string;
   quantityGiven?: number;
 }
+
+export interface ISurveyReportBody {
+  surveyId?: string;
+  salesSurveyId?: string;
+  salesGiveawaySurveyId?: string;
+  freeGiveawaySurveyId?: string;
+  agentId?: string;
+  _reportName?: string;
+  date?: Date;
+  page?: number;
+  pageSize?: number;
+}
