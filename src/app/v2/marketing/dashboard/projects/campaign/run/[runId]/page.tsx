@@ -33,6 +33,8 @@ export default function Page({ params: { runId } }: any) {
     toastmsg: false,
   });
 
+  console.log('run:', run);
+
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
@@ -105,13 +107,6 @@ export default function Page({ params: { runId } }: any) {
           )
         ))}
       </Card>
-
-      {/* Regular Button Example */}
-      <Box sx={{ mt: 3 }}>
-        <Button variant="contained" color="primary">
-          Regular Button
-        </Button>
-      </Box>
     </Box>
   );
 }
