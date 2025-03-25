@@ -235,15 +235,15 @@ export default function Page({ params: { id } }: any) {
   ];
 
   // Define empty functions for view, edit, and delete actions
-  const handleView = (id: string) => {
+  const handleView = (runId: string) => {
     // Logic for viewing a campaign run will go here
   };
 
-  const handleEdit = (id: string) => {
+  const handleEdit = (runid: string) => {
     // Logic for editing a campaign run will go here
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (runid: string) => {
     // Logic for deleting a campaign run will go here
   };
 
