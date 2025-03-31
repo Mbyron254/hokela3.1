@@ -126,12 +126,7 @@ export const RunProfile: FC<{
                 <strong>Activities:</strong>
               </Typography>
               {run?.types?.map((_type: any, i: number) => (
-                <Badge
-                  key={`activity-${i}`}
-                  badgeContent={_type.name}
-                  color="primary"
-                  sx={{ mr: 1, mb: 1 }}
-                />
+                <p key={`activity-${i}`} style={{ marginBottom: '8px', border: '1px solid #ccc', padding: '8px', borderRadius: '25px', backgroundColor: '#f0f0f0'}}>{_type.name}</p>
               ))}
             </CardContent>
           </Card>
@@ -282,9 +277,7 @@ export const RunProfile: FC<{
 
               default:
                 return (
-                  <Typography key={`run-type-${i}`} variant="body2" color="error.main">
-                    Reports not available
-                  </Typography>
+                  <></>
                 );
             }
           })}

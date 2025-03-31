@@ -45,8 +45,8 @@ export const clientOrigin = (): string => {
 export const isWhiteSpaces = (_string: string): boolean => /^\s+$/.test(_string);
 
 export const randomHexadecimal = (size: number): string => [...Array(size)]
-    .map(() => Math.floor(Math.random() * 16).toString(16))
-    .join('');
+  .map(() => Math.floor(Math.random() * 16).toString(16))
+  .join('');
 
 export const generateShortUUIDV4 = (): string => short.generate();
 
@@ -60,7 +60,7 @@ export const unallocatedAssets = (associated: any[], all: any[]): any[] => {
     }
   });
 
-  const availableAssets = all.filter(item => 
+  const availableAssets = all.filter(item =>
     unallocatedIds.includes(item.id)
   );
 
@@ -215,7 +215,7 @@ export const userAccountLabel = (user: any): string => {
   return accountLabel;
 };
 
-export const getUserLocationByIp = async (): Promise<any> => {};
+export const getUserLocationByIp = async (): Promise<any> => { };
 
 export const getGeoLocation = async (
   setLocation: Dispatch<SetStateAction<IGeoLocation | undefined>>
@@ -412,4 +412,29 @@ export const downloadCSVSurveyReport = (
       console.error(error);
     })
     .finally(() => setDownloading(false));
+};
+
+export const downloadCSVReport = (data: ISurveyReportBody, survey: string) => {
+  axios({
+    url: `/excel/download`,
+    method: 'post',
+    responseType: 'blob',
+    timeout: 0,
+    data: { ...data, page: data.page! - 1 },
+  })
+    .then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.setAttribute('download', `${new Date().toISOString()}-report-survey-${survey}.xlsx`);
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => {
+      console.error('Report Download Error', error);
+    });
 };
