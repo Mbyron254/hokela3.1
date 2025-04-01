@@ -29,73 +29,73 @@ import { DashboardSurvey } from 'src/components/DashboardSurvey';
 // import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocation';
 
 export default function Page({ params: { runId } }: any) {
-  const { action: getRun, data: run2 } = GQLMutation({
+  const { action: getRun, data: run } = GQLMutation({
     mutation: M_CAMPAIGN_RUN,
     resolver: 'm_run',
     toastmsg: false,
   });
 
-  const run = {
-    id: "run-123456",
-    name: "Summer Promotion 2023",
-    code: "SUM2023",
-    dateStart: "2023-06-01T00:00:00Z",
-    dateStop: "2023-08-31T23:59:59Z",
-    clockType: "STANDARD",
-    clockInPhotoLabel: "Store Front",
-    clockOutPhotoLabel: "Completed Display",
-    clockInTime: "09:00",
-    clockOutTime: "17:00",
-    locationPingFrequency: 15,
-    closeAdvertOn: "2023-05-15T00:00:00Z",
-    forceClose: false,
-    created: "2023-04-01T10:30:00Z",
-    campaign: {
-      id: "camp-789012",
-      name: "Retail Summer Campaign",
-      project: {
-        clientTier2: {
-          id: "ct2-345678",
-          name: "Regional Marketing",
-          clientTier1: {
-            id: "ct1-901234",
-            name: "Global Brands Inc."
-          }
-        }
-      }
-    },
-    types: [
-      {
-        id: "type-567890",
-        name: "Sales"
-      },
-      {
-        id: "type-567891",
-        name: "In-Store Promotion"
-      },
-      {
-        id: "type-678901",
-        name: "Product Sampling"
-      }
-    ],
-    manager: {
-      id: "mgr-234567",
-      name: "Jane Smith"
-    },
-    poster: {
-      id: "pst-456789",
-      fileName: "summer_campaign_poster.jpg"
-    },
-    applications: [
-      { id: "app-123456" },
-      { id: "app-234567" },
-      { id: "app-345678" }
-    ],
-    offers: [
-      { id: "off-123456" },
-      { id: "off-234567" }
-    ]
-  };
+  // const run = {
+  //   id: "run-123456",
+  //   name: "Summer Promotion 2023",
+  //   code: "SUM2023",
+  //   dateStart: "2023-06-01T00:00:00Z",
+  //   dateStop: "2023-08-31T23:59:59Z",
+  //   clockType: "STANDARD",
+  //   clockInPhotoLabel: "Store Front",
+  //   clockOutPhotoLabel: "Completed Display",
+  //   clockInTime: "09:00",
+  //   clockOutTime: "17:00",
+  //   locationPingFrequency: 15,
+  //   closeAdvertOn: "2023-05-15T00:00:00Z",
+  //   forceClose: false,
+  //   created: "2023-04-01T10:30:00Z",
+  //   campaign: {
+  //     id: "camp-789012",
+  //     name: "Retail Summer Campaign",
+  //     project: {
+  //       clientTier2: {
+  //         id: "ct2-345678",
+  //         name: "Regional Marketing",
+  //         clientTier1: {
+  //           id: "ct1-901234",
+  //           name: "Global Brands Inc."
+  //         }
+  //       }
+  //     }
+  //   },
+  //   types: [
+  //     {
+  //       id: "type-567890",
+  //       name: "Sales"
+  //     },
+  //     {
+  //       id: "type-567891",
+  //       name: "In-Store Promotion"
+  //     },
+  //     {
+  //       id: "type-678901",
+  //       name: "Product Sampling"
+  //     }
+  //   ],
+  //   manager: {
+  //     id: "mgr-234567",
+  //     name: "Jane Smith"
+  //   },
+  //   poster: {
+  //     id: "pst-456789",
+  //     fileName: "summer_campaign_poster.jpg"
+  //   },
+  //   applications: [
+  //     { id: "app-123456" },
+  //     { id: "app-234567" },
+  //     { id: "app-345678" }
+  //   ],
+  //   offers: [
+  //     { id: "off-123456" },
+  //     { id: "off-234567" }
+  //   ]
+  // };
 
   console.log('run:', run);
 
