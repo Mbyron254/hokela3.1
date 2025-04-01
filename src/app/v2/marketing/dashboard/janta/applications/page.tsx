@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/campaign-run-application.mutation';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
