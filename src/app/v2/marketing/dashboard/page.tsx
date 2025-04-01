@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function page() {
   return (
-    <div>page</div>
+    <p>Dashboard analytics coming soon...</p>
   )
 }
