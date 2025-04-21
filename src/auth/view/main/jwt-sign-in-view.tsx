@@ -80,11 +80,11 @@ export function JwtSignInView() {
   const [errorMsg, setErrorMsg] = useState<string>('');
   const password = useBoolean();
 
-  const { action: signin, loading } = GQLMutation({
+  const { action: signin, loading, data } = GQLMutation({
     mutation: USER_LOGIN,
     resolver: 'login',
     toastmsg: true,
-    callback: () => window.location.reload(),
+    callback: () => console.log('data:', data),
   });
 
   const methods = useForm<SignInSchemaType>({
