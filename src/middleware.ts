@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
   headers.set('isAccount', String(isAccount));
 
   const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
-  //  console.log(sessionId, 'SESSION ID')
+   console.log(sessionId, 'SESSION ID')
   //  if(!sessionId){
   //   return NextResponse.redirect(new URL(`${paths.auth.main.signIn}`, request.url));
   //  }
