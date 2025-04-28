@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import {
@@ -135,6 +135,13 @@ export default function EnterpriseListView() {
     }
   }, [clientsActive, clientsRecycled, clientTypes]);
 
+  useEffect(() => {
+    if (clientTypes) {
+      const clientsType = clientTypes.rows;
+      console.log('client types:', clientTypes);
+    }
+  }, [clientTypes]);
+
   // -----------------------------enterprise form -------------------------------------------------
   const isEdit = useBoolean();
   const dialog = useBoolean();
@@ -208,7 +215,7 @@ export default function EnterpriseListView() {
             links={[
               { name: 'Dashboard', href: paths.v2.admin.root },
               { name: 'Enterprise Clients', href: paths.v2.admin.clients.enterprise.root },
-              { name: 'List' },
+              { name: 'Enterprise Clients List' },
             ]}
             action={
               <Button
