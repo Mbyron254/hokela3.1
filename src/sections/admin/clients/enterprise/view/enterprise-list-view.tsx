@@ -98,7 +98,7 @@ export default function EnterpriseListView() {
   const router = useRouter();
   const [tableData, setTableData] = useState<IClient[]>([]);
 
-  const usersQueryFilters = { page: 0, pageSize: 10 };
+  const usersQueryFilters = useMemo(() => ({ page: 0, pageSize: 10 }), []);
 
   const [client_types, setClientsType] = useState<ClientType[]>([]);
 
