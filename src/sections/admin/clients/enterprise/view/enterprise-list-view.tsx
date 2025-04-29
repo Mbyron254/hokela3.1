@@ -29,7 +29,7 @@ import {
   CLIENT_T1_RECYCLE,
   CLIENT_T1_RESTORE
 } from 'src/lib/mutations/client-t1.mutation';
-import { Q_CLIENTS_T1, Q_CLIENTS_T1_RECYCLED } from 'src/lib/queries/client-t1.query';
+import { Q_CLIENTS_T1 } from 'src/lib/queries/client-t1.query';
 
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -40,6 +40,7 @@ const _dataGrid = [...Array(20)].map((_, index) => {
   const status =
     (index % 2 && 'online') || (index % 3 && 'alway') || (index % 4 && 'busy') || 'offline';
 
+  console.log('dataGrid', _dataGrid);
   return {
     id: _mock.id(index),
     status,
@@ -113,15 +114,6 @@ export default function EnterpriseListView() {
     queryAction: 'tier1Clients',
     variables: { input: usersQueryFilters },
   });
-  const {
-    refetch: refetchClientsRecycled,
-    data: clientsRecycled,
-    loading: loadingCientsRecycled,
-  } = GQLQuery({
-    query: Q_CLIENTS_T1_RECYCLED,
-    queryAction: 'tier1ClientsRecycled',
-    variables: { input: usersQueryFilters },
-  });
 
   const { action: create, loading: creating } = GQLMutation({
     mutation: CLIENT_T1_CREATE,
@@ -152,15 +144,15 @@ export default function EnterpriseListView() {
     console.log('Memo starts');
     const clientsTypeData = clientTypes?.rows ? transformClientTypesData(clientTypes.rows) : [];
     console.log('clientsType:', clientsTypeData);
-    if (clientsActive && clientsRecycled) {
+    if (clientsActive) {
       const activeClients = transformClientData(clientsActive.rows);
-      const recycledClients = transformRecycledClientData(clientsRecycled.rows);
+      // const recycledClients = transformRecycledClientData(clientsRecycled.rows);
       const clientsType = clientTypes?.rows ? transformClientTypesData(clientTypes.rows) : [];
       setClientsType(clientsType);
 
-      setTableData([...activeClients, ...recycledClients]);
+      setTableData([...activeClients]);
     }
-  }, [clientsActive, clientsRecycled, clientTypes]);
+  }, [clientsActive, clientTypes]);
 
   useEffect(() => {
     if (clientTypes) {
