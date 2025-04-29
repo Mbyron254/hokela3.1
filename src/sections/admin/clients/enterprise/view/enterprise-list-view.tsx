@@ -27,9 +27,10 @@ import {
   CLIENT_T1_CREATE,
   CLIENT_T1_UPDATE,
   CLIENT_T1_RECYCLE,
-  CLIENT_T1_RESTORE
+  CLIENT_T1_RESTORE,
+  M_CLIENT_T1
 } from 'src/lib/mutations/client-t1.mutation';
-import { Q_CLIENTS_T1 } from 'src/lib/queries/client-t1.query';
+// import { Q_CLIENTS_T1 } from 'src/lib/queries/client-t1.query';
 
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -107,14 +108,20 @@ export default function EnterpriseListView() {
     queryAction: 'clientTypes',
     variables: { input: {} },
   });
-  const {
-    refetch: refetchClientsActive,
-    data: clientsActive,
-    loading: loadingCientsActive,
-  } = GQLQuery({
-    query: Q_CLIENTS_T1,
-    queryAction: 'tier1Clients',
-    variables: { input: usersQueryFilters },
+  // const {
+  //   refetch: refetchClientsActive,
+  //   data: clientsActive,
+  //   loading: loadingCientsActive,
+  // } = GQLQuery({
+  //   query: Q_CLIENTS_T1,
+  //   queryAction: 'tier1Clients',
+  //   variables: { input: usersQueryFilters },
+  // });
+
+  const { action: fetchClientsActive } = GQLMutation({
+    mutation: M_CLIENT_T1,
+    resolver: 'fetchClientsActive',
+    toastmsg: true,
   });
 
   const { action: create, loading: creating } = GQLMutation({
@@ -142,19 +149,32 @@ export default function EnterpriseListView() {
   const [selectedActive, setSelectedActive] = useState<string[]>([]);
   const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
 
-  useMemo(() => {
-    console.log('Memo starts');
-    const clientsTypeData = clientTypes?.rows ? transformClientTypesData(clientTypes.rows) : [];
-    console.log('clientsType:', clientsTypeData);
-    if (clientsActive) {
-      const activeClients = transformClientData(clientsActive.rows);
-      // const recycledClients = transformRecycledClientData(clientsRecycled.rows);
-      const clientsType = clientTypes?.rows ? transformClientTypesData(clientTypes.rows) : [];
-      setClientsType(clientsType);
+  // useMemo(() => {
+  //   console.log('Memo starts');
+  //   const clientsTypeData = clientTypes?.rows ? transformClientTypesData(clientTypes.rows) : [];
+  //   console.log('clientsType:', clientsTypeData);
+  //   if (clientsActive) {
+  //     const activeClients = transformClientData(clientsActive.rows);
+  //     // const recycledClients = transformRecycledClientData(clientsRecycled.rows);
+  //     const clientsType = clientTypes?.rows ? transformClientTypesData(clientTypes.rows) : [];
+  //     setClientsType(clientsType);
 
-      setTableData([...activeClients]);
+  //     setTableData([...activeClients]);
+  //   }
+  // }, [clientsActive, clientTypes]);
+
+  useEffect(() => {
+    fetchClientsActive({ variables: { input: usersQueryFilters } });
+  }, []);
+
+  useEffect(() => {
+    console.log('fetchClientsActive before', fetchClientsActive);
+    if (fetchClientsActive) {
+      console.log('fetchClientsActive after', fetchClientsActive);
+      const activeClients = transformClientData(fetchClientsActive.rows);
+      setTableData(activeClients);
     }
-  }, [clientsActive, clientTypes]);
+  }, [fetchClientsActive]);
 
   useEffect(() => {
     if (clientTypes) {
