@@ -23,7 +23,12 @@ import { _mock } from 'src/_mock';
 import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Q_CLIENT_TYPES_MINI } from 'src/lib/queries/client.query';
-import { CLIENT_T1_CREATE } from 'src/lib/mutations/client-t1.mutation';
+import {
+  CLIENT_T1_CREATE,
+  CLIENT_T1_UPDATE,
+  CLIENT_T1_RECYCLE,
+  CLIENT_T1_RESTORE
+} from 'src/lib/mutations/client-t1.mutation';
 import { Q_CLIENTS_T1, Q_CLIENTS_T1_RECYCLED } from 'src/lib/queries/client-t1.query';
 
 import { Iconify } from 'src/components/iconify';
@@ -124,6 +129,25 @@ export default function EnterpriseListView() {
     toastmsg: true,
   });
 
+  const { action: update, loading: updating } = GQLMutation({
+    mutation: CLIENT_T1_UPDATE,
+    resolver: 'tier1ClientUpdate',
+    toastmsg: true,
+  });
+  const { action: recycle, loading: recycling } = GQLMutation({
+    mutation: CLIENT_T1_RECYCLE,
+    resolver: 'tier1ClientRecycle',
+    toastmsg: true,
+  });
+  const { action: restore, loading: restoring } = GQLMutation({
+    mutation: CLIENT_T1_RESTORE,
+    resolver: 'tier1ClientRestore',
+    toastmsg: true,
+  });
+
+  const [selectedActive, setSelectedActive] = useState<string[]>([]);
+  const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
+
   useMemo(() => {
     console.log('Memo starts');
     const clientsTypeData = clientTypes?.rows ? transformClientTypesData(clientTypes.rows) : [];
@@ -207,6 +231,30 @@ export default function EnterpriseListView() {
     handleDialogClose();
   };
 
+  const handleRecycle = () => {
+    if (selectedActive.length) {
+      recycle({ variables: { input: { ids: selectedActive } } });
+    }
+  };
+
+  const handleRestore = () => {
+    if (selectedRecycled.length) {
+      restore({ variables: { input: { ids: selectedRecycled } } });
+    }
+  };
+
+  const handleUpdate = () => {
+    if (isEdit.value) {
+      const inputUpdate = {
+        id: formData.id,
+        clientTypeId: formData.client_type,
+        name: formData.name,
+      };
+      update({ variables: { input: inputUpdate } });
+    }
+    handleDialogClose();
+  };
+
   // ---------------------------enterprise form ----------------------------------------------------
 
   return (
@@ -275,7 +323,7 @@ export default function EnterpriseListView() {
               <Button onClick={handleDialogClose} variant="outlined" color="inherit">
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} variant="contained">
+              <Button onClick={isEdit.value ? handleUpdate : handleSubmit} variant="contained">
                 {isEdit.value ? 'Update' : 'Create'}
               </Button>
             </DialogActions>
