@@ -36,11 +36,10 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { DataGridCustom } from '../data-grid-custom';
 
-const _dataGrid = [...Array(20)].map((_, index) => {
+[...Array(20)].map((_, index) => {
   const status =
     (index % 2 && 'online') || (index % 3 && 'alway') || (index % 4 && 'busy') || 'offline';
 
-  console.log('dataGrid', _dataGrid);
   return {
     id: _mock.id(index),
     status,
@@ -55,6 +54,9 @@ const _dataGrid = [...Array(20)].map((_, index) => {
     performance: _mock.number.percent(index),
   };
 });
+
+// If you need to log the array, do it after it's been created
+// console.log('dataGrid', _dataGrid);
 
 type IClient = {
   id: string;
