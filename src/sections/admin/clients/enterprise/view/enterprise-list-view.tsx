@@ -165,7 +165,7 @@ export default function EnterpriseListView() {
 
   useEffect(() => {
     fetchClientsActive({ variables: { input: usersQueryFilters } });
-  }, []);
+  }, [fetchClientsActive, usersQueryFilters]);
 
   useEffect(() => {
     console.log('fetchClientsActive before', fetchClientsActive);
