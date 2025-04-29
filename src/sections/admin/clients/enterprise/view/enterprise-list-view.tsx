@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
