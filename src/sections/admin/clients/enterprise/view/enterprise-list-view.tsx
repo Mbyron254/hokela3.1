@@ -125,6 +125,9 @@ export default function EnterpriseListView() {
   });
 
   useMemo(() => {
+    console.log('Memo starts');
+    const clientsTypeData = clientTypes?.rows ? transformClientTypesData(clientTypes.rows) : [];
+    console.log('clientsType:', clientsTypeData);
     if (clientsActive && clientsRecycled) {
       const activeClients = transformClientData(clientsActive.rows);
       const recycledClients = transformRecycledClientData(clientsRecycled.rows);
