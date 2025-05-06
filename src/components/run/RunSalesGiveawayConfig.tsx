@@ -1,0 +1,825 @@
+'use client';
+
+import { FC, useEffect, useState } from 'react';
+import { MutationButton } from '../MutationButton';
+import { GQLMutation } from '@/lib/client';
+import {
+  SALES_GIVEAWAY_CONFIG,
+  SALES_GIVEAWAY_CONFIG_CREATE,
+  SALES_GIVEAWAY_CONFIG_RECYCLE,
+  SALES_GIVEAWAY_CONFIG_RESTORE,
+  SALES_GIVEAWAY_CONFIG_UPDATE,
+  SALES_GIVEAWAY_CONFIGS_ACTIVE,
+  SALES_GIVEAWAY_CONFIGS_RECYCLED,
+} from '@/lib/mutations/sales-giveaway.mutation';
+import { DataTable } from '../DataTable';
+import { LoadingDiv } from '../LoadingDiv';
+import { IInputConfigCreate, IInputConfigUpdate } from '@/lib/interface/general.interface';
+import { M_PRODUCTS_MINI } from '@/lib/mutations/product.mutation';
+import { M_PACKAGINGS_MINI } from '@/lib/mutations/packaging.mutation';
+
+export const RunSalesGiveawayConfig: FC<{
+  clientTier2Id: string;
+  runId: string;
+}> = ({ clientTier2Id, runId }) => {
+  const { action: getProductsTarget, data: productsTarget } = GQLMutation({
+    mutation: M_PRODUCTS_MINI,
+    resolver: 'm_products',
+    toastmsg: false,
+  });
+  const { action: getProductsGiveaway, data: productsGiveaway } = GQLMutation({
+    mutation: M_PRODUCTS_MINI,
+    resolver: 'm_products',
+    toastmsg: false,
+  });
+  const { action: getPackagingsTarget, data: packagingsTarget } = GQLMutation({
+    mutation: M_PACKAGINGS_MINI,
+    resolver: 'm_packagings',
+    toastmsg: false,
+  });
+  const { action: getPackagingsGiveaway, data: packagingsGiveaway } = GQLMutation({
+    mutation: M_PACKAGINGS_MINI,
+    resolver: 'm_packagings',
+    toastmsg: false,
+  });
+  const {
+    action: getConfigsActive,
+    loading: loadingConfigsActive,
+    data: configsActive,
+  } = GQLMutation({
+    mutation: SALES_GIVEAWAY_CONFIGS_ACTIVE,
+    resolver: 'salesGiveawayConfigs',
+    toastmsg: false,
+  });
+  const {
+    action: getConfigsRecycled,
+    loading: loadingConfigsRecycled,
+    data: configsRecycled,
+  } = GQLMutation({
+    mutation: SALES_GIVEAWAY_CONFIGS_RECYCLED,
+    resolver: 'salesGiveawayConfigsRecycled',
+    toastmsg: false,
+  });
+  const {
+    action: getConfig,
+    loading: loadingConfig,
+    data: config,
+  } = GQLMutation({
+    mutation: SALES_GIVEAWAY_CONFIG,
+    resolver: 'salesGiveawayConfig',
+    toastmsg: false,
+  });
+  const {
+    action: createConfig,
+    loading: creatingConfig,
+    data: createdConfig,
+  } = GQLMutation({
+    mutation: SALES_GIVEAWAY_CONFIG_CREATE,
+    resolver: 'salesGiveawayConfigCreate',
+    toastmsg: true,
+  });
+  const {
+    action: updateConfig,
+    loading: updatingConfig,
+    data: updatedConfig,
+  } = GQLMutation({
+    mutation: SALES_GIVEAWAY_CONFIG_UPDATE,
+    resolver: 'salesGiveawayConfigUpdate',
+    toastmsg: true,
+  });
+  const {
+    action: recycleConfig,
+    loading: recyclingConfig,
+    data: recycledConfig,
+  } = GQLMutation({
+    mutation: SALES_GIVEAWAY_CONFIG_RECYCLE,
+    resolver: 'salesGiveawayConfigRecycle',
+    toastmsg: true,
+  });
+  const {
+    action: restoreConfig,
+    loading: restoringConfig,
+    data: restoredConfig,
+  } = GQLMutation({
+    mutation: SALES_GIVEAWAY_CONFIG_RESTORE,
+    resolver: 'salesGiveawayConfigRestore',
+    toastmsg: true,
+  });
+
+  const init: IInputConfigUpdate = {
+    id: undefined,
+    salePackagingId: undefined,
+    saleUnits: undefined,
+    giveawayPackagingId: undefined,
+    giveawayUnits: undefined,
+  };
+  const [inputConfigUpdate, setInputConfigUpdate] = useState<IInputConfigUpdate>(init);
+  const [inputConfigCreate, setInputConfigCreate] = useState<IInputConfigCreate>({
+    salePackagingId: undefined,
+    saleUnits: undefined,
+    giveawayPackagingId: undefined,
+    giveawayUnits: undefined,
+  });
+  const [selectedActive, setSelectedActive] = useState<string[]>([]);
+  const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
+  const [productTarget, setProductTarget] = useState<{
+    id?: string;
+    packagingId?: string;
+  }>({ id: undefined, packagingId: undefined });
+  const [productGiveaway, setProductGiveaway] = useState<{
+    id?: string;
+    packagingId?: string;
+  }>({ id: undefined, packagingId: undefined });
+
+  const handleConfigCreate = () => {
+    if (runId) {
+      createConfig({ variables: { input: { ...inputConfigCreate, runId } } });
+    }
+  };
+  const handleConfigUpdate = () => {
+    updateConfig({ variables: { input: inputConfigUpdate } });
+  };
+  const handleConfigRecycle = () => {
+    if (selectedActive.length) {
+      recycleConfig({ variables: { input: { ids: selectedActive } } });
+    }
+  };
+  const handleConfigRestore = () => {
+    if (selectedRecycled.length) {
+      restoreConfig({ variables: { input: { ids: selectedRecycled } } });
+    }
+  };
+  const loadConfigsActive = (page?: number, pageSize?: number) => {
+    if (runId) {
+      getConfigsActive({ variables: { input: { runId, page, pageSize } } });
+    }
+  };
+  const loadConfigsRecycled = (page?: number, pageSize?: number) => {
+    if (runId) {
+      getConfigsRecycled({ variables: { input: { runId, page, pageSize } } });
+    }
+  };
+  const loadConfig = (id: string) => {
+    getConfig({ variables: { input: { id } } });
+  };
+  const loadProductsTarget = () => {
+    getProductsTarget({ variables: { input: { clientTier2Id } } });
+  };
+  const loadProductsGiveaway = () => {
+    getProductsGiveaway({ variables: { input: { clientTier2Id } } });
+  };
+  const loadTargetPackagings = () => {
+    if (productTarget.id) {
+      getPackagingsTarget({
+        variables: { input: { productId: productTarget.id } },
+      });
+    }
+  };
+  const loadGiveawayPackagings = () => {
+    if (productGiveaway.id) {
+      getPackagingsGiveaway({
+        variables: { input: { productId: productGiveaway.id } },
+      });
+    }
+  };
+
+  const columnsActive = [
+    {
+      name: '#',
+      width: '60px',
+      sortable: true,
+      selector: (row: any) => row.index,
+      cell: (row: any) => row.index,
+    },
+    {
+      name: 'TARGET PRODUCT',
+      sortable: true,
+      wrap: true,
+      grow: 2,
+      selector: (row: any) => row.name,
+      cell: (row: any) => {
+        return (
+          <div className="w-100 overflow-hidden">
+            <h6 className="mt-1 mb-1">{row.salePackaging?.product?.name}</h6>
+            <span className="font-13">
+              {row.salePackaging?.unitQuantity} {row.salePackaging?.unit?.name}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      name: 'TARGET SALE UNITS',
+      sortable: true,
+      right: true,
+      selector: (row: any) => row.saleUnits,
+      cell: (row: any) => row.saleUnits,
+    },
+    {
+      name: 'GIVEAWAY PRODUCT',
+      sortable: true,
+      wrap: true,
+      grow: 2,
+      selector: (row: any) => row.name,
+      cell: (row: any) => {
+        return (
+          <div className="w-100 overflow-hidden">
+            <h6 className="mt-1 mb-1">{row.giveawayPackaging?.product?.name}</h6>
+            <span className="font-13">
+              {row.giveawayPackaging?.unitQuantity} {row.giveawayPackaging?.unit?.name}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      name: 'GIVEAWAY UNITS',
+      sortable: true,
+      right: true,
+      selector: (row: any) => row.giveawayUnits,
+      cell: (row: any) => row.giveawayUnits,
+    },
+    {
+      name: 'MORE',
+      sortable: false,
+      wrap: true,
+      selector: (row: any) => row.id,
+      cell: (row: any) => (
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          data-bs-toggle="modal"
+          data-bs-target="#update-modal"
+          onClick={() => {
+            loadConfig(row.id);
+            setInputConfigUpdate(init);
+          }}
+        >
+          <i className="mdi mdi-pen"></i>
+        </button>
+      ),
+    },
+  ];
+  const columnsRecycled = [
+    {
+      name: '#',
+      width: '60px',
+      sortable: true,
+      selector: (row: any) => row.index,
+      cell: (row: any) => row.index,
+    },
+    {
+      name: 'TARGET PRODUCT',
+      sortable: true,
+      wrap: true,
+      grow: 2,
+      selector: (row: any) => row.name,
+      cell: (row: any) => {
+        return (
+          <div className="w-100 overflow-hidden">
+            <h6 className="mt-1 mb-1">{row.salePackaging?.product?.name}</h6>
+            <span className="font-13">
+              {row.salePackaging?.unitQuantity} {row.salePackaging?.unit?.name}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      name: 'TARGET SALE UNITS',
+      sortable: true,
+      right: true,
+      selector: (row: any) => row.saleUnits,
+      cell: (row: any) => row.saleUnits,
+    },
+    {
+      name: 'GIVEAWAY PRODUCT',
+      sortable: true,
+      wrap: true,
+      grow: 2,
+      selector: (row: any) => row.name,
+      cell: (row: any) => {
+        return (
+          <div className="w-100 overflow-hidden">
+            <h6 className="mt-1 mb-1">{row.giveawayPackaging?.product?.name}</h6>
+            <span className="font-13">
+              {row.giveawayPackaging?.unitQuantity} {row.giveawayPackaging?.unit?.name}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      name: 'GIVEAWAY UNITS',
+      sortable: true,
+      right: true,
+      selector: (row: any) => row.giveawayUnits,
+      cell: (row: any) => row.giveawayUnits,
+    },
+    {
+      name: 'RECYCLED',
+      sortable: true,
+      wrap: true,
+      selector: (row: any) => row.recycled,
+      cell: (row: any) => row.recycled,
+    },
+  ];
+
+  useEffect(() => {
+    loadProductsTarget();
+    loadProductsGiveaway();
+  }, []);
+  useEffect(() => loadTargetPackagings(), [productTarget.id]);
+  useEffect(() => loadGiveawayPackagings(), [productGiveaway.id]);
+  useEffect(() => {
+    if (config) {
+      setInputConfigUpdate({
+        id: config.id,
+        salePackagingId: config.salePackaging.id,
+        saleUnits: config.saleUnits,
+        giveawayPackagingId: config.giveawayPackaging.id,
+        giveawayUnits: config.giveawayUnits,
+      });
+      setProductTarget(config.salePackaging.product.id);
+      setProductGiveaway(config.giveawayPackaging.product.id);
+    }
+  }, [config]);
+
+  return (
+    <div className="row">
+      <div className="col-md-12">
+        <ul className="nav nav-tabs nav-bordered mb-2">
+          <li className="nav-item">
+            <a
+              href="#records-active"
+              data-bs-toggle="tab"
+              aria-expanded="true"
+              className="nav-link active"
+            >
+              <i className="mdi mdi-account-circle d-md-none d-block"></i>
+              <span className="d-none d-md-block">Active</span>
+            </a>
+          </li>
+          <li className="nav-item">
+            <a href="#records-recycled" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
+              <i className="mdi mdi-settings-outline d-md-none d-block"></i>
+              <span className="d-none d-md-block">Recycled</span>
+            </a>
+          </li>
+        </ul>
+
+        <div className="tab-content">
+          <div className="tab-pane show active" id="records-active">
+            <div className="btn-group btn-group-sm mb-2">
+              <button
+                type="button"
+                className="btn btn-outline-success me-2"
+                data-bs-toggle="modal"
+                data-bs-target="#create-modal"
+              >
+                <i className="mdi mdi-plus me-1"></i>New
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline-danger"
+                onClick={handleConfigRecycle}
+                disabled={recyclingConfig}
+              >
+                <i className="mdi mdi-trash-can-outline me-1"></i>Recycle
+              </button>
+            </div>
+
+            <DataTable
+              expanded={false}
+              columns={columnsActive}
+              loading={loadingConfigsActive}
+              totalRows={configsActive?.count}
+              data={configsActive?.rows}
+              setSelected={setSelectedActive}
+              handleReloadMutation={loadConfigsActive}
+              reloadTriggers={[createdConfig, updatedConfig, recycledConfig, restoredConfig]}
+            />
+          </div>
+
+          <div className="tab-pane" id="records-recycled">
+            <div className="btn-group btn-group-sm mb-2">
+              <button
+                type="button"
+                className="btn btn-outline-warning"
+                onClick={handleConfigRestore}
+                disabled={restoringConfig}
+              >
+                <i className="mdi mdi-restore me-1"></i>Restore
+              </button>
+            </div>
+
+            <DataTable
+              expanded={false}
+              columns={columnsRecycled}
+              loading={loadingConfigsRecycled}
+              totalRows={configsRecycled?.count}
+              data={configsRecycled?.rows}
+              setSelected={setSelectedRecycled}
+              handleReloadMutation={loadConfigsRecycled}
+              reloadTriggers={[recycledConfig, restoredConfig]}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="create-modal"
+        className="modal fade"
+        role="dialog"
+        aria-labelledby="create-modal"
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title" id="create-role">
+                New Configuration
+              </h4>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
+            </div>
+            <div className="modal-body">
+              <h5 className="mt-0 mb-2 text-primary">
+                <i className="mdi mdi-bullseye-arrow me-1"></i>Target Sale
+              </h5>
+
+              <div className="card card-border border border-primary">
+                <div className="card-body pb-0">
+                  <div className="row">
+                    <div className="col-md-4">
+                      <div className="form-floating mb-3">
+                        <select
+                          id="targetProduct"
+                          className="form-select"
+                          aria-label="Product"
+                          defaultValue={productTarget.id}
+                          onChange={(e) =>
+                            setProductTarget({
+                              ...productTarget,
+                              id: e.target.value === '' ? undefined : e.target.value,
+                            })
+                          }
+                        >
+                          <option></option>
+                          {productsTarget?.rows.map((product: any, index: number) => (
+                            <option value={product.id} key={`product-${index}`}>
+                              {product.name}
+                            </option>
+                          ))}
+                        </select>
+                        <label htmlFor="targetProduct">Target Product</label>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="form-floating mb-3">
+                        <select
+                          id="targetPackaging"
+                          className="form-select"
+                          aria-label="Packaging"
+                          defaultValue={inputConfigCreate.salePackagingId}
+                          onChange={(e) =>
+                            setInputConfigCreate({
+                              ...inputConfigCreate,
+                              salePackagingId: e.target.value === '' ? undefined : e.target.value,
+                            })
+                          }
+                        >
+                          <option></option>
+                          {packagingsTarget?.rows.map((packaging: any, index: number) => (
+                            <option key={`packaging-${index}`} value={packaging.id}>
+                              {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                            </option>
+                          ))}
+                        </select>
+                        <label htmlFor="targetPackaging">Target Packaging</label>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="form-floating mb-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="saleUnits"
+                          defaultValue={inputConfigCreate.saleUnits}
+                          onChange={(e) =>
+                            setInputConfigCreate({
+                              ...inputConfigCreate,
+                              saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value),
+                            })
+                          }
+                        />
+                        <label htmlFor="saleUnits">Target Sale Units</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h5 className="mt-0 mb-2 text-primary">
+                <i className="mdi mdi-gift-outline me-1"></i> Giveaway
+              </h5>
+
+              <div className="card card-border border border-primary mb-0">
+                <div className="card-body pb-0">
+                  <div className="row">
+                    <div className="col-md-4">
+                      <div className="form-floating mb-3">
+                        <select
+                          id="giveawayProduct"
+                          className="form-select"
+                          aria-label="Product"
+                          defaultValue={productGiveaway.id}
+                          onChange={(e) =>
+                            setProductGiveaway({
+                              ...productGiveaway,
+                              id: e.target.value === '' ? undefined : e.target.value,
+                            })
+                          }
+                        >
+                          <option></option>
+                          {productsGiveaway?.rows.map((product: any, index: number) => (
+                            <option value={product.id} key={`product-${index}`}>
+                              {product.name}
+                            </option>
+                          ))}
+                        </select>
+                        <label htmlFor="giveawayProduct">Target Product</label>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="form-floating mb-3">
+                        <select
+                          id="giveawayPackaging"
+                          className="form-select"
+                          aria-label="Packaging"
+                          defaultValue={inputConfigCreate.giveawayPackagingId}
+                          onChange={(e) =>
+                            setInputConfigCreate({
+                              ...inputConfigCreate,
+                              giveawayPackagingId: e.target.value === '' ? undefined : e.target.value,
+                            })
+                          }
+                        >
+                          <option></option>
+                          {packagingsGiveaway?.rows.map((packaging: any, index: number) => (
+                            <option key={`packaging-${index}`} value={packaging.id}>
+                              {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                            </option>
+                          ))}
+                        </select>
+                        <label htmlFor="giveawayPackaging">Target Packaging</label>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="form-floating mb-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="giveawayUnits"
+                          defaultValue={inputConfigCreate.giveawayUnits}
+                          onChange={(e) =>
+                            setInputConfigCreate({
+                              ...inputConfigCreate,
+                              giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value),
+                            })
+                          }
+                        />
+                        <label htmlFor="giveawayUnits">Giveaway Units</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                Close
+              </button>
+              <MutationButton
+                type="button"
+                className="btn btn-primary"
+                size="sm"
+                label="Save"
+                icon="mdi mdi-plus"
+                loading={creatingConfig}
+                onClick={handleConfigCreate}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="update-modal"
+        className="modal fade"
+        role="dialog"
+        aria-labelledby="update-modal"
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          {loadingConfig ? (
+            <LoadingDiv />
+          ) : (
+            <div className="modal-content">
+              <div className="modal-header">
+                <h4 className="modal-title" id="update-modal">
+                  Edit Configuration
+                </h4>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
+              </div>
+              <div className="modal-body">
+                <h5 className="mt-0 mb-2 text-primary">
+                  <i className="mdi mdi-bullseye-arrow me-1"></i> Target Sale
+                </h5>
+
+                <div className="card card-border border border-primary">
+                  <div className="card-body pb-0">
+                    <div className="row">
+                      <div className="col-md-4">
+                        <div className="form-floating mb-3">
+                          <select
+                            id="targetProduct"
+                            className="form-select"
+                            aria-label="Product"
+                            defaultValue={productTarget.id}
+                            onChange={(e) =>
+                              setProductTarget({
+                                ...productTarget,
+                                id: e.target.value === '' ? undefined : e.target.value,
+                              })
+                            }
+                          >
+                            <option></option>
+                            {productsTarget?.rows.map((product: any, index: number) => (
+                              <option
+                                key={`product-${index}`}
+                                value={product.id}
+                                selected={product.id === config?.salePackaging?.product?.id}
+                              >
+                                {product.name}
+                              </option>
+                            ))}
+                          </select>
+                          <label htmlFor="targetProduct">Target Product</label>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-floating mb-3">
+                          <select
+                            id="targetPackaging"
+                            className="form-select"
+                            aria-label="Packaging"
+                            defaultValue={inputConfigUpdate.salePackagingId}
+                            onChange={(e) =>
+                              setInputConfigCreate({
+                                ...inputConfigUpdate,
+                                salePackagingId: e.target.value === '' ? undefined : e.target.value,
+                              })
+                            }
+                          >
+                            <option></option>
+                            {packagingsTarget?.rows.map((packaging: any, index: number) => (
+                              <option
+                                key={`packaging-${index}`}
+                                value={packaging.id}
+                                selected={packaging.id === config?.salePackaging?.id}
+                              >
+                                {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                              </option>
+                            ))}
+                          </select>
+                          <label htmlFor="targetPackaging">Target Packaging</label>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-floating mb-3">
+                          <input
+                            type="number"
+                            className="form-control"
+                            id="saleUnits"
+                            defaultValue={inputConfigUpdate.saleUnits}
+                            onChange={(e) =>
+                              setInputConfigCreate({
+                                ...inputConfigUpdate,
+                                saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value),
+                              })
+                            }
+                          />
+                          <label htmlFor="saleUnits">Target Sale Units</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <h5 className="mt-0 mb-2 text-primary">
+                  <i className="mdi mdi-gift-outline me-1"></i> Giveaway
+                </h5>
+
+                <div className="card card-border border border-primary mb-0">
+                  <div className="card-body pb-0">
+                    <div className="row">
+                      <div className="col-md-4">
+                        <div className="form-floating mb-3">
+                          <select
+                            id="giveawayProduct"
+                            className="form-select"
+                            aria-label="Product"
+                            defaultValue={productGiveaway.id}
+                            onChange={(e) =>
+                              setProductGiveaway({
+                                ...productGiveaway,
+                                id: e.target.value === '' ? undefined : e.target.value,
+                              })
+                            }
+                          >
+                            <option></option>
+                            {productsGiveaway?.rows.map((product: any, index: number) => (
+                              <option
+                                key={`product-${index}`}
+                                value={product.id}
+                                selected={product.id === config?.giveawayPackaging?.product?.id}
+                              >
+                                {product.name}
+                              </option>
+                            ))}
+                          </select>
+                          <label htmlFor="giveawayProduct">Target Product</label>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-floating mb-3">
+                          <select
+                            id="giveawayPackaging"
+                            className="form-select"
+                            aria-label="Packaging"
+                            defaultValue={inputConfigUpdate.giveawayPackagingId}
+                            onChange={(e) =>
+                              setInputConfigCreate({
+                                ...inputConfigUpdate,
+                                giveawayPackagingId: e.target.value === '' ? undefined : e.target.value,
+                              })
+                            }
+                          >
+                            <option></option>
+                            {packagingsGiveaway?.rows.map((packaging: any, index: number) => (
+                              <option
+                                key={`packaging-${index}`}
+                                value={packaging.id}
+                                selected={packaging.id === config?.giveawayPackaging?.id}
+                              >
+                                {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                              </option>
+                            ))}
+                          </select>
+                          <label htmlFor="giveawayPackaging">Target Packaging</label>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-floating mb-3">
+                          <input
+                            type="number"
+                            className="form-control"
+                            id="giveawayUnits"
+                            defaultValue={inputConfigUpdate.giveawayUnits}
+                            onChange={(e) =>
+                              setInputConfigCreate({
+                                ...inputConfigUpdate,
+                                giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value),
+                              })
+                            }
+                          />
+                          <label htmlFor="giveawayUnits">Giveaway Units</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                  Close
+                </button>
+                <MutationButton
+                  type="button"
+                  className="btn btn-primary"
+                  size="sm"
+                  label="Update"
+                  icon="mdi mdi-refresh"
+                  loading={updatingConfig}
+                  onClick={handleConfigUpdate}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

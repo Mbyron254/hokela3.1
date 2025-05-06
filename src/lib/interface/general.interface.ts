@@ -1,15 +1,7 @@
-import type { DocumentNode } from 'graphql';
-import type {
-  Dispatch,
-  SetStateAction,
-  MouseEventHandler} from 'react';
-import type {
-  ApolloQueryResult,
-  TypedDocumentNode,
-  OperationVariables,
-} from '@apollo/client';
-
-import type { TAnswerType } from '../constant';
+import { ApolloQueryResult, OperationVariables, TypedDocumentNode } from '@apollo/client';
+import { DocumentNode } from 'graphql';
+import { Dispatch, FormEventHandler, MouseEventHandler, SetStateAction } from 'react';
+import { TAnswerType } from '../constant';
 
 export interface IGQLQuery {
   refetch: (variables?: Partial<any>) => Promise<ApolloQueryResult<any>>;
@@ -112,7 +104,12 @@ export interface IWYSIWYG {
 }
 
 export interface IInventoryAllocation {
-  campaignRunId: string;
+  runId: string;
+  clientTier2Id: string;
+}
+
+export interface IInventoryCounterEntry {
+  runId: string;
   clientTier2Id: string;
 }
 
@@ -126,9 +123,9 @@ export interface IAllocations {
 }
 
 export interface IGeoLocation {
-  latitude?: number;
-  longitude?: number;
-  error?: string;
+  lat?: number;
+  lng?: number;
+  err?: string;
 }
 
 export interface IAnswerDropdownOption {
@@ -150,13 +147,15 @@ export interface IQuestionnairField {
   optionsChoiceMultiple?: IChoice[];
   optionsDropdown?: IAnswerDropdownOption[];
   feedbackType: TAnswerType;
-  feedback?: InputSurveyResponseFeedback | string | IChoice[];
+  feedback?: InputSurveyResponseFeedback;
   allowMultipleFileUploads: boolean;
 }
 
 export interface IQuestionnaireSetup {
   questionnaireFields: IQuestionnairField[];
   setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>;
+  mutation: () => void;
+  mutating: boolean;
 }
 
 export interface IQuestionnaireForm {
@@ -166,12 +165,31 @@ export interface IQuestionnaireForm {
   handleSubmit: (e: Event) => void;
 }
 
+export interface InputSurveyCreate {
+  clientTier2Id?: string;
+  name?: string;
+  description?: string;
+  hideRespondentFields?: boolean;
+  requireRespondentName?: boolean;
+  requireRespondentPhone?: boolean;
+  requireRespondentEmail?: boolean;
+  blockSameLocationReportsGlobally?: boolean;
+  blockSameLocationReportsPerAgent?: boolean;
+  questionnaireFields?: IQuestionnairField[];
+}
+
 export interface InputSurveyUpdate {
   id?: string;
   clientTier2Id?: string;
-  campaignRunId?: string;
+  runId?: string;
   name?: string;
   description?: string;
+  hideRespondentFields?: boolean;
+  requireRespondentName?: boolean;
+  requireRespondentPhone?: boolean;
+  requireRespondentEmail?: boolean;
+  blockSameLocationReportsGlobally?: boolean;
+  blockSameLocationReportsPerAgent?: boolean;
   questionnaireFields?: IQuestionnairField[];
 }
 
@@ -190,7 +208,7 @@ export interface InputSurveyResponseFeedback {
 
 export interface InputSurveyResponse {
   questionnaireFieldId: string;
-  feedback: InputSurveyResponseFeedback | string | string[] | IChoice[];
+  feedback?: InputSurveyResponseFeedback;
 }
 
 export interface InputSurveyReportCreate {
@@ -233,7 +251,7 @@ export interface IManageAgentKYC {
 }
 
 export interface IInputConfigCreate {
-  campaignRunId?: string;
+  runId?: string;
   salePackagingId?: string;
   saleUnits?: number;
   giveawayPackagingId?: string;
@@ -283,4 +301,20 @@ export interface ISurveyReportBody {
   date?: Date;
   page?: number;
   pageSize?: number;
+}
+
+export interface IPictureUpload {
+  id?: string;
+  reference?: string;
+  loading: boolean;
+}
+
+export interface ISalesDownload {
+  runId?: string;
+}
+
+export interface InputAgentRunDailySales {
+  runId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }

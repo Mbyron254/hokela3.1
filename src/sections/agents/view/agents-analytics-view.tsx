@@ -13,8 +13,8 @@ import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { LOCATION_PING_INTERVAL_MS } from 'src/lib/constant';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
-// import { M_JANTAS } from 'src/lib/mutations/run-offer.mutation';
-import { M_CAMPAIGN_RUN_OFFERS } from 'src/lib/mutations/campaign-run-offer.mutation';
+import { M_JANTAS } from 'src/lib/mutations/run-offer.mutation';
+// import { M_CAMPAIGN_RUN_OFFERS } from 'src/lib/mutations/campaign-run-offer.mutation';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -38,10 +38,8 @@ export function AgentsAnalyticsView() {
     loading: loadingJanta,
     data: offers,
   } = GQLMutation({
-    mutation: M_CAMPAIGN_RUN_OFFERS,
-    // mutation: M_JANTAS,
-    // resolver: 'jantas',
-    resolver: 'm_campaignRunOffers',
+    mutation: M_JANTAS,
+    resolver: 'jantas',
     toastmsg: false,
   });
 
@@ -78,18 +76,18 @@ export function AgentsAnalyticsView() {
       <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
         Hi, Welcome back 👋
       </Typography>
-      {(!offers?.rows?.length || !geoLocation?.latitude || !geoLocation?.longitude) && (
+      {(!offers?.rows?.length || !geoLocation?.lat || !geoLocation?.lng) && (
         <div className="alert alert-secondary pb-0" role="alert">
           <ol className="font-12">
             <li>
               <i
                 className={`mdi me-2 mdi-${
-                  geoLocation?.latitude && geoLocation?.longitude
+                  geoLocation?.lat && geoLocation?.lng
                     ? 'check-decagram text-success'
                     : 'cancel text-danger'
                 }`}
               />
-              {geoLocation?.latitude && geoLocation?.longitude
+              {geoLocation?.lat && geoLocation?.lng
                 ? 'Confirmed your location.'
                 : 'Confirming your location. Please wait...'}
             </li>
@@ -125,9 +123,9 @@ export function AgentsAnalyticsView() {
 
         <Grid xs={3} sm={6} md={3}>
           <AnalyticsWidgetSummary
-            title="Weekly sales"
+            title="Active Campaigns"
             percent={2.6}
-            total={714000}
+            total={offers?.rows?.length ?? 0}
             icon={<Iconify icon="fluent-color:data-pie-24" width="48px" height="48px" />}
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
@@ -138,9 +136,9 @@ export function AgentsAnalyticsView() {
 
         <Grid xs={3} sm={6} md={3}>
           <AnalyticsWidgetSummary
-            title="Weekly Reports"
+            title="Completed Runs"
             percent={2.8}
-            total={1723315}
+            total={offers?.rows?.length ?? 0}
             color="warning"
             icon={<Iconify icon="fluent-color:clipboard-text-edit-24" width="48px" height="48px" />}
             chart={{
@@ -152,9 +150,9 @@ export function AgentsAnalyticsView() {
 
         <Grid xs={3} sm={6} md={3}>
           <AnalyticsWidgetSummary
-            title="Weekly Giveaways"
+            title="Run Length (Days)"
             percent={3.6}
-            total={234}
+            total={offers?.rows?.length ?? 0}
             color="error"
             icon={<Iconify icon="fluent-color:gift-card-24" width="48px" height="48px" />}
             chart={{
@@ -164,25 +162,11 @@ export function AgentsAnalyticsView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        <Grid xs={12}>
           <CampaignContinue
             title="Continue With Active Runs"
             runs={offers?.rows || []}
             list={_coursesContinue}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AnalyticsWebsiteVisits
-            title="Acitivities"
-            subheader="(+43%) than last year"
-            chart={{
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-              series: [
-                { name: 'Sales', data: [43, 33, 22, 37, 67, 68, 37, 24, 55] },
-                { name: 'Reports', data: [51, 70, 47, 67, 40, 37, 24, 70, 24] },
-              ],
-            }}
           />
         </Grid>
       </Grid>

@@ -2,7 +2,7 @@
 
 import type { TCampaignRunApplications } from 'src/types/application';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -14,6 +14,7 @@ import { _mock } from 'src/_mock';
 import { GQLQuery, GQLMutation } from 'src/lib/client';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/campaign-run-application.mutation';
+import { M_MAKE_JANTA_OFFERS } from 'src/lib/mutations/run-offer.mutation';
 
 import { DataGridCustom } from './data-grid-custom';
 
@@ -59,20 +60,39 @@ export function ApplicationsGridView() {
     toastmsg: false,
   });
 
-  const loadApplications = () => {
+  const {
+    action: makeOffer,
+    loading: offering,
+    data: offered,
+  } = GQLMutation({
+    mutation: M_MAKE_JANTA_OFFERS,
+    resolver: 'makeJantaOffers',
+    toastmsg: true,
+  });
+
+  const [selected, setSelected] = useState<string[]>([]);
+  const [search, setSearch] = useState<string>();
+
+  const loadApplications = (page?: number, pageSize?: number) => {
     if (session?.user?.agent?.id) {
       getApplications({
         variables: {
-          input: { agentId: session.user.agent.id },
+          input: { search, agentId: session.user.agent.id, page, pageSize },
         },
       });
+    }
+  };
+
+  const handleMakeOffer = () => {
+    if (selected.length) {
+      makeOffer({ variables: { input: { applicationIds: selected } } });
     }
   };
 
   useEffect(() => {
     loadApplications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [session?.user?.agent?.id, offered]);
 
   console.log(applications, 'APPLICATIONS');
 
@@ -96,7 +116,9 @@ export function ApplicationsGridView() {
         <Card>
           <CardHeader title="Applications" sx={{ mb: 2 }} />
           <Box sx={{ height: 720 }}>
-            <DataGridCustom data={applicationRows} />
+            <DataGridCustom
+              data={applicationRows}
+            />
           </Box>
         </Card>
       </Stack>

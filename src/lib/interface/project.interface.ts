@@ -16,19 +16,3 @@ export interface IProjectUpdate {
   dateStop?: Date;
   description?: string;
 }
-
-export interface IProject {
-  id: string;
-  name: string;
-  clientTier2?: {
-    id: string;
-    name: string;
-  };
-  manager?: {
-    id: string;
-    name: string;
-  };
-  dateStart: Date;
-  dateStop: Date;
-  status?: string;
-}

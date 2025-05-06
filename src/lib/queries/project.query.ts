@@ -20,6 +20,9 @@ export const Q_PROJECTS_ACTIVE = gql`
           id
           name
         }
+        campaigns {
+          id
+        }
       }
     }
   }
@@ -44,6 +47,9 @@ export const Q_PROJECTS_RECYCLED = gql`
         manager {
           id
           name
+        }
+        campaigns {
+          id
         }
       }
     }

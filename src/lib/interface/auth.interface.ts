@@ -1,5 +1,7 @@
 export interface InputSignUp {
-  name?: string;
+  nameFirst?: string;
+  nameMiddle?: string;
+  nameLast?: string;
   phone?: string;
   email?: string;
 }

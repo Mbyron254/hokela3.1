@@ -19,6 +19,15 @@ import { varAlpha } from 'src/theme/styles';
 
 import { Iconify } from 'src/components/iconify';
 
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Webcam from 'react-webcam';
+import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { InputClockInOut } from 'src/lib/interface/clock.interface';
+import { CLOCK_IN_OUT } from 'src/lib/mutations/clock.mutation';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { sourceImage, uploadPhoto } from 'src/lib/server';
+import { IPictureUpload } from 'src/lib/interface/general.interface';
+
 // ----------------------------------------------------------------------
 
 type TClientTier1 = {
@@ -108,13 +117,89 @@ export function CampaignContinue({ title, subheader, runs, list, ...other }: Pro
 // ----------------------------------------------------------------------
 
 type ItemProps = BoxProps & {
-  run: TCampaignRunOffer;
+  run: any;
 };
 
 function Item({ run, sx, ...other }: ItemProps) {
   const totalTasks = 100;
   const completedTasks = 65;
   const percent = (completedTasks / totalTasks) * 100;
+
+  const { data: session } = GQLQuery({
+    query: Q_SESSION_SELF,
+    queryAction: 'sessionSelf',
+  });
+  const { action: clockInAndOut, data: clocked } = GQLMutation({
+    mutation: CLOCK_IN_OUT,
+    resolver: 'clockInOut',
+    toastmsg: false,
+  });
+
+  const webcamRef = useRef<Webcam>(null);
+
+  const initPhoto: IPictureUpload = {
+    loading: false,
+    id: undefined,
+  };
+
+  const [photo, setPhoto] = useState(initPhoto);
+  const [input, setInput] = useState<InputClockInOut>({});
+
+  const handleClockIn = () => {
+    if (run.id && session?.user?.agent?.id) {
+      if (run.campaignRun.clockType === 'STATIC') {
+        let canClockIn = true;
+
+        if (run.campaignRun.clockInPhotoLabel && !photo.id) {
+          canClockIn = false;
+        }
+
+        if (canClockIn) {
+          clockInAndOut({
+            variables: {
+              input: {
+                ...input,
+                runId: run.id,
+                agentId: session.user.agent.id,
+                clockInAt: new Date(),
+                clockPhotoId: photo.id,
+                lat: 0, // replace with actual latitude
+                lng: 0, // replace with actual longitude
+                clockMode: 'WALKING',
+              },
+            },
+          });
+          setPhoto(initPhoto);
+        } else {
+          alert(`Please take a ${run.campaignRun.clockInPhotoLabel}`);
+        }
+      } else {
+        clockInAndOut({
+          variables: {
+            input: {
+              ...input,
+              runId: run.id,
+              agentId: session.user.agent.id,
+              clockInAt: new Date(),
+              lat: 0, // replace with actual latitude
+              lng: 0, // replace with actual longitude
+              clockMode: 'WALKING',
+            },
+          },
+        });
+      }
+    }
+  };
+
+  const capture = useCallback(() => {
+    uploadPhoto(webcamRef?.current?.getScreenshot(), setPhoto);
+  }, [webcamRef]);
+
+  useEffect(() => {
+    if (clocked) {
+      window.location.replace(`/agent/campaigns/${run.id}`);
+    }
+  }, [clocked]);
 
   return (
     <Box sx={{ gap: 2, display: 'flex', alignItems: 'flex-start', ...sx }} {...other}>
@@ -176,30 +261,100 @@ function Item({ run, sx, ...other }: ItemProps) {
             {fPercent(percent)}
           </Box>
         </Box>
-        {/* <Button
-          onClick={() => {}}
-          variant="contained"
-          color="info"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-        >
-          Join New Campaign
-        </Button> */}
-        {/* <Button
-          onClick={() => {}}
-          variant="contained"
-          color="success"
-          startIcon={<Iconify icon="mingcute:arrow-right-fill" />}
-        >
-          Continue With Campaign
-        </Button> */}
-        <Button
-          onClick={() => {}}
-          variant="contained"
-          color="primary"
-          startIcon={<Iconify icon="mingcute:clock-2-line" />}
-        >
-          Check Into Campaign
-        </Button>
+
+        {run.campaignRun.clockType === 'STATIC' && (
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {}}
+              startIcon={<Iconify icon="mingcute:clock-2-line" />}
+              data-bs-toggle="modal"
+              data-bs-target={`#check-in-${run.id}`}
+            >
+              Check Into Campaign
+            </Button>
+
+            <div
+              tabIndex={-1}
+              className="modal fade"
+              id={`check-in-${run.id}`}
+              role="dialog"
+              aria-hidden="true"
+            >
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h4 className="modal-title" id="myCenterModalLabel">
+                      Check In
+                    </h4>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="modal-body text-center">
+                    {run.campaignRun.clockInPhotoLabel && (
+                      <div className="mb-3">
+                        <h5 className="mt-0 mb-3">{run.campaignRun.clockInPhotoLabel}</h5>
+
+                        <Webcam
+                          screenshotFormat="image/jpeg"
+                          ref={webcamRef}
+                          mirrored={true}
+                          disablePictureInPicture={true}
+                          forceScreenshotSourceSize={true}
+                          imageSmoothing={false}
+                          audio={false}
+                          videoConstraints={{
+                            facingMode: { exact: 'user' },
+                            width: 400,
+                            height: 200,
+                          }}
+                        />
+
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={capture}
+                          sx={{ mt: 2, mb: 0 }}
+                        >
+                          Take Photo
+                        </Button>
+                      </div>
+                    )}
+
+                    {photo.loading && <Typography>Please wait...</Typography>}
+
+                    {!photo.loading && photo.id && (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={handleClockIn}
+                        sx={{ width: '100%' }}
+                      >
+                        Please Check In
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {run.campaignRun.clockType === 'DYNAMIC' && (
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleClockIn}
+            startIcon={<Iconify icon="mingcute:arrow-right-fill" />}
+          >
+            Continue
+          </Button>
+        )}
       </Box>
     </Box>
   );

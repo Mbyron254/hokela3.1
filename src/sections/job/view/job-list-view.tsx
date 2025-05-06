@@ -31,19 +31,24 @@ import { JobSearch } from '../job-search';
 import { JobFilters } from '../job-filters';
 import { JobFiltersResult } from '../job-filters-result';
 
+import { formatDate } from 'src/lib/helpers';
+import Image from 'next/image';
+import { sourceImage } from 'src/lib/server';
+
 // ----------------------------------------------------------------------
 
 type TCampaignRun = {
   index: number;
   id: string;
   closeAdvertOn: string;
+  poster: {
+    fileName: string;
+  };
   campaign: {
     id: string;
     name: string;
     jobDescription: string;
-    jobQualification: string;
     clientTier2: {
-      name: string;
       clientTier1: {
         name: string;
       };
@@ -99,14 +104,15 @@ export function JobListView() {
       benefits: ['Healthcare', 'Annual Leave'],
       totalViews: 0,
       company: {
-        name: job.campaign.clientTier2.name,
-        logo: '/assets/images/company/company_1.png',
+        name: job.campaign.clientTier2.clientTier1.name,
+        logo: sourceImage(job.poster.fileName),
       },
       salary: {
         negotiable: true,
         price: 0,
       },
       candidates: [],
+      closeAdvertOn: (job.closeAdvertOn),
     })) || [];
 
   const dataFiltered = applyFilter({ inputData: transformedJobs, filters: filters.state, sortBy });
@@ -178,8 +184,8 @@ export function JobListView() {
         heading="List"
         links={[
           { name: 'Dashboard', href: '/dashboard' },
-          { name: 'Job', href: '/dashboard/job' },
-          { name: 'List' },
+          { name: 'Janta', href: '/dashboard/janta' },
+          { name: 'Open Jobs' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
@@ -192,7 +198,16 @@ export function JobListView() {
 
       {notFound && <EmptyContent filled sx={{ py: 10 }} />}
 
-      <JobList jobs={dataFiltered} />
+      <JobList jobs={dataFiltered.map(job => ({
+        ...job,
+        logo: <Image
+          src={job.company.logo}
+          alt=""
+          width={200}
+          height={200}
+        />,
+        deadline: job.closeAdvertOn,
+      }))} />
     </DashboardContent>
   );
 }

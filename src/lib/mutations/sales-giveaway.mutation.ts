@@ -74,6 +74,7 @@ export const SALES_GIVEAWAY_CONFIGS_ACTIVE = gql`
       count
       rows {
         id
+        index
         salePackaging {
           id
           unitQuantity
@@ -109,6 +110,7 @@ export const SALES_GIVEAWAY_CONFIGS_RECYCLED = gql`
       count
       rows {
         id
+        index
         salePackaging {
           id
           unitQuantity
@@ -141,6 +143,14 @@ export const SALES_GIVEAWAY_SURVEY = gql`
   mutation salesGiveawaySurvey($input: InputSurvey!) {
     salesGiveawaySurvey(input: $input) {
       id
+      hideRespondentFields
+      requireRespondentName
+      requireRespondentPhone
+      requireRespondentEmail
+      blockSameLocationReportsGlobally
+      blockSameLocationReportsPerAgent
+      created
+      updated
       questionnaireFields {
         id
         question
@@ -164,8 +174,6 @@ export const SALES_GIVEAWAY_SURVEY = gql`
       reports {
         id
       }
-      created
-      updated
     }
   }
 `;
@@ -224,9 +232,7 @@ export const AGENT_SALES_GIVEAWAY_CONFIGURATIONS = gql`
 `;
 
 export const SALES_GIVEAWAY_REPORT_CREATE = gql`
-  mutation salesGiveawayReportCreate(
-    $input: InputSalesGiveawaySurveyReportCreate!
-  ) {
+  mutation salesGiveawayReportCreate($input: InputSalesGiveawaySurveyReportCreate!) {
     salesGiveawayReportCreate(input: $input) {
       message
     }

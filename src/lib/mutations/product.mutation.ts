@@ -39,8 +39,12 @@ export const PRODUCT = gql`
       code
       name
       description
-      basePrice
       created
+      group {
+        id
+        name
+        markup
+      }
       clientTier2 {
         id
         name
@@ -80,8 +84,11 @@ export const M_PRODUCTS_ACTIVE = gql`
         code
         name
         description
-        basePrice
         created
+        group {
+          name
+          markup
+        }
         clientTier2 {
           id
           name
@@ -122,8 +129,11 @@ export const M_PRODUCTS_RECYCLED = gql`
         code
         name
         description
-        basePrice
         recycled
+        group {
+          name
+          markup
+        }
         clientTier2 {
           id
           name
