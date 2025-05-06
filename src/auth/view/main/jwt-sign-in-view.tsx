@@ -84,7 +84,15 @@ export function JwtSignInView() {
     mutation: USER_LOGIN,
     resolver: 'login',
     toastmsg: true,
-    callback: () => window.location.reload(),
+    callback: async () => {
+      try {
+        await checkUserSession?.();
+        router.push(paths.v2.admin.root);
+      } catch (error) {
+        console.error('Session check error:', error);
+        setErrorMsg('Failed to verify session');
+      }
+    },
   });
 
   const methods = useForm<SignInSchemaType>({
