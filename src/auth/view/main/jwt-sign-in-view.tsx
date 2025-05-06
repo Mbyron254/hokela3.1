@@ -84,19 +84,7 @@ export function JwtSignInView() {
     mutation: USER_LOGIN,
     resolver: 'login',
     toastmsg: true,
-    callback: async (response: any) => {
-      try {
-        if (response?.login?.message === 'Welcome !') {
-          await checkUserSession?.();
-          router.push(paths.v2.admin.root);
-        } else {
-          throw new Error('Invalid login response');
-        }
-      } catch (error) {
-        console.error('Session check error:', error);
-        setErrorMsg('Failed to verify session');
-      }
-    },
+    callback: () => window.location.reload(),
     onError: (error: any) => {
       console.error('Sign in error:', error);
       setErrorMsg(error?.message || 'Invalid credentials. Please try again.');
