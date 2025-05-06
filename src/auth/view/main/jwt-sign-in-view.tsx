@@ -84,15 +84,23 @@ export function JwtSignInView() {
     mutation: USER_LOGIN,
     resolver: 'login',
     toastmsg: true,
-    callback: async () => {
+    callback: async (response: any) => {
       try {
-        await checkUserSession?.();
-        router.push(paths.v2.admin.root);
+        if (response?.login?.message === 'Welcome !') {
+          await checkUserSession?.();
+          router.push(paths.v2.admin.root);
+        } else {
+          throw new Error('Invalid login response');
+        }
       } catch (error) {
         console.error('Session check error:', error);
         setErrorMsg('Failed to verify session');
       }
     },
+    onError: (error: any) => {
+      console.error('Sign in error:', error);
+      setErrorMsg(error?.message || 'Invalid credentials. Please try again.');
+    }
   });
 
   const methods = useForm<SignInSchemaType>({
@@ -116,31 +124,6 @@ export function JwtSignInView() {
         keyPrivate: data.password,
       };
       signin({ variables: { input } });
-
-      // await signin({
-      //   variables: {
-      //     input,
-      //   },
-      //   onCompleted: async (response: any) => {
-      //     try {
-      //       console.log('response', response);
-
-      //       if (response?.login?.message === 'Welcome !') {
-      //         await checkUserSession?.();
-      //         router.push(PATH_AFTER_LOGIN);
-      //       } else {
-      //         throw new Error('Invalid login response');
-      //       }
-      //     } catch (error) {
-      //       console.error('Login error:', error);
-      //       setErrorMsg('Failed to login');
-      //     }
-      //   },
-      //   onError: (error: { message: string }) => {
-      //     console.error('Sign in error:', error);
-      //     setErrorMsg(error.message || 'Invalid credentials. Please try again.');
-      //   },
-      // });
     } catch (error) {
       console.error('Sign in error:', error);
       setErrorMsg(error instanceof Error ? error.message : String(error));
