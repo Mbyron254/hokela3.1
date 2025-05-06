@@ -153,10 +153,10 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.redirect(new URL(`/suspended`, request.url));
               }
             }
-          } else {
-            if (isAccount || isUnlock) {
-              return NextResponse.redirect(new URL(`/`, request.url));
-            }
+          } else if (isAccount || isUnlock) {
+            // if (isAccount || isUnlock) {
+            return NextResponse.redirect(new URL(`/`, request.url));
+            // }
           }
         } catch (error) {
           console.error('Error in middleware session check:', error);
