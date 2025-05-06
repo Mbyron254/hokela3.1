@@ -16,147 +16,165 @@ import {
 } from './lib/constant';
 
 export async function middleware(request: NextRequest) {
-  const isRecover = request.nextUrl.pathname.startsWith(`/auth/main/forgot-password`);
-  const isReset = request.nextUrl.pathname.startsWith(`/auth/main/reset`);
-  const isSignUp = request.nextUrl.pathname.startsWith(`/auth/main/sign-up`);
-  const isSignIn = request.nextUrl.pathname === '/auth/main/sign-in/';
-  const isUnlock = request.nextUrl.pathname.startsWith(`/auth/main/unlock`);
+  try {
+    const isRecover = request.nextUrl.pathname.startsWith(`/auth/main/forgot-password`);
+    const isReset = request.nextUrl.pathname.startsWith(`/auth/main/reset`);
+    const isSignUp = request.nextUrl.pathname.startsWith(`/auth/main/sign-up`);
+    const isSignIn = request.nextUrl.pathname === '/auth/main/sign-in/';
+    const isUnlock = request.nextUrl.pathname.startsWith(`/auth/main/unlock`);
 
-  const isAuth = isRecover || isReset || isSignUp || isSignIn || isUnlock;
+    const isAuth = isRecover || isReset || isSignUp || isSignIn || isUnlock;
 
-  const isAdmin = request.nextUrl.pathname.startsWith(`/v2/admin`);
-  const isAgent = request.nextUrl.pathname.startsWith(`/v2/agent`);
-  const isDistribution = request.nextUrl.pathname.startsWith(`/v2/distributor`);
-  const isMarketting = request.nextUrl.pathname.startsWith(`/v2/marketing`);
-  const isProduction = request.nextUrl.pathname.startsWith(`/v2/producer`);
-  const isRetail = request.nextUrl.pathname.startsWith(`/v2/retailer`);
-
-  const isAccount =
-    isAdmin || isAgent || isDistribution || isMarketting || isProduction || isRetail;
-  const headers = new Headers(request.headers);
-
-  headers.set('isAuth', String(isAuth));
-  headers.set('isAccount', String(isAccount));
-
-  const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
-  console.log(sessionId, 'SESSION ID')
-  
-  // Don't redirect to sign-in if already on an auth page
-  if(!sessionId && !isAuth){
-    return NextResponse.redirect(new URL(`${paths.auth.main.signIn}`, request.url));
-  }
-
-  if (isAuth || isAccount) {
-    if (isReset) {
-      return NextResponse.next({ request: { headers } });
+    // Skip middleware for static assets and API routes
+    if (
+      request.nextUrl.pathname.startsWith('/_next/') ||
+      request.nextUrl.pathname.startsWith('/api/')
+    ) {
+      return NextResponse.next();
     }
 
-    const data = await serverGateway(Q_SESSION, { input: { id: sessionId } });
-    console.log(data, 'DATA');
-    const session = data?.sessionAlien;
-    console.log('Session Data:', session);
+    const isAdmin = request.nextUrl.pathname.startsWith(`/v2/admin`);
+    const isAgent = request.nextUrl.pathname.startsWith(`/v2/agent`);
+    const isDistribution = request.nextUrl.pathname.startsWith(`/v2/distributor`);
+    const isMarketting = request.nextUrl.pathname.startsWith(`/v2/marketing`);
+    const isProduction = request.nextUrl.pathname.startsWith(`/v2/producer`);
+    const isRetail = request.nextUrl.pathname.startsWith(`/v2/retailer`);
 
-    if (session && session.user) {
-      const isActiveAccount = session.user.state === USER_AC_STATE.active;
+    const isAccount =
+      isAdmin || isAgent || isDistribution || isMarketting || isProduction || isRetail;
+    const headers = new Headers(request.headers);
 
-      if (isActiveAccount) {
-        if (session.locked) {
-          if (isUnlock) {
-            headers.set('session', JSON.stringify({ user: session?.user }));
+    headers.set('isAuth', String(isAuth));
+    headers.set('isAccount', String(isAccount));
+
+    const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
+    
+    // Don't redirect to sign-in if already on an auth page
+    if(!sessionId && !isAuth){
+      return NextResponse.redirect(new URL(`${paths.auth.main.signIn}`, request.url));
+    }
+
+    if (isAuth || isAccount) {
+      if (isReset) {
+        return NextResponse.next({ request: { headers } });
+      }
+
+      // Only attempt to fetch session data if we have a sessionId
+      if (sessionId) {
+        try {
+          const data = await serverGateway(Q_SESSION, { input: { id: sessionId } });
+          const session = data?.sessionAlien;
+
+          if (session && session.user) {
+            const isActiveAccount = session.user.state === USER_AC_STATE.active;
+
+            if (isActiveAccount) {
+              if (session.locked) {
+                if (isUnlock) {
+                  headers.set('session', JSON.stringify({ user: session?.user }));
+                } else {
+                  return NextResponse.redirect(new URL(`/unlock`, request.url));
+                }
+              } else {
+                let userHomePage = '/';
+                let allowedToView = false;
+                let accountLabel = '';
+
+                // Determine user type and set appropriate homepage
+                if (session.user.role?.name === ROLE_AGENT) {
+                  userHomePage = paths.v2.agent.root;
+                  accountLabel = 'Agent';
+                  allowedToView = isAgent;
+                } else if (!session.user.role?.clientTier1 && !session.user.role?.clientTier2) {
+                  userHomePage = paths.v2.admin.root;
+                  accountLabel = 'Administrator';
+                  allowedToView = isAdmin;
+                }
+
+                if (session.user.role?.clientTier1 || session.user.role?.clientTier2) {
+                  const clientType =
+                    session.user.role?.clientTier1?.clientType?.name ||
+                    session.user.role?.clientTier2?.clientType?.name;
+
+                  switch (clientType) {
+                    case CLIENT_TYPE_PRODUCER:
+                      userHomePage = paths.v2.producer.root;
+                      accountLabel = 'Producer';
+                      allowedToView = isProduction;
+                      break;
+
+                    case CLIENT_TYPE_DISTRIBUTOR:
+                      userHomePage = paths.v2.distributor.root;
+                      accountLabel = 'Distributor';
+                      allowedToView = isDistribution;
+                      break;
+
+                    case CLIENT_TYPE_RETAILER:
+                      userHomePage = paths.v2.retailer.root;
+                      accountLabel = 'Retailor';
+                      allowedToView = isRetail;
+                      break;
+
+                    case CLIENT_TYPE_MARKETING_AGENCY:
+                      userHomePage = paths.v2.marketing.root;
+                      accountLabel = 'Marketing Agency';
+                      allowedToView = isMarketting;
+                      break;
+
+                    default:
+                      break;
+                  }
+                }
+
+                if (isAuth) {
+                  return NextResponse.redirect(new URL(userHomePage, request.url));
+                }
+
+                if (!allowedToView) {
+                  return NextResponse.redirect(new URL(userHomePage, request.url));
+                }
+
+                headers.set(
+                  'session',
+                  JSON.stringify({
+                    menu: [],
+                    user: session?.user,
+                    accountLabel,
+                    isActiveAccount: session?.user?.state === USER_AC_STATE.active,
+                    isLocked: session?.locked,
+                  })
+                );
+              }
+            } else {
+              if (session.user.state === USER_AC_STATE.unconfirmed) {
+                return NextResponse.redirect(new URL(`/unconfirmed`, request.url));
+              }
+              if (session.user.state === USER_AC_STATE.suspended) {
+                return NextResponse.redirect(new URL(`/suspended`, request.url));
+              }
+            }
           } else {
-            return NextResponse.redirect(new URL(`/unlock`, request.url));
-          }
-        } else {
-          let userHomePage: string | URL = '/';
-          let allowedToView = false;
-          let accountLabel = '';
-
-          // Determine user type and set appropriate homepage
-          if (session.user.role?.name === ROLE_AGENT) {
-            userHomePage = paths.v2.agent.root;
-            accountLabel = 'Agent';
-            allowedToView = isAgent;
-          } else if (!session.user.role?.clientTier1 && !session.user.role?.clientTier2) {
-            userHomePage = paths.v2.admin.root;
-            accountLabel = 'Administrator';
-            allowedToView = isAdmin;
-          }
-
-          if (session.user.role?.clientTier1 || session.user.role?.clientTier2) {
-            const clientType =
-              session.user.role?.clientTier1?.clientType?.name ||
-              session.user.role?.clientTier2?.clientType?.name;
-
-            switch (clientType) {
-              case CLIENT_TYPE_PRODUCER:
-                userHomePage = paths.v2.producer.root;
-                accountLabel = 'Producer';
-                allowedToView = isProduction;
-                break;
-
-              case CLIENT_TYPE_DISTRIBUTOR:
-                userHomePage = paths.v2.distributor.root;
-                accountLabel = 'Distributor';
-                allowedToView = isDistribution;
-                break;
-
-              case CLIENT_TYPE_RETAILER:
-                userHomePage = paths.v2.retailer.root;
-                accountLabel = 'Retailor';
-                allowedToView = isRetail;
-                break;
-
-              case CLIENT_TYPE_MARKETING_AGENCY:
-                userHomePage = paths.v2.marketing.root;
-                accountLabel = 'Marketing Agency';
-                allowedToView = isMarketting;
-                break;
-
-              default:
-                break;
+            if (isAccount || isUnlock) {
+              return NextResponse.redirect(new URL(`/`, request.url));
             }
           }
-
-          console.log('Final homepage:', userHomePage);
-          console.log('Allowed to view:', allowedToView);
-
-          if (isAuth) {
-            console.log('Redirecting to homepage after auth');
-            return NextResponse.redirect(new URL(userHomePage, request.url));
-          }
-
-          if (!allowedToView) {
-            console.log('User not allowed to view current page, redirecting to homepage');
-            return NextResponse.redirect(new URL(userHomePage, request.url));
-          }
-
-          console.log('Setting session headers');
-          headers.set(
-            'session',
-            JSON.stringify({
-              menu: [],
-              user: session?.user,
-              accountLabel,
-              isActiveAccount: session?.user?.state === USER_AC_STATE.active,
-              isLocked: session?.locked,
-            })
-          );
+        } catch (error) {
+          console.error('Error in middleware session check:', error);
+          // On error, clear the session cookie and redirect to sign in
+          const response = NextResponse.redirect(new URL(`${paths.auth.main.signIn}`, request.url));
+          response.cookies.delete(SESSION_COOKIE);
+          return response;
         }
-      } else {
-        if (session.user.state === USER_AC_STATE.unconfirmed) {
-          return NextResponse.redirect(new URL(`/unconfirmed`, request.url));
-        }
-        if (session.user.state === USER_AC_STATE.suspended) {
-          return NextResponse.redirect(new URL(`/suspended`, request.url));
-        }
-      }
-    } else {
-      console.log('No session or user data found');
-      if (isAccount || isUnlock) {
-        return NextResponse.redirect(new URL(`/`, request.url));
+      } else if (isAccount || isUnlock) {
+        // No session ID but trying to access protected routes
+        return NextResponse.redirect(new URL(`${paths.auth.main.signIn}`, request.url));
       }
     }
-  }
 
-  return NextResponse.next({ request: { headers } });
+    return NextResponse.next({ request: { headers } });
+  } catch (error) {
+    console.error('Middleware error:', error);
+    // Fallback to prevent middleware from breaking the app
+    return NextResponse.next();
+  }
 }
