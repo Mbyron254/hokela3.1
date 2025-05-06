@@ -2,10 +2,10 @@
 
 import React from 'react'
 
-const SignIn = () => 
+const JwtSignInView = () => 
   (
-    <div>SignIn</div>
+    <div>JwtSignInView</div>
   )
 
 
-export default SignIn
+export default JwtSignInView
