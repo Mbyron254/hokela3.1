@@ -39,10 +39,12 @@ export async function middleware(request: NextRequest) {
   headers.set('isAccount', String(isAccount));
 
   const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
-   console.log(sessionId, 'SESSION ID')
-   if(!sessionId){
+  console.log(sessionId, 'SESSION ID')
+  
+  // Don't redirect to sign-in if already on an auth page
+  if(!sessionId && !isAuth){
     return NextResponse.redirect(new URL(`${paths.auth.main.signIn}`, request.url));
-   }
+  }
 
   if (isAuth || isAccount) {
     if (isReset) {
