@@ -1,17 +1,11 @@
-import type { Dispatch, SetStateAction } from 'react';
-
-import { TEXT_SHORT } from './constant';
+import { Dispatch, SetStateAction } from 'react';
+import { MULTIMEDIA, TEXT_SHORT } from './constant';
 import { generateShortUUIDV4 } from './helpers';
-
-import type {
-  IChoice,
-  IQuestionnairField,
-  InputSurveyResponseFeedback,
-} from './interface/general.interface';
+import { IChoice, InputSurveyResponseFeedback, IQuestionnairField } from './interface/general.interface';
 
 export const formElementAdd = (
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const formElement: IQuestionnairField = {
     id: generateShortUUIDV4(),
@@ -30,7 +24,7 @@ export const formElementAdd = (
 export const formElementRemove = (
   id: string,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
@@ -44,7 +38,7 @@ export const formElementQuestionEdit = (
   id: string,
   question: any,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
@@ -58,7 +52,7 @@ export const answerTypeEdit = (
   id: string,
   feedbackType: any,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
@@ -73,7 +67,7 @@ export const formElementDropDownOptionAdd = (
   dropDownOption: string,
   setDropdownOption: Dispatch<SetStateAction<string>>,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
@@ -93,15 +87,13 @@ export const formElementDropDownOptionRemove = (
   value: string,
   setDropdownOption: Dispatch<SetStateAction<string>>,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
 
   if (index > -1) {
-    const _index = tmpFormElements[index].optionsDropdown?.findIndex(
-      (f) => f.value === value
-    );
+    const _index = tmpFormElements[index].optionsDropdown?.findIndex((f) => f.value === value);
 
     if (_index && _index > -1) {
       tmpFormElements[index].optionsDropdown?.splice(_index, 1);
@@ -115,7 +107,7 @@ export const editFormElementIsRequired = (
   id: string,
   isRequired: boolean,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
@@ -130,7 +122,7 @@ export const editFormElementNoDuplicateResponse = (
   id: string,
   noDuplicateResponse: boolean,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
@@ -146,7 +138,7 @@ export const singleChoiceAdd = (
   singleChoice: IChoice,
   setSingleChoice: Dispatch<SetStateAction<IChoice>>,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
@@ -163,14 +155,14 @@ export const singleChoiceRemove = (
   value: IChoice,
   setSingleChoice: Dispatch<SetStateAction<IChoice>>,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
 
   if (index > -1) {
     const _index = tmpFormElements[index].optionsChoiceSingle?.findIndex(
-      (option) => option.text === value.text
+      (option) => option.text === value.text,
     );
 
     if (_index && _index > -1) {
@@ -186,7 +178,7 @@ export const formElementMultichoiceAdd = (
   multichoice: IChoice,
   setMultichoice: Dispatch<SetStateAction<IChoice>>,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
@@ -203,15 +195,13 @@ export const formElementMultiplechoiceRemove = (
   value: IChoice,
   setMultichoice: Dispatch<SetStateAction<IChoice>>,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
 
   if (index > -1) {
-    const _index = tmpFormElements[index].optionsChoiceMultiple?.findIndex(
-      (f) => f.text === value.text
-    );
+    const _index = tmpFormElements[index].optionsChoiceMultiple?.findIndex((f) => f.text === value.text);
 
     if (_index && _index > -1) {
       tmpFormElements[index].optionsChoiceMultiple?.splice(_index, 1);
@@ -224,36 +214,22 @@ export const formElementMultiplechoiceRemove = (
 export const editFormElementAllowMultipleFileUploads = (
   id: string,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
 
   if (index > -1) {
-    tmpFormElements[index].allowMultipleFileUploads = !tmpFormElements[index]
-      .allowMultipleFileUploads;
-  }
-  setQuestionnaireFields(tmpFormElements);
-};
-
-export const editFeedback = (
-  id: string,
-  feedback: any,
-  questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
-) => {
-  const tmpFormElements = [...questionnaireFields];
-  const index = tmpFormElements.findIndex((field) => field.id === id);
-
-  if (index > -1) {
-    tmpFormElements[index].feedback = feedback;
+    tmpFormElements[index].allowMultipleFileUploads = tmpFormElements[index].allowMultipleFileUploads
+      ? false
+      : true;
   }
   setQuestionnaireFields(tmpFormElements);
 };
 
 export const findFeedback = (
   fieldId: string,
-  questionnaireFields: IQuestionnairField[]
+  questionnaireFields: IQuestionnairField[],
 ): string | IChoice[] | InputSurveyResponseFeedback | undefined => {
   const index = questionnaireFields.findIndex((field) => field.id === fieldId);
 
@@ -265,15 +241,15 @@ export const removeDocumentFeedback = (
   fieldId: string,
   documentId: string,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ): void => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((field) => field.id === fieldId);
 
   if (index > -1) {
-    const indexDocument = (
-      tmpFormElements[index].feedback as string[]
-    ).findIndex((docId) => docId === documentId);
+    const indexDocument = (tmpFormElements[index].feedback as string[]).findIndex(
+      (docId) => docId === documentId,
+    );
 
     if (indexDocument > -1) {
       (tmpFormElements[index].feedback as string[]).splice(indexDocument, 1);
@@ -283,29 +259,70 @@ export const removeDocumentFeedback = (
   }
 };
 
+export const editFeedback = (
+  id: string,
+  feedback: any,
+  questionnaireFields: IQuestionnairField[],
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
+) => {
+  const tmpFormElements = [...questionnaireFields];
+  const index = tmpFormElements.findIndex((field) => field.id === id);
+
+  if (index > -1) {
+    tmpFormElements[index].feedback = { _string: feedback };
+  }
+  setQuestionnaireFields(tmpFormElements);
+};
+
+export const editFeedbackSingleChoice = (
+  id: string,
+  feedback: any,
+  questionnaireFields: IQuestionnairField[],
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
+) => {
+  const tmpFormElements = [...questionnaireFields];
+  const index = tmpFormElements.findIndex((field) => field.id === id);
+
+  if (index > -1) {
+    tmpFormElements[index].feedback = { _choice: feedback };
+  }
+  setQuestionnaireFields(tmpFormElements);
+};
+
 export const editFeedbackMultiChoice = (
   id: string,
   item: IChoice,
   questionnaireFields: IQuestionnairField[],
-  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>
+  setQuestionnaireFields: Dispatch<SetStateAction<IQuestionnairField[]>>,
 ) => {
   const tmpFormElements = [...questionnaireFields];
   const index = tmpFormElements.findIndex((f) => f.id === id);
 
   if (index > -1) {
-    if (Array.isArray(tmpFormElements[index].feedback)) {
-      const _index = tmpFormElements[index].feedback?.findIndex(
-        (_item) => _item === item
-      );
+    if (tmpFormElements[index].feedback?._choiceArray) {
+      const _index = tmpFormElements[index].feedback._choiceArray.findIndex((_item) => _item === item);
 
       if (_index < 0) {
-        tmpFormElements[index].feedback.push(item);
+        tmpFormElements[index].feedback._choiceArray.push(item);
       } else {
-        tmpFormElements[index].feedback.splice(_index, 1);
+        tmpFormElements[index].feedback._choiceArray.splice(_index, 1);
       }
     } else {
-      tmpFormElements[index].feedback = [item];
+      tmpFormElements[index].feedback = { _choiceArray: [item] };
     }
+
+    // if (Array.isArray(tmpFormElements[index].feedback)) {
+    //   const _index = tmpFormElements[index].feedback?.findIndex((_item) => _item === item);
+
+    //   if (_index < 0) {
+    //     tmpFormElements[index].feedback?.push(item);
+    //   } else {
+    //     tmpFormElements[index].feedback?.splice(_index, 1);
+    //   }
+    // } else {
+    //   tmpFormElements[index].feedback = [item];
+    // }
   }
+
   setQuestionnaireFields(tmpFormElements);
 };

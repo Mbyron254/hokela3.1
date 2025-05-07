@@ -12,7 +12,12 @@ import {
   HEADER_VAL_CLIENT,
   SERVER_API_DEV_GQL,
   SERVER_API_PRO_GQL,
+  SERVER_HOST_DEV,
+  SERVER_HOST_PRO,
 } from './constant';
+import axios, { AxiosRequestConfig } from 'axios';
+import { IPictureUpload } from './interface/general.interface';
+import { Dispatch, SetStateAction } from 'react';
 
 export const serverGateway = async (GQLDN: DocumentNode, variables: any) => {
   let uri: string;
@@ -77,4 +82,52 @@ export const sourceImage = (filename?: string) => {
       host = CLIENT_HOST_PRO;
   }
   return `${host}/document/f/${filename}`;
+};
+
+
+export const uploadPhoto = async (
+  base64Data: string | null | undefined,
+  setPhoto: Dispatch<SetStateAction<IPictureUpload>>,
+  reference?: string,
+): Promise<void> => {
+  if (!base64Data) return;
+
+  const blob = await (await fetch(base64Data)).blob();
+  const file = new File([blob], 'outputFileName.jpg', { type: 'image/jpeg' });
+
+  setPhoto({ loading: true });
+
+  const config: AxiosRequestConfig = {
+    headers: {
+      [HEADER_KEY_CLIENT]: HEADER_VAL_CLIENT,
+    },
+  };
+
+  let formData = new FormData();
+
+  formData.append('file', file);
+
+  try {
+    let url: string;
+
+    switch (process.env.NODE_ENV) {
+      case 'development':
+        url = `${SERVER_HOST_DEV}/document/u-local`;
+        break;
+      case 'production':
+        url = `${SERVER_HOST_PRO}/document/u-space`;
+        break;
+      default:
+        url = `${SERVER_HOST_PRO}/document/u-space`;
+    }
+
+    const data = (await axios.post(url, formData, config))?.data;
+
+    setPhoto({ loading: false, id: data.id, reference });
+  } catch (error) {
+    console.log('~~~~~~~~~~~~~ PICTURE UPLOAD ERROR ~~~~~~~~~~~~~');
+    console.log(error);
+
+    setPhoto({ loading: false });
+  }
 };

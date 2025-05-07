@@ -1,4 +1,4 @@
-import type { FileError } from 'react-dropzone';
+import { FileError } from 'react-dropzone';
 
 export interface IDropZone {
   name: string;

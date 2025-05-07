@@ -49,6 +49,64 @@ export const PROJECT = gql`
         id
         name
       }
+      campaigns {
+        id
+      }
+    }
+  }
+`;
+
+export const PROJECTS = gql`
+  mutation m_projects($input: InputProjects!) {
+    m_projects(input: $input) {
+      count
+      rows {
+        id
+        name
+        dateStart
+        dateStop
+        description
+        created
+        clientTier2 {
+          id
+          name
+        }
+        manager {
+          id
+          name
+        }
+        campaigns {
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const PROJECTS_RECYCLED = gql`
+  mutation m_projectsRecycled($input: InputProjects!) {
+    m_projectsRecycled(input: $input) {
+      count
+      rows {
+        id
+        name
+        dateStart
+        dateStop
+        description
+        created
+        recycled
+        clientTier2 {
+          id
+          name
+        }
+        manager {
+          id
+          name
+        }
+        campaigns {
+          id
+        }
+      }
     }
   }
 `;

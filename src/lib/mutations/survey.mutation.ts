@@ -16,21 +16,27 @@ export const SURVEY_REPORT_CREATE = gql`
   }
 `;
 
+export const SURVEY_REPORT_VALIDATION = gql`
+  mutation surveyReportValidation($input: InputValidation!) {
+    surveyReportValidation(input: $input) {
+      message
+    }
+  }
+`;
+
 export const M_SURVEY = gql`
   mutation survey($input: InputSurvey!) {
     survey(input: $input) {
       id
       name
       description
+      hideRespondentFields
+      requireRespondentName
+      requireRespondentPhone
+      requireRespondentEmail
+      blockSameLocationReportsGlobally
+      blockSameLocationReportsPerAgent
       updated
-      clientTier2 {
-        id
-        name
-      }
-      campaignRun {
-        id
-        code
-      }
       questionnaireFields {
         id
         question
@@ -51,9 +57,65 @@ export const M_SURVEY = gql`
           label
         }
       }
+      clientTier2 {
+        id
+        name
+      }
+      run {
+        id
+        code
+      }
       reports {
         id
       }
+    }
+  }
+`;
+
+export const M_SURVEY_4_AGENT = gql`
+  mutation survey4Agent($input: InputSurvey!) {
+    survey4Agent(input: $input) {
+      id
+      name
+      description
+      hideRespondentFields
+      requireRespondentName
+      requireRespondentPhone
+      requireRespondentEmail
+      blockSameLocationReportsGlobally
+      blockSameLocationReportsPerAgent
+      updated
+      questionnaireFields {
+        id
+        question
+        isRequired
+        noDuplicateResponse
+        feedbackType
+        allowMultipleFileUploads
+        optionsChoiceSingle {
+          text
+          documentId
+        }
+        optionsChoiceMultiple {
+          text
+          documentId
+        }
+        optionsDropdown {
+          value
+          label
+        }
+      }
+      # clientTier2 {
+      #   id
+      #   name
+      # }
+      # run {
+      #   id
+      #   code
+      # }
+      # reports {
+      #   id
+      # }
     }
   }
 `;
@@ -83,6 +145,7 @@ export const M_SURVEY_REPORTS = gql`
       rows {
         index
         id
+        validity
         respondentName
         respondentPhone
         respondentEmail
@@ -213,6 +276,11 @@ export const M_SURVEY_OPEN = gql`
       id
       name
       description
+      requireRespondentName
+      requireRespondentPhone
+      requireRespondentEmail
+      blockSameLocationReportsGlobally
+      blockSameLocationReportsPerAgent
       created
       updated
       clientTier2 {
@@ -255,6 +323,11 @@ export const M_SURVEYS_OPEN = gql`
         id
         name
         description
+        requireRespondentName
+        requireRespondentPhone
+        requireRespondentEmail
+        blockSameLocationReportsGlobally
+        blockSameLocationReportsPerAgent
         created
         updated
         clientTier2 {
@@ -281,6 +354,11 @@ export const M_SURVEYS_OPEN_RECYCLED = gql`
         id
         name
         description
+        requireRespondentName
+        requireRespondentPhone
+        requireRespondentEmail
+        blockSameLocationReportsGlobally
+        blockSameLocationReportsPerAgent
         created
         recycled
         clientTier2 {

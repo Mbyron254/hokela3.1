@@ -20,7 +20,7 @@ export function JobList({ jobs }: Props) {
 
   const handleView = useCallback(
     (id: string) => {
-      router.push(`/v2/agent/dashboard/job/${id}`);
+      router.push(`/v2/agent/dashboard/janta/${id}`);
     },
     [router]
   );

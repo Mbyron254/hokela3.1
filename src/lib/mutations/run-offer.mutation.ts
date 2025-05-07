@@ -101,6 +101,50 @@ export const M_RUN_OFFERS_RECYCLED = gql`
   }
 `;
 
+export const M_RUN_OFFERS_SEARCH = gql`
+  mutation searchRunOffers($input: InputRunOffersSearch!) {
+    searchRunOffers(input: $input) {
+      count
+      rows {
+        id
+        agent {
+          id
+          user {
+            name
+            email
+            profile {
+              photo {
+                fileName
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const M_RUN_OFFER = gql`
+  mutation runOffer($input: InputId!) {
+    runOffer(input: $input) {
+      id
+      agent {
+        id
+        user {
+          name
+          email
+          phone
+          profile {
+            photo {
+              fileName
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 // export const M_JANTA = gql`
 //   mutation janta($input: InputId!) {
 //     janta(input: $input) {
@@ -140,20 +184,30 @@ export const M_RUN_OFFERS_RECYCLED = gql`
 // `;
 
 export const M_CAMPAIGN_AGENTS = gql`
-  mutation m_runOffers($input: InputRunOffers!) {
-    m_runOffers(input: $input) {
+  mutation runOffers($input: InputRunOffers!) {
+    runOffers(input: $input) {
       count
       rows {
         index
+        type
         agent {
           id
           user {
             name
+            email
             profile {
               photo {
                 fileName
               }
             }
+          }
+        }
+        team {
+          leader {
+            id
+            # user {
+            #   id
+            # }
           }
         }
       }
@@ -183,6 +237,8 @@ export const M_JANTAS = gql`
           id
           name
           clockType
+          clockInPhotoLabel
+          clockOutPhotoLabel
           poster {
             fileName
           }
@@ -221,11 +277,12 @@ export const M_JANTA = gql`
       run {
         id
         name
-        code
         dateStart
         dateStop
         clockInTime
         clockOutTime
+        clockInPhotoLabel
+        clockOutPhotoLabel
         campaign {
           project {
             clientTier2 {
@@ -234,6 +291,10 @@ export const M_JANTA = gql`
               }
             }
           }
+        }
+        types {
+          id
+          name
         }
       }
     }

@@ -139,8 +139,8 @@ const agentNavData = [
     items: [
       { title: 'Dashboard', path: paths.v2[ERole.AGENT].root, icon: ICONS.dashboard },
       { title: 'Campaigns', path: paths.v2[ERole.AGENT].campaigns.root, icon: ICONS.analytics },
-      { title: 'Janta', path: paths.v2[ERole.AGENT].campaigns.offers.root, icon: ICONS.job },
-      { title: 'Applications', path: paths.v2[ERole.AGENT].janta.applications, icon: ICONS.file },
+      { title: 'Janta', path: paths.v2[ERole.AGENT].janta.root, icon: ICONS.job },
+      { title: 'Janta Applications', path: paths.v2[ERole.AGENT].janta.applications, icon: ICONS.file },
     ],
   },
 ];

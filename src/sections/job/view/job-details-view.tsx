@@ -15,8 +15,8 @@ import { GQLMutation } from 'src/lib/client';
 import { formatDate } from 'src/lib/helpers';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { JOB_DETAILS_TABS, JOB_PUBLISH_OPTIONS } from 'src/_mock';
-import { M_OPEN_JOB } from 'src/lib/mutations/campaign-run.mutation';
-import { M_CAMPAIGN_RUN_APPLY } from 'src/lib/mutations/campaign-run-application.mutation';
+import { M_OPEN_JOB } from 'src/lib/mutations/run.mutation';
+import { M_CAMPAIGN_RUN_APPLY } from 'src/lib/mutations/run-application.mutation';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
@@ -37,7 +37,7 @@ type Props = {
 export function JobDetailsView({ params }: Props) {
   const tabs = useTabs('content');
 
-  const { action: getJob, data: job } = GQLMutation({
+  const { action: getJob, data: run } = GQLMutation({
     mutation: M_OPEN_JOB,
     resolver: 'openJob',
     toastmsg: false,
@@ -59,7 +59,7 @@ export function JobDetailsView({ params }: Props) {
   }, [getJob, params.id]);
 
   const handleApply = useCallback(() => {
-    apply({ variables: { input: { campaignRunId: params.id } } });
+    apply({ variables: { input: { runId: params.id } } });
   }, [apply, params.id]);
 
   useEffect(() => {
@@ -67,17 +67,19 @@ export function JobDetailsView({ params }: Props) {
   }, [loadJob]);
 
   useEffect(() => {
-    if (job) {
+    if (run) {
       setDeadline({
-        date: formatDate(job.closeAdvertOn).split(',')[0],
-        time: formatDate(job.closeAdvertOn).split(',')[1],
+        date: formatDate(run.closeAdvertOn).split(',')[0],
+        time: formatDate(run.closeAdvertOn).split(',')[1],
       });
     }
-  }, [job]);
+  }, [run]);
+
   useEffect(() => {
-    if (applied) redirect(`/agent/job-advertisements`);
+    if (applied) redirect(`/agent/janta/applied`);
   }, [applied]);
-  const [publish, setPublish] = useState(job?.publish);
+
+  const [publish, setPublish] = useState(run?.publish);
   const handleChangePublish = useCallback((newValue: string) => {
     setPublish(newValue);
   }, []);
@@ -92,7 +94,7 @@ export function JobDetailsView({ params }: Props) {
           label={tab.label}
           icon={
             tab.value === 'candidates' ? (
-              <Label variant="filled">{job?.candidates.length}</Label>
+              <Label variant="filled">{run?.candidates.length}</Label>
             ) : (
               ''
             )
@@ -106,7 +108,7 @@ export function JobDetailsView({ params }: Props) {
     <DashboardContent>
       <JobDetailsToolbar
         backLink={paths.v2.agent.campaigns.offers.root}
-        editLink={paths.v2.agent.campaigns.offers.details(`${job?.id}`)}
+        editLink={paths.v2.agent.campaigns.offers.details(`${run?.id}`)}
         liveLink="#"
         publish={publish || ''}
         onChangePublish={handleChangePublish}
@@ -116,7 +118,7 @@ export function JobDetailsView({ params }: Props) {
 
       {tabs.value === 'content' && (
         <>
-          <JobDetailsContent job={job} />
+          <JobDetailsContent job={run} />
           <Button
             variant="contained"
             size="large"
@@ -140,7 +142,7 @@ export function JobDetailsView({ params }: Props) {
 
       {tabs.value === 'candidates' && (
         <>
-          <JobDetailsCandidates candidates={job?.candidates ?? []} />
+          <JobDetailsCandidates candidates={run?.candidates ?? []} />
           <Button
             variant="contained"
             size="large"

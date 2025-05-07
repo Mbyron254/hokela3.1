@@ -39,16 +39,38 @@ export const M_AGENT_ALLOCATIONS = gql`
       id
       quantityAllocated
       quantitySold
-      product {
-        name
-        photos {
-          fileName
-        }
-      }
+      unitPrice
+      giveawayConfigId
       packaging {
         unitQuantity
         unit {
           name
+          abbreviation
+        }
+        product {
+          name
+          photos {
+            fileName
+          }
+        }
+      }
+      giveaway {
+        totalUnlocked
+        totalIssued
+        packaging {
+          id
+          unitQuantity
+          product {
+            id
+            name
+            photos {
+              id
+            }
+          }
+          unit {
+            id
+            name
+          }
         }
       }
     }
@@ -63,10 +85,11 @@ export const M_UPDATE_SALE = gql`
   }
 `;
 
-export const M_PRODUCT_STOCK_BALANCE = gql`
-  mutation productStockBalance($input: InputProductStockBalance!) {
-    productStockBalance(input: $input) {
+export const M_STOCK_BALANCE = gql`
+  mutation stockBalance($input: InputProductStockBalance!) {
+    stockBalance(input: $input) {
       balPackage
+      balAgentRunPackaging
     }
   }
 `;

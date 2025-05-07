@@ -85,15 +85,18 @@ export const Q_SESSION_SELF = gql`
   query sessionSelf {
     sessionSelf {
       user {
+        id
         name
-        email
         phone
+        email
         profile {
           photo {
+            id
             fileName
           }
         }
         role {
+          name
           clientTier1 {
             id
           }

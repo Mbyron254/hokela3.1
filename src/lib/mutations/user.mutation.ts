@@ -104,6 +104,14 @@ export const USER_CREATE_ALIEN = gql`
   }
 `;
 
+export const USER_UPDATE_ROLE = gql`
+  mutation userRoleUpdate($input: InputUserRoleUpdate!) {
+    userRoleUpdate(input: $input) {
+      message
+    }
+  }
+`;
+
 export const M_USERS_MINI = gql`
   mutation m_usersActive($input: InputUsers!) {
     m_usersActive(input: $input) {
@@ -141,3 +149,94 @@ export const M_USERS_ACTIVE = gql`
     }
   }
 `;
+
+export const M_USERS_RECYCLED = gql`
+  mutation m_usersRecycled($input: InputUsers!) {
+    m_usersRecycled(input: $input) {
+      count
+      rows {
+        index
+        id
+        name
+        accountNo
+        phone
+        email
+        state
+        created
+        role {
+          name
+        }
+        profile {
+          photo {
+            fileName
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const M_USER = gql`
+  mutation user($input: InputId!) {
+    user(input: $input) {
+      id
+      name
+      role {
+        id
+        name
+      }
+    }
+  }
+`;
+
+// export const Q_USERS_ACTIVE = gql`
+//   query usersActive($input: InputUsers!) {
+//     usersActive(input: $input) {
+//       count
+//       rows {
+//         index
+//         id
+//         name
+//         accountNo
+//         phone
+//         email
+//         state
+//         created
+//         role {
+//           name
+//         }
+//         profile {
+//           photo {
+//             fileName
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
+
+// export const Q_USERS_RECYCLED = gql`
+//   query usersRecycled($input: InputUsers!) {
+//     usersRecycled(input: $input) {
+//       count
+//       rows {
+//         index
+//         id
+//         name
+//         accountNo
+//         phone
+//         email
+//         state
+//         recycled
+//         role {
+//           name
+//         }
+//         profile {
+//           photo {
+//             fileName
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;

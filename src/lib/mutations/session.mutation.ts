@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 
 // export const M_SESSION = gql`
 //   mutation session($input: InputSession!) {
