@@ -1,16 +1,16 @@
 'use client';
 
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Webcam from 'react-webcam';
 
-import { GQLMutation, GQLQuery } from '@/lib/client';
-import { InputClockInOut } from '@/lib/interface/clock.interface';
-import { CLOCK_IN_OUT } from '@/lib/mutations/clock.mutation';
-import { Q_SESSION_SELF } from '@/lib/queries/session.query';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { sourceImage, uploadPhoto } from '@/lib/server';
+import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { CLOCK_IN_OUT } from 'src/lib/mutations/clock.mutation';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
+import { IPictureUpload } from 'src/lib/interface/general.interface';
+import { InputClockInOut } from 'src/lib/interface/clock.interface';
+import { uploadPhoto } from 'src/lib/server';
 import { LoadingDiv } from '../LoadingDiv';
-import { IPictureUpload } from '@/lib/interface/general.interface';
 
 export const RunAgent: FC<{ offer: any; lat: number; lng: number }> = ({ offer, lat, lng }) => {
   const { data: session } = GQLQuery({
@@ -86,7 +86,7 @@ export const RunAgent: FC<{ offer: any; lat: number; lng: number }> = ({ offer, 
     if (clocked) {
       window.location.replace(`/agent/campaigns/${offer.id}`);
     }
-  }, [clocked]);
+  }, [clocked, offer.id]);
 
   return (
     <div className="card">
@@ -96,7 +96,7 @@ export const RunAgent: FC<{ offer: any; lat: number; lng: number }> = ({ offer, 
         </h5>
 
         <div className="pe-2 text-nowrap mb-2 d-inline-block">
-          <i className="mdi mdi-google-my-business text-muted me-2"></i>
+          <i className="mdi mdi-google-my-business text-muted me-2"/>
           <b>{offer.run?.campaign?.project?.clientTier2?.clientTier1?.name}</b>
         </div>
 
@@ -111,7 +111,7 @@ export const RunAgent: FC<{ offer: any; lat: number; lng: number }> = ({ offer, 
                     data-bs-toggle="modal"
                     data-bs-target={`#check-in-${offer.id}`}
                   >
-                    Check In <i className="mdi mdi-timer-outline"></i>
+                    Check In <i className="mdi mdi-timer-outline"/>
                   </button>
 
                   <div
@@ -142,9 +142,9 @@ export const RunAgent: FC<{ offer: any; lat: number; lng: number }> = ({ offer, 
                               <Webcam
                                 screenshotFormat="image/jpeg"
                                 ref={webcamRef}
-                                mirrored={true}
-                                disablePictureInPicture={true}
-                                forceScreenshotSourceSize={true}
+                                mirrored
+                                disablePictureInPicture
+                                forceScreenshotSourceSize
                                 imageSmoothing={false}
                                 audio={false}
                                 videoConstraints={{
@@ -184,7 +184,7 @@ export const RunAgent: FC<{ offer: any; lat: number; lng: number }> = ({ offer, 
 
               {offer.run?.clockType === 'DYNAMIC' && (
                 <button type="button" className="btn btn-sm btn-success" onClick={handleClockIn}>
-                  Continue <i className="mdi mdi-arrow-right"></i>
+                  Continue <i className="mdi mdi-arrow-right"/>
                 </button>
               )}
             </>
@@ -194,98 +194,3 @@ export const RunAgent: FC<{ offer: any; lat: number; lng: number }> = ({ offer, 
     </div>
   );
 };
-
-// <div className="col-lg-6 col-xxl-3">
-//   <div className="card d-block">
-//     <div className="card-body pb-0">
-//       <p className="text-muted font-13 mb-3">
-//         With supporting text below as a natural lead-in to additional contenposuere erat a ante...
-//         <a href="javascript:void(0);" className="fw-bold text-muted">
-//           view more
-//         </a>
-//       </p>
-
-//       <div className="row">
-//         <div className="col-md-4">
-//           <p className="text-muted text-uppercase font-12 mb-0 mt-0">Potential Pay</p>
-//           <h4 className="fw-normal mb-2">
-//             <span>
-//               <small className="text-muted me-1">ksh</small>
-//               <b className="text-warning">0.00</b>
-//             </span>
-//           </h4>
-//         </div>
-//         <div className="col-md-4">
-//           <p className="text-muted text-uppercase font-12 mb-0 mt-0">Unlocked Pay</p>
-//           <h4 className="fw-normal mb-2">
-//             <span>
-//               <small className="text-muted me-1">ksh</small>
-//               <b className="text-info">0.00</b>
-//             </span>
-//           </h4>
-//         </div>
-//         <div className="col-md-4">
-//           <p className="text-muted text-uppercase font-12 mb-0 mt-0">Paid Amount</p>
-//           <h4 className="fw-normal mb-2">
-//             <span>
-//               <small className="text-muted me-1">ksh</small>
-//               <b className="text-success">0.00</b>
-//             </span>
-//           </h4>
-//         </div>
-//       </div>
-
-//       <div className="row">
-//         <div className="col-md-4">
-//           <p className="mb-0">
-//             <span className="pe-2 text-nowrap mb-2 d-inline-block text-muted">
-//               <i className="mdi mdi-target-account me-1"></i>
-//               <b className="me-1">0/0</b>
-//               <small>KPIs Achieved</small>
-//             </span>
-//           </p>
-//         </div>
-//         <div className="col-md-4">
-//           <p className="mb-0">
-//             <span className="pe-2 text-nowrap mb-2 d-inline-block text-muted">
-//               <i className="mdi mdi-format-list-checks me-1"></i>
-//               <b className="me-1">0/0</b>
-//               <small>Reports Filled</small>
-//             </span>
-//           </p>
-//         </div>
-//         <div className="col-md-4">
-//           <p className="mb-0">
-//             <span className="text-nowrap mb-2 d-inline-block text-muted">
-//               <i className="mdi mdi-shield-account-outline me-1"></i>
-//               <b className="me-1">0%</b>
-//               <small>Profile Complete</small>
-//             </span>
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-
-//     <ul className="list-group list-group-flush">
-//       <li className="list-group-item p-3 pt-0">
-//         <p className="mb-2 fw-bold text-muted">
-//           <span className="">
-//             Campaign progress (<small>3 Days To Go!</small>)
-//           </span>
-//           <span className="float-end ms-2">35%</span>
-//         </p>
-
-//         <div className="progress progress-sm">
-//           <div
-//             className="progress-bar"
-//             role="progressbar"
-//             aria-valuenow={100}
-//             aria-valuemin={0}
-//             aria-valuemax={100}
-//             style={{ width: '35%' }}
-//           />
-//         </div>
-//       </li>
-//     </ul>
-//   </div>
-// </div>;

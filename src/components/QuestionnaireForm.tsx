@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import PhoneNumberInputLegacy from './PhoneNumberInputLegacy';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import ReactStars from 'react-stars';
 import Webcam from 'react-webcam';
@@ -34,10 +34,11 @@ import {
   removeDocumentFeedback,
 } from 'src/lib/survey.utils';
 import { MutationButton } from 'src/components/MutationButton';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { IDocumentWrapper } from 'src/lib/interface/dropzone.type';
 import { DropZone } from 'src/components/dropzone/DropZone';
 import { sourceImage, uploadPhoto } from 'src/lib/server';
+import PhoneNumberInputLegacy from './PhoneNumberInputLegacy';
+
 
 export const QuestionnaireForm = ({
   questionnaireFields,
@@ -63,7 +64,7 @@ export const QuestionnaireForm = ({
 
   useEffect(() => {
     if (documents.length) {
-      for (let i = 0; i < documents.length; i++) {
+      for (let i = 0; i < documents.length; i+=1) {
         if (documents[i].meta?.id && documents[i].meta?.reference) {
           const feedback = findFeedback(documents[i].meta?.reference, questionnaireFields);
           const documentIds = feedback ? (feedback as string[]) : [];
@@ -82,13 +83,13 @@ export const QuestionnaireForm = ({
         }
       }
     }
-  }, [documents]);
+  }, [documents, questionnaireFields, setQuestionnaireFields]);
 
   useEffect(() => {
     if (picture.id && picture.reference) {
       editFeedback(picture.reference, picture.id, questionnaireFields, setQuestionnaireFields);
     }
-  }, [picture.id, picture.reference]);
+  }, [picture.id, picture.reference, questionnaireFields, setQuestionnaireFields]);
 
   return (
     <div className="row">
@@ -97,10 +98,10 @@ export const QuestionnaireForm = ({
           <div className="row" key={`element-${i}`}>
             {element.feedbackType === TEXT_SHORT && (
               <div className="col-md-12 mb-3">
-                <label htmlFor={`text-short-${element.id}`} className="form-label">
+                <p className="form-label">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <input
                   type="text"
                   className="form-control"
@@ -117,10 +118,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === TEXT_LONG && (
               <div className="col-md-12 mb-3">
-                <label htmlFor={`text-long-${element.id}`} className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <textarea
                   className="form-control"
                   id={`text-long-${element.id}`}
@@ -137,10 +138,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === NUMBER && (
               <div className="col-md-12 mb-3">
-                <label htmlFor={`text-number-${element.id}`} className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <input
                   type="number"
                   className="form-control"
@@ -156,10 +157,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === PHONE_NUMBER && (
               <div className="col-md-12 mb-3">
-                <label className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <PhoneNumberInputLegacy
                   required={element.isRequired}
                   value={element.feedback?._string as string}
@@ -172,10 +173,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === DATE && (
               <div className="col-md-12 mb-3">
-                <label htmlFor={`date-${element.id}`} className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <input
                   type="date"
                   className="form-control"
@@ -191,10 +192,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === EMAIL && (
               <div className="col-md-12 mb-3">
-                <label htmlFor={`text-email-${element.id}`} className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <input
                   type="email"
                   className="form-control"
@@ -210,10 +211,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === URL && (
               <div className="col-md-12 mb-3">
-                <label htmlFor={`text-email-${element.id}`} className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <input
                   type="url"
                   className="form-control"
@@ -229,18 +230,18 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === RATING && (
               <div className="col-md-12 mb-3">
-                <label className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <ReactStars
-                  edit={true}
-                  half={true}
+                  edit
+                  half
                   count={5}
                   size={25}
                   value={parseFloat(element.feedback as string)}
-                  color1={'#bac6cb'}
-                  color2={'#ff7000'}
+                  color1="#bac6cb"
+                  color2="#ff7000"
                   onChange={(weight) =>
                     editFeedback(
                       element.id,
@@ -255,10 +256,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === CHOICE_SINGLE && (
               <div className="col-md-12 mb-3">
-                <label className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
 
                 <div className="row mt-2">
                   {element.optionsChoiceSingle?.map((option, index: number) => (
@@ -281,12 +282,9 @@ export const QuestionnaireForm = ({
                                   )
                                 }
                               />
-                              <label
-                                className="form-check-label font-16 fw-bold"
-                                htmlFor={`radio-${index}-${element.id}`}
-                              >
+                              <p className="form-check-label font-16 fw-bold">
                                 {option.text}
-                              </label>
+                              </p>
                             </div>
                             {option.documentId && (
                               <div className="mb-0 ps-3 pt-1">
@@ -311,10 +309,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === CHOICE_MULTIPLE && (
               <div className="col-md-12 mb-3">
-                <label className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
 
                 <div className="row mt-2">
                   {element.optionsChoiceMultiple?.map((option, index: number) => (
@@ -337,12 +335,9 @@ export const QuestionnaireForm = ({
                                   )
                                 }
                               />
-                              <label
-                                className="form-check-label font-16 fw-bold"
-                                htmlFor={`multichoice-check-${element.id}-${index}`}
-                              >
+                              <p className="form-check-label font-16 fw-bold">
                                 {option.text}
-                              </label>
+                              </p>
                             </div>
 
                             {option.documentId && (
@@ -368,10 +363,10 @@ export const QuestionnaireForm = ({
 
             {element.feedbackType === DROPDOWN && (
               <div className="col-md-12 mb-3">
-                <label htmlFor={`text-dropdown-${element.id}`} className="mb-1">
+                <p className="mb-1">
                   {element.question}
                   {element.isRequired && <span className="text-warning ms-1">*</span>}
-                </label>
+                </p>
                 <select
                   className="form-select"
                   id={`text-dropdown-${element.id}`}
@@ -381,7 +376,7 @@ export const QuestionnaireForm = ({
                     editFeedback(element.id, e.target.value, questionnaireFields, setQuestionnaireFields)
                   }
                 >
-                  <option></option>
+                  <option value="">Select Option</option>
                   {element.optionsDropdown?.map((option, index: number) => (
                     <option key={`dropdown-option-${index}`} value={option.value}>
                       {option.label}
@@ -399,9 +394,9 @@ export const QuestionnaireForm = ({
                       <Webcam
                         screenshotFormat="image/jpeg"
                         ref={webcamRef}
-                        mirrored={true}
-                        disablePictureInPicture={true}
-                        forceScreenshotSourceSize={true}
+                        mirrored
+                        disablePictureInPicture
+                        forceScreenshotSourceSize
                         imageSmoothing={false}
                         audio={false}
                         videoConstraints={{
@@ -437,12 +432,12 @@ export const QuestionnaireForm = ({
               <div className="col-md-12">
                 <DropZone
                   name="files"
-                  classes={`dropzone text-center mt-2 mb-2`}
+                  classes="dropzone text-center mt-2 mb-2"
                   acceptedImageTypes={['.png', '.jpeg', '.jpg']}
                   maxSize={1375000000} // 1 GB
                   multiple={element.allowMultipleFileUploads}
                   reference={element.id}
-                  hideProgressBar={true}
+                  hideProgressBar
                   files={documents}
                   setFiles={setDocuments}
                 />
@@ -483,6 +478,8 @@ export const QuestionnaireForm = ({
                                   {/* 2.3 MB */}
                                   <span
                                     className="float-end text-danger"
+                                    role="button"
+                                    tabIndex={0}
                                     onClick={() =>
                                       removeDocumentFeedback(
                                         element.id,
@@ -491,6 +488,16 @@ export const QuestionnaireForm = ({
                                         setQuestionnaireFields,
                                       )
                                     }
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        removeDocumentFeedback(
+                                          element.id,
+                                          documentId,
+                                          questionnaireFields,
+                                          setQuestionnaireFields,
+                                        );
+                                      }
+                                    }}
                                   >
                                     <i className="mdi mdi-cancel text-danger me-2" />
                                     Remove
@@ -507,7 +514,7 @@ export const QuestionnaireForm = ({
               </div>
             )}
 
-            {element.feedbackType === GEOLOCATION && <div className="col-md-12"></div>}
+            {element.feedbackType === GEOLOCATION && <div className="col-md-12"/>}
           </div>
         ))}
 
@@ -520,6 +527,7 @@ export const QuestionnaireForm = ({
           loading={submitting}
         />
         <button
+          type="button"
           className="btn btn-outline-danger btn-sm float-end mt-2 me-3"
           onClick={() => window.location.reload()}
         >

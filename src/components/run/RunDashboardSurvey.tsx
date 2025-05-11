@@ -1,20 +1,164 @@
 'use client';
 
+import { FC, useEffect, useState } from 'react';
 import Image from 'next/image';
+import { Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress } from '@mui/material';
 
-import { GQLMutation } from '@/lib/client';
+import { GQLMutation } from 'src/lib/client';
 import {
   M_SURVEY_MINI,
   M_SURVEY_REPORTS,
   SURVEY_REPORT_VALIDATION,
-} from '@/lib/mutations/survey.mutation';
-import { FC, useEffect, useState } from 'react';
-import { DataTable } from '../DataTable';
-import { sourceImage } from '@/lib/server';
-import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from '@/lib/constant';
-import { TEDashboardSurvey } from '../table-extensions/TEDashboardSurvey';
-import { commafy, parseValidityTheme } from '@/lib/helpers';
-import { MutationButton } from '../MutationButton';
+} from 'src/lib/mutations/survey.mutation';
+import { sourceImage } from 'src/lib/server';
+import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
+import { commafy, parseValidityTheme } from 'src/lib/helpers';
+
+
+// const TEDashboardSurvey: FC<any> = ({ data }) => {
+//   return (
+//     <Card variant="outlined" className="mt-2">
+//       <CardContent>
+//         <Typography variant="h5" color="textSecondary" gutterBottom>
+//           Responses
+//         </Typography>
+//         <hr />
+//         <div className="accordion custom-accordion" id="custom-accordion-one">
+//           {data.responses?.map((response: any, index: number) => {
+//             let component = null;
+
+//             switch (response.feedbackType) {
+//               // case TEXT_SHORT:
+//               //   break;
+//               // case TEXT_LONG:
+//               //   break;
+//               // case NUMBER:
+//               //   break;
+//               // case EMAIL:
+//               //   break;
+//               // case DROPDOWN:
+//               //   break;
+
+//               case PHONE_NUMBER:
+//                 component = <Typography color="textSecondary">+{response.feedback._string}</Typography>;
+//                 break;
+
+//               case DATE:
+//                 component = (
+//                   <Typography color="textSecondary">
+//                     {formatDate(response.feedback._string, 'yyyy MMMM dd')}
+//                   </Typography>
+//                 );
+//                 break;
+
+//               case RATING:
+//                 component = (
+//                   <>
+//                     <Typography color="textSecondary">Rated {response.feedback._string} out of 5</Typography>
+//                     <ReactStars
+//                       edit={false}
+//                       half={true}
+//                       count={5}
+//                       size={20}
+//                       value={parseFloat(response.feedback._string)}
+//                       color1={'#bac6cb'}
+//                       color2={'#ffd700'}
+//                     />
+//                   </>
+//                 );
+//                 break;
+
+//               case CHOICE_SINGLE:
+//                 component = (
+//                   <ul className="list-group mb-2">
+//                     <li className="list-group-item text-muted">
+//                       <i className="mdi mdi-arrow-right me-1"></i>
+//                       {response.feedback?._choice?.text}
+//                     </li>
+//                   </ul>
+//                 );
+//                 break;
+
+//               case CHOICE_MULTIPLE:
+//                 component = (
+//                   <ul className="list-group mb-2">
+//                     {response.feedback?._choiceArray?.map((choice: any, i: number) => (
+//                       <li className="list-group-item text-muted" key={`choice-${i}`}>
+//                         <i className="mdi mdi-arrow-right me-1"></i>
+//                         {choice.text}
+//                       </li>
+//                     ))}
+//                   </ul>
+//                 );
+//                 break;
+
+//               case GEOLOCATION:
+//                 break;
+
+//               case PICTURE:
+//                 component = (
+//                   <div className="text-center">
+//                     <Image
+//                       className=""
+//                       src={sourceImage(response.feedback._string)}
+//                       loader={() => sourceImage(response.feedback._string)}
+//                       alt=""
+//                       width={400}
+//                       height={300}
+//                     />
+//                   </div>
+//                 );
+//                 break;
+
+//               case MULTIMEDIA:
+//                 <div className="row mx-n1 g-0">
+//                   <div className="col-xxl-3 col-lg-6">
+//                     {/* <div className='card m-1 shadow-none border'>
+//                       <div className='p-2'>
+//                         <div className='row align-items-center'>
+//                           <div className='col-auto'>
+//                             <div className='avatar-sm'>
+//                               <span className='avatar-title bg-light text-secondary rounded'>
+//                                 <i className='mdi mdi-folder-zip font-16'></i>
+//                               </span>
+//                             </div>
+//                           </div>
+//                           <div className='col ps-0'>
+//                             <a
+//                               href='javascript:void(0);'
+//                               className='text-muted fw-bold'
+//                             >
+//                               Hyper-sketch.zip
+//                             </a>
+//                             <p className='mb-0 font-13'>2.3 MB</p>
+//                           </div>
+//                         </div>
+//                       </div>
+//                     </div> */}
+//                   </div>
+//                 </div>;
+//                 break;
+
+//               default:
+//                 component = <Typography color="textSecondary">{response.feedback._string}</Typography>;
+//                 break;
+//             }
+//             return (
+//               <Card key={`response-${index}`} className="mb-2">
+//                 <CardContent>
+//                   <Typography variant="h6">
+//                     {index + 1}. {response.question}
+//                   </Typography>
+//                   <div>{component}</div>
+//                 </CardContent>
+//               </Card>
+//             );
+//           })}
+//         </div>
+//       </CardContent>
+//     </Card>
+//   );
+// };
 
 export const RunDashboardSurvey: FC<{ runId: string }> = ({ runId }) => {
   const { action: getSurvey, data: survey } = GQLMutation({
@@ -61,11 +205,6 @@ export const RunDashboardSurvey: FC<{ runId: string }> = ({ runId }) => {
 
   const [selected, setSelected] = useState<string[]>([]);
 
-  const loadSurvey = () => {
-    if (runId) {
-      getSurvey({ variables: { input: { runId } } });
-    }
-  };
   const loadSurveyReports = (page?: number, pageSize?: number) => {
     if (survey?.id) {
       getSurveyReports({
@@ -103,7 +242,7 @@ export const RunDashboardSurvey: FC<{ runId: string }> = ({ runId }) => {
       sortable: true,
       selector: (row: any) => row.validity,
       cell: (row: any) => (
-        <i className={`mdi mdi-decagram text-${parseValidityTheme(row.validity)}`}></i>
+        <i className={`mdi mdi-decagram text-${parseValidityTheme(row.validity)}`}/>
       ),
     },
     {
@@ -159,19 +298,22 @@ export const RunDashboardSurvey: FC<{ runId: string }> = ({ runId }) => {
     },
   ];
 
-  useEffect(() => loadSurvey(), [runId]);
+  useEffect(() => {
+    if (runId) {
+      getSurvey({ variables: { input: { runId } } });
+    }
+  }, [runId, getSurvey]);
 
   return (
     <div className="row">
       <div className="col-md-12">
-        <div className="card border border-primary">
-          <div className="card-body">
-            <h4 className="header-title">{survey?.name}</h4>
-
+        <Card variant="outlined" className="mb-3">
+          <CardContent>
+            <Typography variant="h4">{survey?.name}</Typography>
             <hr />
-
-            <p className="text-muted font-14 mb-3">{survey?.description}</p>
-
+            <Typography variant="body2" color="textSecondary" paragraph>
+              {survey?.description}
+            </Typography>
             <div className="row">
               <div className="col-md-6">
                 <dl className="row mb-0">
@@ -187,7 +329,6 @@ export const RunDashboardSurvey: FC<{ runId: string }> = ({ runId }) => {
                   </dd>
                 </dl>
               </div>
-
               <div className="col-md-6">
                 <dl className="row mb-0">
                   <dt className="col-sm-6">Created</dt>
@@ -197,60 +338,65 @@ export const RunDashboardSurvey: FC<{ runId: string }> = ({ runId }) => {
                 </dl>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="col-md-12">
-        <MutationButton
-          type="button"
-          className="btn btn-success mb-3 me-2"
-          size="sm"
-          label="Mark As Valid"
-          icon="mdi mdi-check-decagram"
-          loading={validating}
+        <Button
+          variant="contained"
+          color="success"
+          className="mb-3 me-2"
+          size="small"
+          startIcon={<i className="mdi mdi-check-decagram"/>}
           onClick={handleValidate}
-        />
-        <MutationButton
-          type="button"
-          className="btn btn-danger mb-3 me-2"
-          size="sm"
-          label="Mark As Invalid"
-          icon="mdi mdi-cancel"
-          loading={inValidating}
-          onClick={handleInValidate}
-        />
-        <button
-          type="button"
-          className="btn btn-primary btn-sm mb-3"
-          disabled={unMarking}
-          onClick={handleUnMark}
+          disabled={validating}
         >
-          {unMarking && (
-            <>
-              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
-              Loading...
-            </>
-          )}
-          {!unMarking && (
-            <>
-              <i className="mdi mdi-minus-thick me-2"></i>Un Mark
-            </>
-          )}
-        </button>
+          {validating ? <CircularProgress size={20} /> : 'Mark As Valid'}
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          className="mb-3 me-2"
+          size="small"
+          startIcon={<i className="mdi mdi-cancel"/>}
+          onClick={handleInValidate}
+          disabled={inValidating}
+        >
+          {inValidating ? <CircularProgress size={20} /> : 'Mark As Invalid'}
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          className="mb-3"
+          size="small"
+          startIcon={<i className="mdi mdi-minus-thick"/>}
+          onClick={handleUnMark}
+          disabled={unMarking}
+        >
+          {unMarking ? <CircularProgress size={20} /> : 'Un Mark'}
+        </Button>
 
-        <DataTable
-          columns={columns}
-          loading={loadingSurveyReports}
-          selectable={true}
-          expanded={false}
-          totalRows={surveyReports?.count}
-          data={surveyReports?.rows}
-          handleReloadMutation={loadSurveyReports}
-          setSelected={setSelected}
-          tableExpansion={TEDashboardSurvey}
-          reloadTriggers={[survey?.id, validated, inValidated, unMarked]}
-        />
+        <TableContainer component={Card}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell key={column.name}>{column.name}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {surveyReports?.rows.map((row: any, index: number) => (
+                <TableRow key={index}>
+                  {columns.map((column) => (
+                    <TableCell key={column.name}>{column.cell(row)}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
     </div>
   );

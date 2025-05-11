@@ -10,8 +10,7 @@ import { RunClockLogsLatest } from './RunClockLogsLatest';
 
 export const RunRollCallRunManager: FC<{
   run: any;
-}> = ({ run }) => {
-  return (
+}> = ({ run }) => (
     <>
       <ul className="nav nav-tabs nav-bordered mb-2">
         <li className="nav-item">
@@ -21,13 +20,13 @@ export const RunRollCallRunManager: FC<{
             aria-expanded="true"
             className="nav-link rounded-0 active"
           >
-            <i className="mdi mdi-account-circle d-md-none d-block"></i>
+            <i className="mdi mdi-account-circle d-md-none d-block"/>
             <span className="d-none d-md-block">Running Logs</span>
           </a>
         </li>
         <li className="nav-item">
           <a href="#logs-all" data-bs-toggle="tab" aria-expanded="false" className="nav-link rounded-0">
-            <i className="mdi mdi-home-variant d-md-none d-block"></i>
+            <i className="mdi mdi-home-variant d-md-none d-block"/>
             <span className="d-none d-md-block">All Logs</span>
           </a>
         </li>
@@ -52,5 +51,4 @@ export const RunRollCallRunManager: FC<{
         </div>
       </div>
     </>
-  );
-};
+  )

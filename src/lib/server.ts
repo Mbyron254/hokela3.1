@@ -1,8 +1,11 @@
-'use client';
+'use client'
+
+import { Dispatch, SetStateAction } from 'react';
 
 import type { DocumentNode} from 'graphql';
 
 import { print } from 'graphql';
+import axios, { AxiosRequestConfig } from 'axios';
 
 import {
   DEFAULT_IMAGE,
@@ -15,9 +18,7 @@ import {
   SERVER_HOST_DEV,
   SERVER_HOST_PRO,
 } from './constant';
-import axios, { AxiosRequestConfig } from 'axios';
 import { IPictureUpload } from './interface/general.interface';
-import { Dispatch, SetStateAction } from 'react';
 
 export const serverGateway = async (GQLDN: DocumentNode, variables: any) => {
   let uri: string;
@@ -103,7 +104,7 @@ export const uploadPhoto = async (
     },
   };
 
-  let formData = new FormData();
+  const formData = new FormData();
 
   formData.append('file', file);
 

@@ -7,7 +7,7 @@ import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/campaign-run-appl
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { sourceImage } from 'src/lib/server';
 import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
-import { M_ADD_AGENTS_TO_CAMPAIGN_RUN } from 'src/lib/mutations/campaign-run-offer.mutation';
+import { M_MAKE_JANTA_OFFERS } from 'src/lib/mutations/run-offer.mutation';
 import { formatDate } from 'src/lib/helpers';
 
 import {
@@ -36,32 +36,34 @@ export default function Page() {
     data: applications,
   } = GQLMutation({
     mutation: M_CAMPAIGN_RUN_APPLICATIONS,
-    resolver: 'm_campaignRunApplications',
+    resolver: 'm_runApplications',
     toastmsg: false,
   });
-  const { action: add, loading: adding } = GQLMutation({
-    mutation: M_ADD_AGENTS_TO_CAMPAIGN_RUN,
-    resolver: 'addAgentsToCampaignRun',
+  const {
+    action: makeOffer,
+    loading: offering,
+  } = GQLMutation({
+    mutation: M_MAKE_JANTA_OFFERS,
+    resolver: 'makeJantaOffers',
     toastmsg: true,
   });
 
   const [selected, setSelected] = useState<string[]>([]);
+  const [search, setSearch] = useState<string>();
 
   useEffect(() => {
     if (session?.user?.role?.clientTier1?.id) {
       getApplications({
         variables: {
-          input: { clientTier1Id: session.user.role.clientTier1.id },
+          input: { search, clientTier1Id: session.user.role.clientTier1.id },
         },
       });
     }
-  }, [session, getApplications]);
+  }, [session, getApplications, search]);
 
-  const handleAddToRun = () => {
+  const handleMakeOffer = () => {
     if (selected.length) {
-      add({
-        variables: { input: { applicationIds: selected } },
-      });
+      makeOffer({ variables: { input: { applicationIds: selected } } });
     }
   };
 
@@ -81,11 +83,11 @@ export default function Page() {
         <Button
           variant="contained"
           color="primary"
-          onClick={handleAddToRun}
-          disabled={adding}
+          onClick={handleMakeOffer}
+          disabled={offering}
           sx={{ mb: 2 }}
         >
-          Add To Campaign Run
+          Make Offer
         </Button>
 
         <TableContainer>

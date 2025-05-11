@@ -14,7 +14,7 @@ export default function PhoneNumberInput({
 }: IPhoneNumberInput): JSX.Element {
   return (
     <PhoneInput
-      country={'ke'}
+      country='ke'
       onlyCountries={COUNTRY_NAME_CODES}
       countryCodeEditable={false}
       value={input[phonekey]}

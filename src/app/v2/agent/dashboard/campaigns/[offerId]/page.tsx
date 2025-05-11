@@ -49,11 +49,6 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Box, Grid, Typography, Button, Card, CardContent, Alert, Tab, Tabs } from '@mui/material';
 
 export default function Page({ params: { offerId } }: any) {
-  // const { action: getShops, data: shops } = GQLMutation({
-  //   mutation: M_SHOPS_MINI,
-  //   resolver: 'm_shops',
-  //   toastmsg: false,
-  // });
   const {
     action: getJanta,
     loading: loadingJanta,
@@ -77,31 +72,7 @@ export default function Page({ params: { offerId } }: any) {
     resolver: 'salesGiveawaySurvey',
     toastmsg: false,
   });
-  // const { action: getSurveySales, data: surveySales } = GQLMutation({
-  //   mutation: SALES_SURVEY,
-  //   resolver: 'salesSurvey',
-  //   toastmsg: false,
-  // });
-  // const {
-  //   action: updateSale,
-  //   loading: updating,
-  //   data: updatedSales,
-  // } = GQLMutation({
-  //   mutation: M_UPDATE_SALE,
-  //   resolver: 'updateSale',
-  //   toastmsg: true,
-  // });
-  // ----------
-  // const { data: sectors } = GQLQuery({
-  //   query: Q_SHOP_SECTORS_MINI,
-  //   queryAction: 'shopSectors',
-  //   variables: { input: {} },
-  // });
-  // const { data: categories } = GQLQuery({
-  //   query: Q_SHOP_CATEGORIES_MINI,
-  //   queryAction: 'shopCategories',
-  //   variables: { input: {} },
-  // });
+  
   const {
     action: createGiveawayReport,
     loading: creatingGiveawayReport,
@@ -114,22 +85,7 @@ export default function Page({ params: { offerId } }: any) {
 
   const { addItem } = useCart();
 
-  // const _inputSale: IInputSale = {
-  //   allocationId: undefined,
-  //   shopId: undefined,
-  //   quantitySold: 0,
-  //   salesRef: undefined,
-  //   newShop: undefined,
-  // };
-  // const _inputSaleSurvey = {
-  //   respondentName: undefined,
-  //   respondentPhone: undefined,
-  //   respondentEmail: undefined,
-  //   responses: undefined,
-  // };
   const [allocations, setAllocations] = useState<IAgentAllocation[]>([]);
-  // const [inputSale, setInputSale] = useState<IInputSale>(_inputSale);
-  // const [inputSaleSurvey, setInputSaleSurvey] = useState<IInputSaleSurvey>(_inputSaleSurvey);
   const [inputSalesGiveaway, setInputSalesGiveaway] = useState<InputSalesGiveawaySurveyReportCreate>({
     salesGiveawayConfigId: undefined,
     quantityGiven: undefined,
@@ -138,78 +94,15 @@ export default function Page({ params: { offerId } }: any) {
     respondentEmail: undefined,
   });
   const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
-  // const [questionnaireFieldsSales, setQuestionnaireFieldsSales] = useState<IQuestionnairField[]>([]);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
 
-  // const loadShops = () => {
-  //   getShops({ variables: { input: {} } });
-  // };
-  const loadJanta = () => {
-    if (offerId) {
-      getJanta({ variables: { input: { id: offerId } } });
-    }
-  };
-  const loadSalesAllocations = () => {
-    if (offer?.run?.id) {
-      getSalesAllocations({
-        variables: { input: { runId: offer.run.id } },
-      });
-    }
-  };
-  const loadSurveySalesGiveaway = () => {
-    if (offer?.run?.id) {
-      getSurveySalesGiveaway({ variables: { input: { runId: offer.run.id } } });
-    }
-  };
-  // const loadSurveySales = () => {
-  //   if (offer?.run?.id) {
-  //     getSurveySales({ variables: { input: { runId: offer.run.id } } });
-  //   }
-  // };
-  // const handleUpdateSale = (e: Event) => {
-  //   e.preventDefault();
-
-  //   if (geoLocation?.lat && geoLocation?.lng) {
-  //     const _responses: InputSurveyResponse[] = [];
-
-  //     for (let i = 0; i < questionnaireFieldsSales.length; i++) {
-  //       _responses.push({
-  //         questionnaireFieldId: questionnaireFieldsSales[i].id,
-  //         feedback: questionnaireFieldsSales[i].feedback || {},
-  //       });
-  //     }
-
-  //     updateSale({
-  //       variables: {
-  //         input: {
-  //           ...inputSale,
-  //           newShop: inputSale.newShop
-  //             ? {
-  //                 ...inputSale.newShop,
-  //                 lat: geoLocation.lat,
-  //                 lng: geoLocation.lng,
-  //               }
-  //             : undefined,
-  //           survey: surveySales
-  //             ? {
-  //                 ...inputSaleSurvey,
-  //                 lat: geoLocation.lat,
-  //                 lng: geoLocation.lng,
-  //                 responses: _responses,
-  //               }
-  //             : undefined,
-  //         },
-  //       },
-  //     });
-  //   }
-  // };
   const handleCreateGiveawayReport = (e: Event) => {
     e.preventDefault();
 
     if (geoLocation?.lat && geoLocation?.lng) {
       const _responses: InputSurveyResponse[] = [];
 
-      for (let i = 0; i < questionnaireFields.length; i++) {
+      for (let i = 0; i < questionnaireFields.length; i+=1) {
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: questionnaireFields[i].feedback || {},
@@ -236,19 +129,25 @@ export default function Page({ params: { offerId } }: any) {
 
     return () => clearInterval(interval);
   }, []);
-  // useEffect(() => loadShops(), []);
-  useEffect(() => loadJanta(), [offerId]);
   useEffect(() => {
-    loadSurveySalesGiveaway();
-    // loadSurveySales();
-    loadSalesAllocations();
-  }, [offer?.run?.id]);
+    if (offerId) {
+      getJanta({ variables: { input: { id: offerId } } });
+    }
+  }, [offerId,getJanta]);
+  useEffect(() => {
+    if (offer?.run?.id) {
+      getSurveySalesGiveaway({ variables: { input: { runId: offer.run.id } } });
+      getSalesAllocations({
+        variables: { input: { runId: offer.run.id } },
+      });
+    }
+  }, [offer?.run?.id,getSalesAllocations,getSurveySalesGiveaway]);
 
   useEffect(() => {
     if (allocationSales) {
       const _allocations: IAgentAllocation[] = [];
 
-      for (let i = 0; i < allocationSales.length; i++) {
+      for (let i = 0; i < allocationSales.length; i+=1) {
         _allocations.push({
           index: allocationSales[i].index,
           id: allocationSales[i].id,
@@ -284,61 +183,17 @@ export default function Page({ params: { offerId } }: any) {
       setAllocations(_allocations);
     }
   }, [allocationSales]);
-  // useEffect(() => {
-  //   if (surveySales) {
-  //     const _fields = [];
-
-  //     for (let i = 0; i < surveySales.questionnaireFields.length; i++) {
-  //       const _dropdown: IAnswerDropdownOption[] = [];
-  //       const _singlechoice: IChoice[] = [];
-  //       const _multichoice: IChoice[] = [];
-
-  //       for (let k = 0; k < surveySales.questionnaireFields[i].optionsChoiceSingle.length; k++) {
-  //         _singlechoice.push({
-  //           text: surveySales.questionnaireFields[i].optionsChoiceSingle[k].text,
-  //           documentId: surveySales.questionnaireFields[i].optionsChoiceSingle[k].documentId,
-  //         });
-  //       }
-
-  //       for (let k = 0; k < surveySales.questionnaireFields[i].optionsChoiceMultiple.length; k++) {
-  //         _multichoice.push({
-  //           text: surveySales.questionnaireFields[i].optionsChoiceMultiple[k].text,
-  //           documentId: surveySales.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
-  //         });
-  //       }
-
-  //       for (let k = 0; k < surveySales.questionnaireFields[i].optionsDropdown.length; k++) {
-  //         _dropdown.push({
-  //           value: surveySales.questionnaireFields[i].optionsDropdown[k].value,
-  //           label: surveySales.questionnaireFields[i].optionsDropdown[k].label,
-  //         });
-  //       }
-
-  //       _fields.push({
-  //         id: surveySales.questionnaireFields[i].id,
-  //         isRequired: surveySales.questionnaireFields[i].isRequired,
-  //         noDuplicateResponse: surveySales.questionnaireFields[i].noDuplicateResponse,
-  //         question: surveySales.questionnaireFields[i].question,
-  //         optionsChoiceSingle: _singlechoice,
-  //         optionsChoiceMultiple: _multichoice,
-  //         optionsDropdown: _dropdown,
-  //         feedbackType: surveySales.questionnaireFields[i].feedbackType,
-  //         allowMultipleFileUploads: surveySales.questionnaireFields[i].allowMultipleFileUploads,
-  //       });
-  //     }
-  //     setQuestionnaireFieldsSales(_fields);
-  //   }
-  // }, [surveySales]);
+  
   useEffect(() => {
     if (surveySalesGiveaway) {
       const _fields = [];
 
-      for (let i = 0; i < surveySalesGiveaway.questionnaireFields.length; i++) {
+      for (let i = 0; i < surveySalesGiveaway.questionnaireFields.length; i+=1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceSingle.length; k++) {
+        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
           _singlechoice.push({
             text: surveySalesGiveaway.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: surveySalesGiveaway.questionnaireFields[i].optionsChoiceSingle[k].documentId,
@@ -348,7 +203,7 @@ export default function Page({ params: { offerId } }: any) {
         for (
           let k = 0;
           k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple.length;
-          k++
+          k+=1
         ) {
           _multichoice.push({
             text: surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple[k].text,
@@ -356,7 +211,7 @@ export default function Page({ params: { offerId } }: any) {
           });
         }
 
-        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsDropdown.length; k++) {
+        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsDropdown.length; k+=1) {
           _dropdown.push({
             value: surveySalesGiveaway.questionnaireFields[i].optionsDropdown[k].value,
             label: surveySalesGiveaway.questionnaireFields[i].optionsDropdown[k].label,
@@ -380,12 +235,10 @@ export default function Page({ params: { offerId } }: any) {
   }, [surveySalesGiveaway]);
   useEffect(() => {
     if (
-      //updatedSales ||
       createdGiveawayReport
     )
       window.location.reload();
   }, [
-    //updatedSales,
     createdGiveawayReport,
   ]);
 
@@ -495,7 +348,7 @@ export default function Page({ params: { offerId } }: any) {
                                   <Grid container justifyContent="space-between">
                                     <Typography>Product search...</Typography>
                                     <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
-                                      <i className="mdi mdi-cart-outline me-1"></i>View Cart
+                                      <i className="mdi mdi-cart-outline me-1"/>View Cart
                                     </Button>
                                   </Grid>
                                 </CardContent>
@@ -511,7 +364,7 @@ export default function Page({ params: { offerId } }: any) {
                                         <Typography>Price: {commafy(allocation.unitPrice)} ksh</Typography>
                                         <Typography>Sold: {allocation.quantitySold} / {allocation.quantityAllocated} {allocation.product?.package}</Typography>
                                         <Button variant="outlined" color="info" fullWidth onClick={() => addItem({ sku: allocation.id, id: allocation.id, name: allocation.product?.name, price: parseFloat(allocation.unitPrice), image: allocation.product?.photo }, 1)}>
-                                          <i className="mdi mdi-cart-plus me-1"></i>Add to Cart
+                                          <i className="mdi mdi-cart-plus me-1"/>Add to Cart
                                         </Button>
                                       </CardContent>
                                     </Card>
@@ -520,7 +373,7 @@ export default function Page({ params: { offerId } }: any) {
 
                                 <Grid item xs={12} className="text-center">
                                   <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
-                                    <i className="mdi mdi-cart-outline me-1"></i>View Cart
+                                    <i className="mdi mdi-cart-outline me-1"/>View Cart
                                   </Button>
                                 </Grid>
                               </Grid>
@@ -622,12 +475,12 @@ export default function Page({ params: { offerId } }: any) {
                   <>
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <label htmlFor="respondentName" className="form-label">
+                        <p className="form-label">
                           Customer Name
                           {surveySalesGiveaway?.requireRespondentName ? (
                             <span className="text-warning ms-1">*</span>
                           ) : undefined}
-                        </label>
+                        </p>
                         <input
                           type="text"
                           id="respondentName"
@@ -646,12 +499,12 @@ export default function Page({ params: { offerId } }: any) {
                     </div>
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <label htmlFor="respondentPhone" className="form-label">
+                        <p className="form-label">
                           Customer Phone
                           {surveySalesGiveaway?.requireRespondentPhone ? (
                             <span className="text-warning ms-1">*</span>
                           ) : undefined}
-                        </label>
+                        </p>
                         <PhoneNumberInput
                           phonekey="respondentPhone"
                           required={surveySalesGiveaway?.requireRespondentPhone}
@@ -662,12 +515,12 @@ export default function Page({ params: { offerId } }: any) {
                     </div>
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <label htmlFor="respondentEmail" className="form-label">
+                        <p className="form-label">
                           Customer Email
                           {surveySalesGiveaway?.requireRespondentEmail ? (
                             <span className="text-warning ms-1">*</span>
                           ) : undefined}
-                        </label>
+                        </p>
                         <input
                           type="text"
                           id="respondentEmail"
@@ -688,9 +541,9 @@ export default function Page({ params: { offerId } }: any) {
                 )}
                 <div className="col-md-4">
                   <div className="mb-3">
-                    <label htmlFor="giveawayUnits" className="form-label">
+                    <p className="form-label">
                       Giveaway Quantity<span className="text-warning ms-1">*</span>
-                    </label>
+                    </p>
                     <input
                       type="number"
                       id="giveawayUnits"
@@ -700,7 +553,7 @@ export default function Page({ params: { offerId } }: any) {
                       onChange={(e) =>
                         setInputSalesGiveaway({
                           ...inputSalesGiveaway,
-                          quantityGiven: parseInt(e.target.value),
+                          quantityGiven: parseInt(e.target.value,10),
                         })
                       }
                     />
@@ -721,372 +574,3 @@ export default function Page({ params: { offerId } }: any) {
     </Box>
   );
 }
-
-/*
-  <div className="mb-2">
-    {allocations?.map((allocation: any, index: number) => (
-      <div key={`allocation-${index}`}>
-        <dl className="row mb-0">
-          <dt className="col-md-7">
-            <div className="d-flex align-items-start">
-              <Image
-                className="me-2 mt-1 mb-1"
-                src={sourceImage(allocation.product.photo)}
-                loader={() => sourceImage(allocation.product.photo)}
-                alt=""
-                width={TABLE_IMAGE_WIDTH}
-                height={TABLE_IMAGE_HEIGHT}
-              />
-              <div>
-                <h5 className="mt-0 mb-0">{allocation.product.name}</h5>
-                <span className="font-12">
-                  {allocation.product.package}
-                  <i className="mdi mdi-at text-muted mx-1"></i>
-                  <span className="text-muted me-1">ksh:</span>
-                  {commafy(allocation.unitPrice)}
-                </span>
-              </div>
-            </div>
-          </dt>
-          <dd className="col-md-5">
-            <div className="input-group input-group-sm">
-              <input
-                type="text"
-                className="form-control font-14"
-                disabled={true}
-                placeholder={`Sold: ${allocation.quantitySold} / ${allocation.quantityAllocated}`}
-              />
-              {surveySalesGiveaway?.id &&
-                allocation.giveaway.totalUnlocked -
-                  allocation.giveaway.totalIssued >
-                  0 && (
-                  <button
-                    className="btn btn-outline-success btn-sm"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#giveaway-report-modal"
-                    style={{ padding: '0 8px 0px 8px' }}
-                    onClick={() =>
-                      setInputSalesGiveaway({
-                        ...inputSalesGiveaway,
-                        salesGiveawayConfigId: allocation.giveawayConfigId,
-                      })
-                    }
-                  >
-                    <span className="me-1">
-                      {allocation.giveaway.totalUnlocked -
-                        allocation.giveaway.totalIssued}
-                    </span>
-                    Giveaway
-                  </button>
-                )}
-              <button
-                className="btn btn-outline-info btn-sm"
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#sales-report-modal"
-                style={{ padding: '0 8px 0px 8px' }}
-                onClick={(e) =>
-                  setInputSale({
-                    ...inputSale,
-                    allocationId: allocation.id,
-                    shopId: undefined,
-                    quantitySold: 0,
-                  })
-                }
-                disabled={updating}
-              >
-                Sales Report
-              </button>
-            </div>
-          </dd>
-        </dl>
-      </div>
-    ))}
-  </div>
-*/
-
-/*
-  <div
-    id="sales-report-modal"
-    className="modal fade"
-    role="dialog"
-    aria-labelledby="sales-report-modal"
-    aria-hidden="true"
-    tabIndex={-1}
-  >
-    <div className="modal-dialog modal-dialog-centered modal-lg">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h4 className="modal-title" id="sales-report-modal">
-            New Sales Report
-          </h4>
-          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
-        </div>
-        <div className="modal-body">
-          <div className="card border border-secondary">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-4">
-                  <div className="mb-2">
-                    <label htmlFor="quantity" className="form-label">
-                      Quantity<span className="text-warning ms-1">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      id="quantity"
-                      className="form-control"
-                      value={inputSale.quantitySold}
-                      onChange={(e) =>
-                        setInputSale({
-                          ...inputSale,
-                          quantitySold: e.target.value ? parseInt(e.target.value) : undefined,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="mb-2">
-                    <label htmlFor="refNo" className="form-label">
-                      Receipt / Other Reference No.
-                    </label>
-                    <input
-                      type="text"
-                      id="refNo"
-                      className="form-control"
-                      defaultValue={inputSale.salesRef}
-                      onChange={(e) =>
-                        setInputSale({
-                          ...inputSale,
-                          salesRef: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="mb-2">
-                    <label htmlFor="shop" className="form-label">
-                      Shop
-                    </label>
-                    <div className="input-group">
-                      <select
-                        id="shop"
-                        className="form-select"
-                        aria-label="Shop"
-                        value={inputSale.shopId}
-                        onChange={(e) =>
-                          setInputSale({
-                            ...inputSale,
-                            shopId: e.target.value === '' ? undefined : e.target.value,
-                          })
-                        }
-                      >
-                        <option></option>
-                        {shops?.rows.map((shop: any, index: number) => (
-                          <option value={shop.id} key={`shop-${index}`}>
-                            {shop.name}
-                          </option>
-                        ))}
-                      </select>
-                      <a
-                        className={`btn btn-outline-${inputSale.newShop ? 'danger' : 'secondary'}`}
-                        data-bs-toggle="collapse"
-                        href="#collapseNewShop"
-                        aria-expanded="false"
-                        aria-controls="collapseNewShop"
-                        onClick={() => setInputSale({ ...inputSale, newShop: undefined })}
-                      >
-                        {inputSale.newShop ? 'Cancel Shop' : 'Create Shop'}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="collapse" id="collapseNewShop">
-                    <h5 className="card-title text-uppercase text-muted">New Shop</h5>
-                    <hr className="mt-0 mb-3" />
-
-                    <div className="row">
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="name"
-                            value={inputSale.newShop?.name}
-                            onChange={(e) =>
-                              setInputSale({
-                                ...inputSale,
-                                newShop: {
-                                  ...inputSale.newShop,
-                                  name: e.target.value,
-                                },
-                              })
-                            }
-                          />
-                          <label htmlFor="name">Name</label>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <select
-                            id="sector"
-                            className="form-select"
-                            value={inputSale.newShop?.shopSectorId}
-                            onChange={(e) =>
-                              setInputSale({
-                                ...inputSale,
-                                newShop: {
-                                  ...inputSale.newShop,
-                                  shopSectorId: e.target.value === '' ? undefined : e.target.value,
-                                },
-                              })
-                            }
-                          >
-                            <option></option>
-                            {sectors?.rows.map((sector: any, index: number) => (
-                              <option value={sector.id} key={`sector-${index}`}>
-                                {sector.name}
-                              </option>
-                            ))}
-                          </select>
-                          <label htmlFor="sector">Business Sector</label>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <select
-                            id="category"
-                            className="form-select"
-                            value={inputSale.newShop?.shopCategoryId}
-                            onChange={(e) =>
-                              setInputSale({
-                                ...inputSale,
-                                newShop: {
-                                  ...inputSale.newShop,
-                                  shopCategoryId: e.target.value === '' ? undefined : e.target.value,
-                                },
-                              })
-                            }
-                          >
-                            <option></option>
-                            {categories?.rows.map((category: any, index: number) => (
-                              <option value={category.id} key={`category-${index}`}>
-                                {category.name}
-                              </option>
-                            ))}
-                          </select>
-                          <label htmlFor="category">Category</label>
-                        </div>
-                      </div>
-                    </div>
-
-
-                    <a
-                      className="btn btn-outline-danger btn-sm float-end"
-                      data-bs-toggle="collapse"
-                      href="#collapseNewShop"
-                      aria-expanded="false"
-                      aria-controls="collapseNewShop"
-                      onClick={() => setInputSale({ ...inputSale, newShop: undefined })}
-                    >
-                      Cancel Shop Creation
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {geoLocation?.lat && geoLocation?.lng && surveySales && (
-            <div className="card border border-secondary">
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-4">
-                    <div className="mb-3">
-                      <label htmlFor="respondentName" className="form;-label">
-                        Customer Name
-                        {surveySales?.requireRespondentName ? (
-                          <span className="text-warning ms-1">*</span>
-                        ) : (
-                          ''
-                        )}
-                      </label>
-                      <input
-                        type="text"
-                        id="respondentName"
-                        className="form-control"
-                        placeholder=""
-                        required={surveySales?.requireRespondentName}
-                        defaultValue={inputSaleSurvey.respondentName}
-                        onChange={(e) =>
-                          setInputSaleSurvey({
-                            ...inputSaleSurvey,
-                            respondentName: e.target.value === '' ? undefined : e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="mb-3">
-                      <label htmlFor="respondentPhone" className="form-label">
-                        Customer Phone
-                        {surveySales?.requireRespondentPhone ? (
-                          <span className="text-warning ms-1">*</span>
-                        ) : (
-                          ''
-                        )}
-                      </label>
-                      <PhoneNumberInput
-                        phonekey="respondentPhone"
-                        required={surveySales?.requireRespondentPhone}
-                        input={inputSaleSurvey}
-                        onChange={setInputSaleSurvey}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="mb-3">
-                      <label htmlFor="respondentEmail" className="form-label">
-                        Customer Email
-                        {surveySales?.requireRespondentEmail ? (
-                          <span className="text-warning ms-1">*</span>
-                        ) : (
-                          ''
-                        )}
-                      </label>
-                      <input
-                        type="text"
-                        id="respondentEmail"
-                        className="form-control"
-                        placeholder=""
-                        required={surveySales?.requireRespondentEmail}
-                        defaultValue={inputSaleSurvey.respondentEmail}
-                        onChange={(e) =>
-                          setInputSaleSurvey({
-                            ...inputSaleSurvey,
-                            respondentEmail: e.target.value === '' ? undefined : e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <QuestionnaireForm
-                  questionnaireFields={questionnaireFieldsSales}
-                  setQuestionnaireFields={setQuestionnaireFieldsSales}
-                  submitting={updating}
-                  handleSubmit={handleUpdateSale}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  </div>
-*/

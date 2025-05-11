@@ -1,11 +1,11 @@
 'use client';
 
-import { GQLMutation } from '@/lib/client';
-import { ICoordinate, IPolygon } from '@/lib/interface/area.interface';
-import { IPoint } from '@/lib/interface/point.interface';
-import { AREAS } from '@/lib/mutations/area.mutation';
-import { AGENTS_LATEST_CLOCK } from '@/lib/mutations/clock.mutation';
-import { POINTS } from '@/lib/mutations/point.mutation';
+import { GQLMutation } from 'src/lib/client';
+import { ICoordinate, IPolygon } from 'src/lib/interface/area.interface';
+import { IPoint } from 'src/lib/interface/point.interface';
+import { AREAS } from 'src/lib/mutations/area.mutation';
+import { AGENTS_LATEST_CLOCK } from 'src/lib/mutations/clock.mutation';
+import { POINTS } from 'src/lib/mutations/point.mutation';
 import { Circle, GoogleMap, Marker, Polygon, useJsApiLoader } from '@react-google-maps/api';
 import { FC, useEffect, useState } from 'react';
 import GoogleMarker from '../GoogleMarker';
@@ -53,33 +53,21 @@ export const RunAttendanceMap: FC<{
   const [_points, _setPoints] = useState<{ lat: number; lng: number; radius: number }[]>([]);
   const [_polygons, _setPolygons] = useState<IPolygon[]>([]);
 
-  const loadLatestClocks = () => {
+  useEffect(() => {
+    if (run.id) {
+      getAreas({ variables: { input: { runId: run.id } } });
+      getPoints({ variables: { input: { runId: run.id } } });
+    }
+  }, [run.id, getAreas, getPoints]);
+  useEffect(() => {
     if (run.id) {
       getLatestClocks({ variables: { input: { ...filters, runId: run.id } } });
     }
-  };
-  const loadPoints = () => {
-    if (run.id) {
-      getPoints({ variables: { input: { runId: run.id } } });
-    }
-  };
-  const loadAreas = () => {
-    if (run.id) {
-      getAreas({ variables: { input: { runId: run.id } } });
-    }
-  };
-
-  useEffect(() => {
-    loadPoints();
-    loadAreas();
-  }, [run.id]);
-  useEffect(() => loadLatestClocks(), [run.id, filters.dateStart, filters.dateStop]);
+  }, [run.id, filters, getLatestClocks]);
   useEffect(() => {
     if (points) {
       points.rows.forEach((point: any) => {
-        _setPoints((curr) => {
-          return [...curr, { lat: point.shop.lat, lng: point.shop.lng, radius: point.radius }];
-        });
+        _setPoints((curr) => [...curr, { lat: point.shop.lat, lng: point.shop.lng, radius: point.radius }]);
       });
     }
   }, [points]);
@@ -88,7 +76,7 @@ export const RunAttendanceMap: FC<{
       areas.rows.forEach((area: any) => {
         const coords: ICoordinate[] = [];
 
-        for (let i = 0; i < area.coordinates.length; i++) {
+        for (let i = 0; i < area.coordinates.length; i+=1) {
           coords.push({
             lat: area.coordinates[i].lat,
             lng: area.coordinates[i].lng,
@@ -101,13 +89,13 @@ export const RunAttendanceMap: FC<{
   }, [areas]);
   useEffect(() => {
     if (clocks) {
-      const _locations: IPoint[] = [];
+      const _locs: IPoint[] = [];
 
-      for (let i = 0; i < clocks.length; i++) {
-        _locations.push({ lat: clocks[i].lat, lng: clocks[i].lng });
+      for (let i = 0; i < clocks.length; i+=1) {
+        _locs.push({ lat: clocks[i].lat, lng: clocks[i].lng });
       }
 
-      _setLocations(_locations);
+      _setLocations(_locs);
     }
   }, [clocks]);
 
@@ -119,7 +107,7 @@ export const RunAttendanceMap: FC<{
       <div className="row">
         <div className="col-md-4">
           <div className="mb-2">
-            <label htmlFor="dateStart">From</label>
+            <p>From</p>
             <input
               className="form-control"
               id="dateStart"
@@ -137,7 +125,7 @@ export const RunAttendanceMap: FC<{
         </div>
         <div className="col-md-4">
           <div className="mb-2">
-            <label htmlFor="dateStop">To</label>
+            <p>To</p>
             <input
               className="form-control"
               id="dateStop"

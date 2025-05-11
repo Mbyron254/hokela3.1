@@ -62,7 +62,17 @@ export default function Page() {
         gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }}
       >
         {applications?.rows.map((application: any) => (
-          <div key={application.id} onClick={() => handleView(application.id)}>
+          <div
+            key={application.id}
+            onClick={() => handleView(application.id)}
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleView(application.id);
+              }
+            }}
+          >
             <Image
               className="me-3 mt-1 mb-1 rounded-circle"
               src={sourceImage(application.run?.poster?.fileName)}

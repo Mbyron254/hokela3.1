@@ -1,14 +1,14 @@
 'use client';
 
-import { GQLMutation } from '@/lib/client';
 import { FC, useEffect, useState } from 'react';
-import { M_ANALYZE_RUN_SHOPS } from '@/lib/mutations/analytics-sales.mutation';
-import { commafy } from '@/lib/helpers';
-import { SALES_SURVEY } from '@/lib/mutations/sales-survey.mutation';
+import { GQLMutation } from 'src/lib/client';
+import { M_RUN_SHOPS_DISTRIBUTION } from 'src/lib/mutations/analytics.mutation';
+import { M_ANALYZE_RUN_SHOPS } from 'src/lib/mutations/analytics-sales.mutation';
+import { SALES_SURVEY } from 'src/lib/mutations/sales-survey.mutation';
+import { IPoint } from 'src/lib/interface/point.interface';
+import { commafy } from 'src/lib/helpers';
 import { LoadingDiv } from '../LoadingDiv';
 import { LoadingSpan } from '../LoadingSpan';
-import { M_RUN_SHOPS_DISTRIBUTION } from '@/lib/mutations/analytics.mutation';
-import { IPoint } from '@/lib/interface/point.interface';
 import { GoogleMapPoint } from '../GoogleMapPoint';
 
 export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
@@ -57,38 +57,27 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
   });
   const [locations, setLocations] = useState<IPoint[]>([]);
 
-  const loadSurvey = () => {
+  useEffect(() => {
     if (runId) {
       getSurvey({ variables: { input: { runId } } });
     }
-  };
-  const loadSalesAnalytics = () => {
+  }, [runId, getSurvey]);
+  useEffect(() => {
     if (runId) {
       getSalesAnalytics({ variables: { input: { runId } } });
+      getShopsDistribution({ variables: { input: { runId } } });
     }
-  };
-  const loadSalesShops = () => {
+  }, [runId, getSalesAnalytics, getShopsDistribution]);
+  useEffect(() => {
     if (runId) {
       getSalesShops({ variables: { input: { runId, page, pageSize: 50 } } });
     }
-  };
-  const loadRunShopsDistribution = () => {
-    if (runId) {
-      getShopsDistribution({ variables: { input: { runId } } });
-    }
-  };
-
-  useEffect(() => loadSurvey(), []);
-  useEffect(() => {
-    loadSalesAnalytics();
-    loadRunShopsDistribution();
-  }, [runId]);
-  useEffect(() => loadSalesShops(), [runId, page]);
+  }, [runId, page, getSalesShops]);
   useEffect(() => {
     if (shopsDistribution) {
       const _locations: IPoint[] = [];
 
-      for (let i = 0; i < shopsDistribution.length; i++) {
+      for (let i = 0; i < shopsDistribution.length; i+=1) {
         _locations.push({ lat: shopsDistribution[i].lat, lng: shopsDistribution[i].lng });
       }
       setLocations(_locations);
@@ -206,13 +195,13 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
               data-bs-toggle="modal"
               data-bs-target="#downloadSalesSurveyReports"
             >
-              <i className="mdi mdi-cloud-download-outline me-1"></i>Download Survey Reports
+              <i className="mdi mdi-cloud-download-outline me-1"/>Download Survey Reports
             </button>
           )}
 
           <div className="card tilebox-one">
             <div className="card-body">
-              <i className="mdi mdi-bank-outline float-end"></i>
+              <i className="mdi mdi-bank-outline float-end"/>
               <h6 className="text-uppercase mt-0">New Shops Mapped</h6>
               <h2 className="my-2" id="active-users-count">
                 {loadingAnalytics && <LoadingSpan />}
@@ -221,7 +210,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
               </h2>
               <p className="mb-0 text-muted">
                 <span className="text-info me-2">
-                  <span className="mdi mdi-arrow-up-bold"></span> ---%
+                  <span className="mdi mdi-arrow-up-bold"/> ---%
                 </span>
                 <span className="text-nowrap">Since yesterday</span>
               </p>
@@ -230,7 +219,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
 
           <div className="card tilebox-one">
             <div className="card-body">
-              <i className="mdi mdi-bank-outline float-end"></i>
+              <i className="mdi mdi-bank-outline float-end"/>
               <h6 className="text-uppercase mt-0">Total Shops Visited</h6>
               <h2 className="my-2" id="active-views-count">
                 {loadingAnalytics && <LoadingSpan />}
@@ -239,7 +228,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
               </h2>
               <p className="mb-0 text-muted">
                 <span className="text-info me-2">
-                  <span className="mdi mdi-arrow-down-bold"></span> ---%
+                  <span className="mdi mdi-arrow-down-bold"/> ---%
                 </span>
                 <span className="text-nowrap">Since yesterday</span>
               </p>
@@ -256,7 +245,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
                 aria-expanded="true"
                 className="nav-link active"
               >
-                <i className="mdi mdi-account-circle d-md-none d-block"></i>
+                <i className="mdi mdi-account-circle d-md-none d-block"/>
                 <span className="d-none d-md-block">Shops Visited</span>
               </a>
             </li>
@@ -267,7 +256,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
                 aria-expanded="false"
                 className="nav-link"
               >
-                <i className="mdi mdi-settings-outline d-md-none d-block"></i>
+                <i className="mdi mdi-settings-outline d-md-none d-block"/>
                 <span className="d-none d-md-block">Shops Distribution</span>
               </a>
             </li>
@@ -322,7 +311,6 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
                     type="text"
                     className="btn btn-light"
                     value={`Total Rows ${salesShops?.total}`}
-                    disabled={true}
                   />
                   <button
                     type="button"
@@ -335,7 +323,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
                   <select
                     className="form-select"
                     id="example-select"
-                    onChange={(e) => setPage(parseInt(e.target.value))}
+                    onChange={(e) => setPage(parseInt(e.target.value, 10))}
                   >
                     {Array(salesShops?.totalPages || 0)
                       .fill(null)
@@ -386,7 +374,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
               <div className="row">
                 <div className="col-md-12">
                   <div className="mb-3">
-                    <label htmlFor="dateSalesSurveyReport">Date</label>
+                    <p>Date</p>
                     <input
                       type="date"
                       className="form-control mb-3"
@@ -401,7 +389,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="page">Page Number</label>
+                    <p>Page Number</p>
                     <input
                       type="number"
                       className="form-control mb-3"
@@ -411,7 +399,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
                       onChange={(e) =>
                         setInputReport({
                           ...inputReport,
-                          page: e.target.value !== '' ? parseInt(e.target.value) : undefined,
+                          page: e.target.value !== '' ? parseInt(e.target.value, 10) : undefined,
                         })
                       }
                     />
@@ -419,7 +407,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="rows">Number of Rows Per Page</label>
+                    <p>Number of Rows Per Page</p>
                     <input
                       type="number"
                       className="form-control mb-3"
@@ -429,7 +417,7 @@ export const DashboardSales: FC<{ runId: string }> = ({ runId }) => {
                       onChange={(e) =>
                         setInputReport({
                           ...inputReport,
-                          pageSize: e.target.value !== '' ? parseInt(e.target.value) : undefined,
+                          pageSize: e.target.value !== '' ? parseInt(e.target.value, 10) : undefined,
                         })
                       }
                     />

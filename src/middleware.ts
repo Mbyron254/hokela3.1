@@ -17,6 +17,7 @@ import {
 
 export async function middleware(request: NextRequest) {
   try {
+  
     const isRecover = request.nextUrl.pathname.startsWith(`/auth/main/forgot-password`);
     const isReset = request.nextUrl.pathname.startsWith(`/auth/main/reset`);
     const isSignUp = request.nextUrl.pathname.startsWith(`/auth/main/sign-up`);

@@ -1,8 +1,7 @@
 'use client';
 
 import { FC, useEffect, useState } from 'react';
-import { MutationButton } from '../MutationButton';
-import { GQLMutation } from '@/lib/client';
+import { GQLMutation } from 'src/lib/client';
 import {
   SALES_GIVEAWAY_CONFIG,
   SALES_GIVEAWAY_CONFIG_CREATE,
@@ -11,12 +10,13 @@ import {
   SALES_GIVEAWAY_CONFIG_UPDATE,
   SALES_GIVEAWAY_CONFIGS_ACTIVE,
   SALES_GIVEAWAY_CONFIGS_RECYCLED,
-} from '@/lib/mutations/sales-giveaway.mutation';
-import { DataTable } from '../DataTable';
+} from 'src/lib/mutations/sales-giveaway.mutation';
+import { IInputConfigCreate, IInputConfigUpdate } from 'src/lib/interface/general.interface';
+import { M_PRODUCTS_MINI } from 'src/lib/mutations/product.mutation';
+import { M_PACKAGINGS_MINI } from 'src/lib/mutations/packaging.mutation';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tabs, Tab } from '@mui/material';
+import { MutationButton } from '../MutationButton';
 import { LoadingDiv } from '../LoadingDiv';
-import { IInputConfigCreate, IInputConfigUpdate } from '@/lib/interface/general.interface';
-import { M_PRODUCTS_MINI } from '@/lib/mutations/product.mutation';
-import { M_PACKAGINGS_MINI } from '@/lib/mutations/packaging.mutation';
 
 export const RunSalesGiveawayConfig: FC<{
   clientTier2Id: string;
@@ -162,19 +162,10 @@ export const RunSalesGiveawayConfig: FC<{
   const loadConfig = (id: string) => {
     getConfig({ variables: { input: { id } } });
   };
-  const loadProductsTarget = () => {
-    getProductsTarget({ variables: { input: { clientTier2Id } } });
-  };
   const loadProductsGiveaway = () => {
     getProductsGiveaway({ variables: { input: { clientTier2Id } } });
   };
-  const loadTargetPackagings = () => {
-    if (productTarget.id) {
-      getPackagingsTarget({
-        variables: { input: { productId: productTarget.id } },
-      });
-    }
-  };
+
   const loadGiveawayPackagings = () => {
     if (productGiveaway.id) {
       getPackagingsGiveaway({
@@ -197,16 +188,14 @@ export const RunSalesGiveawayConfig: FC<{
       wrap: true,
       grow: 2,
       selector: (row: any) => row.name,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) => (
           <div className="w-100 overflow-hidden">
             <h6 className="mt-1 mb-1">{row.salePackaging?.product?.name}</h6>
             <span className="font-13">
               {row.salePackaging?.unitQuantity} {row.salePackaging?.unit?.name}
             </span>
           </div>
-        );
-      },
+        )
     },
     {
       name: 'TARGET SALE UNITS',
@@ -221,16 +210,14 @@ export const RunSalesGiveawayConfig: FC<{
       wrap: true,
       grow: 2,
       selector: (row: any) => row.name,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) => (
           <div className="w-100 overflow-hidden">
             <h6 className="mt-1 mb-1">{row.giveawayPackaging?.product?.name}</h6>
             <span className="font-13">
               {row.giveawayPackaging?.unitQuantity} {row.giveawayPackaging?.unit?.name}
             </span>
           </div>
-        );
-      },
+        )
     },
     {
       name: 'GIVEAWAY UNITS',
@@ -255,7 +242,7 @@ export const RunSalesGiveawayConfig: FC<{
             setInputConfigUpdate(init);
           }}
         >
-          <i className="mdi mdi-pen"></i>
+          <i className="mdi mdi-pen"/>
         </button>
       ),
     },
@@ -274,16 +261,14 @@ export const RunSalesGiveawayConfig: FC<{
       wrap: true,
       grow: 2,
       selector: (row: any) => row.name,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) => (
           <div className="w-100 overflow-hidden">
             <h6 className="mt-1 mb-1">{row.salePackaging?.product?.name}</h6>
             <span className="font-13">
               {row.salePackaging?.unitQuantity} {row.salePackaging?.unit?.name}
             </span>
           </div>
-        );
-      },
+        )
     },
     {
       name: 'TARGET SALE UNITS',
@@ -298,16 +283,15 @@ export const RunSalesGiveawayConfig: FC<{
       wrap: true,
       grow: 2,
       selector: (row: any) => row.name,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) => (
           <div className="w-100 overflow-hidden">
             <h6 className="mt-1 mb-1">{row.giveawayPackaging?.product?.name}</h6>
             <span className="font-13">
               {row.giveawayPackaging?.unitQuantity} {row.giveawayPackaging?.unit?.name}
             </span>
           </div>
-        );
-      },
+        )
+      
     },
     {
       name: 'GIVEAWAY UNITS',
@@ -326,11 +310,23 @@ export const RunSalesGiveawayConfig: FC<{
   ];
 
   useEffect(() => {
-    loadProductsTarget();
-    loadProductsGiveaway();
-  }, []);
-  useEffect(() => loadTargetPackagings(), [productTarget.id]);
-  useEffect(() => loadGiveawayPackagings(), [productGiveaway.id]);
+    getProductsTarget({ variables: { input: { clientTier2Id } } });
+    getProductsGiveaway({ variables: { input: { clientTier2Id } } });
+  }, [clientTier2Id, getProductsTarget, getProductsGiveaway]);
+  useEffect(() => {
+    if (productTarget.id) {
+      getPackagingsTarget({
+        variables: { input: { productId: productTarget.id } },
+      });
+    }
+  }, [productTarget.id, getPackagingsTarget]);
+  useEffect(() => {
+    if (productGiveaway.id) {
+      getPackagingsGiveaway({
+        variables: { input: { productId: productGiveaway.id } },
+      });
+    }
+  }, [productGiveaway.id, getPackagingsGiveaway]);
   useEffect(() => {
     if (config) {
       setInputConfigUpdate({
@@ -348,81 +344,81 @@ export const RunSalesGiveawayConfig: FC<{
   return (
     <div className="row">
       <div className="col-md-12">
-        <ul className="nav nav-tabs nav-bordered mb-2">
-          <li className="nav-item">
-            <a
-              href="#records-active"
-              data-bs-toggle="tab"
-              aria-expanded="true"
-              className="nav-link active"
-            >
-              <i className="mdi mdi-account-circle d-md-none d-block"></i>
-              <span className="d-none d-md-block">Active</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a href="#records-recycled" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
-              <i className="mdi mdi-settings-outline d-md-none d-block"></i>
-              <span className="d-none d-md-block">Recycled</span>
-            </a>
-          </li>
-        </ul>
+        <Tabs value={0} aria-label="basic tabs example">
+          <Tab label="Active" />
+          <Tab label="Recycled" />
+        </Tabs>
 
         <div className="tab-content">
           <div className="tab-pane show active" id="records-active">
             <div className="btn-group btn-group-sm mb-2">
-              <button
-                type="button"
-                className="btn btn-outline-success me-2"
-                data-bs-toggle="modal"
-                data-bs-target="#create-modal"
-              >
-                <i className="mdi mdi-plus me-1"></i>New
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline-danger"
-                onClick={handleConfigRecycle}
-                disabled={recyclingConfig}
-              >
-                <i className="mdi mdi-trash-can-outline me-1"></i>Recycle
-              </button>
+              <Button variant="outlined" color="success" onClick={() => { /* handle new config */ }}>
+                <i className="mdi mdi-plus me-1"/>New
+              </Button>
+              <Button variant="outlined" color="error" onClick={handleConfigRecycle} disabled={recyclingConfig}>
+                <i className="mdi mdi-trash-can-outline me-1"/>Recycle
+              </Button>
             </div>
 
-            <DataTable
-              expanded={false}
-              columns={columnsActive}
-              loading={loadingConfigsActive}
-              totalRows={configsActive?.count}
-              data={configsActive?.rows}
-              setSelected={setSelectedActive}
-              handleReloadMutation={loadConfigsActive}
-              reloadTriggers={[createdConfig, updatedConfig, recycledConfig, restoredConfig]}
-            />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {columnsActive.map((column) => (
+                      <TableCell key={column.name}>{column.name}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {configsActive?.rows.map((row: any, index: number) => (
+                    <TableRow key={index}>
+                      <TableCell>{row.index}</TableCell>
+                      <TableCell>{row.salePackaging?.product?.name}</TableCell>
+                      <TableCell>{row.saleUnits}</TableCell>
+                      <TableCell>{row.giveawayPackaging?.product?.name}</TableCell>
+                      <TableCell>{row.giveawayUnits}</TableCell>
+                      <TableCell>
+                        <Button variant="contained" color="primary" onClick={() => { loadConfig(row.id); setInputConfigUpdate(init); }}>
+                          <i className="mdi mdi-pen"/>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
 
           <div className="tab-pane" id="records-recycled">
             <div className="btn-group btn-group-sm mb-2">
-              <button
-                type="button"
-                className="btn btn-outline-warning"
-                onClick={handleConfigRestore}
-                disabled={restoringConfig}
-              >
-                <i className="mdi mdi-restore me-1"></i>Restore
-              </button>
+              <Button variant="outlined" color="warning" onClick={handleConfigRestore} disabled={restoringConfig}>
+                <i className="mdi mdi-restore me-1"/>Restore
+              </Button>
             </div>
 
-            <DataTable
-              expanded={false}
-              columns={columnsRecycled}
-              loading={loadingConfigsRecycled}
-              totalRows={configsRecycled?.count}
-              data={configsRecycled?.rows}
-              setSelected={setSelectedRecycled}
-              handleReloadMutation={loadConfigsRecycled}
-              reloadTriggers={[recycledConfig, restoredConfig]}
-            />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {columnsRecycled.map((column) => (
+                      <TableCell key={column.name}>{column.name}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {configsRecycled?.rows.map((row: any, index: number) => (
+                    <TableRow key={index}>
+                      <TableCell>{row.index}</TableCell>
+                      <TableCell>{row.salePackaging?.product?.name}</TableCell>
+                      <TableCell>{row.saleUnits}</TableCell>
+                      <TableCell>{row.giveawayPackaging?.product?.name}</TableCell>
+                      <TableCell>{row.giveawayUnits}</TableCell>
+                      <TableCell>{row.recycled}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
         </div>
       </div>
@@ -445,7 +441,7 @@ export const RunSalesGiveawayConfig: FC<{
             </div>
             <div className="modal-body">
               <h5 className="mt-0 mb-2 text-primary">
-                <i className="mdi mdi-bullseye-arrow me-1"></i>Target Sale
+                <i className="mdi mdi-bullseye-arrow me-1"/>Target Sale
               </h5>
 
               <div className="card card-border border border-primary">
@@ -465,14 +461,14 @@ export const RunSalesGiveawayConfig: FC<{
                             })
                           }
                         >
-                          <option></option>
+                          <option value="">Select Product</option>
                           {productsTarget?.rows.map((product: any, index: number) => (
                             <option value={product.id} key={`product-${index}`}>
                               {product.name}
                             </option>
                           ))}
                         </select>
-                        <label htmlFor="targetProduct">Target Product</label>
+                        <p>Target Product</p>
                       </div>
                     </div>
                     <div className="col-md-4">
@@ -489,14 +485,14 @@ export const RunSalesGiveawayConfig: FC<{
                             })
                           }
                         >
-                          <option></option>
+                          <option value="">Select Packaging</option>
                           {packagingsTarget?.rows.map((packaging: any, index: number) => (
                             <option key={`packaging-${index}`} value={packaging.id}>
                               {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
                             </option>
                           ))}
                         </select>
-                        <label htmlFor="targetPackaging">Target Packaging</label>
+                        <p>Target Packaging</p>
                       </div>
                     </div>
                     <div className="col-md-4">
@@ -509,11 +505,11 @@ export const RunSalesGiveawayConfig: FC<{
                           onChange={(e) =>
                             setInputConfigCreate({
                               ...inputConfigCreate,
-                              saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value),
+                              saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
                             })
                           }
                         />
-                        <label htmlFor="saleUnits">Target Sale Units</label>
+                        <p>Target Sale Units</p>
                       </div>
                     </div>
                   </div>
@@ -521,7 +517,7 @@ export const RunSalesGiveawayConfig: FC<{
               </div>
 
               <h5 className="mt-0 mb-2 text-primary">
-                <i className="mdi mdi-gift-outline me-1"></i> Giveaway
+                <i className="mdi mdi-gift-outline me-1"/> Giveaway
               </h5>
 
               <div className="card card-border border border-primary mb-0">
@@ -541,14 +537,14 @@ export const RunSalesGiveawayConfig: FC<{
                             })
                           }
                         >
-                          <option></option>
+                          <option value="">Select Product</option>
                           {productsGiveaway?.rows.map((product: any, index: number) => (
                             <option value={product.id} key={`product-${index}`}>
                               {product.name}
                             </option>
                           ))}
                         </select>
-                        <label htmlFor="giveawayProduct">Target Product</label>
+                        <p>Target Product</p>
                       </div>
                     </div>
                     <div className="col-md-4">
@@ -565,14 +561,14 @@ export const RunSalesGiveawayConfig: FC<{
                             })
                           }
                         >
-                          <option></option>
+                          <option value="">Select Packaging</option>
                           {packagingsGiveaway?.rows.map((packaging: any, index: number) => (
                             <option key={`packaging-${index}`} value={packaging.id}>
                               {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
                             </option>
                           ))}
                         </select>
-                        <label htmlFor="giveawayPackaging">Target Packaging</label>
+                        <p>Target Packaging</p>
                       </div>
                     </div>
                     <div className="col-md-4">
@@ -585,11 +581,11 @@ export const RunSalesGiveawayConfig: FC<{
                           onChange={(e) =>
                             setInputConfigCreate({
                               ...inputConfigCreate,
-                              giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value),
+                              giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
                             })
                           }
                         />
-                        <label htmlFor="giveawayUnits">Giveaway Units</label>
+                        <p>Giveaway Units</p>
                       </div>
                     </div>
                   </div>
@@ -635,7 +631,7 @@ export const RunSalesGiveawayConfig: FC<{
               </div>
               <div className="modal-body">
                 <h5 className="mt-0 mb-2 text-primary">
-                  <i className="mdi mdi-bullseye-arrow me-1"></i> Target Sale
+                  <i className="mdi mdi-bullseye-arrow me-1"/> Target Sale
                 </h5>
 
                 <div className="card card-border border border-primary">
@@ -655,7 +651,7 @@ export const RunSalesGiveawayConfig: FC<{
                               })
                             }
                           >
-                            <option></option>
+                            <option value="">Select Product</option>
                             {productsTarget?.rows.map((product: any, index: number) => (
                               <option
                                 key={`product-${index}`}
@@ -666,7 +662,7 @@ export const RunSalesGiveawayConfig: FC<{
                               </option>
                             ))}
                           </select>
-                          <label htmlFor="targetProduct">Target Product</label>
+                          <p>Target Product</p>
                         </div>
                       </div>
                       <div className="col-md-4">
@@ -683,7 +679,7 @@ export const RunSalesGiveawayConfig: FC<{
                               })
                             }
                           >
-                            <option></option>
+                            <option value="">Select Packaging</option>
                             {packagingsTarget?.rows.map((packaging: any, index: number) => (
                               <option
                                 key={`packaging-${index}`}
@@ -694,7 +690,7 @@ export const RunSalesGiveawayConfig: FC<{
                               </option>
                             ))}
                           </select>
-                          <label htmlFor="targetPackaging">Target Packaging</label>
+                          <p>Target Packaging</p>
                         </div>
                       </div>
                       <div className="col-md-4">
@@ -707,11 +703,11 @@ export const RunSalesGiveawayConfig: FC<{
                             onChange={(e) =>
                               setInputConfigCreate({
                                 ...inputConfigUpdate,
-                                saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value),
+                                saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
                               })
                             }
                           />
-                          <label htmlFor="saleUnits">Target Sale Units</label>
+                          <p>Target Sale Units</p>
                         </div>
                       </div>
                     </div>
@@ -719,7 +715,7 @@ export const RunSalesGiveawayConfig: FC<{
                 </div>
 
                 <h5 className="mt-0 mb-2 text-primary">
-                  <i className="mdi mdi-gift-outline me-1"></i> Giveaway
+                  <i className="mdi mdi-gift-outline me-1"/> Giveaway
                 </h5>
 
                 <div className="card card-border border border-primary mb-0">
@@ -739,7 +735,7 @@ export const RunSalesGiveawayConfig: FC<{
                               })
                             }
                           >
-                            <option></option>
+                            <option value="">Select Product</option>
                             {productsGiveaway?.rows.map((product: any, index: number) => (
                               <option
                                 key={`product-${index}`}
@@ -750,7 +746,7 @@ export const RunSalesGiveawayConfig: FC<{
                               </option>
                             ))}
                           </select>
-                          <label htmlFor="giveawayProduct">Target Product</label>
+                          <p>Target Product</p>
                         </div>
                       </div>
                       <div className="col-md-4">
@@ -767,7 +763,7 @@ export const RunSalesGiveawayConfig: FC<{
                               })
                             }
                           >
-                            <option></option>
+                            <option value="">Select Packaging</option>
                             {packagingsGiveaway?.rows.map((packaging: any, index: number) => (
                               <option
                                 key={`packaging-${index}`}
@@ -778,7 +774,7 @@ export const RunSalesGiveawayConfig: FC<{
                               </option>
                             ))}
                           </select>
-                          <label htmlFor="giveawayPackaging">Target Packaging</label>
+                          <p>Target Packaging</p>
                         </div>
                       </div>
                       <div className="col-md-4">
@@ -791,11 +787,11 @@ export const RunSalesGiveawayConfig: FC<{
                             onChange={(e) =>
                               setInputConfigCreate({
                                 ...inputConfigUpdate,
-                                giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value),
+                                giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
                               })
                             }
                           />
-                          <label htmlFor="giveawayUnits">Giveaway Units</label>
+                          <p>Giveaway Units</p>
                         </div>
                       </div>
                     </div>

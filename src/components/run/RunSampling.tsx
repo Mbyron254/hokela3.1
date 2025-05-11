@@ -3,41 +3,41 @@
 import Image from 'next/image';
 
 import { FC, useEffect, useState } from 'react';
-import { MutationButton } from '../MutationButton';
-import { GQLMutation } from '@/lib/client';
-import { M_PRODUCTS_MINI } from '@/lib/mutations/product.mutation';
-import { DataTableStatic } from '../DataTableStatic';
-import { M_CAMPAIGN_AGENTS, M_RUN_OFFERS_SEARCH } from '@/lib/mutations/run-offer.mutation';
-import { sourceImage } from '@/lib/server';
+import { M_CAMPAIGN_AGENTS } from 'src/lib/mutations/run-offer.mutation';
+import { M_PRODUCTS_MINI } from 'src/lib/mutations/product.mutation';
+import { GQLMutation } from 'src/lib/client';
 import {
   CHOICE_MULTIPLE,
   CHOICE_SINGLE,
   DROPDOWN,
   TABLE_IMAGE_HEIGHT,
   TABLE_IMAGE_WIDTH,
-} from '@/lib/constant';
-import { M_PACKAGINGS_MINI } from '@/lib/mutations/packaging.mutation';
-import { LoadingSpan } from '../LoadingSpan';
+} from 'src/lib/constant';
+import { M_PACKAGINGS_MINI } from 'src/lib/mutations/packaging.mutation';
 import {
   IAnswerDropdownOption,
   IChoice,
   IFreeGiveawayAllocations,
   IInventoryAllocation,
   IQuestionnairField,
-} from '@/lib/interface/general.interface';
+} from 'src/lib/interface/general.interface';
 import {
   ALLOCATE_FREE_GIVEAWAY,
   M_AGENTS_FREE_GIVEAWAY_ALLOCATIONS,
-} from '@/lib/mutations/free-giveaway-allocation.mutation';
-import { QuestionnaireSetup } from '../QuestionnaireSetup';
+} from 'src/lib/mutations/free-giveaway-allocation.mutation';
 import {
   FREE_GIVEAWAY_SURVEY,
   FREE_GIVEAWAY_SURVEY_UPSERT,
-} from '@/lib/mutations/free-giveaway.mutation';
-import { InputFreeGiveawaySurveyUpdate } from '@/lib/interface/survey-free-giveaway.interface';
-import { M_STOCK_BALANCE } from '@/lib/mutations/inventory-allocation.mutation';
-import { DataTable } from '../DataTable';
-import { M_RUN_TEAMS_MINI } from '@/lib/mutations/run-team.mutation';
+} from 'src/lib/mutations/free-giveaway.mutation';
+import { M_STOCK_BALANCE } from 'src/lib/mutations/inventory-allocation.mutation';
+import { M_RUN_TEAMS_MINI } from 'src/lib/mutations/run-team.mutation';
+import { InputFreeGiveawaySurveyUpdate } from 'src/lib/interface/survey-free-giveaway.interface';
+
+import { sourceImage } from 'src/lib/server';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox } from '@mui/material';
+import { QuestionnaireSetup } from '../QuestionnaireSetup';
+import { MutationButton } from '../MutationButton';
+import { LoadingSpan } from '../LoadingSpan';
 
 export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) => {
   const {
@@ -132,42 +132,12 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
       getAgents({ variables: { input: { search, runId, teamId, page, pageSize } } });
     }
   };
-  const loadProducts = () => {
-    getProducts({ variables: { input: { clientTier2Id } } });
-  };
-  const loadPackagings = () => {
-    if (product.id) {
-      getPackagings({ variables: { input: { productId: product.id } } });
-    }
-  };
-  const loadStock = () => {
-    if (product.id && product.packagingId) {
-      getStock({
-        variables: {
-          input: { productId: product.id, packagingId: product.packagingId },
-        },
-      });
-    }
-  };
-  const loadAllocations = () => {
-    if (runId && product.id && product.packagingId && selectedAgents) {
-      getAllocations({
-        variables: {
-          input: {
-            runId,
-            productId: product.id,
-            packagingId: product.packagingId,
-            agents: selectedAgents,
-          },
-        },
-      });
-    }
-  };
+  
   const handleAllocate = () => {
     if (allocations.length) {
       const _allocations: { agentId: string; quantity: number }[] = [];
 
-      for (let x = 0; x < allocations.length; x++) {
+      for (let x = 0; x < allocations.length; x+=1) {
         _allocations.push({
           agentId: allocations[x].id,
           quantity: allocations[x].allocated,
@@ -197,15 +167,13 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
 
     let _allocationTotal = 0;
 
-    for (let i = 0; i < _curr.length; i++) {
+    for (let i = 0; i < _curr.length; i+=1) {
       if (bulkFill) {
-        _curr[i].allocated = parseInt(event.target.value) | 0;
-      } else {
-        if (_curr[i].id === id) {
-          const newAllocation = parseInt(event.target.value) | 0;
+        _curr[i].allocated = parseInt(event.target.value, 10) || 0;
+      } else if (_curr[i].id === id) {
+        const newAllocation = parseInt(event.target.value, 10) || 0;
 
-          _curr[i].allocated = newAllocation < _curr[i].givenAway ? _curr[i].givenAway : newAllocation;
-        }
+        _curr[i].allocated = newAllocation < _curr[i].givenAway ? _curr[i].givenAway : newAllocation;
       }
 
       _allocationTotal += _curr[i].allocated;
@@ -213,14 +181,10 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
     setAllocations(_curr);
     setAllocationTotal(_allocationTotal);
   };
-  const loadSurvey = () => {
-    if (runId) {
-      getSurvey({ variables: { input: { runId } } });
-    }
-  };
+  
   const handleSurveyUpsert = () => {
     if (runId && questionnaireFields.length) {
-      for (let i = 0; i < questionnaireFields.length; i++) {
+      for (let i = 0; i < questionnaireFields.length; i+=1) {
         switch (questionnaireFields[i].feedbackType) {
           case DROPDOWN:
             delete questionnaireFields[i].optionsChoiceSingle;
@@ -251,50 +215,65 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
   };
 
   const columns = [
-    {
-      name: '#',
-      width: '60px',
-      sortable: true,
-      selector: (row: any) => row.index,
-      cell: (row: any) => row.index,
-    },
-    {
-      name: 'AGENT',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.date,
-      cell: (row: any) => (
-        <>
-          <Image
-            className="me-1 mt-1 mb-1 rounded-circle"
-            src={sourceImage(row.agent?.user?.photo?.fileName)}
-            loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
-            alt=""
-            width={TABLE_IMAGE_WIDTH}
-            height={TABLE_IMAGE_HEIGHT}
-          />
-          <div className="w-100 overflow-hidden">
-            <h6 className="mt-1 mb-1">{row.agent?.user?.name}</h6>
-            <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
-          </div>
-        </>
-      ),
-    },
+    { id: 'index', label: '#', minWidth: 60 },
+    { id: 'agent', label: 'AGENT', minWidth: 170 },
   ];
 
-  useEffect(() => loadProducts(), []);
-  useEffect(() => loadTeams(), [runId]);
-  useEffect(() => loadPackagings(), [product.id]);
-  useEffect(() => loadStock(), [product.id, product.packagingId]);
-  useEffect(() => loadAllocations(), [product.id, product.packagingId, selectedAgents]);
-  useEffect(() => loadSurvey(), [upsertedSurvey]);
+  const renderAgentCell = (row: any) => (
+    <>
+      <Image
+        className="me-1 mt-1 mb-1 rounded-circle"
+        src={sourceImage(row.agent?.user?.photo?.fileName)}
+        loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
+        alt=""
+        width={TABLE_IMAGE_WIDTH}
+        height={TABLE_IMAGE_HEIGHT}
+      />
+      <div className="w-100 overflow-hidden">
+        <h6 className="mt-1 mb-1">{row.agent?.user?.name}</h6>
+        <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
+      </div>
+    </>
+  );
+
+  useEffect(() => getProducts({ variables: { input: { clientTier2Id } } }), [getProducts, clientTier2Id]);
+  useEffect(() => getTeams({ variables: { input: { runId } } }), [getTeams, runId]);
+  useEffect(() => getPackagings({ variables: { input: { productId: product.id } } }), [getPackagings, product.id]);
+  useEffect(() => {
+    if (product.id && product.packagingId) {
+      getStock({
+        variables: {
+          input: { productId: product.id, packagingId: product.packagingId },
+        },
+      });
+    }
+  }, [product.id, product.packagingId, getStock]);
+  useEffect(() => {
+    if (runId && product.id && product.packagingId && selectedAgents) {
+      getAllocations({
+        variables: {
+          input: {
+            runId,
+            productId: product.id,
+            packagingId: product.packagingId,
+            agents: selectedAgents,
+          },
+        },
+      });
+    }
+  }, [product.id, product.packagingId, selectedAgents, getAllocations, runId]);
+  useEffect(() => {
+    if (runId) {
+      getSurvey({ variables: { input: { runId } } });
+    }
+  }, [getSurvey, runId]);
   useEffect(() => {
     if (allocation?.entries) {
       const _allocations: IFreeGiveawayAllocations[] = [];
 
       let _allocationTotal = 0;
 
-      for (let i = 0; i < allocation.entries.length; i++) {
+      for (let i = 0; i < allocation.entries.length; i+=1) {
         _allocations.push({
           index: allocation.entries[i].index,
           id: allocation.entries[i].agent?.id,
@@ -313,26 +292,26 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
     if (survey) {
       const _fields = [];
 
-      for (let i = 0; i < survey.questionnaireFields.length; i++) {
+      for (let i = 0; i < survey.questionnaireFields.length; i+=1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k+=1) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
             label: survey.questionnaireFields[i].optionsDropdown[k].label,
@@ -382,7 +361,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
             aria-expanded="true"
             className="nav-link active"
           >
-            <i className="mdi mdi-account-circle d-md-none d-block"></i>
+            <i className="mdi mdi-account-circle d-md-none d-block"/>
             <span className="d-none d-md-block">Questions</span>
           </a>
         </li>
@@ -393,7 +372,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
             aria-expanded="false"
             className="nav-link"
           >
-            <i className="mdi mdi-settings-outline d-md-none d-block"></i>
+            <i className="mdi mdi-settings-outline d-md-none d-block"/>
             <span className="d-none d-md-block">Stock Allocation</span>
           </a>
         </li>
@@ -418,9 +397,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="hideRespondentFieldsFreeGiveaway">
-                      Hide Respondent Fields
-                    </label>
+                    <p>Hide Respondent Fields</p>
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -437,9 +414,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="requireRespondentNameFreeGiveaway">
-                      Require Respondent Name
-                    </label>
+                    <p>Require Respondent Name</p>
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -456,9 +431,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="requireRespondentPhoneFreeGiveaway">
-                      Require Respondent Phone
-                    </label>
+                    <p>Require Respondent Phone</p>
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -475,9 +448,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="requireRespondentEmailFreeGiveaway">
-                      Require Respondent Email
-                    </label>
+                    <p>Require Respondent Email</p>
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -495,12 +466,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                         })
                       }
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="blockSameLocationReportsGloballyFreeGiveaway"
-                    >
-                      Block Same Location Reports Globally
-                    </label>
+                    <p>Block Same Location Reports Globally</p>
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -518,12 +484,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                         })
                       }
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="blockSameLocationReportsPerAgentFreeGiveaway"
-                    >
-                      Block Same Location Reports Per Agent
-                    </label>
+                    <p>Block Same Location Reports Per Agent</p>
                   </div>
                 </div>
               </div>
@@ -548,7 +509,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                     <LoadingSpan />
                   ) : (
                     <div className="mb-3">
-                      <label htmlFor="team">Filter by team</label>
+                      <p>Filter by team</p>
                       <select
                         id="team"
                         className="form-select mt-2"
@@ -556,7 +517,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                         value={teamId}
                         onChange={(e) => setTeamId(e.target.value)}
                       >
-                        <option></option>
+                        <option value="">Select Team</option>
                         {teams?.rows.map((team: any, index: number) => (
                           <option value={team.id} key={`team-${index}`}>
                             {team.name}
@@ -576,7 +537,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                         defaultValue={search}
                         onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
                       />
-                      <span className="mdi mdi-magnify search-icon"></span>
+                      <span className="mdi mdi-magnify search-icon"/>
                       <button
                         className="input-group-text btn-primary"
                         type="button"
@@ -597,19 +558,43 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
 
                   <hr className="mb-2" />
 
-                  <DataTable
-                    selectorParent1="agent"
-                    selectable={true}
-                    dense={true}
-                    fixedHeader={true}
-                    columns={columns}
-                    data={agents?.rows}
-                    totalRows={agents?.count}
-                    setSelected={setSelectedAgents}
-                    loading={loadingAgents}
-                    handleReloadMutation={loadAgents}
-                    reloadTriggers={[runId, teamId]}
-                  />
+                  <TableContainer component={Paper}>
+                    <Table stickyHeader aria-label="sticky table">
+                      <TableHead>
+                        <TableRow>
+                          {columns.map((column) => (
+                            <TableCell
+                              key={column.id}
+                              style={{ minWidth: column.minWidth }}
+                            >
+                              {column.label}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {agents?.rows.map((row: any, index: number) => (
+                          <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                            <TableCell>
+                              <Checkbox
+                                checked={selectedAgents.includes(row.agent?.id)}
+                                onChange={() => {
+                                  const newSelected = [...selectedAgents];
+                                  if (newSelected.includes(row.agent?.id)) {
+                                    newSelected.splice(newSelected.indexOf(row.agent?.id), 1);
+                                  } else {
+                                    newSelected.push(row.agent?.id);
+                                  }
+                                  setSelectedAgents(newSelected);
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>{renderAgentCell(row)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </div>
               </div>
             </div>
@@ -632,14 +617,14 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                             })
                           }
                         >
-                          <option></option>
-                          {products?.rows.map((product: any, index: number) => (
-                            <option value={product.id} key={`product-${index}`}>
-                              {product.name}
+                          <option value="">Select Product</option>
+                          {products?.rows.map((prod: any, index: number) => (
+                            <option value={prod.id} key={`product-${index}`}>
+                              {prod.name}
                             </option>
                           ))}
                         </select>
-                        <label htmlFor="product">Product</label>
+                        <p>Product</p>
                       </div>
                     </div>
                     <div className="col-md-6">
@@ -656,14 +641,14 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                             })
                           }
                         >
-                          <option></option>
+                          <option value="">Select Packaging</option>
                           {packagings?.rows.map((packaging: any, index: number) => (
                             <option key={`packaging-${index}`} value={packaging.id}>
                               {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
                             </option>
                           ))}
                         </select>
-                        <label htmlFor="packaging">Packaging</label>
+                        <p>Packaging</p>
                       </div>
                     </div>
                   </div>
@@ -690,13 +675,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                           disabled={allocation?.canBulkFill}
                           onClick={() => setBulkFill(!bulkFill)}
                         />
-                        <label
-                          className="form-check-label"
-                          htmlFor="bulkFill"
-                          style={{ marginTop: '3px' }}
-                        >
-                          Bulk Fill
-                        </label>
+                        <p style={{ marginTop: '3px' }}>Bulk Fill</p>
                       </div>
                     </span>
                   </h5>
@@ -704,36 +683,36 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
                   <hr className="mt-0 mb-1" />
 
                   <div className="mb-2">
-                    {allocations?.map((allocation: any, index: number) => (
+                    {allocations?.map((alloc: any, index: number) => (
                       <div key={`allocation-${index}`}>
                         <dl className="row mb-0">
                           <dt className="col-sm-7">
-                            <span className="me-2">{allocation.index}.</span>
+                            <span className="me-2">{alloc.index}.</span>
                             <Image
                               className="me-2 mt-1 mb-1"
-                              src={sourceImage(allocation.photo)}
-                              loader={() => sourceImage(allocation.photo)}
+                              src={sourceImage(alloc.photo)}
+                              loader={() => sourceImage(alloc.photo)}
                               alt=""
                               width={TABLE_IMAGE_WIDTH}
                               height={TABLE_IMAGE_HEIGHT}
                             />
-                            {allocation.name}
+                            {alloc.name}
                           </dt>
                           <dd className="col-sm-5">
                             <div className="input-group input-group-sm">
                               <input
                                 type="text"
                                 className="form-control form-control-sm font-14"
-                                disabled={true}
-                                placeholder={`Given away: ${allocation.givenAway}`}
+                                disabled
+                                placeholder={`Given away: ${alloc.givenAway}`}
                               />
                               <input
                                 type="number"
                                 id="quantity-1"
                                 className="form-control form-control-sm font-14"
-                                min={allocation.givenAway}
-                                value={allocation.allocated}
-                                onChange={(e) => handleChange(allocation.id, e)}
+                                min={alloc.givenAway}
+                                value={alloc.allocated}
+                                onChange={(e) => handleChange(alloc.id, e)}
                               />
                             </div>
                           </dd>

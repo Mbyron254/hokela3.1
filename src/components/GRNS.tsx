@@ -1,7 +1,7 @@
 'use client';
 
-import { GQLMutation } from '@/lib/client';
-import { InputGRNCreate, InputGRNUpdate } from '@/lib/interface/grns.interface';
+import { FC, useEffect, useState } from 'react';
+import { GQLMutation } from 'src/lib/client';
 import {
   GRN,
   GRNCreate,
@@ -10,11 +10,10 @@ import {
   GRNs,
   GRNs_RECYCLED,
   GRNUpdate,
-} from '@/lib/mutations/grn.mutation';
-import { FC, useEffect, useState } from 'react';
+} from 'src/lib/mutations/grn.mutation';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tabs, Tab } from '@mui/material';
+import { InputGRNCreate, InputGRNUpdate } from 'src/lib/interface/grns.interface';
 import { LoadingDiv } from './LoadingDiv';
-import { DataTable } from './DataTable';
-import { TEGRN } from './table-extensions/TEGRN';
 import { MutationButton } from './MutationButton';
 
 export const GRNS: FC<{ clientTier2Id: string }> = ({ clientTier2Id }) => {
@@ -177,7 +176,7 @@ export const GRNS: FC<{ clientTier2Id: string }> = ({ clientTier2Id }) => {
             loadGrn(row.id);
           }}
         >
-          <i className="mdi mdi-pen"></i>
+          <i className="mdi mdi-pen"/>
         </button>
       ),
     },
@@ -232,78 +231,84 @@ export const GRNS: FC<{ clientTier2Id: string }> = ({ clientTier2Id }) => {
 
   return (
     <>
-      <ul className="nav nav-tabs nav-bordered">
-        <li className="nav-item">
-          <a href="#grns-active" data-bs-toggle="tab" aria-expanded="true" className="nav-link active">
-            <i className="mdi mdi-account-circle d-md-none d-block"></i>
-            <span className="d-none d-md-block">Active</span>
-          </a>
-        </li>
-        <li className="nav-item">
-          <a href="#grns-recycled" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
-            <i className="mdi mdi-settings-outline d-md-none d-block"></i>
-            <span className="d-none d-md-block">Recycled</span>
-          </a>
-        </li>
-      </ul>
+      <Tabs value={0} aria-label="GRN Tabs">
+        <Tab label="Active" />
+        <Tab label="Recycled" />
+      </Tabs>
 
-      <div className="tab-content">
-        <div className="tab-pane show active" id="grns-active">
-          <div className="btn-group btn-group-sm mt-2 mb-2">
-            <button
-              type="button"
-              className="btn btn-outline-success btn-sm me-2"
-              data-bs-toggle="modal"
-              data-bs-target="#create-grn"
-            >
-              <i className="mdi mdi-plus me-1"></i>New
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-danger btn-sm"
-              onClick={handleRecycle}
-              disabled={recycling}
-            >
-              <i className="mdi mdi-trash-can-outline me-1"></i>Recycle
-            </button>
-          </div>
-
-          <DataTable
-            expanded={false}
-            columns={columnsActive}
-            loading={loadingGrnsActive}
-            data={grnsActive?.rows}
-            totalRows={grnsActive?.count}
-            handleReloadMutation={loadGrnsActive}
-            setSelected={setSelectedActive}
-            reloadTriggers={[created, updated, recycled, restored]}
-            tableExpansion={TEGRN}
-          />
+      <div>
+        <div>
+          <Button variant="outlined" color="success" onClick={() => {}} data-bs-toggle="modal" data-bs-target="#create-grn">
+            New
+          </Button>
+          <Button variant="outlined" color="error" onClick={handleRecycle} disabled={recycling}>
+            Recycle
+          </Button>
         </div>
 
-        <div className="tab-pane" id="grns-recycled">
-          <div className="btn-group btn-group-sm mt-2 mb-2">
-            <button
-              type="button"
-              className="btn btn-outline-warning btn-sm me-1"
-              onClick={handleRestore}
-              disabled={restoring}
-            >
-              <i className="mdi mdi-restore me-1"></i>Restore
-            </button>
-          </div>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {columnsActive.map((column) => (
+                  <TableCell key={column.name}>{column.name}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {grnsActive?.rows.map((row: any, index: number) => (
+                <TableRow key={index}>
+                  <TableCell>{row.index}</TableCell>
+                  <TableCell>{row.supplierRefNo}</TableCell>
+                  <TableCell>{row.grnNo}</TableCell>
+                  <TableCell>{row.inventories?.length}</TableCell>
+                  <TableCell>{row.created}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        setInputUpdate(init);
+                        loadGrn(row.id);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
 
-          <DataTable
-            expanded={false}
-            columns={columnsRecycled}
-            loading={loadingGrnsRecycled}
-            data={grnsRecycled?.rows}
-            totalRows={grnsRecycled?.count}
-            handleReloadMutation={loadGrnsRecycled}
-            setSelected={setSelectedRecycled}
-            reloadTriggers={[recycled, restored]}
-          />
-        </div>
+      <div>
+        <Button variant="outlined" color="warning" onClick={handleRestore} disabled={restoring}>
+          Restore
+        </Button>
+
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {columnsRecycled.map((column) => (
+                  <TableCell key={column.name}>{column.name}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {grnsRecycled?.rows.map((row: any, index: number) => (
+                <TableRow key={index}>
+                  <TableCell>{row.index}</TableCell>
+                  <TableCell>{row.supplierRefNo}</TableCell>
+                  <TableCell>{row.grnNo}</TableCell>
+                  <TableCell>{row.inventories?.length}</TableCell>
+                  <TableCell>{row.recycled}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
 
       {/* =================== Modal Create =================== */}
@@ -325,9 +330,7 @@ export const GRNS: FC<{ clientTier2Id: string }> = ({ clientTier2Id }) => {
             </div>
             <div className="modal-body">
               <div className="mb-3">
-                <label className="form-label" htmlFor="supplierRefNo">
-                  Supplier Ref (Invoice No, Delivery Note No, etc)
-                </label>
+                <p className="form-label">Supplier Ref (Invoice No, Delivery Note No, etc)</p>
                 <input
                   type="text"
                   id="supplierRefNo"
@@ -342,7 +345,7 @@ export const GRNS: FC<{ clientTier2Id: string }> = ({ clientTier2Id }) => {
                 />
               </div>
               <div className="mb-3">
-                <label>Notes</label>
+                <p>Notes</p>
                 <textarea
                   className="form-control"
                   placeholder="Notes"
@@ -393,9 +396,7 @@ export const GRNS: FC<{ clientTier2Id: string }> = ({ clientTier2Id }) => {
               ) : (
                 <>
                   <div className="mb-3">
-                    <label className="form-label" htmlFor="supplierRefNo">
-                      Supplier Ref (Invoice No, Delivery Note No, etc)
-                    </label>
+                    <p className="form-label">Supplier Ref (Invoice No, Delivery Note No, etc)</p>
                     <input
                       type="text"
                       id="supplierRefNo"
@@ -410,7 +411,7 @@ export const GRNS: FC<{ clientTier2Id: string }> = ({ clientTier2Id }) => {
                     />
                   </div>
                   <div className="">
-                    <label>Notes</label>
+                    <p>Notes</p>
                     <textarea
                       className="form-control"
                       placeholder="Notes"

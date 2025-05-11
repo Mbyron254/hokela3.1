@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Box, Tabs, Tab, Card, Typography, Button } from '@mui/material';
+import { Box, Tabs, Tab, Card, Typography } from '@mui/material';
 import { GQLMutation } from 'src/lib/client';
 import {
   RUN_ACTIVITY_ROAD_SHOW,
@@ -13,20 +13,19 @@ import {
 import { M_CAMPAIGN_RUN } from 'src/lib/mutations/campaign-run.mutation';
 import { RunProfile } from 'src/components/RunProfile';
 import { RunRollCall } from 'src/components/RunRollCall';
-import { DashboardSurvey } from 'src/components/DashboardSurvey';
-// import { RunSalesGiveawayConfig } from 'src/components/run/RunSalesGiveawayConfig';
-// import { RunSalesGiveawayQuestions } from 'src/components/run/RunSalesGiveawayQuestions';
-// import { RunSalesQuestions } from 'src/components/run/RunSalesQuestions';
-// import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
-// import { RunRollCall } from 'src/components/run/RunRollCall';
-// import { RunStockCounterEntry } from 'src/components/run/RunStockCounterEntry';
-// import { RunDashboardSurvey } from 'src/components/run/RunDashboardSurvey';
-// import { RunKPIs } from 'src/components/run/RunKPIs';
-// import { RunPayment } from 'src/components/run/RunPayment';
-// import { RunPayRate } from 'src/components/run/RunPayRate';
-// import { RunProfile } from 'src/components/run/RunProfile';
-// import { RunSampling } from 'src/components/run/RunSampling';
-// import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocation';
+import { RunDashboardSurvey } from 'src/components/run/RunDashboardSurvey';
+import { RunDashboardSales } from 'src/components/run/RunDashboardSales';
+import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocation';
+import { RunKPIs } from 'src/components/run/RunKPIs';
+import { RunPayroll } from 'src/components/run/RunPayroll';
+import { RunPayRate } from 'src/components/run/RunPayRate';
+import { RunSampling } from 'src/components/run/RunSampling';
+import { RunSalesGiveawayConfig } from 'src/components/run/RunSalesGiveawayConfig';
+import { RunSalesGiveawayQuestions } from 'src/components/run/RunSalesGiveawayQuestions';
+import { RunSalesQuestions } from 'src/components/run/RunSalesQuestions';
+import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
+import { RunStockCounterEntry } from 'src/components/run/RunStockCounterEntry';
+import { RunTeam } from 'src/components/run/RunTeam';
 
 export default function Page({ params: { runId } }: any) {
   const { action: getRun, data: run } = GQLMutation({
@@ -34,70 +33,6 @@ export default function Page({ params: { runId } }: any) {
     resolver: 'm_run',
     toastmsg: false,
   });
-
-  // const run = {
-  //   id: "run-123456",
-  //   name: "Summer Promotion 2023",
-  //   code: "SUM2023",
-  //   dateStart: "2023-06-01T00:00:00Z",
-  //   dateStop: "2023-08-31T23:59:59Z",
-  //   clockType: "STANDARD",
-  //   clockInPhotoLabel: "Store Front",
-  //   clockOutPhotoLabel: "Completed Display",
-  //   clockInTime: "09:00",
-  //   clockOutTime: "17:00",
-  //   locationPingFrequency: 15,
-  //   closeAdvertOn: "2023-05-15T00:00:00Z",
-  //   forceClose: false,
-  //   created: "2023-04-01T10:30:00Z",
-  //   campaign: {
-  //     id: "camp-789012",
-  //     name: "Retail Summer Campaign",
-  //     project: {
-  //       clientTier2: {
-  //         id: "ct2-345678",
-  //         name: "Regional Marketing",
-  //         clientTier1: {
-  //           id: "ct1-901234",
-  //           name: "Global Brands Inc."
-  //         }
-  //       }
-  //     }
-  //   },
-  //   types: [
-  //     {
-  //       id: "type-567890",
-  //       name: "Sales"
-  //     },
-  //     {
-  //       id: "type-567891",
-  //       name: "In-Store Promotion"
-  //     },
-  //     {
-  //       id: "type-678901",
-  //       name: "Product Sampling"
-  //     }
-  //   ],
-  //   manager: {
-  //     id: "mgr-234567",
-  //     name: "Jane Smith"
-  //   },
-  //   poster: {
-  //     id: "pst-456789",
-  //     fileName: "summer_campaign_poster.jpg"
-  //   },
-  //   applications: [
-  //     { id: "app-123456" },
-  //     { id: "app-234567" },
-  //     { id: "app-345678" }
-  //   ],
-  //   offers: [
-  //     { id: "off-123456" },
-  //     { id: "off-234567" }
-  //   ]
-  // };
-
-  console.log('run:', run);
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -126,223 +61,175 @@ export default function Page({ params: { runId } }: any) {
         aria-label="full width tabs example"
       >
         <Tab label="Profile" />
-        <Tab label="Dashboards" />
-        <Tab label="Roll Call" />
-        <Tab label="Stock Management" />
-        <Tab label="Surveys" />
+        <Tab label="Team" />
+        <Tab label="Analytics" />
+        <Tab label="Attendance" />
         <Tab label="Payroll" />
-        {/* {run?.types?.map((activity: any, i: number) => (
+        {run?.types?.map((activity: any, i: number) => (
           <Tab key={`run-type-${i}`} label={activity.name || 'No Activity'} />
-        ))} */}
+        ))}
       </Tabs>
 
       <Card sx={{ mt: 3 }}>
         {activeTab === 0 && (
           <Box sx={{ p: 2 }}>
-            <Typography variant="h6">Profile Content</Typography>
             {run && <RunProfile run={run} />}
           </Box>
         )}
         {activeTab === 1 && (
           <Box sx={{ p: 2 }}>
-            <Typography variant="h6">Dashboards Content</Typography>
-            <div className="tab-pane" id="dashboards">
-              <ul className="nav nav-tabs nav-bordered mb-3">
-                {run?.types?.map((activity: any, i: number) => {
-                  switch (activity.name) {
-                    case RUN_ACTIVITY_SALES:
-                      return (
-                        <li className="nav-item" key={`run-type-${i}`}>
-                          <a
-                            href={`#run-dashboard-${i}`}
-                            data-bs-toggle="tab"
-                            aria-expanded={i === 0 }
-                            className={`nav-link ${i === 0 ? 'active' : ''}`}
-                          >
-                            <i className="mdi mdi-account-circle d-md-none d-block"/>
-                            <span className="d-none d-md-block">{activity.name}</span>
-                          </a>
-                        </li>
-                      );
-
-                    case RUN_ACTIVITY_SAMPLING:
-                      return (
-                        <li className="nav-item" key={`run-type-${i}`}>
-                          <a
-                            href={`#run-dashboard-${i}`}
-                            data-bs-toggle="tab"
-                            aria-expanded={i === 0 }
-                            className={`nav-link ${i === 0 ? 'active' : ''}`}
-                          >
-                            <i className="mdi mdi-account-circle d-md-none d-block"/>
-                            <span className="d-none d-md-block">{activity.name}</span>
-                          </a>
-                        </li>
-                      );
-
-                    case RUN_ACTIVITY_SURVEY:
-                      return (
-                        <li className="nav-item" key={`run-type-${i}`}>
-                          <a
-                            href={`#run-dashboard-${i}`}
-                            data-bs-toggle="tab"
-                            aria-expanded={i === 0 }
-                            className={`nav-link ${i === 0 ? 'active' : ''}`}
-                          >
-                            <i className="mdi mdi-account-circle d-md-none d-block"/>
-                            <span className="d-none d-md-block">{activity.name}</span>
-                          </a>
-                        </li>
-                      );
-
-                    case RUN_ACTIVITY_ROAD_SHOW:
-                      return (
-                        <li className="nav-item" key={`run-type-${i}`}>
-                          <a
-                            href={`#run-dashboard-${i}`}
-                            data-bs-toggle="tab"
-                            aria-expanded={i === 0 }
-                            className={`nav-link ${i === 0 ? 'active' : ''}`}
-                          >
-                            <i className="mdi mdi-account-circle d-md-none d-block"/>
-                            <span className="d-none d-md-block">{activity.name}</span>
-                          </a>
-                        </li>
-                      );
-
-                    case RUN_ACTIVITY_STOCK_MAPPING:
-                      return (
-                        <li className="nav-item" key={`run-type-${i}`}>
-                          <a
-                            href={`#run-dashboard-${i}`}
-                            data-bs-toggle="tab"
-                            aria-expanded={i === 0 }
-                            className={`nav-link ${i === 0 ? 'active' : ''}`}
-                          >
-                            <i className="mdi mdi-account-circle d-md-none d-block"/>
-                            <span className="d-none d-md-block">{activity.name}</span>
-                          </a>
-                        </li>
-                      );
-
-                    default:
-                      return (
-                        <li className="nav-item" key={`run-type-${i}`}>
-                          <a
-                            href={`#run-dashboard-${i}`}
-                            data-bs-toggle="tab"
-                            aria-expanded={i === 0 }
-                            className={`nav-link ${i === 0 ? 'active' : ''}`}
-                          >
-                            <i className="mdi mdi-account-circle d-md-none d-block"/>
-                            <span className="d-none d-md-block">Unsupported Run Activity</span>
-                          </a>
-                        </li>
-                      );
-                  }
-                })}
-              </ul>
-
-              <div className="tab-content">
-                {run?.types?.map((activity: any, i: number) => {
-                  switch (activity.name) {
-                    case RUN_ACTIVITY_SALES:
-                      return (
-                        <div
-                          className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                          id={`run-dashboard-${i}`}
-                          key={`run-dash-${i}`}
-                        >
-                          <h4>Dashboard Sales</h4>
-                        </div>
-                      );
-
-                    case RUN_ACTIVITY_SAMPLING:
-                      return (
-                        <div
-                          className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                          id={`run-dashboard-${i}`}
-                          key={`run-dash-${i}`}
-                        >
-                          <h4>Dashboard Sampling</h4>
-                        </div>
-                      );
-
-                    case RUN_ACTIVITY_SURVEY:
-                      return (
-                        <div
-                          className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                          id={`run-dashboard-${i}`}
-                          key={`run-dash-${i}`}
-                        >
-                          <h4>Dashboard Survey</h4>
-                        </div>
-                      );
-
-                    case RUN_ACTIVITY_ROAD_SHOW:
-                      return (
-                        <div
-                          className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                          id={`run-dashboard-${i}`}
-                          key={`run-dash-${i}`}
-                        >
-                          <h4>Dashboard Road Show</h4>
-                        </div>
-                      );
-
-                    case RUN_ACTIVITY_STOCK_MAPPING:
-                      return (
-                        <div
-                          className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                          id={`run-dashboard-${i}`}
-                          key={`run-dash-${i}`}
-                        >
-                          <h4>Dashboard Stock Mapping</h4>
-                        </div>
-                      );
-
-                    default:
-                      return (
-                        <div
-                          className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                          id={`run-dashboard-${i}`}
-                          key={`run-dash-${i}`}
-                        >
-                          <h4>Unsupported Run Activity</h4>
-                        </div>
-                      );
-                  }
-                })}
-              </div>
-            </div>
+            {run && <RunTeam run={run} />}
           </Box>
         )}
         {activeTab === 2 && (
           <Box sx={{ p: 2 }}>
-            <Typography variant="h6">Roll Call Content</Typography>
-            {run && <RunRollCall run={run} />}
+            <ul className="nav nav-tabs nav-bordered mb-3">
+              {run?.types?.map((activity: any, i: number) => (
+                <li className="nav-item" key={`run-type-${i}`}>
+                  <a
+                    href={`#run-dashboard-${i}`}
+                    data-bs-toggle="tab"
+                    aria-expanded={i === 0}
+                    className={`nav-link ${i === 0 ? 'active' : ''}`}
+                  >
+                    <span className="d-md-block">{activity.name}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div className="tab-content">
+              {run?.types?.map((activity: any, i: number) => {
+                switch (activity.name) {
+                  case RUN_ACTIVITY_SALES:
+                    return (
+                      <div
+                        className={`tab-pane ${i === 0 ? 'show active' : ''}`}
+                        id={`run-dashboard-${i}`}
+                        key={`run-dash-${i}`}
+                      >
+                        {run?.id ? <RunDashboardSales runId={run.id} /> : null}
+                      </div>
+                    );
+
+                  case RUN_ACTIVITY_SAMPLING:
+                    return (
+                      <div
+                        className={`tab-pane ${i === 0 ? 'show active' : ''}`}
+                        id={`run-dashboard-${i}`}
+                        key={`run-dash-${i}`}
+                      >
+                        <h4>Dashboard Sampling</h4>
+                      </div>
+                    );
+
+                  case RUN_ACTIVITY_SURVEY:
+                    return (
+                      <div
+                        className={`tab-pane ${i === 0 ? 'show active' : ''}`}
+                        id={`run-dashboard-${i}`}
+                        key={`run-dash-${i}`}
+                      >
+                        {run?.id ? <RunDashboardSurvey runId={run.id} /> : null}
+                      </div>
+                    );
+
+                  case RUN_ACTIVITY_ROAD_SHOW:
+                    return (
+                      <div
+                        className={`tab-pane ${i === 0 ? 'show active' : ''}`}
+                        id={`run-dashboard-${i}`}
+                        key={`run-dash-${i}`}
+                      >
+                        <h4>Dashboard Road Show</h4>
+                      </div>
+                    );
+
+                  case RUN_ACTIVITY_STOCK_MAPPING:
+                    return (
+                      <div
+                        className={`tab-pane ${i === 0 ? 'show active' : ''}`}
+                        id={`run-dashboard-${i}`}
+                        key={`run-dash-${i}`}
+                      >
+                        <h4>Dashboard Stock Mapping</h4>
+                      </div>
+                    );
+
+                  default:
+                    return (
+                      <div
+                        className={`tab-pane ${i === 0 ? 'show active' : ''}`}
+                        id={`run-dashboard-${i}`}
+                        key={`run-dash-${i}`}
+                      >
+                        <h4>Unsupported Run Activity</h4>
+                      </div>
+                    );
+                }
+              })}
+            </div>
           </Box>
         )}
         {activeTab === 3 && (
           <Box sx={{ p: 2 }}>
-            <Typography variant="h6">Stock Management</Typography>
-            {/* Placeholder for Stock Management Content */}
-            {run && <p>Stock Management</p>}
+            {run && <RunRollCall run={run} />}
           </Box>
         )}
         {activeTab === 4 && (
           <Box sx={{ p: 2 }}>
-            <Typography variant="h6">Surveys</Typography>
-            {/* Surveys Content */}
-            {run?.id && <DashboardSurvey campaignRunId={run.id} />}
+            <ul className="nav nav-tabs nav-bordered mb-3">
+              <li className="nav-item">
+                <a href="#payrates" data-bs-toggle="tab" aria-expanded="true" className="nav-link active">
+                  <span className="d-md-block">Pay Rates</span>
+                </a>
+              </li>
+              <li className="nav-item">
+                <a href="#kpis" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
+                  <span className="d-md-block">KPIs</span>
+                </a>
+              </li>
+              <li className="nav-item">
+                <a href="#agent-scores" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
+                  <span className="d-md-block">Scores & Earnings</span>
+                </a>
+              </li>
+            </ul>
+
+            <div className="tab-content">
+              <div className="tab-pane show active" id="payrates">
+                {run?.id && <RunPayRate runId={run.id} />}
+              </div>
+
+              <div className="tab-pane" id="kpis">
+                {run?.id && <RunKPIs runId={run.id} />}
+              </div>
+
+              <div className="tab-pane" id="agent-scores">
+                {run?.id && <RunPayroll runId={run.id} />}
+              </div>
+            </div>
           </Box>
         )}
         {run?.types?.map((activity: any, i: number) => (
           activeTab === i + 5 && (
             <Box sx={{ p: 2 }} key={`activity-content-${i}`}>
               <Typography variant="h6">{activity.name} Content</Typography>
-              {/* Placeholder for Activity Content */}
-              {run && <p>Run Activity</p>}
+              {activity.name === RUN_ACTIVITY_SALES && (
+                <div>
+                  <RunSalesQuestions runId={run.id} />
+                  <RunSalesStockAllocation runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                  <RunSalesGiveawayQuestions runId={run.id} />
+                  <RunSalesGiveawayConfig runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                  <RunStockCounterEntry runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                </div>
+              )}
+              {activity.name === RUN_ACTIVITY_SAMPLING && (
+                <RunSampling runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+              )}
+              {activity.name === RUN_ACTIVITY_SURVEY && (
+                <RunSurveyQuestions runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+              )}
             </Box>
           )
         ))}

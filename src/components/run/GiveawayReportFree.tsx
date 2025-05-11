@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import PhoneNumberInput from '../PhoneNumberInput';
 
 import { GQLMutation } from 'src/lib/client';
 import { IAgentFreeGiveawayAllocations } from 'src/lib/interface/campaign.interface';
@@ -26,6 +25,7 @@ import {
 import { QuestionnaireForm } from 'src/components/QuestionnaireForm';
 import { getGeoLocation } from 'src/lib/helpers';
 import { LoadingDiv } from 'src/components/LoadingDiv';
+import PhoneNumberInput from '../PhoneNumberInput';
 
 export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
   const {
@@ -66,46 +66,19 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
   const [allocations, setAllocations] = useState<IAgentFreeGiveawayAllocations[]>([]);
   const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
-
-  const loadAllocations = () => {
-    if (runId) {
-      getAllocations({ variables: { input: { runId } } });
-    }
-  };
-  const loadSurvey = () => {
-    if (runId) {
-      getSurvey({ variables: { input: { runId } } });
-    }
-  };
+  
   const handleCreate = (e: Event) => {
     e.preventDefault();
 
     if (survey?.id && geoLocation?.lat && geoLocation?.lng) {
       const _responses: InputSurveyResponse[] = [];
 
-      for (let i = 0; i < questionnaireFields.length; i++) {
+      for (let i = 0; i < questionnaireFields.length; i+=1) {
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: questionnaireFields[i].feedback || {},
         });
       }
-
-      // for (let i = 0; i < questionnaireFields.length; i++) {
-      //   let _string: undefined | string = undefined;
-      //   let _stringArray: undefined | string[] = undefined;
-
-      //   if (Array.isArray(questionnaireFields[i].feedback)) {
-      //     _stringArray = questionnaireFields[i].feedback as string[];
-      //   } else {
-      //     if (questionnaireFields[i].feedback) {
-      //       _string = questionnaireFields[i].feedback as string;
-      //     }
-      //   }
-      //   _responses.push({
-      //     questionnaireFieldId: questionnaireFields[i].id,
-      //     feedback: { _string, _stringArray },
-      //   });
-      // }
 
       create({
         variables: {
@@ -122,13 +95,21 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
 
     return () => clearInterval(interval);
   }, []);
-  useEffect(() => loadSurvey(), []);
-  useEffect(() => loadAllocations(), [runId]);
+  useEffect(() => {
+    if (runId) {
+      getSurvey({ variables: { input: { runId } } });
+    }
+  }, [runId, getSurvey]);
+  useEffect(() => {
+    if (runId) {
+      getAllocations({ variables: { input: { runId } } });
+    }
+  }, [runId, getAllocations]);
   useEffect(() => {
     if (FGAllocations) {
       const _allocations: IAgentFreeGiveawayAllocations[] = [];
 
-      for (let i = 0; i < FGAllocations.length; i++) {
+      for (let i = 0; i < FGAllocations.length; i+=1) {
         _allocations.push({
           index: FGAllocations[i].index,
           id: FGAllocations[i].id,
@@ -148,26 +129,26 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
     if (survey) {
       const _fields = [];
 
-      for (let i = 0; i < survey.questionnaireFields.length; i++) {
+      for (let i = 0; i < survey.questionnaireFields.length; i+=1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k+=1) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
             label: survey.questionnaireFields[i].optionsDropdown[k].label,
@@ -234,7 +215,7 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
                         <input
                           type="text"
                           className="form-control font-14"
-                          disabled={true}
+                          disabled
                           placeholder={`Given away: ${allocation.quantityGiven} / ${allocation.quantityAllocated}`}
                         />
                         <button
@@ -284,12 +265,12 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
               <div className="row">
                 <div className="col-md-12">
                   <div className="mb-3">
-                    <label htmlFor="respondentName" className="form-label">
+                    <p className="form-label">
                       Customer Name
                       {survey?.requireRespondentName ? (
                         <span className="text-warning ms-1">*</span>
                       ) : undefined}
-                    </label>
+                    </p>
                     <input
                       type="text"
                       id="respondentName"
@@ -308,12 +289,12 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
                 </div>
                 <div className="col-md-4">
                   <div className="mb-3">
-                    <label htmlFor="respondentPhone" className="form-label">
+                    <p className="form-label">
                       Customer Phone
                       {survey?.requireRespondentPhone ? (
                         <span className="text-warning ms-1">*</span>
                       ) : undefined}
-                    </label>
+                    </p>
                     <PhoneNumberInput
                       phonekey="respondentPhone"
                       required={survey?.requireRespondentPhone}
@@ -324,12 +305,12 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
                 </div>
                 <div className="col-md-4">
                   <div className="mb-3">
-                    <label htmlFor="respondentEmail" className="form-label">
+                    <p className="form-label">
                       Customer Email
                       {survey?.requireRespondentEmail ? (
                         <span className="text-warning ms-1">*</span>
                       ) : undefined}
-                    </label>
+                    </p>
                     <input
                       type="text"
                       id="respondentEmail"
@@ -348,9 +329,9 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
                 </div>
                 <div className="col-md-4">
                   <div className="mb-3">
-                    <label htmlFor="giveawayUnits" className="form-label">
+                    <p className="form-label">
                       Giveaway Quantity<span className="text-warning ms-1">*</span>
-                    </label>
+                    </p>
                     <input
                       type="number"
                       id="giveawayUnits"
@@ -360,7 +341,7 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
                       onChange={(e) =>
                         setInput({
                           ...input,
-                          quantityGiven: parseInt(e.target.value),
+                          quantityGiven: parseInt(e.target.value,10),
                         })
                       }
                     />

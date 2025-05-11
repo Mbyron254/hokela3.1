@@ -3,17 +3,17 @@
 import Image from 'next/image';
 
 import { FC, useEffect, useState } from 'react';
-import { MutationButton } from '../MutationButton';
-import { GQLMutation } from '@/lib/client';
-import { M_PRODUCTS_MINI } from '@/lib/mutations/product.mutation';
-import { sourceImage } from '@/lib/server';
-import { M_PACKAGINGS_MINI } from '@/lib/mutations/packaging.mutation';
-import { LoadingSpan } from '../LoadingSpan';
-import { IInventoryCounterEntry } from '@/lib/interface/general.interface';
+import { GQLMutation } from 'src/lib/client';
+import { M_PRODUCTS_MINI } from 'src/lib/mutations/product.mutation';
+import { INVENTORY_COUNTER_ENTRY } from 'src/lib/mutations/inventory.mutation';
+import { M_STOCK_BALANCE } from 'src/lib/mutations/inventory-allocation.mutation';
+import { M_PACKAGINGS_MINI } from 'src/lib/mutations/packaging.mutation';
+import { IInventoryCounterEntry } from 'src/lib/interface/general.interface';
+import { sourceImage } from 'src/lib/server';
+import { commafy } from 'src/lib/helpers';
 import { SearchRunOffer } from '../SearchRunOffer';
-import { INVENTORY_COUNTER_ENTRY } from '@/lib/mutations/inventory.mutation';
-import { M_STOCK_BALANCE } from '@/lib/mutations/inventory-allocation.mutation';
-import { commafy } from '@/lib/helpers';
+import { MutationButton } from '../MutationButton';
+import { LoadingSpan } from '../LoadingSpan';
 
 export const RunStockCounterEntry: FC<IInventoryCounterEntry> = ({ runId, clientTier2Id }) => {
   const {
@@ -64,15 +64,15 @@ export const RunStockCounterEntry: FC<IInventoryCounterEntry> = ({ runId, client
   });
   const [selectedOffer, setSelectedOffer] = useState<any>();
 
-  const loadProducts = () => {
-    getProducts({ variables: { input: { clientTier2Id } } });
-  };
-  const loadPackagings = () => {
-    if (input.productId) {
-      getPackagings({ variables: { input: { productId: input.productId } } });
+  const handleCounter = () => {
+    if (runId && selectedOffer?.agent?.id) {
+      counter({ variables: { input: { ...input, runId, agentId: selectedOffer.agent.id } } });
     }
   };
-  const loadStock = () => {
+
+  useEffect(() => getProducts({ variables: { input: { clientTier2Id } } }), [getProducts, clientTier2Id]);
+  useEffect(() => getPackagings({ variables: { input: { productId: input.productId } } }), [getPackagings, input.productId]);
+  useEffect(() => {
     if (runId && selectedOffer?.agent?.id && input.packagingId) {
       getStock({
         variables: {
@@ -84,16 +84,7 @@ export const RunStockCounterEntry: FC<IInventoryCounterEntry> = ({ runId, client
         },
       });
     }
-  };
-  const handleCounter = () => {
-    if (runId && selectedOffer?.agent?.id) {
-      counter({ variables: { input: { ...input, runId, agentId: selectedOffer.agent.id } } });
-    }
-  };
-
-  useEffect(() => loadProducts(), []);
-  useEffect(() => loadPackagings(), [input.productId]);
-  useEffect(() => loadStock(), [runId, selectedOffer?.agent?.id, input.productId, input.packagingId]);
+  }, [runId, selectedOffer?.agent?.id, input.productId, input.packagingId, getStock]);
 
   return (
     <>
@@ -153,14 +144,14 @@ export const RunStockCounterEntry: FC<IInventoryCounterEntry> = ({ runId, client
                           })
                         }
                       >
-                        <option></option>
+                        <option value="">Select</option>
                         {products?.rows.map((product: any, index: number) => (
                           <option value={product.id} key={`product-${index}`}>
                             {product.name}
                           </option>
                         ))}
                       </select>
-                      <label htmlFor="product">Product</label>
+                      <p>Product</p>
                     </div>
                   )}
                 </div>
@@ -181,14 +172,14 @@ export const RunStockCounterEntry: FC<IInventoryCounterEntry> = ({ runId, client
                           })
                         }
                       >
-                        <option></option>
+                        <option>Select</option>
                         {packagings?.rows.map((packaging: any, index: number) => (
                           <option key={`packaging-${index}`} value={packaging.id}>
                             {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
                           </option>
                         ))}
                       </select>
-                      <label htmlFor="packaging">Packaging</label>
+                      <p>Packaging</p>
                     </div>
                   )}
                 </div>
@@ -207,7 +198,7 @@ export const RunStockCounterEntry: FC<IInventoryCounterEntry> = ({ runId, client
                         })
                       }
                     />
-                    <label htmlFor="quantity">Quantity</label>
+                    <p>Quantity</p>
                   </div>
                 </div>
                 <div className="col-md-12">
@@ -224,7 +215,7 @@ export const RunStockCounterEntry: FC<IInventoryCounterEntry> = ({ runId, client
                         })
                       }
                     />
-                    <label htmlFor="quantity">Reasons / Notes</label>
+                    <p>Reasons / Notes</p>
                   </div>
                 </div>
               </div>

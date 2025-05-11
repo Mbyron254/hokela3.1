@@ -199,7 +199,7 @@ function Item({ run, sx, ...other }: ItemProps) {
     if (clocked) {
       window.location.replace(`/agent/campaigns/${run.id}`);
     }
-  }, [clocked]);
+  }, [clocked, run.id]);
 
   return (
     <Box sx={{ gap: 2, display: 'flex', alignItems: 'flex-start', ...sx }} {...other}>
@@ -303,9 +303,9 @@ function Item({ run, sx, ...other }: ItemProps) {
                         <Webcam
                           screenshotFormat="image/jpeg"
                           ref={webcamRef}
-                          mirrored={true}
-                          disablePictureInPicture={true}
-                          forceScreenshotSourceSize={true}
+                          mirrored
+                          disablePictureInPicture
+                          forceScreenshotSourceSize
                           imageSmoothing={false}
                           audio={false}
                           videoConstraints={{

@@ -20,18 +20,17 @@ export const AgentsLocation: FC<{ runId: string }> = ({ runId }) => {
 
   const [locations, setLocations] = useState<IPoint[]>([]);
 
-  const loadLatestAgentClocls = () => {
+  useEffect(() => {
     if (runId) {
       getClocks({ variables: { input: { runId } } });
     }
-  };
+  }, [runId, getClocks]);
 
-  useEffect(() => loadLatestAgentClocls(), []);
   useEffect(() => {
     if (clocks) {
       const _locations: IPoint[] = [];
 
-      for (let i = 0; i < clocks.length; i++) {
+      for (let i = 0; i < clocks.length; i+=1) {
         _locations.push({ lat: clocks[i].lat, lng: clocks[i].lng });
       }
       setLocations(_locations);

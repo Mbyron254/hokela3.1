@@ -1,15 +1,15 @@
 'use client';
 
-import { DROPDOWN, CHOICE_SINGLE, CHOICE_MULTIPLE } from '@/lib/constant';
+import { DROPDOWN, CHOICE_SINGLE, CHOICE_MULTIPLE } from 'src/lib/constant';
 import {
   IChoice,
   IAnswerDropdownOption,
   IQuestionnairField,
   InputSurveyUpdate,
-} from '@/lib/interface/general.interface';
+} from 'src/lib/interface/general.interface';
 import { FC, useEffect, useState } from 'react';
-import { GQLMutation } from '@/lib/client';
-import { M_SURVEY, SURVEY_UPSERT } from '@/lib/mutations/survey.mutation';
+import { GQLMutation } from 'src/lib/client';
+import { M_SURVEY, SURVEY_UPSERT } from 'src/lib/mutations/survey.mutation';
 import { RunSurveyTargetReports } from './RunSurveyTargetReports';
 import { QuestionnaireSetup } from '../QuestionnaireSetup';
 
@@ -45,14 +45,9 @@ export const RunSurveyQuestions: FC<{
     questionnaireFields: [],
   });
 
-  const loadSurvey = () => {
-    if (runId) {
-      getSurvey({ variables: { input: { runId } } });
-    }
-  };
   const handleUpsert = () => {
     if (clientTier2Id && runId && questionnaireFields) {
-      for (let i = 0; i < questionnaireFields.length; i++) {
+      for (let i = 0; i < questionnaireFields.length; i+=1) {
         switch (questionnaireFields[i].feedbackType) {
           case DROPDOWN:
             delete questionnaireFields[i].optionsChoiceSingle;
@@ -81,31 +76,31 @@ export const RunSurveyQuestions: FC<{
     }
   };
 
-  useEffect(() => loadSurvey(), [upserted]);
+  useEffect(() => getSurvey({ variables: { input: { runId } } }), [getSurvey, runId]);
   useEffect(() => {
     if (survey) {
       const _fields = [];
 
-      for (let i = 0; i < survey.questionnaireFields.length; i++) {
+      for (let i = 0; i < survey.questionnaireFields.length; i+=1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k+=1) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
             label: survey.questionnaireFields[i].optionsDropdown[k].label,
@@ -138,7 +133,7 @@ export const RunSurveyQuestions: FC<{
       });
       setQuestionnaireFields(_fields);
     }
-  }, [survey]);
+  }, [survey, input]);
 
   return (
     <>
@@ -180,9 +175,7 @@ export const RunSurveyQuestions: FC<{
                         })
                       }
                     />
-                    <label htmlFor="surveyName" className="form-label">
-                      Survey Name
-                    </label>
+                    <p className="form-label">Survey Name</p>
                   </div>
                   <div className="form-floating">
                     <textarea
@@ -198,7 +191,7 @@ export const RunSurveyQuestions: FC<{
                         })
                       }
                     />
-                    <label htmlFor="description">Survey Description</label>
+                    <p>Survey Description</p>
                   </div>
                 </div>
               </div>
@@ -220,9 +213,7 @@ export const RunSurveyQuestions: FC<{
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="hideRespondentFieldsSurvey">
-                      Hide Respondent Fields
-                    </label>
+                    <p className="form-check-label">Hide Respondent Fields</p>
                   </div>
                   <div className="form-check form-switch mb-3">
                     <input
@@ -237,9 +228,7 @@ export const RunSurveyQuestions: FC<{
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="requireRespondentNameSurvey">
-                      Require Respondent Name
-                    </label>
+                    <p className="form-check-label">Require Respondent Name</p>
                   </div>
                   <div className="form-check form-switch mb-3">
                     <input
@@ -254,9 +243,7 @@ export const RunSurveyQuestions: FC<{
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="requireRespondentPhoneSurvey">
-                      Require Respondent Phone
-                    </label>
+                    <p className="form-check-label">Require Respondent Phone</p>
                   </div>
                   <div className="form-check form-switch mb-3">
                     <input
@@ -271,9 +258,7 @@ export const RunSurveyQuestions: FC<{
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="requireRespondentEmailSurvey">
-                      Require Respondent Email
-                    </label>
+                    <p className="form-check-label">Require Respondent Email</p>
                   </div>
                   <div className="form-check form-switch mb-3">
                     <input
@@ -288,9 +273,7 @@ export const RunSurveyQuestions: FC<{
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="blockSameLocationReportsGloballySurvey">
-                      Block Same Location Reports Globally
-                    </label>
+                    <p className="form-check-label">Block Same Location Reports Globally</p>
                   </div>
                   <div className="form-check form-switch">
                     <input
@@ -305,9 +288,7 @@ export const RunSurveyQuestions: FC<{
                         })
                       }
                     />
-                    <label className="form-check-label" htmlFor="blockSameLocationReportsPerAgentSurvey">
-                      Block Same Location Reports Per Agent
-                    </label>
+                    <p className="form-check-label">Block Same Location Reports Per Agent</p>
                   </div>
                 </div>
               </div>

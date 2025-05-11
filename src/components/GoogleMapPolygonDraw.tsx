@@ -1,8 +1,8 @@
 'use client';
 
-import { IPoint } from '@/lib/interface/point.interface';
-import { GoogleMap, Polygon, useJsApiLoader } from '@react-google-maps/api';
 import { Dispatch, FC, SetStateAction } from 'react';
+import { IPoint } from 'src/lib/interface/point.interface';
+import { GoogleMap, Polygon, useJsApiLoader } from '@react-google-maps/api';
 
 export const GoogleMapPolygonDraw: FC<{
   color: string;
@@ -33,7 +33,7 @@ export const GoogleMapPolygonDraw: FC<{
           <Polygon
             path={polygonPaths}
             key={1}
-            editable={true}
+            editable
             options={{
               strokeColor: color,
               strokeOpacity: 0.8,

@@ -5,11 +5,11 @@ import Link from 'next/link';
 
 import { FC, useState } from 'react';
 import { GQLMutation } from 'src/lib/client';
-import { DataTable } from '../DataTable';
-import { sourceImage } from '@/lib/server';
-import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from '@/lib/constant';
-import { M_AGENTS_PERFORMANCE } from '@/lib/mutations/analytics.mutation';
-import { commafy } from '@/lib/helpers';
+import { sourceImage } from 'src/lib/server';
+import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
+import { M_AGENTS_PERFORMANCE } from 'src/lib/mutations/analytics.mutation';
+import { commafy } from 'src/lib/helpers';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 export const AgentsPerformance: FC<{ runId: string }> = ({ runId }) => {
   const {
@@ -278,17 +278,11 @@ export const AgentsPerformance: FC<{ runId: string }> = ({ runId }) => {
           href={`/c-marketing/runs/agent/${runId}/${row.agent?.id}`}
           className="btn btn-primary btn-sm"
         >
-          <i className="mdi mdi-arrow-right"></i>
+          <i className="mdi mdi-arrow-right"/>
         </Link>
       ),
     },
   ];
-
-  const loadPerformances = (page?: number, pageSize?: number) => {
-    if (runId) {
-      getPerformances({ variables: { input: { ...filters, runId, page, pageSize } } });
-    }
-  };
 
   return (
     <>
@@ -304,19 +298,33 @@ export const AgentsPerformance: FC<{ runId: string }> = ({ runId }) => {
             />
           </div>
         </div>
-        <div className="col-md-9"></div>
+        <div className="col-md-9" />
       </div>
 
-      <DataTable
-        selectable={false}
-        expanded={false}
-        columns={columns}
-        loading={loadingPerformances}
-        totalRows={performances?.count}
-        data={performances?.rows}
-        handleReloadMutation={loadPerformances}
-        reloadTriggers={[filters.date]}
-      />
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell key={column.name} style={{ width: column.width }}>
+                  {column.name}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {performances?.rows.map((row: any, index: number) => (
+              <TableRow key={index}>
+                {columns.map((column) => (
+                  <TableCell key={column.name}>
+                    {column.cell(row)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   );
 };

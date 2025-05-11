@@ -1,11 +1,11 @@
 'use client';
 
 import { FC, useEffect, useState } from 'react';
-import { GQLMutation } from '@/lib/client';
-import { KPI_CONFIG_RUN_UPDATE, KPI_CONFIG_RUNS, PAY_RATE } from '@/lib/mutations/pay-rate.mutation';
-import { InputKPIConfig } from '@/lib/interface/pay-rate.interface';
+import { GQLMutation } from 'src/lib/client';
+import { KPI_CONFIG_RUN_UPDATE, KPI_CONFIG_RUNS, PAY_RATE } from 'src/lib/mutations/pay-rate.mutation';
+import { InputKPIConfig } from 'src/lib/interface/pay-rate.interface';
+import { commafy } from 'src/lib/helpers';
 import { MutationButton } from '../MutationButton';
-import { commafy } from '@/lib/helpers';
 
 export const RunKPIs: FC<{ runId: string }> = ({ runId }) => {
   const { action: getConfigurations, data: configurations } = GQLMutation({
@@ -30,15 +30,9 @@ export const RunKPIs: FC<{ runId: string }> = ({ runId }) => {
 
   const [configs, setConfigs] = useState<InputKPIConfig[]>([]);
   const [total, setTotal] = useState<number>(0);
-
-  const loadConfigurations = () => {
-    if (runId) getConfigurations({ variables: { input: { runId } } });
-  };
-  const loadPayRate = () => {
-    if (runId) getPayRate({ variables: { input: { runId } } });
-  };
+  
   const handleUpdate = () => {
-    for (let i = 0; i < configs.length; i++) delete configs[i]._label;
+    for (let i = 0; i < configs.length; i+=1) delete configs[i]._label;
 
     update({ variables: { input: { configs } } });
   };
@@ -47,9 +41,9 @@ export const RunKPIs: FC<{ runId: string }> = ({ runId }) => {
 
     let _total = 0;
 
-    for (let i = 0; i < _curr.length; i++) {
+    for (let i = 0; i < _curr.length; i+=1) {
       if (_curr[i].id === id) {
-        _curr[i].percentage = parseInt(event.target.value) | 0;
+        _curr[i].percentage = parseInt(event.target.value, 10) || 0;
       }
 
       _total += _curr[i].percentage!;
@@ -59,15 +53,20 @@ export const RunKPIs: FC<{ runId: string }> = ({ runId }) => {
     setTotal(_total);
   };
 
-  useEffect(() => loadPayRate(), []);
-  useEffect(() => loadConfigurations(), [updated]);
+  useEffect(() => {
+    if (runId) getPayRate({ variables: { input: { runId } } });
+  }, [runId, getPayRate]);
+  
+  useEffect(() => {
+    if (runId) getConfigurations({ variables: { input: { runId } } });
+  }, [runId, getConfigurations]);
   useEffect(() => {
     if (configurations) {
       const _configs = [];
 
       let _total = 0;
 
-      for (let i = 0; i < configurations.rows.length; i++) {
+      for (let i = 0; i < configurations.rows.length; i+=1) {
         _total += configurations.rows[i].percentage;
 
         _configs.push({
@@ -105,10 +104,10 @@ export const RunKPIs: FC<{ runId: string }> = ({ runId }) => {
                     <input
                       type="text"
                       className="form-control form-control-sm font-14"
-                      disabled={true}
+                      disabled
                       placeholder={`ksh: ${
                         payRate
-                          ? commafy((parseInt(config.percentage) / 100) * parseFloat(payRate.amount))
+                          ? commafy((parseInt(config.percentage, 10) / 100) * parseFloat(payRate.amount))
                           : 0
                       }`}
                     />

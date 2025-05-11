@@ -9,22 +9,25 @@ export const MutationButton: FC<IMutationButton> = (props) => {
     icon,
     loading,
     disable = false,
-    type,
+    type = 'button',
     className,
     outline,
     btntype,
     onClick,
     size = 'sm',
   } = props;
-  const btn_type = btntype ? btntype : 'success';
+  const btn_type = btntype || 'success';
+
+  // Ensure the type is one of the valid button types
+  const validType = type === 'button' || type === 'submit' || type === 'reset' ? type : 'button';
 
   return (
     <button
       className={`btn btn-${size} ${
         outline ? `btn-outline-${btn_type}` : `btn-${btn_type}`
       } ${className} waves-effect waves-light`}
-      type={type ? type : 'button'}
-      disabled={disable ? disable : loading}
+      type="button"
+      disabled={disable || loading}
       onClick={onClick}
     >
       {loading ? (
@@ -34,8 +37,8 @@ export const MutationButton: FC<IMutationButton> = (props) => {
         </>
       ) : (
         <span>
-          <i className={`${icon} ${label ? 'me-2' : undefined}`}></i>
-          {label ? label : undefined}
+          <i className={`${icon} ${label ? 'me-2' : ''}`} />
+          {label || ''}
         </span>
       )}
     </button>

@@ -12,7 +12,7 @@ export const LoadingDiv: FC<{ label?: string }> = (props) => {
         role='status'
         aria-hidden='true'
       />
-      <span className='mt-0'>{label ? label : 'Loading'}...</span>
+      <span className='mt-0'>{label || 'Loading'}...</span>
     </div>
   );
 };

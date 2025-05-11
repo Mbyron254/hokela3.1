@@ -220,9 +220,7 @@ export const editFormElementAllowMultipleFileUploads = (
   const index = tmpFormElements.findIndex((f) => f.id === id);
 
   if (index > -1) {
-    tmpFormElements[index].allowMultipleFileUploads = tmpFormElements[index].allowMultipleFileUploads
-      ? false
-      : true;
+    tmpFormElements[index].allowMultipleFileUploads = !tmpFormElements[index].allowMultipleFileUploads;
   }
   setQuestionnaireFields(tmpFormElements);
 };

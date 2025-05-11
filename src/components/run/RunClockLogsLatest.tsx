@@ -1,14 +1,23 @@
 'use client';
 
 import Image from 'next/image';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  CircularProgress,
+} from '@mui/material';
 
-import { GQLMutation } from '@/lib/client';
-import { AGENTS_LATEST_CLOCK } from '@/lib/mutations/clock.mutation';
-import { sourceImage } from '@/lib/server';
+import { GQLMutation } from 'src/lib/client';
+import { AGENTS_LATEST_CLOCK } from 'src/lib/mutations/clock.mutation';
+import { sourceImage } from 'src/lib/server';
 import { FC, useState } from 'react';
-import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from '@/lib/constant';
-import { formatDate } from '@/lib/helpers';
-import { DataTable } from '../DataTable';
+import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
+import { formatDate } from 'src/lib/helpers';
 
 export const RunClockLogsLatest: FC<{
   run: any;
@@ -157,7 +166,7 @@ export const RunClockLogsLatest: FC<{
       <div className="row">
         <div className="col-md-4">
           <div className="mb-2">
-            <label htmlFor="dateStart">From</label>
+            <p>From</p>
             <input
               className="form-control"
               id="dateStart"
@@ -175,7 +184,7 @@ export const RunClockLogsLatest: FC<{
         </div>
         <div className="col-md-4">
           <div className="mb-2">
-            <label htmlFor="dateStop">To</label>
+            <p>To</p>
             <input
               className="form-control"
               id="dateStop"
@@ -193,18 +202,36 @@ export const RunClockLogsLatest: FC<{
         </div>
       </div>
 
-      <DataTable
-        expanded={false}
-        selectable={false}
-        columns={columns}
-        loading={loadingLatestClocks}
-        // totalRows={clockLogs?.count}
-        // data={clockLogs?.rows}
-        totalRows={clocks ? clocks.length : 0}
-        data={clocks ? clocks : []}
-        handleReloadMutation={loadLatestClocks}
-        reloadTriggers={[run.id, filters.dateStart, filters.dateStop]}
-      />
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell key={column.name}>{column.name}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loadingLatestClocks ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  <CircularProgress />
+                </TableCell>
+              </TableRow>
+            ) : (
+              clocks?.map((row: any, index: number) => (
+                <TableRow key={index}>
+                  {columns.map((column) => (
+                    <TableCell key={column.name}>
+                      {column.cell(row)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   );
 };

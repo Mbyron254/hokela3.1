@@ -10,8 +10,7 @@ import { RunClockLogsLatest } from './RunClockLogsLatest';
 
 export const RunRollCall: FC<{
   run: any;
-}> = ({ run }) => {
-  return (
+}> = ({ run }) => (
     <>
       <ul className="nav nav-tabs nav-bordered mb-2">
         <li className="nav-item">
@@ -21,13 +20,13 @@ export const RunRollCall: FC<{
             aria-expanded="true"
             className="nav-link rounded-0 active"
           >
-            <i className="mdi mdi-account-circle d-md-none d-block"></i>
+            <i className="mdi mdi-account-circle d-md-none d-block"/>
             <span className="d-none d-md-block">Running Logs</span>
           </a>
         </li>
         <li className="nav-item">
           <a href="#logs-all" data-bs-toggle="tab" aria-expanded="false" className="nav-link rounded-0">
-            <i className="mdi mdi-home-variant d-md-none d-block"></i>
+            <i className="mdi mdi-home-variant d-md-none d-block"/>
             <span className="d-none d-md-block">All Logs</span>
           </a>
         </li>
@@ -76,7 +75,7 @@ export const RunRollCall: FC<{
                 className="nav-link rounded-0 active"
               >
                 <span className="d-md-block">
-                  <i className="mdi mdi-map-marker-circle me-2"></i>Points
+                  <i className="mdi mdi-map-marker-circle me-2"/>Points
                 </span>
               </a>
             </li>
@@ -88,7 +87,7 @@ export const RunRollCall: FC<{
                 className="nav-link rounded-0"
               >
                 <span className="d-md-block">
-                  <i className="mdi mdi-shape-polygon-plus me-2"></i>Areas
+                  <i className="mdi mdi-shape-polygon-plus me-2"/>Areas
                 </span>
               </a>
             </li>
@@ -100,7 +99,7 @@ export const RunRollCall: FC<{
                 className="nav-link rounded-0"
               >
                 <span className="d-md-block">
-                  <i className="mdi mdi-map-marker-path me-2"></i>Directions
+                  <i className="mdi mdi-map-marker-path me-2"/>Directions
                 </span>
               </a>
             </li>
@@ -122,5 +121,4 @@ export const RunRollCall: FC<{
         </div>
       </div>
     </>
-  );
-};
+  )

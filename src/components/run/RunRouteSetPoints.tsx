@@ -1,7 +1,7 @@
 'use client';
 
-import { GQLQuery, GQLMutation } from '@/lib/client';
-import { IPointUpdate, IPointCreate, IPoint } from '@/lib/interface/point.interface';
+import { GQLQuery, GQLMutation } from 'src/lib/client';
+import { IPointUpdate, IPointCreate, IPoint } from 'src/lib/interface/point.interface';
 import {
   POINTS,
   POINTS_RECYCLED,
@@ -10,14 +10,14 @@ import {
   POINT_UPDATE,
   POINT_RECYCLE,
   POINT_RESTORE,
-} from '@/lib/mutations/point.mutation';
-import { M_SHOPS_MINI } from '@/lib/mutations/shop.mutation';
-import { Q_SHOP_CATEGORIES_MINI } from '@/lib/queries/shop-category.query';
-import { Q_SHOP_SECTORS_MINI } from '@/lib/queries/shop-sector.query';
+} from 'src/lib/mutations/point.mutation';
+import { M_SHOPS_MINI } from 'src/lib/mutations/shop.mutation';
+import { Q_SHOP_CATEGORIES_MINI } from 'src/lib/queries/shop-category.query';
+import { Q_SHOP_SECTORS_MINI } from 'src/lib/queries/shop-sector.query';
 import { FC, useEffect, useState } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton } from '@mui/material';
 import { MutationButton } from '../MutationButton';
 import { LoadingDiv } from '../LoadingDiv';
-import { DataTable } from '../DataTable';
 import { GoogleMapPointPick } from '../GoogleMapPointPick';
 
 export const RunRouteSetPoints: FC<{
@@ -120,9 +120,6 @@ export const RunRouteSetPoints: FC<{
   const [marker, setMarker] = useState<IPoint>();
   const [markerUpdate, setMarkerUpdate] = useState<IPoint>();
 
-  const loadShops = () => {
-    getShops({ variables: { input: {} } });
-  };
   const loadPoints = () => {
     if (run.id) {
       getPoints({ variables: { input: { runId: run.id } } });
@@ -187,149 +184,7 @@ export const RunRouteSetPoints: FC<{
     }
   };
 
-  const columns = [
-    {
-      name: '#',
-      width: '60px',
-      sortable: true,
-      selector: (row: any) => row.index,
-      cell: (row: any) => row.index,
-    },
-    {
-      name: 'NAME',
-      sortable: true,
-      wrap: true,
-      grow: 2,
-      selector: (row: any) => row.shop?.name,
-      cell: (row: any) => row.shop?.name,
-    },
-    {
-      name: 'SECTOR',
-      sortable: true,
-      wrap: true,
-      grow: 1,
-      selector: (row: any) => row.shop?.sector?.name,
-      cell: (row: any) => row.shop?.sector?.name,
-    },
-    {
-      name: 'CATEGORY',
-      sortable: true,
-      wrap: true,
-      grow: 1,
-      selector: (row: any) => row.shop?.category?.name,
-      cell: (row: any) => row.shop?.category?.name,
-    },
-    {
-      name: 'RADIUS',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.radius,
-      cell: (row: any) => `${row.radius} m`,
-    },
-    {
-      name: 'APPROVAL',
-      width: '115px',
-      sortable: true,
-      center: true,
-      selector: (row: any) => row.shop?.approved,
-      cell: (row: any) => {
-        return (
-          <i
-            className={`mdi mdi-check-decagram text-${
-              row.shop?.approved ? 'success' : 'danger'
-            } font-16`}
-          />
-        );
-      },
-    },
-    {
-      name: 'MORE',
-      width: '100px',
-      sortable: false,
-      center: true,
-      selector: (row: any) => row.id,
-      cell: (row: any) => {
-        return (
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#update-point-modal"
-            onClick={() => {
-              setInputUpdate(_inputInit);
-              loadPoint(row.id);
-            }}
-          >
-            <i className="mdi mdi-pen"></i>
-          </button>
-        );
-      },
-    },
-  ];
-  const columnsRecycled = [
-    {
-      name: '#',
-      width: '60px',
-      sortable: true,
-      selector: (row: any) => row.index,
-      cell: (row: any) => row.index,
-    },
-    {
-      name: 'NAME',
-      sortable: true,
-      wrap: true,
-      grow: 2,
-      selector: (row: any) => row.shop?.name,
-      cell: (row: any) => row.shop?.name,
-    },
-    {
-      name: 'SECTOR',
-      sortable: true,
-      wrap: true,
-      grow: 1,
-      selector: (row: any) => row.shop?.sector?.name,
-      cell: (row: any) => row.shop?.sector?.name,
-    },
-    {
-      name: 'CATEGORY',
-      sortable: true,
-      wrap: true,
-      grow: 1,
-      selector: (row: any) => row.shop?.category?.name,
-      cell: (row: any) => row.shop?.category?.name,
-    },
-    {
-      name: 'RADIUS',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.radius,
-      cell: (row: any) => `${row.radius} m`,
-    },
-    {
-      name: 'APPROVAL',
-      width: '115px',
-      sortable: true,
-      selector: (row: any) => row.shop?.approved,
-      cell: (row: any) => {
-        return (
-          <i
-            className={`mdi mdi-check-decagram text-${
-              row.shop?.approved ? 'success' : 'danger'
-            } font-16`}
-          />
-        );
-      },
-    },
-    {
-      name: 'RECYCLED',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.recycled,
-      cell: (row: any) => row.recycled,
-    },
-  ];
-
-  useEffect(() => loadShops(), []);
+  useEffect(() => getShops({ variables: { input: {} } }), [getShops]);
   useEffect(() => {
     if (point) {
       setInputUpdate({ id: point.id, shopId: point.shop?.id, radius: point.radius });
@@ -341,13 +196,13 @@ export const RunRouteSetPoints: FC<{
       <ul className="nav nav-tabs nav-bordered mb-2">
         <li className="nav-item">
           <a href="#active-shops" data-bs-toggle="tab" aria-expanded="true" className="nav-link active">
-            <i className="mdi mdi-account-circle d-md-none d-block"></i>
+            <i className="mdi mdi-account-circle d-md-none d-block"/>
             <span className="d-none d-md-block">Active</span>
           </a>
         </li>
         <li className="nav-item">
           <a href="#recycled-shops" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
-            <i className="mdi mdi-settings-outline d-md-none d-block"></i>
+            <i className="mdi mdi-settings-outline d-md-none d-block"/>
             <span className="d-none d-md-block">Recycled</span>
           </a>
         </li>
@@ -356,58 +211,91 @@ export const RunRouteSetPoints: FC<{
       <div className="tab-content">
         <div className="tab-pane show active" id="active-shops">
           <div className="btn-group btn-group-sm mb-2">
-            <button
-              type="button"
-              className="btn btn-outline-success me-2"
-              data-bs-toggle="modal"
-              data-bs-target="#create-shop-modal"
-            >
-              <i className="mdi mdi-plus me-1"></i>New
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-danger"
-              onClick={handleRecycle}
-              disabled={recycling}
-            >
-              <i className="mdi mdi-trash-can-outline me-1"></i>Recycle
-            </button>
+            <Button variant="outlined" onClick={() => { /* handle new shop creation */ }}>
+              New
+            </Button>
+            <Button variant="outlined" color="error" onClick={handleRecycle} disabled={recycling}>
+              Recycle
+            </Button>
           </div>
 
-          <DataTable
-            columns={columns}
-            loading={loadingPoints}
-            setSelected={setSelected}
-            expanded={false}
-            totalRows={points?.count}
-            data={points?.rows}
-            handleReloadMutation={loadPoints}
-            reloadTriggers={[created, updated, recycled, restored]}
-          />
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>#</TableCell>
+                  <TableCell>NAME</TableCell>
+                  <TableCell>SECTOR</TableCell>
+                  <TableCell>CATEGORY</TableCell>
+                  <TableCell>RADIUS</TableCell>
+                  <TableCell>APPROVAL</TableCell>
+                  <TableCell>MORE</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {points?.rows.map((row: any, index: number) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{row.shop?.name}</TableCell>
+                    <TableCell>{row.shop?.sector?.name}</TableCell>
+                    <TableCell>{row.shop?.category?.name}</TableCell>
+                    <TableCell>{`${row.radius} m`}</TableCell>
+                    <TableCell>
+                      <IconButton>
+                        <i className={`mdi mdi-check-decagram text-${row.shop?.approved ? 'success' : 'danger'} font-16`} />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => { setInputUpdate(_inputInit); loadPoint(row.id); }}>
+                        Edit
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
 
         <div className="tab-pane" id="recycled-shops">
           <div className="btn-group btn-group-sm mb-2">
-            <button
-              type="button"
-              className="btn btn-outline-warning"
-              onClick={handleRestore}
-              disabled={restoring}
-            >
-              <i className="mdi mdi-restore me-2"></i>Restore
-            </button>
+            <Button variant="outlined" color="warning" onClick={handleRestore} disabled={restoring}>
+              Restore
+            </Button>
           </div>
 
-          <DataTable
-            columns={columnsRecycled}
-            loading={loadingPointsRecycled}
-            setSelected={setSelectedRecycled}
-            expanded={false}
-            totalRows={pointsRecycled?.count}
-            data={pointsRecycled?.rows}
-            handleReloadMutation={loadPointsRecycled}
-            reloadTriggers={[recycled, restored]}
-          />
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>#</TableCell>
+                  <TableCell>NAME</TableCell>
+                  <TableCell>SECTOR</TableCell>
+                  <TableCell>CATEGORY</TableCell>
+                  <TableCell>RADIUS</TableCell>
+                  <TableCell>APPROVAL</TableCell>
+                  <TableCell>RECYCLED</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {pointsRecycled?.rows.map((row: any, index: number) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{row.shop?.name}</TableCell>
+                    <TableCell>{row.shop?.sector?.name}</TableCell>
+                    <TableCell>{row.shop?.category?.name}</TableCell>
+                    <TableCell>{`${row.radius} m`}</TableCell>
+                    <TableCell>
+                      <IconButton>
+                        <i className={`mdi mdi-check-decagram text-${row.shop?.approved ? 'success' : 'danger'} font-16`} />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>{row.recycled}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
 
@@ -431,7 +319,7 @@ export const RunRouteSetPoints: FC<{
               <div className="row">
                 <div className="col-md-3">
                   <div className="mb-3">
-                    <label htmlFor="radius">Proximity Radius (m)</label>
+                    <p>Proximity Radius (m)</p>
                     <input
                       id="radius"
                       type="number"
@@ -440,7 +328,7 @@ export const RunRouteSetPoints: FC<{
                       onChange={(e) =>
                         setInput({
                           ...input,
-                          radius: e.target.value === '' ? undefined : parseInt(e.target.value),
+                          radius: e.target.value === '' ? undefined : parseInt(e.target.value, 10),
                         })
                       }
                     />
@@ -448,9 +336,7 @@ export const RunRouteSetPoints: FC<{
                 </div>
                 <div className="col-md-9">
                   <div className="mb-3">
-                    <label htmlFor="name" className="form-label">
-                      Name
-                    </label>
+                    <p className="form-label">Name</p>
                     <div className="input-group input-group-sm">
                       <select
                         id="name"
@@ -465,7 +351,7 @@ export const RunRouteSetPoints: FC<{
                           })
                         }
                       >
-                        <option></option>
+                        <option value="">Select Shop</option>
                         {shops?.rows.map((shop: any, index: number) => (
                           <option value={shop.id} key={`shop-${index}`}>
                             {shop.name}
@@ -509,7 +395,7 @@ export const RunRouteSetPoints: FC<{
                                   })
                                 }
                               />
-                              <label htmlFor="name">Name</label>
+                              <p>Name</p>
                             </div>
                           </div>
                           <div className="col-md-4">
@@ -528,14 +414,14 @@ export const RunRouteSetPoints: FC<{
                                   })
                                 }
                               >
-                                <option></option>
+                                <option value="">Select Sector</option>
                                 {sectors?.rows.map((sector: any, index: number) => (
                                   <option value={sector.id} key={`sector-${index}`}>
                                     {sector.name}
                                   </option>
                                 ))}
                               </select>
-                              <label htmlFor="sector">Sector</label>
+                              <p>Sector</p>
                             </div>
                           </div>
                           <div className="col-md-4">
@@ -554,14 +440,14 @@ export const RunRouteSetPoints: FC<{
                                   })
                                 }
                               >
-                                <option></option>
+                                <option value="">Select Category</option>
                                 {categories?.rows.map((category: any, index: number) => (
                                   <option value={category.id} key={`category-${index}`}>
                                     {category.name}
                                   </option>
                                 ))}
                               </select>
-                              <label htmlFor="category">Category</label>
+                              <p>Category</p>
                             </div>
                           </div>
                         </div>
@@ -595,10 +481,10 @@ export const RunRouteSetPoints: FC<{
 
                   <MutationButton
                     type="button"
+                    icon="mdi mdi-plus-thick"
                     className="btn btn-success float-end"
                     size="sm"
                     label="Submit"
-                    icon="mdi mdi-plus-thick"
                     loading={creating}
                     onClick={handleCreate}
                   />
@@ -632,7 +518,7 @@ export const RunRouteSetPoints: FC<{
                 <div className="row">
                   <div className="col-md-3">
                     <div className="mb-3">
-                      <label htmlFor="radius">Proximity Radius (m)</label>
+                      <p>Proximity Radius (m)</p>
                       <input
                         id="radius"
                         type="number"
@@ -641,7 +527,7 @@ export const RunRouteSetPoints: FC<{
                         onChange={(e) =>
                           setInputUpdate({
                             ...inputUpdate,
-                            radius: e.target.value === '' ? undefined : parseInt(e.target.value),
+                            radius: e.target.value === '' ? undefined : parseInt(e.target.value, 10),
                           })
                         }
                       />
@@ -649,9 +535,7 @@ export const RunRouteSetPoints: FC<{
                   </div>
                   <div className="col-md-9">
                     <div className="mb-3">
-                      <label htmlFor="point" className="form-label">
-                        Name
-                      </label>
+                      <p className="form-label">Name</p>
                       <div className="input-group input-group-sm">
                         <select
                           id="point"
@@ -666,7 +550,7 @@ export const RunRouteSetPoints: FC<{
                             });
                           }}
                         >
-                          <option></option>
+                          <option value="">Select Shop</option>
                           {shops?.rows.map((shop: any, index: number) => (
                             <option value={shop.id} key={`shop-${index}`}>
                               {shop.name}
@@ -710,7 +594,7 @@ export const RunRouteSetPoints: FC<{
                                     })
                                   }
                                 />
-                                <label htmlFor="name">Name</label>
+                                <p>Name</p>
                               </div>
                             </div>
                             <div className="col-md-4">
@@ -729,14 +613,14 @@ export const RunRouteSetPoints: FC<{
                                     })
                                   }
                                 >
-                                  <option></option>
+                                  <option value="">Select Sector</option>
                                   {sectors?.rows.map((sector: any, index: number) => (
                                     <option value={sector.id} key={`sector-${index}`}>
                                       {sector.name}
                                     </option>
                                   ))}
                                 </select>
-                                <label htmlFor="sector">Sector</label>
+                                <p>Sector</p>
                               </div>
                             </div>
                             <div className="col-md-4">
@@ -750,20 +634,19 @@ export const RunRouteSetPoints: FC<{
                                       ...inputUpdate,
                                       newShop: {
                                         ...inputUpdate.newShop,
-                                        shopCategoryId:
-                                          e.target.value === '' ? undefined : e.target.value,
+                                        shopCategoryId: e.target.value === '' ? undefined : e.target.value,
                                       },
                                     })
                                   }
                                 >
-                                  <option></option>
+                                  <option value="">Select Category</option>
                                   {categories?.rows.map((category: any, index: number) => (
                                     <option value={category.id} key={`category-${index}`}>
                                       {category.name}
                                     </option>
                                   ))}
                                 </select>
-                                <label htmlFor="category">Category</label>
+                                <p>Category</p>
                               </div>
                             </div>
                           </div>
@@ -797,10 +680,10 @@ export const RunRouteSetPoints: FC<{
 
                     <MutationButton
                       type="button"
+                      icon="mdi mdi-plus-thick"
                       className="btn btn-primary"
                       size="sm"
                       label="Submit"
-                      icon="mdi mdi-refresh"
                       loading={updating}
                       onClick={handleUpdate}
                     />

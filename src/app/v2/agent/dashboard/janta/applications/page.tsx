@@ -1,14 +1,10 @@
-'use client';
-import { CONFIG } from 'src/config-global';
+'use client'
+
 import { useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { useRouter } from 'src/routes/hooks';
-import { Button } from '@mui/material';
-import { Typography } from '@mui/material'; 
-// ----------------------------------------------------------------------
-
-export const metadata = { title: `Job Applications | Dashboard - ${CONFIG.appName}` };
+import { Button,Typography } from '@mui/material';
 
 export default function Page() {
   const router = useRouter()

@@ -1,7 +1,16 @@
-'use client';
+'use client'
 
+import { FC, useEffect, useState } from 'react';
 import Image from 'next/image';
 
+import { sourceImage } from 'src/lib/server';
+import { GQLMutation } from 'src/lib/client';
+import { M_RUN_REPORTS_SUMMARY } from 'src/lib/mutations/general.mutation';
+import {
+  InputAgentRunDailySales,
+  ISalesDownload,
+  ISurveyReportBody,
+} from 'src/lib/interface/general.interface';
 import {
   commafy,
   downloadCSVAgentsRunSalesCumulative,
@@ -10,25 +19,16 @@ import {
   formatDate,
   formatTimeTo12Hr,
   slugify,
-} from '@/lib/helpers';
-import { sourceImage } from '@/lib/server';
-import { FC, useEffect, useState } from 'react';
-import { GQLMutation } from '@/lib/client';
-import { M_RUN_REPORTS_SUMMARY } from '@/lib/mutations/general.mutation';
-import { LoadingSpan } from '../LoadingSpan';
-import {
-  InputAgentRunDailySales,
-  ISalesDownload,
-  ISurveyReportBody,
-} from '@/lib/interface/general.interface';
-import { MutationButton } from '../MutationButton';
+} from 'src/lib/helpers';
 import {
   RUN_ACTIVITY_ROAD_SHOW,
   RUN_ACTIVITY_SALES,
   RUN_ACTIVITY_SAMPLING,
   RUN_ACTIVITY_STOCK_MAPPING,
   RUN_ACTIVITY_SURVEY,
-} from '@/lib/constant';
+} from 'src/lib/constant';
+import { LoadingSpan } from '../LoadingSpan';
+import { MutationButton } from '../MutationButton';
 
 export const RunProfile: FC<{
   run: any;
@@ -61,11 +61,6 @@ export const RunProfile: FC<{
   const [downloadingSalesCumulative, setDownloadingSalesCumulative] = useState(false);
   const [downloadingSalesDaily, setDownloadingSalesDaily] = useState(false);
 
-  const loadReportSummary = () => {
-    if (run?.id) {
-      getRunReportSummary({ variables: { input: { runId: run.id } } });
-    }
-  };
   const handleDownloadCSVSurveyReport = () => {
     downloadCSVSurveyReport(inputReport, setDownloading);
   };
@@ -75,7 +70,11 @@ export const RunProfile: FC<{
     }
   };
 
-  useEffect(() => loadReportSummary(), [run?.id]);
+  useEffect(() => {
+    if (run?.id) {
+      getRunReportSummary({ variables: { input: { runId: run.id } } });
+    }
+  }, [run?.id, getRunReportSummary]);
 
   return (
     <>
@@ -208,7 +207,7 @@ export const RunProfile: FC<{
                                     )
                                   }
                                 >
-                                  <i className="dripicons-download"></i>
+                                  <i className="dripicons-download" />
                                 </a>
                               )}
                             </div>
@@ -240,7 +239,7 @@ export const RunProfile: FC<{
                                   data-bs-toggle="modal"
                                   data-bs-target="#downloadDailySales"
                                 >
-                                  <i className="dripicons-download"></i>
+                                  <i className="dripicons-download" />
                                 </a>
                               )}
                             </div>
@@ -278,9 +277,7 @@ export const RunProfile: FC<{
                                   onClick={() =>
                                     setInputReport({
                                       ...inputReport,
-                                      _reportName: `survey-sales${
-                                        run?.name ? '-' + slugify(run?.name) : ''
-                                      }`,
+                                      _reportName: `survey-sales${run?.name ? `-${slugify(run?.name)}` : ''}`,
                                       salesSurveyId: runReportSummary?.salesSurveyId,
                                       surveyId: undefined,
                                       salesGiveawaySurveyId: undefined,
@@ -288,7 +285,7 @@ export const RunProfile: FC<{
                                     })
                                   }
                                 >
-                                  <i className="dripicons-download"></i>
+                                  <i className="dripicons-download" />
                                 </a>
                               )}
                             </div>
@@ -325,9 +322,7 @@ export const RunProfile: FC<{
                                   onClick={() =>
                                     setInputReport({
                                       ...inputReport,
-                                      _reportName: `sales-giveaway${
-                                        run?.name ? '-' + slugify(run?.name) : ''
-                                      }`,
+                                      _reportName: `sales-giveaway${run?.name ? `-${slugify(run?.name)}` : ''}`,
                                       salesGiveawaySurveyId: runReportSummary?.salesGiveawaySurveyId,
                                       surveyId: undefined,
                                       salesSurveyId: undefined,
@@ -335,7 +330,7 @@ export const RunProfile: FC<{
                                     })
                                   }
                                 >
-                                  <i className="dripicons-download"></i>
+                                  <i className="dripicons-download" />
                                 </a>
                               )}
                             </div>
@@ -378,9 +373,7 @@ export const RunProfile: FC<{
                                   onClick={() =>
                                     setInputReport({
                                       ...inputReport,
-                                      _reportName: `sampling${
-                                        run?.name ? '-' + slugify(run?.name) : ''
-                                      }`,
+                                      _reportName: `sampling${run?.name ? `-${slugify(run?.name)}` : ''}`,
                                       freeGiveawaySurveyId: runReportSummary?.freeGiveawaySurveyId,
                                       surveyId: undefined,
                                       salesSurveyId: undefined,
@@ -388,7 +381,7 @@ export const RunProfile: FC<{
                                     })
                                   }
                                 >
-                                  <i className="dripicons-download"></i>
+                                  <i className="dripicons-download" />
                                 </a>
                               )}
                             </div>
@@ -431,9 +424,7 @@ export const RunProfile: FC<{
                                   onClick={() =>
                                     setInputReport({
                                       ...inputReport,
-                                      _reportName: `general-survey${
-                                        run?.name ? '-' + slugify(run?.name) : ''
-                                      }`,
+                                      _reportName: `general-survey${run?.name ? `-${slugify(run?.name)}` : ''}`,
                                       surveyId: runReportSummary?.surveyId,
                                       salesSurveyId: undefined,
                                       salesGiveawaySurveyId: undefined,
@@ -441,7 +432,7 @@ export const RunProfile: FC<{
                                     })
                                   }
                                 >
-                                  <i className="dripicons-download"></i>
+                                  <i className="dripicons-download" />
                                 </a>
                               )}
                             </div>
@@ -475,7 +466,7 @@ export const RunProfile: FC<{
                   <div className="row" key={`run-type-${i}`}>
                     <div className="col-md-6">
                       <p className="text-warning mb-3">
-                        <i className="mdi mdi-alert me-2"></i>Other reports not availlable for now.
+                        <i className="mdi mdi-alert me-2"/>Other reports not availlable for now.
                         Please try again later
                       </p>
                     </div>
@@ -506,7 +497,7 @@ export const RunProfile: FC<{
               <div className="row">
                 <div className="col-md-12">
                   <div className="mb-3">
-                    <label htmlFor="dateSalesSurveyReport">Date</label>
+                    <p>Date</p>
                     <input
                       type="date"
                       className="form-control mb-3"
@@ -524,7 +515,7 @@ export const RunProfile: FC<{
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="page">Page</label>
+                    <p>Page</p>
                     <input
                       type="number"
                       className="form-control mb-3"
@@ -534,7 +525,7 @@ export const RunProfile: FC<{
                       onChange={(e) =>
                         setInputReport({
                           ...inputReport,
-                          page: e.target.value !== '' ? parseInt(e.target.value) : undefined,
+                          page: e.target.value !== '' ? parseInt(e.target.value,10) : undefined,
                         })
                       }
                     />
@@ -542,7 +533,7 @@ export const RunProfile: FC<{
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="rows">Rows per page</label>
+                    <p>Rows per page</p>
                     <input
                       type="number"
                       className="form-control mb-3"
@@ -552,7 +543,7 @@ export const RunProfile: FC<{
                       onChange={(e) =>
                         setInputReport({
                           ...inputReport,
-                          pageSize: e.target.value !== '' ? parseInt(e.target.value) : undefined,
+                          pageSize: e.target.value !== '' ? parseInt(e.target.value,10) : undefined,
                         })
                       }
                     />
@@ -593,7 +584,7 @@ export const RunProfile: FC<{
               <div className="row">
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="dateFrom">From Date</label>
+                    <p>From Date</p>
                     <input
                       type="date"
                       className="form-control mb-3"
@@ -611,7 +602,7 @@ export const RunProfile: FC<{
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="dateTo">To Date</label>
+                    <p>To Date</p>
                     <input
                       type="date"
                       className="form-control mb-3"

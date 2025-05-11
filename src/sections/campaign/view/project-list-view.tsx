@@ -1,7 +1,6 @@
 'use client';
 
 import type { IDatePickerControl } from 'src/types/common';
-import type { IProject } from 'src/lib/interface/project.interface';
 
 import dayjs from 'dayjs';
 import { useState, useCallback, useEffect, Suspense, SyntheticEvent } from 'react';
@@ -91,7 +90,7 @@ type IProjectTableFilters = {
 
 type ApplyFilterProps = {
   dateError: boolean;
-  inputData: IProject[];
+  inputData: any;
   filters: IProjectTableFilters;
   comparator: (a: any, b: any) => number;
 };
@@ -116,8 +115,7 @@ export function ProjectListView() {
   const [formData, setFormData] = useState<ICampaignCreate>({
     name: '',
     jobDescription: '',
-    jobQualification: '',
-    clientTier2Id: '',
+    jobQualification: ''
   });
 
   const filters = useSetState<IProjectTableFilters>({
@@ -257,7 +255,7 @@ export function ProjectListView() {
     handleDialogClose();
   };
   const handleDialogClose = () => {
-    setFormData({ name: '', jobDescription: '', jobQualification: '', clientTier2Id: '' });
+    setFormData({ name: '', jobDescription: '', jobQualification: '' });
     dialog.onFalse();
   };
 
@@ -511,15 +509,15 @@ export function ProjectListView() {
 function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
   const { status, name, startDate, endDate } = filters;
 
-  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+  const stabilizedThis = inputData.map((el: any, index: number) => [el, index] as const);
 
-  stabilizedThis.sort((a, b) => {
+  stabilizedThis.sort((a: any, b: any) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
 
-  inputData = stabilizedThis.map((el) => el[0]);
+  inputData = stabilizedThis.map((el: any) => el[0]);
 
   // if (name) {
   //   inputData = inputData.filter(
@@ -531,7 +529,7 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   // }
 
   if (status !== 'all') {
-    inputData = inputData.filter((project) => project.status === status);
+    inputData = inputData.filter((project: any) => project.status === status);
   }
 
   return inputData;

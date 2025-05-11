@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useState } from 'react';
 import {
   GoogleMap,
   useJsApiLoader,
@@ -8,7 +8,7 @@ import {
   DirectionsService,
   DirectionsRenderer,
 } from '@react-google-maps/api';
-import { IPoint } from '@/lib/interface/point.interface';
+import { IPoint } from 'src/lib/interface/point.interface';
 
 const cssMapContainer = {
   width: '100%',
@@ -40,7 +40,7 @@ export const GoogleMapDirection: FC<{
         setTravelTime(route.duration.text);
       } else {
         console.log('------------------ GErr -----------------');
-        console.error('Directions request failed due to ' + response.status);
+        console.error(`Directions request failed due to ${response.status}`);
       }
     }
   };
@@ -57,10 +57,7 @@ export const GoogleMapDirection: FC<{
           <GoogleMap
             mapContainerStyle={cssMapContainer}
             center={centerPoint}
-            zoom={5}
-            // onLoad={onLoad}
-            // onUnmount={onUnmount}
-          >
+            zoom={5}>
             {routes?.map((route: any, index: number) => (
               <div key={`direction-${index}`}>
                 <Marker position={route.origin} options={{ clickable: false, label: 'START' }} />
@@ -71,7 +68,7 @@ export const GoogleMapDirection: FC<{
                 {directions && (
                   <DirectionsRenderer
                     options={{
-                      directions: directions,
+                      directions,
                     }}
                   />
                 )}
@@ -83,14 +80,3 @@ export const GoogleMapDirection: FC<{
     </>
   );
 };
-
-// const [map, setMap] = useState(null);
-
-// const onLoad = useCallback(function callback(map: any) {
-//   const bounds = new window.google.maps.LatLngBounds(centerPoint);
-//   map.fitBounds(bounds);
-//   setMap(map);
-// }, []);
-// const onUnmount = useCallback(function callback(map: any) {
-//   setMap(null);
-// }, []);

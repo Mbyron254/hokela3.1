@@ -37,11 +37,7 @@ export const RunCartSales: FC<{
     removeItem,
     emptyCart,
   } = useCart();
-  //   const { action: getShops, data: shops } = GQLMutation({
-  //     mutation: M_SHOPS_MINI,
-  //     resolver: 'm_shops',
-  //     toastmsg: false,
-  //   });
+ 
   const { action: getSurveySales, data: surveySales } = GQLMutation({
     mutation: SALES_SURVEY,
     resolver: 'salesSurvey',
@@ -57,11 +53,6 @@ export const RunCartSales: FC<{
     toastmsg: true,
   });
 
-  //   const _inputSale: IInputSale = {
-  //     salesRef: undefined,
-  //     shopId: undefined,
-  //     newShop: undefined,
-  //   };
   const _inputSaleSurvey = {
     respondentName: undefined,
     respondentPhone: undefined,
@@ -69,24 +60,15 @@ export const RunCartSales: FC<{
     responses: undefined,
   };
 
-  //   const [inputSale, setInputSale] = useState<IInputSale>(_inputSale);
   const [inputSaleSurvey, setInputSaleSurvey] = useState<IInputSaleSurvey>(_inputSaleSurvey);
   const [questionnaireFieldsSales, setQuestionnaireFieldsSales] = useState<IQuestionnairField[]>([]);
 
-  //   const loadShops = () => {
-  //     getShops({ variables: { input: {} } });
-  //   };
-  const loadSurveySales = () => {
-    if (runId) {
-      getSurveySales({ variables: { input: { runId } } });
-    }
-  };
   const handleSendReport = (e: Event) => {
     e.preventDefault();
 
     const _responses: InputSurveyResponse[] = [];
 
-    for (let i = 0; i < questionnaireFieldsSales.length; i++) {
+    for (let i = 0; i < questionnaireFieldsSales.length; i+=1) {
       _responses.push({
         questionnaireFieldId: questionnaireFieldsSales[i].id,
         feedback: questionnaireFieldsSales[i].feedback || {},
@@ -95,7 +77,7 @@ export const RunCartSales: FC<{
 
     const _items: IInputSaleItem[] = [];
 
-    for (let i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.length; i+=1) {
       _items.push({
         allocationId: items[i].id,
         quantitySold: items[i].quantity,
@@ -108,13 +90,7 @@ export const RunCartSales: FC<{
           //   ...inputSale,
           runId,
           items: _items,
-          //   newShop: inputSale.newShop
-          //     ? {
-          //         ...inputSale.newShop,
-          //         lat,
-          //         lng,
-          //       }
-          //     : undefined,
+          
           survey: surveySales
             ? {
                 ...inputSaleSurvey,
@@ -128,32 +104,35 @@ export const RunCartSales: FC<{
     });
   };
 
-  //   useEffect(() => loadShops(), []);
-  useEffect(() => loadSurveySales(), [runId]);
+  useEffect(() => {
+    if (runId) {
+      getSurveySales({ variables: { input: { runId } } });
+    }
+  }, [runId, getSurveySales]);
   useEffect(() => {
     if (surveySales) {
       const _fields = [];
 
-      for (let i = 0; i < surveySales.questionnaireFields.length; i++) {
+      for (let i = 0; i < surveySales.questionnaireFields.length; i+=1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < surveySales.questionnaireFields[i].optionsChoiceSingle.length; k++) {
+        for (let k = 0; k < surveySales.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
           _singlechoice.push({
             text: surveySales.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: surveySales.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < surveySales.questionnaireFields[i].optionsChoiceMultiple.length; k++) {
+        for (let k = 0; k < surveySales.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
           _multichoice.push({
             text: surveySales.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: surveySales.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < surveySales.questionnaireFields[i].optionsDropdown.length; k++) {
+        for (let k = 0; k < surveySales.questionnaireFields[i].optionsDropdown.length; k+=1) {
           _dropdown.push({
             value: surveySales.questionnaireFields[i].optionsDropdown[k].value,
             label: surveySales.questionnaireFields[i].optionsDropdown[k].label,
@@ -180,7 +159,7 @@ export const RunCartSales: FC<{
       emptyCart();
       window.location.reload();
     }
-  }, [sentReport]);
+  }, [sentReport, emptyCart]);
 
   return (
     <div
@@ -276,9 +255,6 @@ export const RunCartSales: FC<{
                                     className="form-control"
                                     style={{
                                       width: '77px',
-                                      // height: '35px',
-                                      // paddingLeft: '4px',
-                                      // paddingRight: '2px',
                                     }}
                                     value={item.quantity}
                                     defaultValue={item.quantity}
@@ -296,7 +272,7 @@ export const RunCartSales: FC<{
                                 </td>
                                 <td className="p-0">
                                   <a href="#" className="" onClick={() => removeItem(item.id)}>
-                                    <i className="mdi mdi-cancel font-size-20 text-danger"></i>
+                                    <i className="mdi mdi-cancel font-size-20 text-danger"/>
                                   </a>
                                 </td>
                               </tr>
@@ -345,16 +321,17 @@ export const RunCartSales: FC<{
 
             {items.length > 0 && (
               <>
-                <button className="btn btn-sm btn-danger" onClick={emptyCart}>
-                  <i className="mdi mdi-trash-can-outline me-2"></i>Clear Cart
+                <button type="button" className="btn btn-sm btn-danger" onClick={emptyCart}>
+                  <i className="mdi mdi-trash-can-outline me-2"/>Clear Cart
                 </button>
 
                 <button
+                  type="button"
                   className="btn btn-sm btn-success float-end"
                   data-bs-toggle="modal"
                   data-bs-target="#sales-report-modal"
                 >
-                  Check Out<i className="mdi mdi-arrow-right ms-2"></i>
+                  Check Out<i className="mdi mdi-arrow-right ms-2"/>
                 </button>
               </>
             )}
@@ -385,14 +362,14 @@ export const RunCartSales: FC<{
                         <div className="row">
                           <div className="col-md-4">
                             <div className="mb-3">
-                              <label htmlFor="respondentName" className="form;-label">
+                              <p className="form-label">
                                 Customer Name
                                 {surveySales?.requireRespondentName ? (
                                   <span className="text-warning ms-1">*</span>
                                 ) : (
                                   ''
                                 )}
-                              </label>
+                              </p>
                               <input
                                 type="text"
                                 id="respondentName"
@@ -411,14 +388,14 @@ export const RunCartSales: FC<{
                           </div>
                           <div className="col-md-4">
                             <div className="mb-3">
-                              <label htmlFor="respondentPhone" className="form-label">
+                              <p className="form-label">
                                 Customer Phone
                                 {surveySales?.requireRespondentPhone ? (
                                   <span className="text-warning ms-1">*</span>
                                 ) : (
                                   ''
                                 )}
-                              </label>
+                              </p>
                               <PhoneNumberInput
                                 phonekey="respondentPhone"
                                 required={surveySales?.requireRespondentPhone}
@@ -429,14 +406,14 @@ export const RunCartSales: FC<{
                           </div>
                           <div className="col-md-4">
                             <div className="mb-3">
-                              <label htmlFor="respondentEmail" className="form-label">
+                              <p className="form-label">
                                 Customer Email
                                 {surveySales?.requireRespondentEmail ? (
                                   <span className="text-warning ms-1">*</span>
                                 ) : (
                                   ''
                                 )}
-                              </label>
+                              </p>
                               <input
                                 type="text"
                                 id="respondentEmail"
@@ -465,162 +442,7 @@ export const RunCartSales: FC<{
                   </div>
                 )}
 
-                {/* <div className="card border border-secondary">
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="mb-2">
-                          <label htmlFor="refNo" className="form-label">
-                            Receipt / Other Reference No.
-                          </label>
-                          <input
-                            type="text"
-                            id="refNo"
-                            className="form-control"
-                            defaultValue={inputSale.salesRef}
-                            onChange={(e) =>
-                              setInputSale({
-                                ...inputSale,
-                                salesRef: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="mb-2">
-                          <label htmlFor="shop" className="form-label">
-                            Shop
-                          </label>
-                          <div className="input-group">
-                            <select
-                              id="shop"
-                              className="form-select"
-                              aria-label="Shop"
-                              value={inputSale.shopId}
-                              onChange={(e) =>
-                                setInputSale({
-                                  ...inputSale,
-                                  shopId: e.target.value === '' ? undefined : e.target.value,
-                                })
-                              }
-                            >
-                              <option></option>
-                              {shops?.rows.map((shop: any, index: number) => (
-                                <option value={shop.id} key={`shop-${index}`}>
-                                  {shop.name}
-                                </option>
-                              ))}
-                            </select>
-                            <a
-                              className={`btn btn-outline-${inputSale.newShop ? 'danger' : 'secondary'}`}
-                              data-bs-toggle="collapse"
-                              href="#collapseNewShop"
-                              aria-expanded="false"
-                              aria-controls="collapseNewShop"
-                              onClick={() => setInputSale({ ...inputSale, newShop: undefined })}
-                            >
-                              {inputSale.newShop ? 'Cancel Shop' : 'Create Shop'}
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-12">
-                        <div className="collapse" id="collapseNewShop">
-                          <h5 className="card-title text-uppercase text-muted">New Shop</h5>
-                          <hr className="mt-0 mb-3" />
-
-                          <div className="row">
-                            <div className="col-md-4">
-                              <div className="form-floating mb-3">
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  id="name"
-                                  value={inputSale.newShop?.name}
-                                  onChange={(e) =>
-                                    setInputSale({
-                                      ...inputSale,
-                                      newShop: {
-                                        ...inputSale.newShop,
-                                        name: e.target.value,
-                                      },
-                                    })
-                                  }
-                                />
-                                <label htmlFor="name">Name</label>
-                              </div>
-                            </div>
-                            <div className="col-md-4">
-                              <div className="form-floating mb-3">
-                                <select
-                                  id="sector"
-                                  className="form-select"
-                                  value={inputSale.newShop?.shopSectorId}
-                                  onChange={(e) =>
-                                    setInputSale({
-                                      ...inputSale,
-                                      newShop: {
-                                        ...inputSale.newShop,
-                                        shopSectorId: e.target.value === '' ? undefined : e.target.value,
-                                      },
-                                    })
-                                  }
-                                >
-                                  <option></option>
-                                  {sectors?.rows.map((sector: any, index: number) => (
-                                    <option value={sector.id} key={`sector-${index}`}>
-                                      {sector.name}
-                                    </option>
-                                  ))}
-                                </select>
-                                <label htmlFor="sector">Business Sector</label>
-                              </div>
-                            </div>
-                            <div className="col-md-4">
-                              <div className="form-floating mb-3">
-                                <select
-                                  id="category"
-                                  className="form-select"
-                                  value={inputSale.newShop?.shopCategoryId}
-                                  onChange={(e) =>
-                                    setInputSale({
-                                      ...inputSale,
-                                      newShop: {
-                                        ...inputSale.newShop,
-                                        shopCategoryId:
-                                          e.target.value === '' ? undefined : e.target.value,
-                                      },
-                                    })
-                                  }
-                                >
-                                  <option></option>
-                                  {categories?.rows.map((category: any, index: number) => (
-                                    <option value={category.id} key={`category-${index}`}>
-                                      {category.name}
-                                    </option>
-                                  ))}
-                                </select>
-                                <label htmlFor="category">Category</label>
-                              </div>
-                            </div>
-                          </div>
-
-                          <a
-                            className="btn btn-outline-danger btn-sm float-end"
-                            data-bs-toggle="collapse"
-                            href="#collapseNewShop"
-                            aria-expanded="false"
-                            aria-controls="collapseNewShop"
-                            onClick={() => setInputSale({ ...inputSale, newShop: undefined })}
-                          >
-                            Cancel Shop Creation
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
+                
               </div>
             </div>
           </div>

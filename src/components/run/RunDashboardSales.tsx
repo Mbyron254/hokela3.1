@@ -2,11 +2,11 @@
 
 import dynamic from 'next/dynamic';
 
-import { GQLQuery } from '@/lib/client';
+import { GQLQuery } from 'src/lib/client';
 import { FC } from 'react';
-import { Q_RUN_SALES_CHART } from '@/lib/queries/inventory.query';
-import { commafy } from '@/lib/helpers';
-import { Q_ANALYZE_RUN_SALES } from '@/lib/queries/analytics.query';
+import { Q_RUN_SALES_CHART } from 'src/lib/queries/inventory.query';
+import { commafy } from 'src/lib/helpers';
+import { Q_ANALYZE_RUN_SALES } from 'src/lib/queries/analytics.query';
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -90,7 +90,7 @@ export const RunDashboardSales: FC<{ runId: string }> = ({ runId }) => {
                   </div>
                   <div className="col-6">
                     <div className="text-end">
-                      <div id="new-leads-chart" data-colors="#0acf97"></div>
+                      <div id="new-leads-chart" data-colors="#0acf97"/>
                     </div>
                   </div>
                 </div>
@@ -112,7 +112,7 @@ export const RunDashboardSales: FC<{ runId: string }> = ({ runId }) => {
                   </div>
                   <div className="col-6">
                     <div className="text-end">
-                      <div id="booked-revenue-chart" data-colors="#0acf97"></div>
+                      <div id="booked-revenue-chart" data-colors="#0acf97"/>
                     </div>
                   </div>
                 </div>
@@ -126,7 +126,7 @@ export const RunDashboardSales: FC<{ runId: string }> = ({ runId }) => {
         <div className="card-body">
           <Chart
             type="line"
-            width={'100%'}
+            width="100%"
             height={350}
             series={[
               {

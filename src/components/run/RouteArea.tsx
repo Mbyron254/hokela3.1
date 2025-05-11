@@ -1,8 +1,7 @@
 'use client';
 
 import { FC, useEffect, useState } from 'react';
-import { GoogleMapArea } from '../GoogleMapArea';
-import { GQLMutation } from '@/lib/client';
+import { GQLMutation } from 'src/lib/client';
 import {
   AREA,
   AREA_CREATE,
@@ -11,12 +10,12 @@ import {
   AREA_UPDATE,
   AREAS,
   AREAS_RECYCLED,
-} from '@/lib/mutations/area.mutation';
-import { IAreaCreate, IAreaUpdate, ICoordinate, IPolygon } from '@/lib/interface/area.interface';
-import { DataTable } from '../DataTable';
-import { MutationButton } from '../MutationButton';
+} from 'src/lib/mutations/area.mutation';
+import { IAreaCreate, IAreaUpdate, ICoordinate, IPolygon } from 'src/lib/interface/area.interface';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { LoadingDiv } from '../LoadingDiv';
-import e from 'express';
+import { MutationButton } from '../MutationButton';
+import { GoogleMapArea } from '../GoogleMapArea';
 
 export const RouteArea: FC<{
   runId: string;
@@ -103,9 +102,6 @@ export const RouteArea: FC<{
   const [coordinate, setCoordinate] = useState<ICoordinate>({ id: 0, lat: 0, lng: 0 });
   const [coordinateUpdate, setCoordinateUpdate] = useState<ICoordinate>({ id: 0, lat: 0, lng: 0 });
 
-  const loadAreas = () => {
-    if (runId) getAreas({ variables: { input: { runId } } });
-  };
   const loadAreasRecycled = () => {
     if (runId) getAreasRecycled({ variables: { input: { runId } } });
   };
@@ -117,7 +113,7 @@ export const RouteArea: FC<{
       const _cords: ICoordinate[] = [];
 
       if (input.coordinates) {
-        for (let i = 0; i < input.coordinates?.length; i++) {
+        for (let i = 0; i < input.coordinates?.length; i+=1) {
           _cords.push({ lat: input.coordinates[i].lat, lng: input.coordinates[i].lng });
         }
       }
@@ -129,7 +125,7 @@ export const RouteArea: FC<{
       const _cords: ICoordinate[] = [];
 
       if (inputUpdate.coordinates) {
-        for (let i = 0; i < inputUpdate.coordinates?.length; i++) {
+        for (let i = 0; i < inputUpdate.coordinates?.length; i+=1) {
           _cords.push({ lat: inputUpdate.coordinates[i].lat, lng: inputUpdate.coordinates[i].lng });
         }
       }
@@ -201,8 +197,7 @@ export const RouteArea: FC<{
       sortable: false,
       center: true,
       selector: (row: any) => row.id,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) =>  (
           <button
             type="button"
             className="btn btn-light btn-sm me-2"
@@ -213,10 +208,9 @@ export const RouteArea: FC<{
               loadArea(row.id);
             }}
           >
-            <i className="mdi mdi-circle-edit-outline"></i>
+            <i className="mdi mdi-circle-edit-outline"/>
           </button>
-        );
-      },
+        )
     },
   ];
   const columnsRecycled = [
@@ -244,12 +238,37 @@ export const RouteArea: FC<{
     },
   ];
 
-  useEffect(() => loadAreas(), []);
+  const renderTable = (data: any[], cols: any[], handleRowClick: (id: string) => void) => (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {cols.map((column, index) => (
+              <TableCell key={index}>{column.name}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((row, index) => (
+            <TableRow key={index} onClick={() => handleRowClick(row.id)}>
+              {cols.map((column, colIndex) => (
+                <TableCell key={colIndex}>{column.selector(row)}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
+  useEffect(() => {
+    if (runId) getAreas({ variables: { input: { runId } } });
+  }, [runId, getAreas]);
   useEffect(() => {
     if (area) {
       const _coords: ICoordinate[] = [];
 
-      for (let i = 0; i < area.coordinates?.length; i++) {
+      for (let i = 0; i < area.coordinates?.length; i+=1) {
         _coords.push({ id: i + 1, lat: area.coordinates[i].lat, lng: area.coordinates[i].lng });
       }
       setInputUpdate({ id: area.id, name: area.name, color: area.color, coordinates: _coords });
@@ -257,16 +276,16 @@ export const RouteArea: FC<{
   }, [area]);
   useEffect(() => {
     if (areas) {
-      areas.rows.forEach((area: any) => {
+      areas.rows.forEach((_area: any) => {
         const coords: ICoordinate[] = [];
 
-        for (let i = 0; i < area.coordinates.length; i++) {
+        for (let i = 0; i < _area.coordinates.length; i+=1) {
           coords.push({
-            lat: area.coordinates[i].lat,
-            lng: area.coordinates[i].lng,
+            lat: _area.coordinates[i].lat,
+            lng: _area.coordinates[i].lng,
           });
         }
-        setPolygons((curr) => [...curr, { color: area.color, coords }]);
+        setPolygons((curr) => [...curr, { color: _area.color, coords }]);
       });
     }
   }, [areas]);
@@ -288,7 +307,7 @@ export const RouteArea: FC<{
               data-bs-target="#create-area-modal"
             >
               <span className=" d-md-block">
-                <i className="mdi mdi-plus me-2"></i>New Area
+                <i className="mdi mdi-plus me-2"/>New Area
               </span>
             </a>
             <a
@@ -300,7 +319,7 @@ export const RouteArea: FC<{
               aria-controls="v-pills-area-table"
               aria-selected="true"
             >
-              <i className="mdi mdi-home-variant d-md-none d-block"></i>
+              <i className="mdi mdi-home-variant d-md-none d-block"/>
               <span className="d-none d-md-block">Table</span>
             </a>
             <a
@@ -312,7 +331,7 @@ export const RouteArea: FC<{
               aria-controls="v-pills-area-map"
               aria-selected="false"
             >
-              <i className="mdi mdi-account-circle d-md-none d-block"></i>
+              <i className="mdi mdi-account-circle d-md-none d-block"/>
               <span className="d-none d-md-block">Map</span>
             </a>
           </div>
@@ -334,7 +353,7 @@ export const RouteArea: FC<{
                     aria-expanded="true"
                     className="nav-link active"
                   >
-                    <i className="mdi mdi-account-circle d-md-none d-block"></i>
+                    <i className="mdi mdi-account-circle d-md-none d-block"/>
                     <span className="d-none d-md-block">Active</span>
                   </a>
                 </li>
@@ -345,7 +364,7 @@ export const RouteArea: FC<{
                     aria-expanded="false"
                     className="nav-link"
                   >
-                    <i className="mdi mdi-settings-outline d-md-none d-block"></i>
+                    <i className="mdi mdi-settings-outline d-md-none d-block"/>
                     <span className="d-none d-md-block">Recycled</span>
                   </a>
                 </li>
@@ -354,50 +373,22 @@ export const RouteArea: FC<{
               <div className="tab-content">
                 <div className="tab-pane show active" id="active-areas">
                   <div className="btn-group mb-2">
-                    <button
-                      type="button"
-                      className="btn btn-light"
-                      onClick={handleRecycle}
-                      disabled={recycling}
-                    >
-                      <i className="mdi mdi-trash-can-outline me-2"></i>Recycle
-                    </button>
+                    <Button variant="outlined" onClick={handleRecycle} disabled={recycling}>
+                      <i className="mdi mdi-trash-can-outline me-2"/>Recycle
+                    </Button>
                   </div>
 
-                  <DataTable
-                    columns={columns}
-                    loading={loadingAreas}
-                    setSelected={setSelected}
-                    expanded={false}
-                    totalRows={areas?.count}
-                    data={areas?.rows}
-                    handleReloadMutation={loadAreas}
-                    reloadTriggers={[created, updated, recycled, restored]}
-                  />
+                  {renderTable(areas?.rows || [], columns, loadArea)}
                 </div>
 
                 <div className="tab-pane" id="recycled-areas">
                   <div className="btn-group mb-2">
-                    <button
-                      type="button"
-                      className="btn btn-light"
-                      onClick={handleRestore}
-                      disabled={restoring}
-                    >
-                      <i className="mdi mdi-restore me-2"></i>Restore
-                    </button>
+                    <Button variant="outlined" onClick={handleRestore} disabled={restoring}>
+                      <i className="mdi mdi-restore me-2"/>Restore
+                    </Button>
                   </div>
 
-                  <DataTable
-                    columns={columnsRecycled}
-                    loading={loadingAreasRecycled}
-                    setSelected={setSelectedRecycled}
-                    expanded={false}
-                    totalRows={areasRecycled?.count}
-                    data={areasRecycled?.rows}
-                    handleReloadMutation={loadAreasRecycled}
-                    reloadTriggers={[recycled, restored]}
-                  />
+                  {renderTable(areasRecycled?.rows || [], columnsRecycled, loadArea)}
                 </div>
               </div>
             </div>
@@ -438,9 +429,7 @@ export const RouteArea: FC<{
               <div className="row">
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label className="mb-1" htmlFor="name">
-                      Name
-                    </label>
+                    <p className="mb-1">Name</p>
                     <input
                       type="text"
                       className="form-control"
@@ -457,15 +446,12 @@ export const RouteArea: FC<{
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label className="mb-1" htmlFor="color">
-                      Color
-                    </label>
+                    <p className="mb-1">Color</p>
                     <input
                       type="color"
                       name="color"
                       className="form-control"
                       id="color"
-                      // value="#727cf5"
                       defaultValue={input.color}
                       onChange={(e) =>
                         setInput({
@@ -478,7 +464,7 @@ export const RouteArea: FC<{
                 </div>
                 <div className="col-md-12">
                   <div className="mb-3">
-                    <label className="mb-1">Coordinates</label>
+                    <p className="mb-1">Coordinates</p>
                     <div className="input-group">
                       <input
                         type="text"
@@ -517,15 +503,16 @@ export const RouteArea: FC<{
                   </div>
 
                   <ul className="list-group">
-                    {input.coordinates?.map((coordinate: any, index: number) => (
+                    {input.coordinates?.map((_coordinate: any, index: number) => (
                       <li key={`coordinate-${index}`} className="list-group-item">
-                        <i className={`mdi mdi-google-maps me-1`}></i>
-                        {`Lat: ${coordinate.lat}, Lng: ${coordinate.lng}`}
+                        <i className="mdi mdi-google-maps me-1"/>
+                        {`Lat: ${_coordinate.lat}, Lng: ${_coordinate.lng}`}
                         <button
+                          type="button"
                           className="btn btn-sm btn-outline-danger float-end p-1"
-                          onClick={() => handleRemove('create', coordinate.id)}
+                          onClick={() => handleRemove('create', _coordinate.id)}
                         >
-                          <i className="mdi mdi-cancel"></i>
+                          <i className="mdi mdi-cancel"/>
                         </button>
                       </li>
                     ))}
@@ -569,9 +556,7 @@ export const RouteArea: FC<{
                 <div className="row mb-3">
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="mb-1" htmlFor="name">
-                        Name
-                      </label>
+                      <p className="mb-1">Name</p>
                       <input
                         type="text"
                         className="form-control"
@@ -588,15 +573,12 @@ export const RouteArea: FC<{
                   </div>
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="mb-1" htmlFor="color">
-                        Color
-                      </label>
+                      <p className="mb-1">Color</p>
                       <input
                         type="color"
                         name="color"
                         className="form-control"
                         id="color"
-                        // value="#727cf5"
                         defaultValue={inputUpdate.color}
                         onChange={(e) =>
                           setInputUpdate({
@@ -609,7 +591,7 @@ export const RouteArea: FC<{
                   </div>
                   <div className="col-md-12">
                     <div className="mb-3">
-                      <label className="mb-1">Coordinates</label>
+                      <p className="mb-1">Coordinates</p>
                       <div className="input-group">
                         <input
                           type="text"
@@ -648,15 +630,16 @@ export const RouteArea: FC<{
                     </div>
 
                     <ul className="list-group">
-                      {inputUpdate.coordinates?.map((coordinate: any, index: number) => (
+                      {inputUpdate.coordinates?.map((_coordinate: any, index: number) => (
                         <li key={`coordinate-${index}`} className="list-group-item">
-                          <i className={`mdi mdi-google-maps me-1`}></i>
-                          {`Lat: ${coordinate.lat}, Lng: ${coordinate.lng}`}
+                          <i className="mdi mdi-google-maps me-1"/>
+                          {`Lat: ${_coordinate.lat}, Lng: ${_coordinate.lng}`}
                           <button
+                            type="button"
                             className="btn btn-sm btn-outline-danger float-end p-1"
-                            onClick={() => handleRemove('update', coordinate.id)}
+                            onClick={() => handleRemove('update', _coordinate.id)}
                           >
-                            <i className="mdi mdi-cancel"></i>
+                            <i className="mdi mdi-cancel"/>
                           </button>
                         </li>
                       ))}

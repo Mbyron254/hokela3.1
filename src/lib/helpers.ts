@@ -15,11 +15,13 @@ import {
   USER_AC_STATE,
   CLIENT_HOST_DEV,
   CLIENT_HOST_PRO,
-  ROLE_AC_MANAGER,
+  ROLE_ACCOUNT_MANAGER,
   CLIENT_TYPE_PRODUCER,
   CLIENT_TYPE_RETAILER,
   CLIENT_TYPE_DISTRIBUTOR,
   CLIENT_TYPE_MARKETING_AGENCY,
+  RUN_OFFER_TYPE,
+  DEFAULT_RESPONSE_TIMEOUT,
 } from './constant';
 
 import type {
@@ -27,6 +29,8 @@ import type {
   IGeoLocation,
   IAgentOriginContext,
   ISurveyReportBody,
+  InputAgentRunDailySales,
+  ISalesDownload,
 } from './interface/general.interface';
 
 const short = require('short-uuid');
@@ -142,7 +146,7 @@ export const isSystemRole = (name: string): boolean => {
       isSystem = true;
       break;
 
-    case ROLE_AC_MANAGER:
+    case ROLE_ACCOUNT_MANAGER:
       isSystem = true;
       break;
     default:
@@ -231,20 +235,20 @@ export const getGeoLocation = async (
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
         });
       },
       (error) => {
         if (error.code === error.PERMISSION_DENIED) {
-          setLocation({ error: 'Location permission denied' });
+          setLocation({ err: 'Location permission denied' });
         } else if (error.code === error.POSITION_UNAVAILABLE) {
-          setLocation({ error: 'Location unavaillable' });
+          setLocation({ err: 'Location unavaillable' });
         } else if (error.code === error.TIMEOUT) {
-          setLocation({ error: 'Location retrieval timeout' });
+          setLocation({ err: 'Location retrieval timeout' });
           // Recurse function
         } else {
-          setLocation({ error: 'Location error' });
+          setLocation({ err: 'Location error' });
         }
       },
       {
@@ -437,4 +441,109 @@ export const downloadCSVReport = (data: ISurveyReportBody, survey: string) => {
     .catch((error) => {
       console.error('Report Download Error', error);
     });
+};
+
+export const parseValidityTheme = (validity: number): string => {
+  switch (validity) {
+    case 1:
+      return 'success';
+
+    case 2:
+      return 'danger';
+
+    default:
+      return 'secondary';
+  }
+};
+
+export const parseRunOfferType = (offerType: number): string => {
+  let _type = '---';
+
+  switch (offerType) {
+    case RUN_OFFER_TYPE.STANDARD:
+      _type = 'Standard';
+      break;
+
+    case RUN_OFFER_TYPE.DRIVER:
+      _type = 'Driver';
+      break;
+
+    case RUN_OFFER_TYPE.MIXOLOGIST:
+      _type = 'Mixologist';
+      break;
+
+    case RUN_OFFER_TYPE.BOUNCER:
+      _type = 'Bouncer';
+      break;
+
+    case RUN_OFFER_TYPE.DANCER:
+      _type = 'Dancer';
+      break;
+    default:
+      break;
+  }
+
+  return _type;
+};
+
+export const downloadCSVAgentsRunSalesCumulative = (
+  params: ISalesDownload,
+  setDownloading: Dispatch<SetStateAction<boolean>>,
+) => {
+  setDownloading(true);
+  axios({
+    url: `/excel/agents-run-sales-cumulative`,
+    method: 'post',
+    responseType: 'blob',
+    timeout: DEFAULT_RESPONSE_TIMEOUT,
+    data: { ...params },
+  })
+    .then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.setAttribute('download', `${new Date().toISOString()}-HIAR-agents-run-sales-cumulative.xlsx`);
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => {
+      console.error('::: Agents Run Sales Cumulative Download Error -------->');
+      console.error(error);
+    })
+    .finally(() => setDownloading(false));
+};
+
+export const downloadCSVAgentsRunSalesDaily = (
+  params: InputAgentRunDailySales,
+  setDownloading: Dispatch<SetStateAction<boolean>>,
+) => {
+  setDownloading(true);
+  axios({
+    url: `/excel/agents-run-sales-daily`,
+    method: 'post',
+    responseType: 'blob',
+    timeout: DEFAULT_RESPONSE_TIMEOUT,
+    data: { ...params },
+  })
+    .then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.setAttribute('download', `${new Date().toISOString()}-HIAR-agents-run-sales-daily.xlsx`);
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => {
+      console.error('::: Agents Run Sales Daily Download Error -------->');
+      console.error(error);
+    })
+    .finally(() => setDownloading(false));
 };

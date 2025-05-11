@@ -1,10 +1,10 @@
 import type { IDateValue } from 'src/types/common';
 import type { GridColDef } from '@mui/x-data-grid';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import { Box , Grid , Button, Dialog, TextField, DialogTitle, DialogActions, DialogContent } from '@mui/material';
+import { Box, Grid, Button, Dialog, TextField, DialogTitle, DialogActions, DialogContent } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -90,22 +90,9 @@ const columns: GridColDef[] = [
 
 type Props = {
   clientTier2Id: string;
-  data: {
-    id: string;
-    age: number;
-    name: string;
-    email: string;
-    rating: number;
-    status: string;
-    isAdmin: boolean;
-    lastName: string;
-    firstName: string;
-    performance: number;
-    lastLogin: IDateValue;
-  }[];
 };
 
-export function ProductGroupList({ clientTier2Id, data }: Props) {
+export function ProductGroupList({ clientTier2Id }: Props) {
   const dialog = useBoolean();
   const isEdit = useBoolean();
 
@@ -179,40 +166,48 @@ export function ProductGroupList({ clientTier2Id, data }: Props) {
     toastmsg: true,
   });
 
-  const loadGroupsActive = () => {
-    if (clientTier2Id) {
-      getGroupsActive({ variables: { input: { clientTier2Id } } });
-    }
-  };
-
-  useState(
-    () => {
-      loadGroupsActive();
-    },
-    // @ts-ignore
-    []
-  );
-
-  console.log('groupsActive', groupsActive);
-
-  const handleDialogClose = () => {
-    dialog.onFalse();
-    isEdit.onFalse();
-  };
   const [formData, setFormData] = useState({
     name: '',
     markUp: '',
     description: '',
   });
 
-  const handleNewRow = () => {
-    dialog.onTrue();
+  const [selectedActive, setSelectedActive] = useState<string[]>([]);
+  const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (clientTier2Id) {
+      getGroupsActive({ variables: { input: { clientTier2Id } } });
+    }
+  }, [clientTier2Id,getGroupsActive]);
+
+  useEffect(() => {
+    if (group) {
+      setFormData({
+        name: group.name,
+        markUp: group.markup,
+        description: group.description,
+      });
+    }
+  }, [group]);
+
+  const handleDialogClose = () => {
+    dialog.onFalse();
     isEdit.onFalse();
   };
 
-  const handleEditRow = (row: any) => {
-    console.log('Edit Row', row);
+  const handleNewRow = () => {
+    dialog.onTrue();
+    isEdit.onFalse();
+    setFormData({ name: '', markUp: '', description: '' });
   };
+
+  const handleEditRow = (row: any) => {
+    dialog.onTrue();
+    isEdit.onTrue();
+    getGroup({ variables: { input: { id: row.id } } });
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -221,79 +216,106 @@ export function ProductGroupList({ clientTier2Id, data }: Props) {
   };
 
   const handleSubmit = () => {
-    console.log('Submit', formData);
+    if (isEdit.value) {
+      update({ variables: { input: { ...formData, id: group.id } } });
+    } else {
+      create({ variables: { input: { ...formData, clientTier2Id } } });
+    }
+    handleDialogClose();
   };
+
+  const handleRecycle = () => {
+    if (selectedActive.length) {
+      recycle({ variables: { input: { ids: selectedActive } } });
+    }
+  };
+
+  const handleRestore = () => {
+    if (selectedRecycled.length) {
+      restore({ variables: { input: { ids: selectedRecycled } } });
+    }
+  };
+
   return (
     <DashboardContent>
-        <CustomBreadcrumbs
-          heading="Product Groups"
-          links={[{ name: 'List', href: '/dashboard' }]}
-          action={
-            <Button
-              // component={RouterLink}
-              // href={paths.v2.marketing.clients.new}
-              onClick={handleNewRow}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New Product Group
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
-        <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="sm">
-          <DialogTitle>{isEdit.value ? 'Edit Product Group' : 'New Product Group'}</DialogTitle>
+      <CustomBreadcrumbs
+        heading="Product Groups"
+        links={[{ name: 'List', href: '/dashboard' }]}
+        action={
+          <Button
+            onClick={handleNewRow}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            New Product Group
+          </Button>
+        }
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
+      <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="sm">
+        <DialogTitle>{isEdit.value ? 'Edit Product Group' : 'New Product Group'}</DialogTitle>
 
-          <DialogContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoFocus
-                  fullWidth
-                  name="name"
-                  margin="dense"
-                  variant="outlined"
-                  label="Group Name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoFocus
-                  fullWidth
-                  name="markUp"
-                  margin="dense"
-                  variant="outlined"
-                  label="Mark Up"
-                  value={formData.markUp}
-                  onChange={handleInputChange}
-                />
-              </Grid>
+        <DialogContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoFocus
+                fullWidth
+                name="name"
+                margin="dense"
+                variant="outlined"
+                label="Group Name"
+                value={formData.name}
+                onChange={handleInputChange}
+              />
             </Grid>
-            <Box sx={{ my: 2 }} />
-            <TextField
-              variant="outlined"
-              rows={4}
-              fullWidth
-              multiline
-              label="Descrption"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-            />
-          </DialogContent>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="markUp"
+                margin="dense"
+                variant="outlined"
+                label="Mark Up"
+                value={formData.markUp}
+                onChange={handleInputChange}
+              />
+            </Grid>
+          </Grid>
+          <Box sx={{ my: 2 }} />
+          <TextField
+            variant="outlined"
+            rows={4}
+            fullWidth
+            multiline
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+          />
+        </DialogContent>
 
-          <DialogActions>
-            <Button onClick={handleDialogClose} variant="outlined" color="inherit">
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} variant="contained">
-              {isEdit.value ? 'Update' : 'Create'}
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <DataGrid columns={columns} rows={data} checkboxSelection disableRowSelectionOnClick />;
-      </DashboardContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} variant="outlined" color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} variant="contained">
+            {isEdit.value ? 'Update' : 'Create'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <DataGrid
+        columns={columns}
+        rows={groupsActive?.rows || []}
+        checkboxSelection
+        disableRowSelectionOnClick
+        onRowClick={(params) => handleEditRow(params.row)}
+      />
+      <Button onClick={handleRecycle} variant="outlined" color="error" disabled={recycling}>
+        Recycle
+      </Button>
+      <Button onClick={handleRestore} variant="outlined" color="primary" disabled={restoring}>
+        Restore
+      </Button>
+    </DashboardContent>
   );
 }

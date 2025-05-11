@@ -3,7 +3,7 @@
 import React, { useCallback, useState } from 'react';
 
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
-import { IPoint } from '@/lib/interface/point.interface';
+import { IPoint } from 'src/lib/interface/point.interface';
 
 export const GoogleMapPoint = ({ locations }: { locations: IPoint[] }) => {
   const { isLoaded } = useJsApiLoader({

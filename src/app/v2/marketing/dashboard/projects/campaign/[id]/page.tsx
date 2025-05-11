@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useState, useEffect } from 'react';
 import { Box, Typography, Button, Paper, Grid, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableRow, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Select, MenuItem, InputLabel, FormControl, Tooltip, IconButton } from '@mui/material';
@@ -6,7 +6,7 @@ import { useTable, TableNoData, TableEmptyRows, TableHeadCustom, TablePagination
 
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { formatDate, formatTimeTo12Hr } from 'src/lib/helpers';
-import { ICampaignRunCreate } from 'src/lib/interface/campaign.interface';
+import { ICampaignRunCreate, ICampaignRunUpdate } from 'src/lib/interface/campaign.interface';
 import { M_CAMPAIGN } from 'src/lib/mutations/campaign.mutation';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
@@ -15,10 +15,14 @@ import { paths } from 'src/routes/paths';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { CAMPAIGN_RUN_CREATE, CAMPAIGN_RUN_RECYCLE, CAMPAIGN_RUN_RESTORE, M_CAMPAIGN_RUNS_ACTIVE, M_CAMPAIGN_RUNS_RECYCLED } from 'src/lib/mutations/campaign-run.mutation';
 import { M_USERS_MINI } from 'src/lib/mutations/user.mutation';
-// import { DropZone } from 'src/components/dropzone/DropZone';
 import { SelectMultiple } from 'src/components/SelectMultiple';
 import { M_RUN_TYPE_MINI } from 'src/lib/mutations/run-type.mutation';
 import { useRouter } from 'next/navigation';
+import { CAMPAIGN_RUN_UPDATE, M_CAMPAIGN_RUN } from 'src/lib/mutations/run.mutation';
+import { DropZone } from 'src/components/dropzone/DropZone';
+import { LoadingSpan } from 'src/components/LoadingSpan';
+import { MutationButton } from 'src/components/MutationButton';
+import { IDocumentWrapper } from 'src/lib/interface/dropzone.type';
 
 // Define the tabs
 const TABS = [
@@ -26,7 +30,7 @@ const TABS = [
   { value: 'runs', icon: <Iconify icon="solar:heart-bold" width={24} />, label: 'Runs' },
 ];
 
-export default function Page({ params: { id } }: any) {
+export default function Page({ params: { id: campaignId } }: any) {
   const { data: session } = GQLQuery({
     query: Q_SESSION_SELF,
     queryAction: 'sessionSelf',
@@ -49,17 +53,6 @@ export default function Page({ params: { id } }: any) {
   });
 
   const dialog = useBoolean();
-  // const [inputCreate, setInputCreate] = useState<ICampaignRunCreate>({
-  //   projectId: undefined,
-  //   campaignId: id,
-  //   runTypeId: undefined,
-  //   managerId: undefined,
-  //   dateStart: undefined,
-  //   dateStop: undefined,
-  //   checkInAt: undefined,
-  //   checkOutAt: undefined,
-  //   closeAdvertOn: undefined,
-  // });
 
   const [inputCreate, setInputCreate] = useState<ICampaignRunCreate>({
     managerId: undefined,
@@ -136,21 +129,47 @@ export default function Page({ params: { id } }: any) {
     toastmsg: false,
   });
 
+  const { action: update, loading: updating } = GQLMutation({
+    mutation: CAMPAIGN_RUN_UPDATE,
+    resolver: 'runUpdate',
+    toastmsg: true,
+  });
+
   const [openDialog, setOpenDialog] = useState(false);
+
+  const [inputUpdate, setInputUpdate] = useState<ICampaignRunUpdate>({
+    id: undefined,
+    managerId: undefined,
+    posterId: undefined,
+    runTypeIds: [],
+    name: undefined,
+    dateStart: undefined,
+    dateStop: undefined,
+    clockType: undefined,
+    clockInPhotoLabel: undefined,
+    clockOutPhotoLabel: undefined,
+    clockInTime: undefined,
+    clockOutTime: undefined,
+    locationPingFrequency: undefined,
+    closeAdvertOn: undefined,
+  });
+
+  const [documentsCreate, setDocumentsCreate] = useState<IDocumentWrapper[]>([]);
+  const [documentsUpdate, setDocumentsUpdate] = useState<IDocumentWrapper[]>([]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   };
 
   useEffect(() => {
-    if (id) getCampaign({ variables: { input: { id } } });
-  }, [id, getCampaign, getUsersMini]);
+    if (campaignId) getCampaign({ variables: { input: { id: campaignId } } });
+  }, [campaignId, getCampaign, getUsersMini]);
 
   useEffect(() => {
-    if (id) {
-      getRunsActive({ variables: { input: { campaignId: id } } });
+    if (campaignId) {
+      getRunsActive({ variables: { input: { campaignId } } });
     }
-  }, [id,getRunsActive]);
+  }, [campaignId,getRunsActive]);
 
   console.log('runsActive:', runsActive);
 
@@ -165,8 +184,8 @@ export default function Page({ params: { id } }: any) {
   }, [session?.user?.role?.clientTier1?.id, getUsersMini]);
 
   useEffect(() => {
-    if (id) getRunTypes({ variables: { input: {} } });
-  }, [id, getRunTypes]);
+    if (campaignId) getRunTypes({ variables: { input: {} } });
+  }, [campaignId, getRunTypes]);
 
   useEffect(() => {
     if (runTypes?.rows) {
@@ -176,6 +195,50 @@ export default function Page({ params: { id } }: any) {
       setOptionsAllUpdate(runTypes.rows);
     }
   }, [runTypes]);
+
+  useEffect(() => {
+    if (documentsCreate?.length) {
+      setInputCreate({ ...inputCreate, posterId: documentsCreate[documentsCreate.length - 1].meta?.id });
+    }
+  }, [documentsCreate, inputCreate]);
+
+  useEffect(() => {
+    if (documentsUpdate?.length) {
+      setInputUpdate({ ...inputUpdate, posterId: documentsUpdate[documentsUpdate.length - 1].meta?.id });
+    }
+  }, [documentsUpdate, inputUpdate]);
+
+  const {
+    action: getRun,
+    loading: loadingRun,
+    data: run,
+  } = GQLMutation({
+    mutation: M_CAMPAIGN_RUN,
+    resolver: 'm_run',
+    toastmsg: false,
+  });
+
+  useEffect(() => {
+    if (run) {
+      setInputUpdate({
+        id: run.id,
+        managerId: run.manager?.id,
+        posterId: run.poster?.id,
+        runTypeIds: [],
+        name: run.name,
+        dateStart: run.dateStart,
+        dateStop: run.dateStop,
+        clockType: run.clockType,
+        clockInPhotoLabel: run.clockInPhotoLabel,
+        clockOutPhotoLabel: run.clockOutPhotoLabel,
+        clockInTime: run.clockInTime,
+        clockOutTime: run.clockOutTime,
+        locationPingFrequency: run.locationPingFrequency,
+        closeAdvertOn: run.closeAdvertOn,
+      });
+      setOptionsSelectedUpdate(run.types);
+    }
+  }, [run]);
 
   const handleRecycle = () => {
     if (selectedActive.length) {
@@ -201,11 +264,11 @@ export default function Page({ params: { id } }: any) {
     // Ensure optionsSelectedCreate is correctly mapped to runTypeIds
     const _runTypeIds: string[] = optionsSelectedCreate.map((option: any) => option.id);
 
-    if (id) {
+    if (campaignId) {
       if (_runTypeIds.length > 0) {
         const data = {
           ...inputCreate,
-          campaignId: id,
+          campaignId,
           runTypeIds: _runTypeIds,
         };
         console.log('Run _runTypeIds:', _runTypeIds);
@@ -215,6 +278,20 @@ export default function Page({ params: { id } }: any) {
         alert('Please choose at least 1 run activity');
       }
     }
+  };
+
+  const handleUpdate = () => {
+    const _runTypeIds: string[] = [];
+
+    for (let i = 0; i < optionsSelectedUpdate.length; i+=1) {
+      _runTypeIds.push(optionsSelectedUpdate[i].id);
+    }
+
+    update({ variables: { input: { ...inputUpdate, runTypeIds: _runTypeIds } } });
+  };
+
+  const handleForceCloseAdvert = (id: string) => {
+    update({ variables: { input: { id, forceClose: true } } });
   };
 
   const table = useTable({ defaultOrderBy: 'name' });
@@ -243,7 +320,7 @@ export default function Page({ params: { id } }: any) {
   };
 
   const handleEdit = (runid: string) => {
-    // Logic for editing a campaign run will go here
+    getRun({ variables: { input: { id: runid } } });
   };
 
   const handleDelete = (runid: string) => {
@@ -257,7 +334,7 @@ export default function Page({ params: { id } }: any) {
         links={[
           { name: 'Dashboard', href: paths.v2.marketing.root },
           { name: 'Projects', href: paths.v2.marketing.projects.list },
-          { name: 'Campaign', href: paths.v2.marketing.projects.campaign(id) },
+          { name: 'Campaign', href: paths.v2.marketing.projects.campaign(campaignId) },
           { name: 'Details' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
@@ -466,23 +543,29 @@ export default function Page({ params: { id } }: any) {
             selected={optionsSelectedCreate}
             setSelected={setOptionsSelectedCreate}
           />
-          {/* <DropZone
+          <DropZone
             name="photo (Max of 3, 230px by 230px)"
-            classes={`dropzone text-center mt-3`}
+            classes="dropzone text-center mt-3"
             acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
-            multiple={true}
+            multiple
             files={documentsCreate}
             setFiles={setDocumentsCreate}
             maxSize={1375000000} // 1GB
-          /> */}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleCreate} color="primary" disabled={creating}>
-            Create
-          </Button>
+          <MutationButton
+            type="button"
+            className="btn btn-primary"
+            size="sm"
+            label="Create"
+            icon="mdi mdi-plus"
+            loading={creating}
+            onClick={handleCreate}
+          />
         </DialogActions>
       </Dialog>
     </Box>

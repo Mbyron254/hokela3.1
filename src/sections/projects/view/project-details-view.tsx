@@ -29,8 +29,14 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { PROJECT } from 'src/lib/mutations/project.mutation';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { M_CAMPAIGNS_ACTIVE, CAMPAIGN_CREATE } from 'src/lib/mutations/campaign.mutation';
 import { useBoolean } from 'src/hooks/use-boolean';
+import {
+  M_CAMPAIGNS_ACTIVE, CAMPAIGN_CREATE,
+  M_CAMPAIGNS_RECYCLED,
+  CAMPAIGN_UPDATE,
+  CAMPAIGN_RECYCLE,
+  CAMPAIGN_RESTORE,
+} from 'src/lib/mutations/campaign.mutation';
 
 // ----------------------------------------------------------------------
 
@@ -69,6 +75,11 @@ export function ProjectDetailsView({ id }: Props) {
     resolver: 'm_campaigns',
     toastmsg: false,
   });
+  const { action: getCampaignsRecycled, data: campaignsRecycled } = GQLMutation({
+    mutation: M_CAMPAIGNS_RECYCLED,
+    resolver: 'm_campaignsRecycled',
+    toastmsg: false,
+  });
 
   const dialog = useBoolean();
   const [inputCreate, setInputCreate] = useState({
@@ -83,7 +94,28 @@ export function ProjectDetailsView({ id }: Props) {
     toastmsg: true,
   });
 
+  const { action: update, loading: updating } = GQLMutation({
+    mutation: CAMPAIGN_UPDATE,
+    resolver: 'campaignUpdate',
+    toastmsg: true,
+  });
+
+  const { action: recycle, loading: recycling } = GQLMutation({
+    mutation: CAMPAIGN_RECYCLE,
+    resolver: 'campaignRecycle',
+    toastmsg: true,
+  });
+
+  const { action: restore, loading: restoring } = GQLMutation({
+    mutation: CAMPAIGN_RESTORE,
+    resolver: 'campaignRestore',
+    toastmsg: true,
+  });
+
   const router = useRouter();
+
+  const [selectedActive, setSelectedActive] = useState<string[]>([]);
+  const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
 
   const loadProject = () => {
     if (id) {
@@ -109,6 +141,12 @@ export function ProjectDetailsView({ id }: Props) {
     }
   }, [project]);
 
+  useEffect(() => {
+    if (project) {
+      getCampaignsRecycled({ variables: { input: { projectId: project.id } } });
+    }
+  }, [project, getCampaignsRecycled]);
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   };
@@ -116,6 +154,18 @@ export function ProjectDetailsView({ id }: Props) {
   const handleCreate = () => {
     if (projectId) {
       create({ variables: { input: { ...inputCreate, projectId } } });
+    }
+  };
+
+  const handleRecycle = () => {
+    if (selectedActive.length) {
+      recycle({ variables: { input: { ids: selectedActive } } });
+    }
+  };
+
+  const handleRestore = () => {
+    if (selectedRecycled.length) {
+      restore({ variables: { input: { ids: selectedRecycled } } });
     }
   };
 
@@ -181,6 +231,24 @@ export function ProjectDetailsView({ id }: Props) {
               sx={{ mb: 2 }}
             >
               New Campaign
+            </Button>
+            <Button
+              onClick={handleRecycle}
+              variant="outlined"
+              color="error"
+              sx={{ mb: 2 }}
+              disabled={recycling}
+            >
+              Recycle Selected
+            </Button>
+            <Button
+              onClick={handleRestore}
+              variant="outlined"
+              color="success"
+              sx={{ mb: 2 }}
+              disabled={restoring}
+            >
+              Restore Selected
             </Button>
 
             <TableContainer component={Paper}>

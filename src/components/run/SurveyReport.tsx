@@ -1,7 +1,7 @@
 'use client';
 
-import PhoneNumberInput from '../PhoneNumberInput';
 
+import { FC, useEffect, useState } from 'react';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import {
   IChoice,
@@ -18,13 +18,13 @@ import {
   M_SURVEY_REPORTS_AGENT,
   SURVEY_REPORT_CREATE,
 } from 'src/lib/mutations/survey.mutation';
-import { FC, useEffect, useState } from 'react';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { QuestionnaireForm } from 'src/components/QuestionnaireForm';
 import { LoadingDiv } from 'src/components/LoadingDiv';
 import { LoadingSpan } from 'src/components/LoadingSpan';
 import { getGeoLocation } from 'src/lib/helpers';
 import { LOCATION_PING_INTERVAL_MS } from 'src/lib/constant';
+import PhoneNumberInput from '../PhoneNumberInput';
 
 export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
   const { data: session } = GQLQuery({
@@ -77,20 +77,8 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
   const [inputCreate, setInputCreate] = useState(_inputCreate);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
 
-  const loadSurvey = () => {
-    if (runId) {
-      getSurvey({ variables: { input: { runId } } });
-    }
-  };
-  const loadTarget = () => {
-    if (survey?.id && session?.user?.agent?.id) {
-      getAgentTarget({
-        variables: {
-          input: { surveyId: survey.id, agentId: session.user.agent.id },
-        },
-      });
-    }
-  };
+  
+  
   // const loadReports = () => {
   //   if (survey?.id && session?.user?.agent?.id) {
   //     getReports({
@@ -106,7 +94,7 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
     if (survey.id && session?.user?.agent?.id && geoLocation?.lat && geoLocation?.lng) {
       const _responses: InputSurveyResponse[] = [];
 
-      for (let i = 0; i < questionnaireFields.length; i++) {
+      for (let i = 0; i < questionnaireFields.length; i+=1) {
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: questionnaireFields[i].feedback || {},
@@ -135,35 +123,44 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
 
     return () => clearInterval(interval);
   }, []);
-  useEffect(() => loadSurvey(), []);
   useEffect(() => {
-    loadTarget();
-    // loadReports();
-  }, [survey?.id, session?.user?.agent?.id]);
+    if (runId) {
+      getSurvey({ variables: { input: { runId } } });
+    }
+  }, [runId, getSurvey]);
+  useEffect(() => {
+    if (survey?.id && session?.user?.agent?.id) {
+      getAgentTarget({
+        variables: {
+          input: { surveyId: survey.id, agentId: session.user.agent.id },
+        },
+      });
+    }
+  }, [survey?.id, session?.user?.agent?.id, getAgentTarget]);
   useEffect(() => {
     if (survey) {
       const _fields = [];
 
-      for (let i = 0; i < survey.questionnaireFields.length; i++) {
+      for (let i = 0; i < survey.questionnaireFields.length; i+=1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k++) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k+=1) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
             label: survey.questionnaireFields[i].optionsDropdown[k].label,
@@ -212,11 +209,12 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
                       <div className="row mb-3">
                         <div className="col-12 d-grid">
                           <button
+                            type="button"
                             className="btn btn-info btn-sm float-end"
                             data-bs-toggle="modal"
                             data-bs-target="#modal-report-new"
                           >
-                            <i className="mdi mdi-plus me-1"></i>New Report
+                            <i className="mdi mdi-plus me-1"/>New Report
                           </button>
                         </div>
                       </div>
@@ -310,12 +308,12 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
               <div className="row">
                 <div className="col-md-4">
                   <div className="mb-3">
-                    <label htmlFor="respondentName" className="form-label">
+                    <p className="form-label">
                       Customer Name
                       {survey?.requireRespondentName ? (
                         <span className="text-warning ms-1">*</span>
                       ) : undefined}
-                    </label>
+                    </p>
                     <input
                       type="text"
                       id="respondentName"
@@ -334,12 +332,12 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
                 </div>
                 <div className="col-md-4">
                   <div className="mb-3">
-                    <label htmlFor="respondentPhone" className="form-label">
+                    <p className="form-label">
                       Customer Phone
                       {survey?.requireRespondentPhone ? (
                         <span className="text-warning ms-1">*</span>
                       ) : undefined}
-                    </label>
+                    </p>
                     <PhoneNumberInput
                       phonekey="respondentPhone"
                       required={survey?.requireRespondentPhone}
@@ -350,12 +348,12 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
                 </div>
                 <div className="col-md-4">
                   <div className="mb-3">
-                    <label htmlFor="respondentEmail" className="form-label">
+                    <p className="form-label">
                       Customer Email
                       {survey?.requireRespondentEmail ? (
                         <span className="text-warning ms-1">*</span>
                       ) : undefined}
-                    </label>
+                    </p>
                     <input
                       type="text"
                       id="respondentEmail"

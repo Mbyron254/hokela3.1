@@ -1,8 +1,8 @@
 'use client';
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC } from 'react';
 import { GoogleMap, useJsApiLoader, Polygon } from '@react-google-maps/api';
-import { IPolygon } from '@/lib/interface/area.interface';
+import { IPolygon } from 'src/lib/interface/area.interface';
 
 export const GoogleMapArea: FC<{ polygons: IPolygon[] }> = ({ polygons }) => {
   const { isLoaded } = useJsApiLoader({

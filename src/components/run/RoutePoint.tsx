@@ -1,4 +1,6 @@
-'use client';
+'use client'
+
+import { FC, useEffect, useState } from 'react';
 
 import {
   POINT,
@@ -8,16 +10,15 @@ import {
   POINT_UPDATE,
   POINTS,
   POINTS_RECYCLED,
-} from '@/lib/mutations/point.mutation';
-import { GQLMutation, GQLQuery } from '@/lib/client';
-import { Q_SHOP_CATEGORIES_MINI } from '@/lib/queries/shop-category.query';
-import { Q_SHOP_SECTORS_MINI } from '@/lib/queries/shop-sector.query';
-import { FC, useEffect, useState } from 'react';
-import { M_SHOPS_MINI } from '@/lib/mutations/shop.mutation';
-import { MutationButton } from '../MutationButton';
-import { DataTable } from '../DataTable';
-import { IPoint, IPointCreate, IPointUpdate } from '@/lib/interface/point.interface';
+} from 'src/lib/mutations/point.mutation';
+import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { Q_SHOP_CATEGORIES_MINI } from 'src/lib/queries/shop-category.query';
+import { Q_SHOP_SECTORS_MINI } from 'src/lib/queries/shop-sector.query';
+import { M_SHOPS_MINI } from 'src/lib/mutations/shop.mutation';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton } from '@mui/material';
+import { IPoint, IPointCreate, IPointUpdate } from 'src/lib/interface/point.interface';
 import { LoadingDiv } from '../LoadingDiv';
+import { MutationButton } from '../MutationButton';
 import { GoogleMapPoint } from '../GoogleMapPoint';
 
 export const RoutePoint: FC<{
@@ -117,9 +118,6 @@ export const RoutePoint: FC<{
 
   const [locations, setLocations] = useState<IPoint[]>([]);
 
-  const loadShops = () => {
-    getShops({ variables: { input: {} } });
-  };
   const loadPoints = () => {
     if (runId) getPoints({ variables: { input: { runId } } });
   };
@@ -185,15 +183,13 @@ export const RoutePoint: FC<{
       width: '115px',
       sortable: true,
       selector: (row: any) => row.shop?.approved,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) => (
           <i
             className={`mdi mdi-check-decagram text-${
               row.shop?.approved ? 'success' : 'danger'
             } font-16`}
           />
-        );
-      },
+        ),
     },
     {
       name: 'MORE',
@@ -201,8 +197,7 @@ export const RoutePoint: FC<{
       sortable: false,
       center: true,
       selector: (row: any) => row.id,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) => (
           <button
             type="button"
             className="btn btn-light btn-sm me-2"
@@ -213,10 +208,9 @@ export const RoutePoint: FC<{
               loadPoint(row.id);
             }}
           >
-            <i className="mdi mdi-circle-edit-outline"></i>
+            <i className="mdi mdi-circle-edit-outline"/>
           </button>
-        );
-      },
+        ),
     },
   ];
   const columnsRecycled = [
@@ -256,15 +250,13 @@ export const RoutePoint: FC<{
       width: '115px',
       sortable: true,
       selector: (row: any) => row.shop?.approved,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) => (
           <i
             className={`mdi mdi-check-decagram text-${
               row.shop?.approved ? 'success' : 'danger'
             } font-16`}
           />
-        );
-      },
+        ),
     },
     {
       name: 'RECYCLED',
@@ -275,19 +267,42 @@ export const RoutePoint: FC<{
     },
   ];
 
-  useEffect(() => loadShops(), []);
+  useEffect(() => {
+    getShops({ variables: { input: {} } });
+  }, [getShops]);
   useEffect(() => {
     if (point) setInputUpdate({ id: point.id, shopId: point.shop?.id });
   }, [point]);
   useEffect(() => {
     if (points) {
-      points.rows.forEach((point: any) => {
-        setLocations((curr) => {
-          return [...curr, { lat: point.shop.lat, lng: point.shop.lng }];
-        });
+      points.rows.forEach((_point: any) => {
+        setLocations((curr) => [...curr, { lat: _point.shop.lat, lng: _point.shop.lng }]);
       });
     }
   }, [points]);
+
+  const renderTable = (data: any[], _columns: any[], handleRowClick: (id: string) => void) => (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {_columns.map((column, index) => (
+              <TableCell key={index}>{column.name}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((row, index) => (
+            <TableRow key={index} onClick={() => handleRowClick(row.id)}>
+              {_columns.map((column, colIndex) => (
+                <TableCell key={colIndex}>{column.cell(row)}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 
   return (
     <>
@@ -299,40 +314,15 @@ export const RoutePoint: FC<{
             role="tablist"
             aria-orientation="vertical"
           >
-            <a
-              className="btn btn-info mb-3"
-              href="#"
-              data-bs-toggle="modal"
-              data-bs-target="#create-shop-modal"
-            >
-              <span className=" d-md-block">
-                <i className="mdi mdi-plus me-2"></i>New Shop
-              </span>
-            </a>
-            <a
-              className="nav-link active show"
-              id="v-pills-home-tab"
-              data-bs-toggle="pill"
-              href="#v-pills-home"
-              role="tab"
-              aria-controls="v-pills-home"
-              aria-selected="true"
-            >
-              <i className="mdi mdi-home-variant d-md-none d-block"></i>
-              <span className="d-none d-md-block">Table</span>
-            </a>
-            <a
-              className="nav-link"
-              id="v-pills-profile-tab"
-              data-bs-toggle="pill"
-              href="#v-pills-profile"
-              role="tab"
-              aria-controls="v-pills-profile"
-              aria-selected="false"
-            >
-              <i className="mdi mdi-account-circle d-md-none d-block"></i>
-              <span className="d-none d-md-block">Map</span>
-            </a>
+            <Button variant="contained" color="primary" data-bs-toggle="modal" data-bs-target="#create-shop-modal">
+              New Shop
+            </Button>
+            <Button variant="outlined" color="primary" className="mt-3" data-bs-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">
+              Table
+            </Button>
+            <Button variant="outlined" color="primary" className="mt-3" data-bs-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+              Map
+            </Button>
           </div>
         </div>
 
@@ -344,79 +334,21 @@ export const RoutePoint: FC<{
               role="tabpanel"
               aria-labelledby="v-pills-home-tab"
             >
-              <ul className="nav nav-tabs nav-bordered mb-3">
-                <li className="nav-item">
-                  <a
-                    href="#active-shops"
-                    data-bs-toggle="tab"
-                    aria-expanded="true"
-                    className="nav-link active"
-                  >
-                    <i className="mdi mdi-account-circle d-md-none d-block"></i>
-                    <span className="d-none d-md-block">Active</span>
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a
-                    href="#recycled-shops"
-                    data-bs-toggle="tab"
-                    aria-expanded="false"
-                    className="nav-link"
-                  >
-                    <i className="mdi mdi-settings-outline d-md-none d-block"></i>
-                    <span className="d-none d-md-block">Recycled</span>
-                  </a>
-                </li>
-              </ul>
-
-              <div className="tab-content">
-                <div className="tab-pane show active" id="active-shops">
-                  <div className="btn-group mb-2">
-                    <button
-                      type="button"
-                      className="btn btn-light"
-                      onClick={handleRecycle}
-                      disabled={recycling}
-                    >
-                      <i className="mdi mdi-trash-can-outline me-2"></i>Recycle
-                    </button>
-                  </div>
-
-                  <DataTable
-                    columns={columns}
-                    loading={loadingPoints}
-                    setSelected={setSelected}
-                    expanded={false}
-                    totalRows={points?.count}
-                    data={points?.rows}
-                    handleReloadMutation={loadPoints}
-                    reloadTriggers={[created, updated, recycled, restored]}
-                  />
-                </div>
-                <div className="tab-pane" id="recycled-shops">
-                  <div className="btn-group mb-2">
-                    <button
-                      type="button"
-                      className="btn btn-light"
-                      onClick={handleRestore}
-                      disabled={restoring}
-                    >
-                      <i className="mdi mdi-restore me-2"></i>Restore
-                    </button>
-                  </div>
-
-                  <DataTable
-                    columns={columnsRecycled}
-                    loading={loadingPointsRecycled}
-                    setSelected={setSelectedRecycled}
-                    expanded={false}
-                    totalRows={pointsRecycled?.count}
-                    data={pointsRecycled?.rows}
-                    handleReloadMutation={loadPointsRecycled}
-                    reloadTriggers={[recycled, restored]}
-                  />
-                </div>
+              <div className="btn-group mb-2">
+                <Button variant="outlined" color="secondary" onClick={handleRecycle} disabled={recycling}>
+                  Recycle
+                </Button>
               </div>
+
+              {renderTable(points?.rows || [], columns, loadPoint)}
+
+              <div className="btn-group mb-2 mt-3">
+                <Button variant="outlined" color="secondary" onClick={handleRestore} disabled={restoring}>
+                  Restore
+                </Button>
+              </div>
+
+              {renderTable(pointsRecycled?.rows || [], columnsRecycled, loadPoint)}
             </div>
 
             <div
@@ -455,9 +387,7 @@ export const RoutePoint: FC<{
               <div className="row">
                 <div className="col-md-12">
                   <div className="mb-3">
-                    <label htmlFor="shop" className="form-label">
-                      Shop
-                    </label>
+                    <p className="form-label">Shop</p>
                     <div className="input-group">
                       <select
                         id="shop"
@@ -472,7 +402,7 @@ export const RoutePoint: FC<{
                           })
                         }
                       >
-                        <option></option>
+                        <option value="">Select Shop</option>
                         {shops?.rows.map((shop: any, index: number) => (
                           <option value={shop.id} key={`shop-${index}`}>
                             {shop.name}
@@ -516,7 +446,7 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               />
-                              <label htmlFor="name">Name</label>
+                              <p>Name</p>
                             </div>
                           </div>
                           <div className="col-md-4">
@@ -535,14 +465,14 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               >
-                                <option></option>
+                                <option value="">Select Sector</option>
                                 {sectors?.rows.map((sector: any, index: number) => (
                                   <option value={sector.id} key={`sector-${index}`}>
                                     {sector.name}
                                   </option>
                                 ))}
                               </select>
-                              <label htmlFor="sector">Sector</label>
+                              <p>Sector</p>
                             </div>
                           </div>
                           <div className="col-md-4">
@@ -561,14 +491,14 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               >
-                                <option></option>
+                                <option value="">Select Category</option>
                                 {categories?.rows.map((category: any, index: number) => (
                                   <option value={category.id} key={`category-${index}`}>
                                     {category.name}
                                   </option>
                                 ))}
                               </select>
-                              <label htmlFor="category">Category</label>
+                              <p>Category</p>
                             </div>
                           </div>
                         </div>
@@ -591,7 +521,7 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               />
-                              <label htmlFor="lat">Latitude</label>
+                              <p>Latitude</p>
                             </div>
                           </div>
                           <div className="col-md-6">
@@ -611,7 +541,7 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               />
-                              <label htmlFor="lng">Longitude</label>
+                              <p>Longitude</p>
                             </div>
                           </div>
                         </div>
@@ -631,10 +561,10 @@ export const RoutePoint: FC<{
                   </div>
                   <MutationButton
                     type="button"
+                    icon="mdi mdi-plus-thick"
                     className="btn btn-success float-end"
                     size="sm"
                     label="Save"
-                    icon="mdi mdi-plus-thick"
                     loading={creating}
                     onClick={handleCreate}
                   />
@@ -667,9 +597,7 @@ export const RoutePoint: FC<{
               <div className="modal-body">
                 <div className="col-md-12">
                   <div className="mb-3">
-                    <label htmlFor="shop" className="form-label">
-                      Shop
-                    </label>
+                    <p className="form-label">Shop</p>
                     <div className="input-group">
                       <select
                         id="shop"
@@ -684,7 +612,7 @@ export const RoutePoint: FC<{
                           });
                         }}
                       >
-                        <option></option>
+                        <option value="">Select Shop</option>
                         {shops?.rows.map((shop: any, index: number) => (
                           <option value={shop.id} key={`shop-${index}`}>
                             {shop.name}
@@ -728,7 +656,7 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               />
-                              <label htmlFor="name">Name</label>
+                              <p>Name</p>
                             </div>
                           </div>
                           <div className="col-md-4">
@@ -747,14 +675,14 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               >
-                                <option></option>
+                                <option value="">Select Sector</option>
                                 {sectors?.rows.map((sector: any, index: number) => (
                                   <option value={sector.id} key={`sector-${index}`}>
                                     {sector.name}
                                   </option>
                                 ))}
                               </select>
-                              <label htmlFor="sector">Sector</label>
+                              <p>Sector</p>
                             </div>
                           </div>
                           <div className="col-md-4">
@@ -773,14 +701,14 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               >
-                                <option></option>
+                                <option value="">Select Category</option>
                                 {categories?.rows.map((category: any, index: number) => (
                                   <option value={category.id} key={`category-${index}`}>
                                     {category.name}
                                   </option>
                                 ))}
                               </select>
-                              <label htmlFor="category">Category</label>
+                              <p>Category</p>
                             </div>
                           </div>
                         </div>
@@ -803,7 +731,7 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               />
-                              <label htmlFor="lat">Latitude</label>
+                              <p>Latitude</p>
                             </div>
                           </div>
                           <div className="col-md-6">
@@ -823,7 +751,7 @@ export const RoutePoint: FC<{
                                   })
                                 }
                               />
-                              <label htmlFor="lng">Longitude</label>
+                              <p>Longitude</p>
                             </div>
                           </div>
                         </div>
@@ -843,10 +771,10 @@ export const RoutePoint: FC<{
                   </div>
                   <MutationButton
                     type="button"
+                    icon="mdi mdi-refresh"
                     className="btn btn-primary"
                     size="sm"
                     label="Update"
-                    icon="mdi mdi-refresh"
                     loading={updating}
                     onClick={handleUpdate}
                   />

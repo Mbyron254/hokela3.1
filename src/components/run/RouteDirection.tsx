@@ -1,8 +1,7 @@
 'use client';
 
 import { FC, useEffect, useState } from 'react';
-import { GoogleMapDirection } from '../GoogleMapDirection';
-import { GQLMutation } from '@/lib/client';
+import { GQLMutation } from 'src/lib/client';
 import {
   DIRECTION,
   DIRECTION_CREATE,
@@ -11,13 +10,14 @@ import {
   DIRECTION_UPDATE,
   DIRECTIONS,
   DIRECTIONS_RECYCLED,
-} from '@/lib/mutations/direction.mutation';
-import { IDirectionCreate, IDirectionUpdate } from '@/lib/interface/direction.interface';
-import { IPoint } from '@/lib/interface/point.interface';
+} from 'src/lib/mutations/direction.mutation';
+import { IDirectionCreate, IDirectionUpdate } from 'src/lib/interface/direction.interface';
+import { IPoint } from 'src/lib/interface/point.interface';
+import { DRIVING_MODES } from 'src/lib/constant';
+import { Table, TableBody, TableCell, TableContainer, Paper, Button, TableRow, TableHead } from '@mui/material';
 import { MutationButton } from '../MutationButton';
 import { LoadingDiv } from '../LoadingDiv';
-import { DataTable } from '../DataTable';
-import { DRIVING_MODES } from '@/lib/constant';
+import { GoogleMapDirection } from '../GoogleMapDirection';
 
 export const RouteDirection: FC<{
   runId: string;
@@ -142,159 +142,6 @@ export const RouteDirection: FC<{
     }
   };
 
-  const columns = [
-    {
-      name: '#',
-      width: '60px',
-      sortable: true,
-      selector: (row: any) => row.index,
-      cell: (row: any) => row.index,
-    },
-    {
-      name: 'NAME',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.name,
-      cell: (row: any) => row.name,
-    },
-    {
-      name: 'MODE',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.travelMode,
-      cell: (row: any) => row.travelMode,
-    },
-    {
-      name: 'START',
-      sortable: true,
-      wrap: true,
-      grow: 2,
-      selector: (row: any) => row.startLat,
-      cell: (row: any) => (
-        <div className="w-100 overflow-hidden">
-          <h6 className="font-8 mb-1">
-            <small className="text-muted me-1">Lat:</small>
-            {row.startLat}
-          </h6>
-          <h6 className="font-8 mb-1">
-            <small className="text-muted me-1">Lng:</small>
-            {row.startLng}
-          </h6>
-        </div>
-      ),
-    },
-    {
-      name: 'STOP',
-      sortable: true,
-      wrap: true,
-      grow: 2,
-      selector: (row: any) => row.stopLat,
-      cell: (row: any) => (
-        <div className="w-100 overflow-hidden">
-          <h6 className="font-8 mb-1">
-            <small className="text-muted me-1">Lat:</small>
-            {row.stopLat}
-          </h6>
-          <h6 className="font-8 mb-1">
-            <small className="text-muted me-1">Lng:</small>
-            {row.stopLng}
-          </h6>
-        </div>
-      ),
-    },
-    {
-      name: 'MORE',
-      width: '100px',
-      sortable: false,
-      center: true,
-      selector: (row: any) => row.id,
-      cell: (row: any) => {
-        return (
-          <button
-            type="button"
-            className="btn btn-light btn-sm me-2"
-            data-bs-toggle="modal"
-            data-bs-target="#update-direction"
-            onClick={() => {
-              setInputUpdate(_input);
-              loadDirection(row.id);
-            }}
-          >
-            <i className="mdi mdi-circle-edit-outline"></i>
-          </button>
-        );
-      },
-    },
-  ];
-  const columnsRecycled = [
-    {
-      name: '#',
-      width: '60px',
-      sortable: true,
-      selector: (row: any) => row.index,
-      cell: (row: any) => row.index,
-    },
-    {
-      name: 'NAME',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.name,
-      cell: (row: any) => row.name,
-    },
-    {
-      name: 'MODE',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.travelMode,
-      cell: (row: any) => row.travelMode,
-    },
-    {
-      name: 'START',
-      sortable: true,
-      wrap: true,
-      grow: 2,
-      selector: (row: any) => row.startLat,
-      cell: (row: any) => (
-        <div className="w-100 overflow-hidden">
-          <h6 className="font-8 mb-1">
-            <small className="text-muted me-1">Lat:</small>
-            {row.startLat}
-          </h6>
-          <h6 className="font-8 mb-1">
-            <small className="text-muted me-1">Lng:</small>
-            {row.startLng}
-          </h6>
-        </div>
-      ),
-    },
-    {
-      name: 'STOP',
-      sortable: true,
-      wrap: true,
-      grow: 2,
-      selector: (row: any) => row.stopLat,
-      cell: (row: any) => (
-        <div className="w-100 overflow-hidden">
-          <h6 className="font-8 mb-1">
-            <small className="text-muted me-1">Lat:</small>
-            {row.stopLat}
-          </h6>
-          <h6 className="font-8 mb-1">
-            <small className="text-muted me-1">Lng:</small>
-            {row.stopLng}
-          </h6>
-        </div>
-      ),
-    },
-    {
-      name: 'RECYCLED',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.recycled,
-      cell: (row: any) => row.recycled,
-    },
-  ];
-
   useEffect(() => {
     if (direction) {
       setInputUpdate({
@@ -310,17 +157,15 @@ export const RouteDirection: FC<{
   }, [direction]);
   useEffect(() => {
     if (directions) {
-      directions.rows.forEach((direction: any) => {
-        setRoutes((curr) => {
-          return [
+      directions.rows.forEach((_direction: any) => {
+        setRoutes((curr) => [
             ...curr,
             {
-              origin: { lat: direction.startLat, lng: direction.startLng },
-              destination: { lat: direction.stopLat, lng: direction.stopLng },
-              travelMode: direction.travelMode,
+              origin: { lat: _direction.startLat, lng: _direction.startLng },
+              destination: { lat: _direction.stopLat, lng: _direction.stopLng },
+              travelMode: _direction.travelMode,
             },
-          ];
-        });
+          ]);
       });
     }
   }, [directions]);
@@ -335,40 +180,17 @@ export const RouteDirection: FC<{
             role="tablist"
             aria-orientation="vertical"
           >
-            <a
-              className="btn btn-info mb-3"
-              href="#"
-              data-bs-toggle="modal"
-              data-bs-target="#create-direction"
-            >
-              <span className=" d-md-block">
-                <i className="mdi mdi-plus me-2"></i>New Direction
-              </span>
-            </a>
-            <a
-              className="nav-link active show"
-              id="v-pills-direction-table-tab"
-              data-bs-toggle="pill"
-              href="#v-pills-direction-table"
-              role="tab"
-              aria-controls="v-pills-direction-table"
-              aria-selected="true"
-            >
-              <i className="mdi mdi-home-variant d-md-none d-block"></i>
+            <Button variant="contained" color="primary" className="mb-3" data-bs-toggle="modal" data-bs-target="#create-direction">
+              <i className="mdi mdi-plus me-2"/>New Direction
+            </Button>
+            <Button variant="outlined" className="nav-link active show" id="v-pills-direction-table-tab" data-bs-toggle="pill" href="#v-pills-direction-table" role="tab" aria-controls="v-pills-direction-table" aria-selected="true">
+              <i className="mdi mdi-home-variant d-md-none d-block"/>
               <span className="d-none d-md-block">Table</span>
-            </a>
-            <a
-              className="nav-link"
-              id="v-pills-direction-map-tab"
-              data-bs-toggle="pill"
-              href="#v-pills-direction-map"
-              role="tab"
-              aria-controls="v-pills-direction-map"
-              aria-selected="false"
-            >
-              <i className="mdi mdi-account-circle d-md-none d-block"></i>
+            </Button>
+            <Button variant="outlined" className="nav-link" id="v-pills-direction-map-tab" data-bs-toggle="pill" href="#v-pills-direction-map" role="tab" aria-controls="v-pills-direction-map" aria-selected="false">
+              <i className="mdi mdi-account-circle d-md-none d-block"/>
               <span className="d-none d-md-block">Map</span>
-            </a>
+            </Button>
           </div>
         </div>
 
@@ -382,76 +204,119 @@ export const RouteDirection: FC<{
             >
               <ul className="nav nav-tabs nav-bordered mb-3">
                 <li className="nav-item">
-                  <a
-                    href="#active-route"
-                    data-bs-toggle="tab"
-                    aria-expanded="true"
-                    className="nav-link active"
-                  >
-                    <i className="mdi mdi-account-circle d-md-none d-block"></i>
+                  <Button variant="text" href="#active-route" data-bs-toggle="tab" aria-expanded="true" className="nav-link active">
+                    <i className="mdi mdi-account-circle d-md-none d-block"/>
                     <span className="d-none d-md-block">Active</span>
-                  </a>
+                  </Button>
                 </li>
                 <li className="nav-item">
-                  <a
-                    href="#recycled-route"
-                    data-bs-toggle="tab"
-                    aria-expanded="false"
-                    className="nav-link"
-                  >
-                    <i className="mdi mdi-settings-outline d-md-none d-block"></i>
+                  <Button variant="text" href="#recycled-route" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
+                    <i className="mdi mdi-settings-outline d-md-none d-block"/>
                     <span className="d-none d-md-block">Recycled</span>
-                  </a>
+                  </Button>
                 </li>
               </ul>
 
               <div className="tab-content">
                 <div className="tab-pane show active" id="active-route">
                   <div className="btn-group mb-2">
-                    <button
-                      type="button"
-                      className="btn btn-light"
-                      onClick={handleRecycle}
-                      disabled={recycling}
-                    >
-                      <i className="mdi mdi-trash-can-outline me-2"></i>Recycle
-                    </button>
+                    <Button variant="outlined" onClick={handleRecycle} disabled={recycling}>
+                      <i className="mdi mdi-trash-can-outline me-2"/>Recycle
+                    </Button>
                   </div>
 
-                  <DataTable
-                    columns={columns}
-                    loading={loadingDirections}
-                    setSelected={setSelected}
-                    expanded={false}
-                    totalRows={directions?.count}
-                    data={directions?.rows}
-                    handleReloadMutation={loadDirections}
-                    reloadTriggers={[created, updated, recycled, restored]}
-                  />
+                  <TableContainer component={Paper}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>#</TableCell>
+                          <TableCell>NAME</TableCell>
+                          <TableCell>MODE</TableCell>
+                          <TableCell>START</TableCell>
+                          <TableCell>STOP</TableCell>
+                          <TableCell>MORE</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {directions?.rows.map((row: any, index: number) => (
+                          <TableRow key={row.id}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{row.name}</TableCell>
+                            <TableCell>{row.travelMode}</TableCell>
+                            <TableCell>
+                              <div>
+                                <div>Lat: {row.startLat}</div>
+                                <div>Lng: {row.startLng}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <div>Lat: {row.stopLat}</div>
+                                <div>Lng: {row.stopLng}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => {
+                                  setInputUpdate(_input);
+                                  loadDirection(row.id);
+                                }}
+                              >
+                                <i className="mdi mdi-circle-edit-outline"/>
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </div>
 
                 <div className="tab-pane" id="recycled-route">
                   <div className="btn-group mb-2">
-                    <button
-                      type="button"
-                      className="btn btn-light"
-                      onClick={handleRestore}
-                      disabled={restoring}
-                    >
-                      <i className="mdi mdi-restore me-2"></i>Restore
-                    </button>
+                    <Button variant="outlined" onClick={handleRestore} disabled={restoring}>
+                      <i className="mdi mdi-restore me-2"/>Restore
+                    </Button>
                   </div>
 
-                  <DataTable
-                    columns={columnsRecycled}
-                    loading={loadingDirectionsRecycled}
-                    setSelected={setSelectedRecycled}
-                    expanded={false}
-                    totalRows={directionsRecycled?.count}
-                    data={directionsRecycled?.rows}
-                    handleReloadMutation={loadDirectionsRecycled}
-                    reloadTriggers={[recycled, restored]}
-                  />
+                  <TableContainer component={Paper}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>#</TableCell>
+                          <TableCell>NAME</TableCell>
+                          <TableCell>MODE</TableCell>
+                          <TableCell>START</TableCell>
+                          <TableCell>STOP</TableCell>
+                          <TableCell>RECYCLED</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {directionsRecycled?.rows.map((row: any, index: number) => (
+                          <TableRow key={row.id}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{row.name}</TableCell>
+                            <TableCell>{row.travelMode}</TableCell>
+                            <TableCell>
+                              <div>
+                                <div>Lat: {row.startLat}</div>
+                                <div>Lng: {row.startLng}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <div>Lat: {row.stopLat}</div>
+                                <div>Lng: {row.stopLng}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell>{row.recycled}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </div>
               </div>
             </div>
@@ -504,7 +369,7 @@ export const RouteDirection: FC<{
                         })
                       }
                     />
-                    <label htmlFor="name">Name</label>
+                    <p>Name</p>
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -520,14 +385,14 @@ export const RouteDirection: FC<{
                         })
                       }
                     >
-                      <option></option>
+                      <option value="">Select Mode</option>
                       {DRIVING_MODES.map((mode: any, index: number) => (
                         <option key={`mode-${index}`} value={mode}>
                           {mode}
                         </option>
                       ))}
                     </select>
-                    <label htmlFor="travelMode">Travel Mode</label>
+                    <p>Travel Mode</p>
                   </div>
                 </div>
                 <div className="col-md-3">
@@ -544,7 +409,7 @@ export const RouteDirection: FC<{
                         })
                       }
                     />
-                    <label htmlFor="startLat">Start Latitude</label>
+                    <p>Start Latitude</p>
                   </div>
                 </div>
                 <div className="col-md-3">
@@ -561,7 +426,7 @@ export const RouteDirection: FC<{
                         })
                       }
                     />
-                    <label htmlFor="startLng">Start Longitude</label>
+                    <p>Start Longitude</p>
                   </div>
                 </div>
                 <div className="col-md-3">
@@ -578,7 +443,7 @@ export const RouteDirection: FC<{
                         })
                       }
                     />
-                    <label htmlFor="stopLat">Stop Latitude</label>
+                    <p>Stop Latitude</p>
                   </div>
                 </div>
                 <div className="col-md-3">
@@ -595,7 +460,7 @@ export const RouteDirection: FC<{
                         })
                       }
                     />
-                    <label htmlFor="stopLng">Stop Longitude</label>
+                    <p>Stop Longitude</p>
                   </div>
                 </div>
               </div>
@@ -648,7 +513,7 @@ export const RouteDirection: FC<{
                           })
                         }
                       />
-                      <label htmlFor="name">Name</label>
+                      <p>Name</p>
                     </div>
                   </div>
                   <div className="col-md-6">
@@ -664,14 +529,14 @@ export const RouteDirection: FC<{
                           })
                         }
                       >
-                        <option></option>
+                        <option value="">Select Mode</option>
                         {DRIVING_MODES.map((mode: any, index: number) => (
                           <option key={`mode-${index}`} value={mode}>
                             {mode}
                           </option>
                         ))}
                       </select>
-                      <label htmlFor="travelMode">Travel Mode</label>
+                      <p>Travel Mode</p>
                     </div>
                   </div>
                   <div className="col-md-3">
@@ -688,7 +553,7 @@ export const RouteDirection: FC<{
                           })
                         }
                       />
-                      <label htmlFor="startLat">Start Latitude</label>
+                      <p>Start Latitude</p>
                     </div>
                   </div>
                   <div className="col-md-3">
@@ -705,7 +570,7 @@ export const RouteDirection: FC<{
                           })
                         }
                       />
-                      <label htmlFor="startLng">Start Longitude</label>
+                      <p>Start Longitude</p>
                     </div>
                   </div>
                   <div className="col-md-3">
@@ -722,7 +587,7 @@ export const RouteDirection: FC<{
                           })
                         }
                       />
-                      <label htmlFor="stopLat">Stop Latitude</label>
+                      <p>Stop Latitude</p>
                     </div>
                   </div>
                   <div className="col-md-3">
@@ -739,7 +604,7 @@ export const RouteDirection: FC<{
                           })
                         }
                       />
-                      <label htmlFor="stopLng">Stop Longitude</label>
+                      <p>Stop Longitude</p>
                     </div>
                   </div>
                 </div>

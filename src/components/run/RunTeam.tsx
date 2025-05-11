@@ -1,13 +1,13 @@
 'use client';
 
 import Image from 'next/image';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Select, MenuItem } from '@mui/material';
 
-import { parseRunOfferType } from '@/lib/helpers';
-import { sourceImage } from '@/lib/server';
+import { parseRunOfferType } from 'src/lib/helpers';
+import { sourceImage } from 'src/lib/server';
 import { FC, useEffect, useState } from 'react';
-import { GQLMutation } from '@/lib/client';
-import { MutationButton } from '../MutationButton';
-import { RUN_OFFER_TYPES, TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from '@/lib/constant';
+import { GQLMutation } from 'src/lib/client';
+import { RUN_OFFER_TYPES, TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
 import {
   M_RUN_TEAMS,
   RUN_TEAM,
@@ -16,10 +16,10 @@ import {
   RUN_TEAM_MEMBERS_REMOVE,
   RUN_TEAM_MEMBERS_TYPE_UPDATE,
   RUN_TEAM_UPDATE,
-} from '@/lib/mutations/run-team.mutation';
-import { M_CAMPAIGN_AGENTS } from '@/lib/mutations/run-offer.mutation';
+} from 'src/lib/mutations/run-team.mutation';
+import { M_CAMPAIGN_AGENTS } from 'src/lib/mutations/run-offer.mutation';
 import { LoadingDiv } from '../LoadingDiv';
-import { DataTableStatic } from '../DataTableStatic';
+import { MutationButton } from '../MutationButton';
 
 export interface IRunTeamCreate {
   runId?: string;
@@ -133,16 +133,6 @@ export const RunTeam: FC<{
   const [selectedAgentsAdd, setSelectedAgentsAdd] = useState<string[]>([]);
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
 
-  const loadOffers = () => {
-    if (run?.id) {
-      getOffers({ variables: { input: { runId: run.id } } });
-    }
-  };
-  const loadRunTeams = () => {
-    if (run?.id) {
-      getRunTeams({ variables: { input: { runId: run.id } } });
-    }
-  };
   const loadTeamOffers = (teamId: string) => {
     getTeamOffers({ variables: { input: { teamId } } });
   };
@@ -220,18 +210,24 @@ export const RunTeam: FC<{
               )}
             </>
           );
-        } else {
-          return parseRunOfferType(row.type);
         }
+        return parseRunOfferType(row.type);
+
       },
     },
   ];
 
-  useEffect(() => loadOffers(), [run?.id]);
+  useEffect(() => {
+    if (run?.id) {
+      getOffers({ variables: { input: { runId: run.id } } });
+    }
+  }, [run.id, getOffers]);
   useEffect(
-    () => loadRunTeams(),
-    [run?.id, created, updated, addedTeamMembers, removedTeamMembers, updatedTeamMembersType],
-  );
+    () => {
+      if (run?.id) {
+      getRunTeams({ variables: { input: { runId: run.id } } });
+    }
+  }, [run.id, getRunTeams]);
   useEffect(() => {
     if (runTeam) {
       setInputUpdate({
@@ -243,23 +239,25 @@ export const RunTeam: FC<{
   }, [runTeam]);
   useEffect(() => {
     if (teamOffers?.rows?.length) {
-      for (let i = 0; i < teamOffers.rows.length; i++) {
+      for (let i = 0; i < teamOffers.rows.length; i+=1) {
         setSelectedAgentsAdd((prev) => [...prev, teamOffers.rows[i].agent.id]);
       }
     }
-  }, [teamOffers?.rows?.length]);
+  }, [teamOffers.rows]);
 
   return (
     <div className="row">
       <div className="col-md-12">
-        <button
-          type="button"
-          className="btn btn-outline-success btn-sm"
+        <Button
+          variant="outlined"
+          color="success"
+          size="small"
           data-bs-toggle="modal"
           data-bs-target="#new-team"
+          startIcon={<i className="mdi mdi-plus"/>}
         >
-          <i className="mdi mdi-plus"></i> New Team
-        </button>
+          New Team
+        </Button>
 
         <hr className="mt-3 mb-1" />
 
@@ -279,10 +277,10 @@ export const RunTeam: FC<{
               role="tablist"
               aria-orientation="vertical"
             >
-              {runTeams?.rows.map((team: any, index: number) => (
+              {runTeams?.rows.map((team: any, teamIndex: number) => (
                 <a
-                  key={`team-${index}`}
-                  className={`nav-link ${index === 0 ? '' : ''}`}
+                  key={`team-${teamIndex}`}
+                  className={`nav-link ${teamIndex === 0 ? '' : ''}`}
                   id={`v-pills-team-${team.id}-tab`}
                   data-bs-toggle="pill"
                   href={`#v-pills-team-${team.id}`}
@@ -297,7 +295,7 @@ export const RunTeam: FC<{
                   }}
                 >
                   <span className="d-md-block">
-                    <span className="me-2">{index + 1}.</span>
+                    <span className="me-2">{teamIndex + 1}.</span>
                     {team.name}
                   </span>
                 </a>
@@ -307,10 +305,10 @@ export const RunTeam: FC<{
 
           <div className="col-sm-9">
             <div className="tab-content" id="v-pills-tabContent">
-              {runTeams?.rows.map((team: any, index: number) => (
+              {runTeams?.rows.map((team: any, teamIndex: number) => (
                 <div
-                  key={`team-${index}`}
-                  className={`tab-pane fade ${index === 0 ? '' : ''}`}
+                  key={`team-${teamIndex}`}
+                  className={`tab-pane fade ${teamIndex === 0 ? '' : ''}`}
                   id={`v-pills-team-${team.id}`}
                   role="tabpanel"
                   aria-labelledby={`v-pills-team-${team.id}-tab`}
@@ -324,19 +322,19 @@ export const RunTeam: FC<{
                           <div className="row">
                             <div className="col-md-4">
                               <div className="input-group input-group-sm">
-                                <select
-                                  className="form-select"
+                                <Select
                                   id="agentType"
-                                  aria-label="Agent Type"
-                                  defaultValue={membersType}
-                                  onChange={(e) => setMembersType(parseInt(e.target.value))}
+                                  value={membersType}
+                                  onChange={(e) => setMembersType(e.target.value as number)}
+                                  displayEmpty
+                                  fullWidth
                                 >
-                                  {RUN_OFFER_TYPES.map((type: any, index: number) => (
-                                    <option key={`type-${index}`} value={type.value}>
+                                  {RUN_OFFER_TYPES.map((type: any) => (
+                                    <MenuItem key={`type-${teamIndex}`} value={type.value}>
                                       {type.label}
-                                    </option>
+                                    </MenuItem>
                                   ))}
-                                </select>
+                                </Select>
                                 <MutationButton
                                   type="button"
                                   className="btn btn-success"
@@ -358,37 +356,72 @@ export const RunTeam: FC<{
                                 loading={removingTeamMembers}
                                 onClick={handleRemoveTeamMembers}
                               />
-                              <button
-                                type="button"
-                                className="btn btn-outline-primary btn-sm float-end me-2"
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                className="float-end me-2"
                                 data-bs-toggle="modal"
                                 data-bs-target="#update-modal"
+                                startIcon={<i className="mdi mdi-pen"/>}
                               >
-                                <i className="mdi mdi-pen"></i> Edit
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-outline-success btn-sm float-end me-2"
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="success"
+                                size="small"
+                                className="float-end me-2"
                                 data-bs-toggle="modal"
                                 data-bs-target="#new-team-members"
+                                startIcon={<i className="mdi mdi-plus"/>}
                               >
-                                <i className="mdi mdi-plus"></i> Add
-                              </button>
+                                Add
+                              </Button>
                             </div>
                           </div>
 
                           <hr className="my-2" />
 
-                          <DataTableStatic
-                            selectorParent1="agent"
-                            selectable={true}
-                            dense={true}
-                            fixedHeader={true}
-                            columns={columns}
-                            data={teamOffers?.rows}
-                            loading={loadingOffers}
-                            setSelected={setSelectedAgents}
-                          />
+                          <TableContainer component={Paper}>
+                            <Table size="small" aria-label="team members table">
+                              <TableHead>
+                                <TableRow>
+                                  {columns.map((column) => (
+                                    <TableCell key={column.name}>{column.name}</TableCell>
+                                  ))}
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {teamOffers?.rows.map((row: any, rowIndex: number) => (
+                                  <TableRow key={rowIndex}>
+                                    <TableCell>{row.index}</TableCell>
+                                    <TableCell>
+                                      <Image
+                                        className="me-1 mt-1 mb-1 rounded-circle"
+                                        src={sourceImage(row.agent?.user?.photo?.fileName)}
+                                        loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
+                                        alt=""
+                                        width={TABLE_IMAGE_WIDTH}
+                                        height={TABLE_IMAGE_HEIGHT}
+                                      />
+                                      <div className="w-100 overflow-hidden">
+                                        <h6 className="mt-1 mb-1">{row.agent?.user?.name}</h6>
+                                        <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      {row.team?.leader?.id === row.agent?.id ? (
+                                        <span className="badge bg-primary p-2">Team Leader</span>
+                                      ) : (
+                                        parseRunOfferType(row.type)
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
                         </>
                       )}
                     </div>
@@ -423,7 +456,7 @@ export const RunTeam: FC<{
                       })
                     }
                   />
-                  <label htmlFor="name">Name</label>
+                  <p>Name</p>
                 </div>
                 {loadingOffers ? (
                   <LoadingDiv />
@@ -441,14 +474,14 @@ export const RunTeam: FC<{
                         })
                       }
                     >
-                      <option></option>
+                      <option value="">Select Leader</option>
                       {offers?.rows.map((offer: any, index: number) => (
                         <option value={offer.agent.id} key={`agent-${index}`}>
                           {offer.agent.user.name}
                         </option>
                       ))}
                     </select>
-                    <label htmlFor="leader">Leader</label>
+                    <p>Leader</p>
                   </div>
                 )}
               </div>
@@ -509,7 +542,7 @@ export const RunTeam: FC<{
                         })
                       }
                     />
-                    <label htmlFor="name">Category Name</label>
+                    <p>Category Name</p>
                   </div>
                   {loadingOffers ? (
                     <LoadingDiv />
@@ -527,14 +560,14 @@ export const RunTeam: FC<{
                           })
                         }
                       >
-                        <option></option>
+                        <option value="">Select Leader</option>
                         {offers?.rows.map((offer: any, index: number) => (
                           <option value={offer.agent.id} key={`agent-${index}`}>
                             {offer.agent.user.name}
                           </option>
                         ))}
                       </select>
-                      <label htmlFor="leader">Leader</label>
+                      <p>Leader</p>
                     </div>
                   )}
                 </div>
@@ -568,16 +601,45 @@ export const RunTeam: FC<{
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
               </div>
               <div className="modal-body">
-                <DataTableStatic
-                  selectorParent1="agent"
-                  selectable={true}
-                  dense={true}
-                  fixedHeader={true}
-                  columns={columns}
-                  data={offers?.rows}
-                  setSelected={setSelectedAgentsAdd}
-                  loading={loadingOffers}
-                />
+                <TableContainer component={Paper}>
+                  <Table size="small" aria-label="team members table">
+                    <TableHead>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <TableCell key={column.name}>{column.name}</TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {offers?.rows.map((row: any, index: number) => (
+                        <TableRow key={index}>
+                          <TableCell>{row.index}</TableCell>
+                          <TableCell>
+                            <Image
+                              className="me-1 mt-1 mb-1 rounded-circle"
+                              src={sourceImage(row.agent?.user?.photo?.fileName)}
+                              loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
+                              alt=""
+                              width={TABLE_IMAGE_WIDTH}
+                              height={TABLE_IMAGE_HEIGHT}
+                            />
+                            <div className="w-100 overflow-hidden">
+                              <h6 className="mt-1 mb-1">{row.agent?.user?.name}</h6>
+                              <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {row.team?.leader?.id === row.agent?.id ? (
+                              <span className="badge bg-primary p-2">Team Leader</span>
+                            ) : (
+                              parseRunOfferType(row.type)
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-light btn-sm" data-bs-dismiss="modal">

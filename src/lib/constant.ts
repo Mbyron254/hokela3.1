@@ -1,12 +1,12 @@
 export const CLIENT_HOST_DEV = 'http://localhost:3001';
-export const CLIENT_HOST_PRO = 'https://hokela360-srld9.ondigitalocean.app';
+export const CLIENT_HOST_PRO = 'https://hokela-test-oc4vu.ondigitalocean.app';
 export const SERVER_HOST_DEV = 'http://localhost:3000';
-export const SERVER_HOST_PRO = 'https://hokela-api-test-xhutk.ondigitalocean.app';
+export const SERVER_HOST_PRO = 'https://hokela-api-9uucl.ondigitalocean.app';
 export const DO_SPACE_ORIGIN = 'https://hokela360.blr1.digitaloceanspaces.com';
 export const SERVER_API_DEV_GQL = `${SERVER_HOST_DEV}/graphql`;
 export const SERVER_API_PRO_GQL = `${SERVER_HOST_PRO}/graphql`;
 export const SERVER_API_DEV_RST = `${SERVER_HOST_DEV}/api`;
-export const SERVER_API_PRO_RST = `${SERVER_HOST_PRO}/graphql`;
+export const SERVER_API_PRO_RST = `${SERVER_HOST_PRO}/api`;
 export const HEADER_KEY_CLIENT = 'Client';
 export const HEADER_VAL_CLIENT = 'APP_WEBSITE';
 export const COOKIE_PREFIX = 'hokela';
@@ -17,12 +17,13 @@ export const TABLE_IMAGE_HEIGHT = 30;
 export const ROLE_ROOT = 'Root';
 export const ROLE_AGENT = 'Agent';
 export const ROLE_GUEST = 'Guest';
-export const ROLE_AC_MANAGER = 'Account Manager';
+export const ROLE_ACCOUNT_MANAGER = 'Account Manager'; // Un-seeded
+export const ROLE_RUN_MANAGER = 'Run Manager'; // Un-seeded
 export const CLIENT_TYPE_PRODUCER = 'Producer';
 export const CLIENT_TYPE_DISTRIBUTOR = 'Distributor';
 export const CLIENT_TYPE_RETAILER = 'Retailer';
 export const CLIENT_TYPE_MARKETING_AGENCY = 'Marketing Agency';
-export const QUERY_REVALIDATE_INTERVAL_MS = 500;
+export const QUERY_REVALIDATE_INTERVAL_MS = 15000; // 15 seconds
 export const COUNTRY_NAME_CODES = ['ke', 'tz', 'ug', 'rw', 'et'];
 
 export const CODE_RWANDA = '250';
@@ -97,3 +98,21 @@ export const RUN_ACTIVITY_SURVEY = 'Survey';
 export const RUN_ACTIVITY_ROAD_SHOW = 'Road Show';
 
 export const RUN_ACTIVITY_STOCK_MAPPING = 'Stock Mapping';
+
+export const DEFAULT_RESPONSE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
+export enum RUN_OFFER_TYPE {
+  STANDARD = 0,
+  DRIVER,
+  MIXOLOGIST,
+  BOUNCER,
+  DANCER,
+}
+
+export const RUN_OFFER_TYPES = [
+  { value: RUN_OFFER_TYPE.STANDARD, label: 'Standard' },
+  { value: RUN_OFFER_TYPE.DRIVER, label: 'Driver' },
+  { value: RUN_OFFER_TYPE.MIXOLOGIST, label: 'Mixologist' },
+  { value: RUN_OFFER_TYPE.BOUNCER, label: 'Bouncer' },
+  { value: RUN_OFFER_TYPE.DANCER, label: 'Dancer' },
+];

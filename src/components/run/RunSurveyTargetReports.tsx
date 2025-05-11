@@ -3,17 +3,17 @@
 import Image from 'next/image';
 
 import { FC, useEffect, useState } from 'react';
-import { IAgentTarget, ISurveyReportTarget } from '@/lib/interface/general.interface';
-import { GQLMutation } from '@/lib/client';
+import { IAgentTarget, ISurveyReportTarget } from 'src/lib/interface/general.interface';
+import { GQLMutation } from 'src/lib/client';
 import {
   M_SURVEY_REPORT_AGENTS_TARGET,
   SURVEY_REPORT_TARGET_CREATE,
-} from '@/lib/mutations/survey.mutation';
-import { sourceImage } from '@/lib/server';
-import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from '@/lib/constant';
+} from 'src/lib/mutations/survey.mutation';
+import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
+import { sourceImage } from 'src/lib/server';
+import { commafy } from 'src/lib/helpers';
 import { MutationButton } from '../MutationButton';
 import { LoadingSpan } from '../LoadingSpan';
-import { commafy } from '@/lib/helpers';
 
 export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) => {
   const {
@@ -40,14 +40,11 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
   const [targets, setTargets] = useState<IAgentTarget[]>([]);
   const [bulkFill, setBulkFill] = useState<boolean>(false);
 
-  const loadAgentsTarget = () => {
-    if (surveyId) getAgentsTarget({ variables: { input: { surveyId } } });
-  };
   const handleUpsert = () => {
     if (surveyId && targets.length) {
       const t: IAgentTarget[] = [];
 
-      for (let i = 0; i < targets.length; i++) {
+      for (let i = 0; i < targets.length; i+=1) {
         t.push({ agentId: targets[i].agentId, target: targets[i].target });
       }
 
@@ -59,16 +56,15 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
 
     let _totalTarget = 0;
 
-    for (let i = 0; i < _curr.length; i++) {
+    for (let i = 0; i < _curr.length; i+=1) {
       if (bulkFill) {
-        _curr[i].target = parseInt(event.target.value) | 0;
-      } else {
-        if (_curr[i].agentId === agentId) {
-          const newTarget = parseInt(event.target.value) | 0;
+        _curr[i].target = parseInt(event.target.value, 10) || 0;
+      } else if (_curr[i].agentId === agentId) {
+          const newTarget = parseInt(event.target.value, 10) || 0;
 
           _curr[i].target =
             newTarget < (_curr[i]._filled as number) ? (_curr[i]._filled as number) : newTarget;
-        }
+        
       }
 
       _totalTarget += _curr[i].target;
@@ -78,7 +74,9 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
     setTotalTarget(_totalTarget);
   };
 
-  useEffect(() => loadAgentsTarget(), [upserted]);
+  useEffect(() => {
+    if (surveyId) getAgentsTarget({ variables: { input: { surveyId } } });
+  }, [surveyId, getAgentsTarget]);
   useEffect(() => {
     if (agentsTarget?.rows) {
       const _targets: IAgentTarget[] = [];
@@ -86,7 +84,7 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
       let _totalTarget = 0;
       let _totalFilled = 0;
 
-      for (let i = 0; i < agentsTarget.rows.length; i++) {
+      for (let i = 0; i < agentsTarget.rows.length; i+=1) {
         _targets.push({
           agentId: agentsTarget.rows[i].agent?.id,
           target: agentsTarget.rows[i].target,
@@ -94,8 +92,8 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
           _agent: agentsTarget.rows[i].agent,
         });
 
-        _totalTarget += parseInt(agentsTarget.rows[i].target);
-        _totalFilled += parseInt(agentsTarget.rows[i].filled);
+        _totalTarget += parseInt(agentsTarget.rows[i].target, 10);
+        _totalFilled += parseInt(agentsTarget.rows[i].filled, 10);
       }
 
       setTargets(_targets);
@@ -144,9 +142,9 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
                   id="bulkFill"
                   onClick={() => setBulkFill(!bulkFill)}
                 />
-                <label className="form-check-label" htmlFor="bulkFill" style={{ marginTop: '3px' }}>
+                <p className="form-check-label" style={{ marginTop: '3px' }}>
                   Bulk Fill
-                </label>
+                </p>
               </div>
             </span>
           </h5>
@@ -154,7 +152,7 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
           <hr className="mt-0 mb-1" />
 
           <div className="mb-2">
-            {targets?.map((target: any, index: number) => (
+            {targets?.map((target: IAgentTarget, index: number) => (
               <div key={`allocation-${index}`}>
                 <dl className="row mb-0">
                   <dt className="col-sm-8">
@@ -175,7 +173,7 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
                       <input
                         type="text"
                         className="form-control form-control-sm font-14"
-                        disabled={true}
+                        disabled
                         placeholder={`Submitted: ${target._filled}`}
                       />
                       <input

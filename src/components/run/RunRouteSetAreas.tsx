@@ -1,7 +1,8 @@
-'use client';
+'use client'
 
-import { GQLMutation } from '@/lib/client';
-import { IAreaUpdate, IAreaCreate, ICoordinate } from '@/lib/interface/area.interface';
+import { FC, useEffect, useState } from 'react';
+import { GQLMutation } from 'src/lib/client';
+import { IAreaUpdate, IAreaCreate, ICoordinate } from 'src/lib/interface/area.interface';
 import {
   AREAS,
   AREAS_RECYCLED,
@@ -10,13 +11,14 @@ import {
   AREA_UPDATE,
   AREA_RECYCLE,
   AREA_RESTORE,
-} from '@/lib/mutations/area.mutation';
-import { FC, useEffect, useState } from 'react';
+} from 'src/lib/mutations/area.mutation';
+import { IPoint } from 'src/lib/interface/point.interface';
+// Add Material-UI imports
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { GoogleMapPolygonDraw } from '../GoogleMapPolygonDraw';
-import { IPoint } from '@/lib/interface/point.interface';
-import { DataTable } from '../DataTable';
 import { MutationButton } from '../MutationButton';
 import { LoadingDiv } from '../LoadingDiv';
+
 
 export const RunRouteSetAreas: FC<{
   run: any;
@@ -103,11 +105,6 @@ export const RunRouteSetAreas: FC<{
   const [polygonPathsCreate, setPolygonPathsCreate] = useState<IPoint[]>([]);
   const [polygonPathsUpdate, setPolygonPathsUpdate] = useState<IPoint[]>([]);
 
-  const loadAreas = () => {
-    if (run.id) {
-      getAreas({ variables: { input: { runId: run.id } } });
-    }
-  };
   const loadAreasRecycled = () => {
     if (run.id) {
       getAreasRecycled({ variables: { input: { runId: run.id } } });
@@ -137,77 +134,16 @@ export const RunRouteSetAreas: FC<{
     }
   };
 
-  const columns = [
-    {
-      name: '#',
-      width: '60px',
-      sortable: true,
-      selector: (row: any) => row.index,
-      cell: (row: any) => row.index,
-    },
-    {
-      name: 'NAME',
-      sortable: true,
-      wrap: true,
-      grow: 2,
-      selector: (row: any) => row.name,
-      cell: (row: any) => row.name,
-    },
-    {
-      name: 'MORE',
-      width: '100px',
-      sortable: false,
-      center: true,
-      selector: (row: any) => row.id,
-      cell: (row: any) => {
-        return (
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#update-area-modal"
-            onClick={() => {
-              setInputUpdate(_input);
-              loadArea(row.id);
-            }}
-          >
-            <i className="mdi mdi-circle-edit-outline"></i>
-          </button>
-        );
-      },
-    },
-  ];
-  const columnsRecycled = [
-    {
-      name: '#',
-      width: '60px',
-      sortable: true,
-      selector: (row: any) => row.index,
-      cell: (row: any) => row.index,
-    },
-    {
-      name: 'NAME',
-      sortable: true,
-      wrap: true,
-      grow: 2,
-      selector: (row: any) => row.shop?.name,
-      cell: (row: any) => row.shop?.name,
-    },
-    {
-      name: 'RECYCLED',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.recycled,
-      cell: (row: any) => row.recycled,
-    },
-  ];
-
-  useEffect(() => loadAreas(), []);
+  useEffect(() => {
+    if (run.id) {
+      getAreas({ variables: { input: { runId: run.id } } });
+    }
+  }, [run.id, getAreas]);
   useEffect(() => {
     if (area) {
       const _coords: ICoordinate[] = [];
 
-      for (let i = 0; i < area.coordinates?.length; i++) {
+      for (let i = 0; i < area.coordinates?.length; i+=1) {
         _coords.push({ lat: area.coordinates[i].lat, lng: area.coordinates[i].lng });
       }
 
@@ -221,13 +157,13 @@ export const RunRouteSetAreas: FC<{
       <ul className="nav nav-tabs nav-bordered mb-2">
         <li className="nav-item">
           <a href="#active-areas" data-bs-toggle="tab" aria-expanded="true" className="nav-link active">
-            <i className="mdi mdi-account-circle d-md-none d-block"></i>
+            <i className="mdi mdi-account-circle d-md-none d-block"/>
             <span className="d-none d-md-block">Active</span>
           </a>
         </li>
         <li className="nav-item">
           <a href="#recycled-areas" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
-            <i className="mdi mdi-settings-outline d-md-none d-block"></i>
+            <i className="mdi mdi-settings-outline d-md-none d-block"/>
             <span className="d-none d-md-block">Recycled</span>
           </a>
         </li>
@@ -236,58 +172,95 @@ export const RunRouteSetAreas: FC<{
       <div className="tab-content">
         <div className="tab-pane show active" id="active-areas">
           <div className="btn-group btn-group-sm mb-2">
-            <button
-              type="button"
-              className="btn btn-outline-success me-2"
+            <Button
+              variant="outlined"
+              color="success"
+              size="small"
               data-bs-toggle="modal"
               data-bs-target="#create-area-modal"
             >
-              <i className="mdi mdi-plus me-1"></i>New
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-danger"
+              <i className="mdi mdi-plus me-1"/>New
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
               onClick={handleRecycle}
               disabled={recycling}
             >
-              <i className="mdi mdi-trash-can-outline me-1"></i>Recycle
-            </button>
+              <i className="mdi mdi-trash-can-outline me-1"/>Recycle
+            </Button>
           </div>
 
-          <DataTable
-            columns={columns}
-            loading={loadingAreas}
-            setSelected={setSelected}
-            expanded={false}
-            totalRows={areas?.count}
-            data={areas?.rows}
-            handleReloadMutation={loadAreas}
-            reloadTriggers={[created, updated, recycled, restored]}
-          />
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>#</TableCell>
+                  <TableCell>NAME</TableCell>
+                  <TableCell>MORE</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {areas?.rows.map((row: any, index: number) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        data-bs-toggle="modal"
+                        data-bs-target="#update-area-modal"
+                        onClick={() => {
+                          setInputUpdate(_input);
+                          loadArea(row.id);
+                        }}
+                      >
+                        <i className="mdi mdi-circle-edit-outline"/>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
 
         <div className="tab-pane" id="recycled-areas">
           <div className="btn-group btn-group-sm mb-2">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-warning"
+            <Button
+              variant="outlined"
+              color="warning"
+              size="small"
               onClick={handleRestore}
               disabled={restoring}
             >
-              <i className="mdi mdi-restore me-2"></i>Restore
-            </button>
+              <i className="mdi mdi-restore me-2"/>Restore
+            </Button>
           </div>
 
-          <DataTable
-            columns={columnsRecycled}
-            loading={loadingAreasRecycled}
-            setSelected={setSelectedRecycled}
-            expanded={false}
-            totalRows={areasRecycled?.count}
-            data={areasRecycled?.rows}
-            handleReloadMutation={loadAreasRecycled}
-            reloadTriggers={[recycled, restored]}
-          />
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>#</TableCell>
+                  <TableCell>NAME</TableCell>
+                  <TableCell>RECYCLED</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {areasRecycled?.rows.map((row: any, index: number) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{row.shop?.name}</TableCell>
+                    <TableCell>{row.recycled}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
 
@@ -311,9 +284,9 @@ export const RunRouteSetAreas: FC<{
               <div className="row">
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label className="mb-1" htmlFor="name">
+                    <p className="mb-1">
                       Name
-                    </label>
+                    </p>
                     <input
                       type="text"
                       className="form-control"
@@ -330,9 +303,9 @@ export const RunRouteSetAreas: FC<{
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label className="mb-1" htmlFor="color">
+                    <p className="mb-1">
                       Color
-                    </label>
+                    </p>
                     <input
                       type="color"
                       name="color"
@@ -354,7 +327,11 @@ export const RunRouteSetAreas: FC<{
                   setPolygonPaths={setPolygonPathsCreate}
                 />
               </div>
-              <button className="btn btn-sm btn-primary" onClick={() => setPolygonPathsCreate([])}>
+              <button
+                type="button"
+                className="btn btn-sm btn-primary"
+                onClick={() => setPolygonPathsCreate([])}
+              >
                 Reset Area
               </button>
               <MutationButton
@@ -394,9 +371,9 @@ export const RunRouteSetAreas: FC<{
                 <div className="row mb-3">
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="mb-1" htmlFor="name">
+                      <p className="mb-1">
                         Name
-                      </label>
+                      </p>
                       <input
                         type="text"
                         className="form-control"
@@ -413,15 +390,14 @@ export const RunRouteSetAreas: FC<{
                   </div>
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="mb-1" htmlFor="color">
+                      <p className="mb-1">
                         Color
-                      </label>
+                      </p>
                       <input
                         type="color"
                         name="color"
                         className="form-control"
                         id="color"
-                        // value="#727cf5"
                         defaultValue={inputUpdate.color}
                         onChange={(e) =>
                           setInputUpdate({
@@ -440,7 +416,7 @@ export const RunRouteSetAreas: FC<{
                   />
                 </div>
 
-                <button className="btn btn-sm btn-primary" onClick={() => setPolygonPathsUpdate([])}>
+                <button type="button" className="btn btn-sm btn-primary" onClick={() => setPolygonPathsUpdate([])}>
                   Reset Map
                 </button>
                 <MutationButton

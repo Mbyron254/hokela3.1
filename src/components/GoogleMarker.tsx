@@ -1,8 +1,8 @@
 'use client';
 
-import { IPoint } from '@/lib/interface/point.interface';
-import { OverlayView } from '@react-google-maps/api';
 import { ReactNode } from 'react';
+import { IPoint } from 'src/lib/interface/point.interface';
+import { OverlayView } from '@react-google-maps/api';
 
 export default function GoogleMarker({ position, children }: { position: IPoint; children: ReactNode }) {
   return (

@@ -3,7 +3,7 @@
 import React, { Dispatch, FC, SetStateAction } from 'react';
 
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
-import { IPoint } from '@/lib/interface/point.interface';
+import { IPoint } from 'src/lib/interface/point.interface';
 
 export const GoogleMapPointPick: FC<{ setMarker: Dispatch<SetStateAction<IPoint | undefined>> }> = ({
   setMarker,
@@ -28,7 +28,7 @@ export const GoogleMapPointPick: FC<{ setMarker: Dispatch<SetStateAction<IPoint 
           center={{ lat: -1.2679966483358556, lng: 36.778462836409915 }}
           zoom={6}
           onClick={handleOnClick}
-        ></GoogleMap>
+        />
       )}
     </>
   );

@@ -1,16 +1,12 @@
 'use client';
 
-import Image from 'next/image';
-
 import { FC, useEffect, useState } from 'react';
-import { GQLMutation, GQLQuery } from '@/lib/client';
-import { DataTable } from '../DataTable';
-import { sourceImage } from '@/lib/server';
-import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from '@/lib/constant';
-import { PAY_RATE, PAY_RATE_UPSERT } from '@/lib/mutations/pay-rate.mutation';
-import { InputPayRateUpsert } from '@/lib/interface/pay-rate.interface';
+
+import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { PAY_RATE, PAY_RATE_UPSERT } from 'src/lib/mutations/pay-rate.mutation';
+import { InputPayRateUpsert } from 'src/lib/interface/pay-rate.interface';
+import { Q_PAYMENT_DURATIONS, Q_PAYMENT_INTERVALS } from 'src/lib/queries/general.query';
 import { MutationButton } from '../MutationButton';
-import { Q_PAYMENT_DURATIONS, Q_PAYMENT_INTERVALS } from '@/lib/queries/general.query';
 
 export const RunPayRate: FC<{ runId: string }> = ({ runId }) => {
   const { data: durations } = GQLQuery({
@@ -43,16 +39,15 @@ export const RunPayRate: FC<{ runId: string }> = ({ runId }) => {
     intervalUnit: undefined,
   });
 
-  const loadPayRate = () => {
-    if (runId) getPayRate({ variables: { input: { runId } } });
-  };
   const handleUpsert = () => {
     if (runId) {
       upsert({ variables: { input: { ...input, runId } } });
     }
   };
 
-  useEffect(() => loadPayRate(), [upserted]);
+  useEffect(() => {
+    if (runId) getPayRate({ variables: { input: { runId } } });
+  }, [runId, getPayRate]);
   useEffect(() => {
     if (payRate) {
       setInput({
@@ -78,7 +73,7 @@ export const RunPayRate: FC<{ runId: string }> = ({ runId }) => {
                 defaultValue={input.amount}
                 onChange={(e) => setInput({ ...input, amount: e.target.value })}
               />
-              <label htmlFor="amount">Payment Amount</label>
+              <p>Payment Amount</p>
             </div>
           </div>
           <div className="col-md-6">
@@ -90,7 +85,7 @@ export const RunPayRate: FC<{ runId: string }> = ({ runId }) => {
                 defaultValue={input.amountDuration}
                 onChange={(e) => setInput({ ...input, amountDuration: e.target.value })}
               >
-                <option></option>
+                <option value="">Select Duration</option>
                 {durations?.map((duration: any, index: number) => (
                   <option
                     key={`duration-${index}`}
@@ -101,7 +96,7 @@ export const RunPayRate: FC<{ runId: string }> = ({ runId }) => {
                   </option>
                 ))}
               </select>
-              <label htmlFor="amountDuration">Payment Duration</label>
+              <p>Payment Duration</p>
             </div>
           </div>
           <div className="col-md-6">
@@ -113,10 +108,10 @@ export const RunPayRate: FC<{ runId: string }> = ({ runId }) => {
                 placeholder=" "
                 defaultValue={input.interval}
                 onChange={(e) =>
-                  setInput({ ...input, interval: e.target.value ? parseInt(e.target.value) : 0 })
+                  setInput({ ...input, interval: e.target.value ? parseInt(e.target.value,10) : 0 })
                 }
               />
-              <label htmlFor="interval">Payment Interval</label>
+              <p>Payment Interval</p>
             </div>
           </div>
           <div className="col-md-6">
@@ -128,7 +123,7 @@ export const RunPayRate: FC<{ runId: string }> = ({ runId }) => {
                 defaultValue={input.intervalUnit}
                 onChange={(e) => setInput({ ...input, intervalUnit: e.target.value })}
               >
-                <option></option>
+                <option value="">Select Interval Unit</option>
                 {intervals?.map((interval: any, index: number) => (
                   <option
                     key={`interval-${index}`}
@@ -139,7 +134,7 @@ export const RunPayRate: FC<{ runId: string }> = ({ runId }) => {
                   </option>
                 ))}
               </select>
-              <label htmlFor="intervalUnit">Payment Interval Unit</label>
+              <p>Payment Interval Unit</p>
             </div>
           </div>
         </div>

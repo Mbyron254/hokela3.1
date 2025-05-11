@@ -1,13 +1,13 @@
 'use client';
 
+import { FC, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
 import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { Q_AGENT_RUN_SALES_CHART } from 'src/lib/queries/inventory.query';  
 import { AGENT_RUN_SALES } from 'src/lib/mutations/inventory.mutation';
 import { sourceImage } from 'src/lib/server';
-import { FC, useEffect } from 'react';
 import { LoadingSpan } from 'src/components/LoadingSpan';
-import { Q_AGENT_RUN_SALES_CHART } from 'src/lib/queries/inventory.query';  
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -27,13 +27,11 @@ export const RunAgentHistoricSales: FC<{ runId: string }> = ({ runId }) => {
     variables: { input: { runId } },
   });
 
-  const loadAgentRunSales = () => {
+  useEffect(() => {
     if (runId) {
       getAgentRunSales({ variables: { input: { runId } } });
     }
-  };
-
-  useEffect(() => loadAgentRunSales(), [runId]);
+  }, [runId, getAgentRunSales]);
 
   return (
     <div className="row">
@@ -92,7 +90,7 @@ export const RunAgentHistoricSales: FC<{ runId: string }> = ({ runId }) => {
           <div className="card-body p-1">
             <Chart
               type="line"
-              width={'100%'}
+              width='100%'
               height={350}
               series={[
                 {

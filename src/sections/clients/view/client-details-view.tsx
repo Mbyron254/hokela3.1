@@ -46,21 +46,17 @@ export function ClientDetailsView({ id }: { id: string }) {
 
   const clientTier2Id = client?.tier2Id;
 
-  const loadClient = () => {
-    getClient({ variables: { input: { id } } });
-  };
+  
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   };
 
-  useEffect(
-    () => {
-      loadClient();
-    },
-    //  eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  useEffect(() => {
+    if (id) {
+      getClient({ variables: { input: { id } } });
+    }
+  }, [getClient, id]);
 
   console.log('client', client);
   return (
@@ -75,25 +71,47 @@ export function ClientDetailsView({ id }: { id: string }) {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <Tabs value={currentTab} onChange={handleTabChange}>
-        {TABS.map((tab) => (
-          <Tab key={tab.value} value={tab.value} label={tab.label} />
-        ))}
-      </Tabs>
+      <div className="row">
+        <div className="col-md-3">
+          <div className="card">
+            <div className="card-body">
+              <dl className="row mb-0">
+                <dt className="col-sm-12 text-muted">Name</dt>
+                <dd className="col-sm-12">{client?.name}</dd>
+                <dt className="col-sm-12 text-muted">Client No.</dt>
+                <dd className="col-sm-12">{client?.clientNo}</dd>
+                <dt className="col-sm-12 text-muted">Client Type</dt>
+                <dd className="col-sm-12">{client?.clientType?.name}</dd>
+                <dt className="col-sm-12 text-muted">Projects</dt>
+                <dd className="col-sm-12">
+                  {client?.projects?.length} project{client?.projects?.length > 1 ? 's' : ''}
+                </dd>
+                <dt className="col-sm-12 text-muted">Registered</dt>
+                <dd className="col-sm-12">{client?.created}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
 
-      <Paper variant="outlined" sx={{ p: 2.5, typography: 'body2', borderRadius: 1.5 }}>
-        {currentTab === 'overview' && (
-          <>
-            <Typography variant="h6" gutterBottom>
-              TEIBNM
-            </Typography>
-            Overview Content
-          </>
-        )}
-        {currentTab === 'groups' && <ProductGroupList data={[]} clientTier2Id={clientTier2Id} />}
-        {currentTab === 'products' && <ProductList data={[]} />}
-        {currentTab === 'grn' && <GrnList data={[]} />}
-      </Paper>
+        <div className="col-md-9">
+          <Tabs value={currentTab} onChange={handleTabChange}>
+            {TABS.map((tab) => (
+              <Tab key={tab.value} value={tab.value} label={tab.label} />
+            ))}
+          </Tabs>
+
+          <Paper variant="outlined" sx={{ p: 2.5, typography: 'body2', borderRadius: 1.5 }}>
+            {currentTab === 'overview' && (
+              <div className="card">
+                <div className="card-body">Overview Content</div>
+              </div>
+            )}
+            {currentTab === 'groups' && client?.id && <ProductGroupList clientTier2Id={client.id} />}
+            {currentTab === 'products' && client?.id && <ProductList clientTier2Id={client.id} />}
+            {currentTab === 'grn' && client?.id && <GrnList clientTier2Id={client.id} />}
+          </Paper>
+        </div>
+      </div>
     </DashboardContent>
   );
 }

@@ -3,22 +3,22 @@
 import Image from 'next/image';
 
 import { FC, useEffect, useState } from 'react';
-import { MutationButton } from '../MutationButton';
+// import { MutationButton } from '../MutationButton';
 import {
   ALLOCATE_INVENTORY,
   M_AGENTS_ALLOCATIONS,
   M_STOCK_BALANCE,
-} from '@/lib/mutations/inventory-allocation.mutation';
-import { GQLMutation } from '@/lib/client';
-import { M_PRODUCTS_MINI } from '@/lib/mutations/product.mutation';
-import { M_CAMPAIGN_AGENTS } from '@/lib/mutations/run-offer.mutation';
-import { sourceImage } from '@/lib/server';
-import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from '@/lib/constant';
-import { M_PACKAGINGS_MINI } from '@/lib/mutations/packaging.mutation';
+} from 'src/lib/mutations/inventory-allocation.mutation';
+import { M_RUN_TEAMS_MINI } from 'src/lib/mutations/run-team.mutation';
+import { GQLMutation } from 'src/lib/client';
+import { M_PRODUCTS_MINI } from 'src/lib/mutations/product.mutation';
+import { M_CAMPAIGN_AGENTS } from 'src/lib/mutations/run-offer.mutation';
+import { sourceImage } from 'src/lib/server';
+import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
+import { M_PACKAGINGS_MINI } from 'src/lib/mutations/packaging.mutation';
+import { IAllocations, IInventoryAllocation } from 'src/lib/interface/general.interface';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, TextField, Button, Select, MenuItem, FormControl, InputLabel, FormControlLabel } from '@mui/material';
 import { LoadingSpan } from '../LoadingSpan';
-import { IAllocations, IInventoryAllocation } from '@/lib/interface/general.interface';
-import { DataTable } from '../DataTable';
-import { M_RUN_TEAMS_MINI } from '@/lib/mutations/run-team.mutation';
 
 export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) => {
   const {
@@ -92,53 +92,17 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   const [search, setSearch] = useState<string>();
   const [teamId, setTeamId] = useState<string>();
 
-  const loadTeams = () => {
-    if (runId) {
-      getTeams({ variables: { input: { runId } } });
-    }
-  };
   const loadAgents = (page?: number, pageSize?: number) => {
     if (runId) {
       getAgents({ variables: { input: { search, runId, teamId, page, pageSize } } });
     }
   };
-  const loadProducts = () => {
-    getProducts({ variables: { input: { clientTier2Id } } });
-  };
-  const loadPackagings = () => {
-    if (product.id) {
-      getPackagings({
-        variables: { input: { productId: product.id } },
-      });
-    }
-  };
-  const loadStock = () => {
-    if (product.id && product.packagingId) {
-      getStock({
-        variables: {
-          input: { productId: product.id, packagingId: product.packagingId },
-        },
-      });
-    }
-  };
-  const loadAllocations = () => {
-    if (runId && product.id && product.packagingId && selectedAgents) {
-      getAllocations({
-        variables: {
-          input: {
-            runId,
-            packagingId: product.packagingId,
-            agents: selectedAgents,
-          },
-        },
-      });
-    }
-  };
+
   const handleAllocate = () => {
     if (allocations.length) {
       const _allocations: { agentId: string; quantity: number }[] = [];
 
-      for (let x = 0; x < allocations.length; x++) {
+      for (let x = 0; x < allocations.length; x += 1) {
         _allocations.push({
           agentId: allocations[x].id,
           quantity: allocations[x].allocated,
@@ -165,15 +129,14 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
 
     let _allocationTotal = 0;
 
-    for (let i = 0; i < _curr.length; i++) {
+    for (let i = 0; i < _curr.length; i += 1) {
       if (bulkFill) {
-        _curr[i].allocated = parseInt(event.target.value) | 0;
-      } else {
-        if (_curr[i].id === id) {
-          const newAllocation = parseInt(event.target.value) | 0;
+        _curr[i].allocated = parseInt(event.target.value, 10) || 0;
+      } else if (_curr[i].id === id) {
+        const newAllocation = parseInt(event.target.value, 10) || 0;
 
-          _curr[i].allocated = newAllocation < _curr[i].sold ? _curr[i].sold : newAllocation;
-        }
+        _curr[i].allocated = newAllocation < _curr[i].sold ? _curr[i].sold : newAllocation;
+
       }
       _allocationTotal += _curr[i].allocated;
     }
@@ -182,49 +145,22 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   };
 
   const columns = [
-    {
-      name: '#',
-      width: '60px',
-      sortable: true,
-      selector: (row: any) => row.index,
-      cell: (row: any) => row.index,
-    },
-    {
-      name: 'AGENT',
-      sortable: true,
-      wrap: true,
-      selector: (row: any) => row.date,
-      cell: (row: any) => (
-        <>
-          <Image
-            className="me-1 mt-1 mb-1 rounded-circle"
-            src={sourceImage(row.agent?.user?.photo?.fileName)}
-            loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
-            alt=""
-            width={TABLE_IMAGE_WIDTH}
-            height={TABLE_IMAGE_HEIGHT}
-          />
-          <div className="w-100 overflow-hidden">
-            <h6 className="mt-1 mb-1">{row.agent?.user?.name}</h6>
-            <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
-          </div>
-        </>
-      ),
-    },
+    { id: 'index', label: '#', minWidth: 60 },
+    { id: 'agent', label: 'AGENT', minWidth: 170 },
   ];
 
-  useEffect(() => loadProducts(), []);
-  useEffect(() => loadTeams(), [runId]);
-  useEffect(() => loadPackagings(), [product.id]);
-  useEffect(() => loadStock(), [product.id, product.packagingId]);
-  useEffect(() => loadAllocations(), [product.id, product.packagingId, selectedAgents]);
+  useEffect(() => getProducts({ variables: { input: { clientTier2Id } } }), [clientTier2Id, getProducts]);
+  useEffect(() => getTeams({ variables: { input: { runId } } }), [runId, getTeams]);
+  useEffect(() => getPackagings({ variables: { input: { productId: product.id } } }), [product.id, getPackagings]);
+  useEffect(() => getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } }), [product.id, product.packagingId, getStock]);
+  useEffect(() => getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } }), [product.id, product.packagingId, selectedAgents, getAllocations, runId]);
   useEffect(() => {
     if (allocation?.entries) {
       const _allocations: IAllocations[] = [];
 
       let _allocationTotal = 0;
 
-      for (let i = 0; i < allocation.entries.length; i++) {
+      for (let i = 0; i < allocation.entries.length; i += 1) {
         _allocations.push({
           index: allocation.entries[i].index,
           id: allocation.entries[i].agent?.id,
@@ -249,69 +185,85 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
               {loadingTeams ? (
                 <LoadingSpan />
               ) : (
-                <div className="mb-3">
-                  <label htmlFor="team">Filter by team</label>
-                  <select
+                <FormControl fullWidth variant="outlined" className="mb-3">
+                  <InputLabel id="team-label">Filter by team</InputLabel>
+                  <Select
+                    labelId="team-label"
                     id="team"
-                    className="form-select mt-2"
-                    aria-label="Filter By Team"
                     value={teamId}
                     onChange={(e) => setTeamId(e.target.value)}
+                    label="Filter by team"
                   >
-                    <option></option>
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
                     {teams?.rows.map((team: any, index: number) => (
-                      <option value={team.id} key={`team-${index}`}>
+                      <MenuItem value={team.id} key={`team-${index}`}>
                         {team.name}
-                      </option>
+                      </MenuItem>
                     ))}
-                  </select>
-                </div>
+                  </Select>
+                </FormControl>
               )}
 
-              <div className="app-search mb-3">
-                <div className="input-group">
-                  <input
-                    type="text"
-                    id="top-search"
-                    className="form-control dropdown-toggle"
-                    placeholder="Search agent..."
-                    defaultValue={search}
-                    onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
-                  />
-                  <span className="mdi mdi-magnify search-icon"></span>
-                  <button
-                    className="input-group-text btn-primary"
-                    type="button"
-                    disabled={loadingAgents}
-                    onClick={() => loadAgents(0, 10)}
-                  >
-                    {loadingAgents && (
-                      <>
-                        <i className="spinner-border spinner-border-sm me-1" role="status" />
-                        Loading
-                      </>
-                    )}
-
-                    {!loadingAgents && <>Search</>}
-                  </button>
-                </div>
-              </div>
+              <TextField
+                id="top-search"
+                label="Search agent..."
+                variant="outlined"
+                fullWidth
+                className="mb-3"
+                defaultValue={search}
+                onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={loadingAgents}
+                      onClick={() => loadAgents(0, 10)}
+                    >
+                      {loadingAgents ? 'Loading...' : 'Search'}
+                    </Button>
+                  ),
+                }}
+              />
 
               <hr className="mb-2" />
 
-              <DataTable
-                selectorParent1="agent"
-                selectable={true}
-                dense={true}
-                fixedHeader={true}
-                columns={columns}
-                data={agents?.rows}
-                totalRows={agents?.count}
-                setSelected={setSelectedAgents}
-                loading={loadingAgents}
-                handleReloadMutation={loadAgents}
-                reloadTriggers={[runId, teamId]}
-              />
+              <TableContainer component={Paper}>
+                <Table stickyHeader aria-label="agents table">
+                  <TableHead>
+                    <TableRow>
+                      {columns.map((column) => (
+                        <TableCell key={column.id} style={{ minWidth: column.minWidth }}>
+                          {column.label}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {agents?.rows.map((row: any, index: number) => (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                        <TableCell>{row.index}</TableCell>
+                        <TableCell>
+                          <Image
+                            className="me-1 mt-1 mb-1 rounded-circle"
+                            src={sourceImage(row.agent?.user?.photo?.fileName)}
+                            loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
+                            alt=""
+                            width={TABLE_IMAGE_WIDTH}
+                            height={TABLE_IMAGE_HEIGHT}
+                          />
+                          <div className="w-100 overflow-hidden">
+                            <h6 className="mt-1 mb-1">{row.agent?.user?.name}</h6>
+                            <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </div>
           </div>
         </div>
@@ -324,56 +276,60 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
                   {loadingProducts ? (
                     <LoadingSpan />
                   ) : (
-                    <div className="form-floating mb-3">
-                      <select
+                    <FormControl fullWidth variant="outlined" className="mb-3">
+                      <InputLabel id="product-label">Product</InputLabel>
+                      <Select
+                        labelId="product-label"
                         id="product"
-                        className="form-select"
-                        aria-label="Product"
-                        defaultValue={product.id}
+                        value={product.id}
                         onChange={(e) =>
                           setProduct({
                             ...product,
                             id: e.target.value === '' ? undefined : e.target.value,
                           })
                         }
+                        label="Product"
                       >
-                        <option></option>
-                        {products?.rows.map((product: any, index: number) => (
-                          <option value={product.id} key={`product-${index}`}>
-                            {product.name}
-                          </option>
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
+                        {products?.rows.map((prod: any, index: number) => (
+                          <MenuItem value={prod.id} key={`product-${index}`}>
+                            {prod.name}
+                          </MenuItem>
                         ))}
-                      </select>
-                      <label htmlFor="product">Product</label>
-                    </div>
+                      </Select>
+                    </FormControl>
                   )}
                 </div>
                 <div className="col-md-6">
                   {loadingPackagings ? (
                     <LoadingSpan />
                   ) : (
-                    <div className="form-floating mb-3">
-                      <select
+                    <FormControl fullWidth variant="outlined" className="mb-3">
+                      <InputLabel id="packaging-label">Packaging</InputLabel>
+                      <Select
+                        labelId="packaging-label"
                         id="packaging"
-                        className="form-select"
-                        aria-label="Packaging"
-                        defaultValue={product.packagingId}
+                        value={product.packagingId}
                         onChange={(e) =>
                           setProduct({
                             ...product,
                             packagingId: e.target.value === '' ? undefined : e.target.value,
                           })
                         }
+                        label="Packaging"
                       >
-                        <option></option>
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
                         {packagings?.rows.map((packaging: any, index: number) => (
-                          <option key={`packaging-${index}`} value={packaging.id}>
+                          <MenuItem key={`packaging-${index}`} value={packaging.id}>
                             {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
-                          </option>
+                          </MenuItem>
                         ))}
-                      </select>
-                      <label htmlFor="packaging">Packaging</label>
-                    </div>
+                      </Select>
+                    </FormControl>
                   )}
                 </div>
               </div>
@@ -393,54 +349,57 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
                 {loadingAllocations ? <LoadingSpan /> : undefined}
 
                 <span className="float-end">
-                  <div className="form-check form-check-inline">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="bulkFill"
-                      disabled={allocation?.canBulkFill}
-                      onClick={() => setBulkFill(!bulkFill)}
-                    />
-                    <label className="form-check-label" htmlFor="bulkFill" style={{ marginTop: '3px' }}>
-                      Bulk Fill
-                    </label>
-                  </div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={bulkFill}
+                        onChange={() => setBulkFill(!bulkFill)}
+                        name="bulkFill"
+                        color="primary"
+                        disabled={allocation?.canBulkFill}
+                      />
+                    }
+                    label="Bulk Fill"
+                  />
                 </span>
               </h5>
 
               <hr className="mt-0 mb-1" />
 
               <div className="mb-2">
-                {allocations?.map((allocation: any, index: number) => (
+                {allocations?.map((alloc: any, index: number) => (
                   <div key={`allocation-${index}`}>
                     <dl className="row mb-0">
                       <dt className="col-sm-8">
-                        <span className="me-2">{allocation.index}.</span>
+                        <span className="me-2">{alloc.index}.</span>
                         <Image
                           className="me-2 mt-1 mb-1"
-                          src={sourceImage(allocation.photo)}
-                          loader={() => sourceImage(allocation.photo)}
+                          src={sourceImage(alloc.photo)}
+                          loader={() => sourceImage(alloc.photo)}
                           alt=""
                           width={TABLE_IMAGE_WIDTH}
                           height={TABLE_IMAGE_HEIGHT}
                         />
-                        {allocation.name}
+                        {alloc.name}
                       </dt>
                       <dd className="col-sm-4">
                         <div className="input-group input-group-sm">
-                          <input
+                          <TextField
                             type="text"
-                            className="form-control form-control-sm font-14"
-                            disabled={true}
-                            placeholder={`Sold: ${allocation.sold}`}
+                            variant="outlined"
+                            size="small"
+                            disabled
+                            placeholder={`Sold: ${alloc.sold}`}
+                            fullWidth
                           />
-                          <input
+                          <TextField
                             type="number"
-                            id="quantity-1"
-                            className="form-control form-control-sm font-14"
-                            min={allocation.sold}
-                            value={allocation.allocated}
-                            onChange={(e) => handleChange(allocation.id, e)}
+                            variant="outlined"
+                            size="small"
+                            value={alloc.allocated}
+                            onChange={(e) => handleChange(alloc.id, e)}
+                            fullWidth
+                            inputProps={{ min: alloc.sold }}
                           />
                         </div>
                       </dd>
@@ -453,15 +412,17 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
             </div>
           </div>
 
-          <MutationButton
-            type="button"
-            size="sm"
-            label="Save"
-            icon="mdi mdi-refresh"
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
             className="float-end"
-            loading={allocating}
+            startIcon={<i className="mdi mdi-refresh" />}
             onClick={handleAllocate}
-          />
+            disabled={allocating}
+          >
+            {allocating ? 'Saving...' : 'Save'}
+          </Button>
         </div>
       </div>
     </>
