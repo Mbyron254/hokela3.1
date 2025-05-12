@@ -4,7 +4,6 @@ import { z as zod } from 'zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Cookies from 'js-cookie';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -81,11 +80,6 @@ export function JwtSignInView() {
   const { checkUserSession } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState<string>('');
   const password = useBoolean();
-
-  useEffect(() => {
-    const sessionId = Cookies.get(SESSION_COOKIE);
-    console.log('Session ID:', sessionId);
-  }, []);
 
   const { action: signin, loading } = GQLMutation({
     mutation: USER_LOGIN,
