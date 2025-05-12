@@ -1,9 +1,10 @@
 'use client';
 
 import { z as zod } from 'zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Cookies from 'js-cookie';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -27,6 +28,7 @@ import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from '../../hooks';
 import { FormHead } from '../../components/form-head';
+import { SESSION_COOKIE } from 'src/lib/constant';
 
 // ----------------------------------------------------------------------
 
@@ -44,8 +46,8 @@ export const SignInSchema = zod.object({
 
 type ErrorType =
   | {
-      message: string;
-    }
+    message: string;
+  }
   | string;
 
 interface UserRole {
@@ -79,6 +81,11 @@ export function JwtSignInView() {
   const { checkUserSession } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState<string>('');
   const password = useBoolean();
+
+  useEffect(() => {
+    const sessionId = Cookies.get(SESSION_COOKIE);
+    console.log('Session ID:', sessionId);
+  }, []);
 
   const { action: signin, loading } = GQLMutation({
     mutation: USER_LOGIN,
