@@ -22,12 +22,12 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { GQLMutation } from 'src/lib/client';
 import { USER_LOGIN } from 'src/lib/mutations/user.mutation';
 
+// import { SESSION_COOKIE } from 'src/lib/constant';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from '../../hooks';
 import { FormHead } from '../../components/form-head';
-import { SESSION_COOKIE } from 'src/lib/constant';
 
 // ----------------------------------------------------------------------
 
