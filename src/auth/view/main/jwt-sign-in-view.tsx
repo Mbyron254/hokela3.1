@@ -162,7 +162,7 @@ export function JwtSignInView() {
     >
       <Field.Text
         name="email"
-        label="Email / Phone / Account number"
+        label="Email / Phone / Account"
         InputLabelProps={{ shrink: true }}
         sx={{
           '& .MuiInputBase-root': {
