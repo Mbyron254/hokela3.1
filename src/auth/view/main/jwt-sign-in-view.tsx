@@ -85,10 +85,6 @@ export function JwtSignInView() {
     resolver: 'login',
     toastmsg: true,
     callback: () => window.location.reload(),
-    onError: (error: any) => {
-      console.error('Sign in error:', error);
-      setErrorMsg(error?.message || 'Invalid credentials. Please try again.');
-    }
   });
 
   const methods = useForm<SignInSchemaType>({
