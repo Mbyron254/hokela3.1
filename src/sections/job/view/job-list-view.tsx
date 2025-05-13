@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 // import { useState } from 'react';
 import { GQLMutation } from 'src/lib/client';
 import { M_OPEN_JOBS } from 'src/lib/mutations/run.mutation';
@@ -24,9 +24,9 @@ const JobListView = () => {
     toastmsg: false,
   });
 
-  const loadRunsActive = (page?: number, pageSize?: number) => {
+  const loadRunsActive = useCallback((page?: number, pageSize?: number) => {
     getJobs({ variables: { input: { page, pageSize } } });
-  };
+  }, [getJobs]);
 
   useEffect(() => {
     loadRunsActive();
