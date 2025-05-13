@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { CLIENT_T1_CREATE, CLIENT_T1_UPDATE, CLIENT_T1_RECYCLE, CLIENT_T1_RESTORE } from 'src/lib/mutations/client-t1.mutation';
 import { Q_CLIENTS_T1, Q_CLIENTS_T1_RECYCLED } from 'src/lib/queries/client-t1.query';
