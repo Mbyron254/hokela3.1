@@ -119,7 +119,7 @@ export default function Page() {
   }, [session, getOffersActive, getOffersRecycled, searchActive, searchRecycled]);
 
   useEffect(() => {
-    if(getOffersActive.data.length > 0) {
+    if(getOffersActive?.rows.length > 0) {
       return;
     }
     if (session?.user?.role?.clientTier1?.id) {
