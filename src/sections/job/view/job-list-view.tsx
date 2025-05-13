@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { GQLMutation } from 'src/lib/client';
 import { M_OPEN_JOBS } from 'src/lib/mutations/run.mutation';
 import { formatDate } from 'src/lib/helpers';
@@ -30,7 +30,7 @@ const JobListView = () => {
 
   useEffect(() => {
     loadRunsActive();
-  }, []);
+  }, [loadRunsActive]);
 
   return (
     <DashboardContent>
@@ -57,14 +57,14 @@ const JobListView = () => {
                   <a href={`/agent/janta/${run.id}`}>{run.name}</a>
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <i className="mdi mdi-google-my-business text-muted me-2"></i>
+                  <i className="mdi mdi-google-my-business text-muted me-2"/>
                   <b>{run?.campaign?.project?.clientTier2?.clientTier1?.name}</b>
                 </Typography>
                 <Typography variant="body2" color="text.secondary" dangerouslySetInnerHTML={{
-                  __html: run.campaign?.jobDescription?.substr(0, 100) + '...',
+                  __html: `${(run.campaign?.jobDescription || '').substr(0, 100)}...`,
                 }} />
                 <Typography variant="body2" color="text.secondary">
-                  <i className="mdi mdi-calendar-remove-outline text-muted me-2"></i>
+                  <i className="mdi mdi-calendar-remove-outline text-muted me-2"/>
                   <b>Deadline:</b> <span className="text-warning">{formatDate(run.closeAdvertOn)}</span>
                 </Typography>
                 <Button
