@@ -36,6 +36,10 @@ export default function Page() {
     queryAction: 'sessionSelf',
   });
 
+  useEffect(() => {
+    console.log('SESSION:',session);
+  }, []);
+
   const {
     action: getOffersActive,
     loading: loadingOffersActive,
