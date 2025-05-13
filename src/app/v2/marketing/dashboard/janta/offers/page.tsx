@@ -38,7 +38,7 @@ export default function Page() {
 
   useEffect(() => {
     console.log('SESSION:',session);
-  }, []);
+  }, [session]);
 
   const {
     action: getOffersActive,
