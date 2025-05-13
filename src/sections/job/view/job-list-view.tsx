@@ -56,15 +56,17 @@ const JobListView = () => {
                 <Typography variant="h5" component="div">
                   <a href={`/agent/janta/${run.id}`}>{run.name}</a>
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  <i className="mdi mdi-google-my-business text-muted me-2"/>
+                <Typography
+                  variant="body2"
+                  color="text.secondary">
+                  <i className="mdi mdi-google-my-business text-muted me-2" />
                   <b>{run?.campaign?.project?.clientTier2?.clientTier1?.name}</b>
                 </Typography>
                 <Typography variant="body2" color="text.secondary" dangerouslySetInnerHTML={{
                   __html: `${(run.campaign?.jobDescription || '').substr(0, 100)}...`,
                 }} />
                 <Typography variant="body2" color="text.secondary">
-                  <i className="mdi mdi-calendar-remove-outline text-muted me-2"/>
+                  <i className="mdi mdi-calendar-remove-outline text-muted me-2" />
                   <b>Deadline:</b> <span className="text-warning">{formatDate(run.closeAdvertOn)}</span>
                 </Typography>
                 <Button
