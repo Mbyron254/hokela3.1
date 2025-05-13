@@ -1,66 +1,24 @@
 'use client';
 
-
-import { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
+import React, { useEffect } from 'react';
+import { useState } from 'react';
 import { GQLMutation } from 'src/lib/client';
 import { M_OPEN_JOBS } from 'src/lib/mutations/run.mutation';
-import {
-  _roles,
-  JOB_SORT_OPTIONS,
-  JOB_BENEFIT_OPTIONS,
-  JOB_EXPERIENCE_OPTIONS,
-  JOB_EMPLOYMENT_TYPE_OPTIONS,
-} from 'src/_mock';
+import { formatDate } from 'src/lib/helpers';
 import { sourceImage } from 'src/lib/server';
-import type { IJobItem, IJobFilters } from 'src/types/job';
 
-
-import Stack from '@mui/material/Stack';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useSetState } from 'src/hooks/use-set-state';
-
-import { orderBy } from 'src/utils/helper';
-
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import { DashboardContent } from 'src/layouts/dashboard';
-
-import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { paths } from 'src/routes/paths';
 
-import { JobList } from '../job-list';
-import { JobSort } from '../job-sort';
-import { JobSearch } from '../job-search';
-import { JobFilters } from '../job-filters';
-import { JobFiltersResult } from '../job-filters-result';
-
-// ----------------------------------------------------------------------
-
-type TCampaignRun = {
-  index: number;
-  id: string;
-  closeAdvertOn: string;
-  poster: {
-    fileName: string;
-  };
-  campaign: {
-    id: string;
-    name: string;
-    jobDescription: string;
-    clientTier2: {
-      clientTier1: {
-        name: string;
-      };
-    };
-  };
-};
-
-export function JobListView() {
-  const openFilters = useBoolean();
-
-  const [sortBy, setSortBy] = useState('latest');
-
-  const { action: getJobs, data: jobs } = GQLMutation({
+const JobListView = () => {
+  const { action: getJobs, data: runs } = GQLMutation({
     mutation: M_OPEN_JOBS,
     resolver: 'openJobs',
     toastmsg: false,
@@ -72,200 +30,58 @@ export function JobListView() {
 
   useEffect(() => {
     loadRunsActive();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  console.log('JOBS  ', jobs);
-
-  const search = useSetState<{
-    query: string;
-    results: IJobItem[];
-  }>({ query: '', results: [] });
-
-  const filters = useSetState<IJobFilters>({
-    roles: [],
-    locations: [],
-    benefits: [],
-    experience: 'all',
-    employmentTypes: [],
-  });
-
-  const transformedJobs =
-    jobs?.rows?.map((job: TCampaignRun) => ({
-      id: job.id,
-      title: job.campaign.name,
-      description: job.campaign.jobDescription,
-      createdAt: new Date().toISOString(),
-      experience: 'Junior',
-      role: 'Developer',
-      locations: ['Remote'],
-      employmentTypes: ['Full-time'],
-      benefits: ['Healthcare', 'Annual Leave'],
-      totalViews: 0,
-      company: {
-        name: job.campaign.clientTier2.clientTier1.name,
-        logo: sourceImage(job.poster.fileName),
-      },
-      salary: {
-        negotiable: true,
-        price: 0,
-      },
-      candidates: [],
-      closeAdvertOn: (job.closeAdvertOn),
-    })) || [];
-
-  const dataFiltered = applyFilter({ inputData: transformedJobs, filters: filters.state, sortBy });
-
-  const canReset =
-    filters.state.roles.length > 0 ||
-    filters.state.locations.length > 0 ||
-    filters.state.benefits.length > 0 ||
-    filters.state.employmentTypes.length > 0 ||
-    filters.state.experience !== 'all';
-
-  const notFound = !dataFiltered.length && canReset;
-
-  const handleSortBy = useCallback((newValue: string) => {
-    setSortBy(newValue);
-  }, []);
-
-  const handleSearch = useCallback(
-    (inputValue: string) => {
-      search.setState({ query: inputValue });
-
-      if (inputValue) {
-        const results = transformedJobs.filter(
-          // @ts-ignore
-          (job) => job.title.toLowerCase().indexOf(search.state.query.toLowerCase()) !== -1
-        );
-
-        search.setState({ results });
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [search]
-  );
-
-  const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      alignItems={{ xs: 'flex-end', sm: 'center' }}
-      direction={{ xs: 'column', sm: 'row' }}
-    >
-      <JobSearch search={search} onSearch={handleSearch} />
-
-      <Stack direction="row" spacing={1} flexShrink={0}>
-        <JobFilters
-          filters={filters}
-          canReset={canReset}
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          options={{
-            roles: _roles,
-            benefits: JOB_BENEFIT_OPTIONS.map((option) => option.label),
-            employmentTypes: JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label),
-            experiences: ['all', ...JOB_EXPERIENCE_OPTIONS.map((option) => option.label)],
-          }}
-        />
-
-        <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} />
-      </Stack>
-    </Stack>
-  );
-
-  const renderResults = <JobFiltersResult filters={filters} totalResults={dataFiltered.length} />;
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="List"
+        heading="Job List"
         links={[
-          { name: 'Dashboard', href: '/dashboard' },
-          { name: 'Janta', href: '/dashboard/janta' },
-          { name: 'Open Jobs' },
+          { name: 'Agent', href: paths.v2.agent.root },
+          { name: 'Janta', href: paths.v2.agent.janta.root },
         ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <Stack spacing={2.5} sx={{ mb: { xs: 3, md: 5 } }}>
-        {renderFilters}
-
-        {canReset && renderResults}
-      </Stack>
-
-      {notFound && <EmptyContent filled sx={{ py: 10 }} />}
-
-      <JobList jobs={dataFiltered.map(job => ({
-        ...job,
-        logo: <Image
-          src={job.company.logo}
-          alt=""
-          width={200}
-          height={200}
-        />,
-        deadline: job.closeAdvertOn,
-      }))} />
+      <Grid container spacing={3}>
+        {runs?.rows?.map((run: any, index: number) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Card>
+              <CardMedia
+                component="img"
+                height="200"
+                image={sourceImage(run.poster?.fileName)}
+                alt={run.name}
+              />
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  <a href={`/agent/janta/${run.id}`}>{run.name}</a>
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <i className="mdi mdi-google-my-business text-muted me-2"></i>
+                  <b>{run?.campaign?.project?.clientTier2?.clientTier1?.name}</b>
+                </Typography>
+                <Typography variant="body2" color="text.secondary" dangerouslySetInnerHTML={{
+                  __html: run.campaign?.jobDescription?.substr(0, 100) + '...',
+                }} />
+                <Typography variant="body2" color="text.secondary">
+                  <i className="mdi mdi-calendar-remove-outline text-muted me-2"></i>
+                  <b>Deadline:</b> <span className="text-warning">{formatDate(run.closeAdvertOn)}</span>
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  href={`/agent/janta/${run.id}`}
+                >
+                  Read and Apply
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
     </DashboardContent>
   );
-}
-
-// ----------------------------------------------------------------------
-
-type ApplyFilterProps = {
-  inputData: IJobItem[];
-  filters: IJobFilters;
-  sortBy: string;
 };
 
-const applyFilter = ({ inputData, filters, sortBy }: ApplyFilterProps) => {
-  const { employmentTypes, experience, roles, locations, benefits } = filters;
-
-  // Sort by
-  if (sortBy === 'latest') {
-    // @ts-ignore
-    inputData = orderBy(inputData, ['createdAt'], ['desc']);
-  }
-
-  if (sortBy === 'oldest') {
-    // @ts-ignore
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
-  }
-
-  if (sortBy === 'popular') {
-    // @ts-ignore
-    inputData = orderBy(inputData, ['totalViews'], ['desc']);
-  }
-
-  // Filters
-  if (employmentTypes.length) {
-    // @ts-ignore
-    inputData = inputData.filter((job) =>
-      // @ts-ignore
-      job.employmentTypes.some((item) => employmentTypes.includes(item))
-    );
-  }
-
-  if (experience !== 'all') {
-    // @ts-ignore
-    inputData = inputData.filter((job) => job.experience === experience);
-  }
-
-  if (roles.length) {
-    // @ts-ignore
-    inputData = inputData.filter((job) => roles.includes(job.role));
-  }
-
-  if (locations.length) {
-    // @ts-ignore
-    inputData = inputData.filter((job) => job.locations.some((item) => locations.includes(item)));
-  }
-
-  if (benefits.length) {
-    // @ts-ignore
-    inputData = inputData.filter((job) => job.benefits.some((item) => benefits.includes(item)));
-  }
-
-  return inputData;
-};
+export default JobListView;
