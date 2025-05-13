@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { GQLMutation } from 'src/lib/client';
-import { M_OPEN_JOBS } from 'src/lib/mutations/campaign-run.mutation';
+import { M_OPEN_JOBS } from 'src/lib/mutations/run.mutation';
 import {
   _roles,
   JOB_SORT_OPTIONS,
