@@ -35,7 +35,7 @@ const JobListView = () => {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Job List"
+        heading="Janta"
         links={[
           { name: 'Agent', href: paths.v2.agent.root },
           { name: 'Janta', href: paths.v2.agent.janta.root },
