@@ -37,7 +37,7 @@ export default function Page() {
   });
 
   useEffect(() => {
-    console.log('SESSION:',session);
+    console.log('SESSION:', session);
   }, [session]);
 
   const {
@@ -93,27 +93,52 @@ export default function Page() {
 
   useEffect(() => {
     if (session?.user?.role?.clientTier1?.id) {
-      if (session?.user?.role?.clientTier1?.id) {
-        getOffersActive({
-          variables: {
-            input: {
-              search: searchActive,
-              clientTier1Id: session.user.role.clientTier1.id
-            },
+      console.log('Input:', {
+        search: searchActive,
+        clientTier1Id: session.user.role.clientTier1.id
+      });
+      getOffersActive({
+        variables: {
+          input: {
+            search: searchActive,
+            clientTier1Id: session.user.role.clientTier1.id
           },
-        });
+        },
+      });
 
-        getOffersRecycled({
-          variables: {
-            input: {
-              search: searchRecycled,
-              clientTier1Id: session.user.role.clientTier1.id,
-            },
+      getOffersRecycled({
+        variables: {
+          input: {
+            search: searchRecycled,
+            clientTier1Id: session.user.role.clientTier1.id,
           },
-        });
-      }
+        },
+      });
+
     }
-  }, [session,  getOffersActive, getOffersRecycled, searchActive, searchRecycled]);
+  }, [session, getOffersActive, getOffersRecycled, searchActive, searchRecycled]);
+
+  useEffect(() => {
+    if(getOffersActive.data.length > 0) {
+      return;
+    }
+    if (session?.user?.role?.clientTier1?.id) {
+      console.log('Input:', {
+        search: searchActive,
+        clientTier1Id: session.user.role.clientTier1.id
+      });
+      getOffersActive({
+        variables: {
+          input: {
+            search: searchActive,
+            clientTier1Id: session.user.role.clientTier1.id,
+            page: 1,
+            pageSize: 10,
+          },
+        },
+      });
+    }
+  }, [session, getOffersActive, getOffersRecycled, searchActive, searchRecycled]);
 
   const loadOffersActive = () => {
     getOffersActive({
