@@ -448,20 +448,32 @@ export default function Page({ params: { id: campaignId } }: any) {
         )}
       </Paper>
       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
-        <DialogTitle>New Run</DialogTitle>
+        <DialogTitle>{inputUpdate.id ? 'Edit Run' : 'New Run'}</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
             label="Run Name"
-            value={inputCreate.name || ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, name: e.target.value })}
+            value={inputUpdate.id ? inputUpdate.name || '' : inputCreate.name || ''}
+            onChange={(e) => {
+              if (inputUpdate.id) {
+                setInputUpdate({ ...inputUpdate, name: e.target.value });
+              } else {
+                setInputCreate({ ...inputCreate, name: e.target.value });
+              }
+            }}
             margin="normal"
           />
           <FormControl fullWidth margin="normal">
             <InputLabel>Run Manager</InputLabel>
             <Select
-              value={inputCreate.managerId || ''}
-              onChange={(e) => setInputCreate({ ...inputCreate, managerId: e.target.value })}
+              value={inputUpdate.id ? inputUpdate.managerId || '' : inputCreate.managerId || ''}
+              onChange={(e) => {
+                if (inputUpdate.id) {
+                  setInputUpdate({ ...inputUpdate, managerId: e.target.value });
+                } else {
+                  setInputCreate({ ...inputCreate, managerId: e.target.value });
+                }
+              }}
             >
               {users?.rows.map((user: any) => (
                 <MenuItem key={user.id} value={user.id}>
@@ -474,8 +486,14 @@ export default function Page({ params: { id: campaignId } }: any) {
             fullWidth
             label="Start Date"
             type="date"
-            value={inputCreate.dateStart ? inputCreate.dateStart.toISOString().split('T')[0] : ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, dateStart: new Date(e.target.value) })}
+            value={inputUpdate.id ? (inputUpdate.dateStart ? inputUpdate.dateStart.toISOString().split('T')[0] : '') : (inputCreate.dateStart ? inputCreate.dateStart.toISOString().split('T')[0] : '')}
+            onChange={(e) => {
+              if (inputUpdate.id) {
+                setInputUpdate({ ...inputUpdate, dateStart: new Date(e.target.value) });
+              } else {
+                setInputCreate({ ...inputCreate, dateStart: new Date(e.target.value) });
+              }
+            }}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
@@ -483,8 +501,14 @@ export default function Page({ params: { id: campaignId } }: any) {
             fullWidth
             label="Stop Date"
             type="date"
-            value={inputCreate.dateStop ? inputCreate.dateStop.toISOString().split('T')[0] : ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, dateStop: new Date(e.target.value) })}
+            value={inputUpdate.id ? (inputUpdate.dateStop ? inputUpdate.dateStop.toISOString().split('T')[0] : '') : (inputCreate.dateStop ? inputCreate.dateStop.toISOString().split('T')[0] : '')}
+            onChange={(e) => {
+              if (inputUpdate.id) {
+                setInputUpdate({ ...inputUpdate, dateStop: new Date(e.target.value) });
+              } else {
+                setInputCreate({ ...inputCreate, dateStop: new Date(e.target.value) });
+              }
+            }}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
@@ -492,8 +516,14 @@ export default function Page({ params: { id: campaignId } }: any) {
             fullWidth
             label="Clock In Time"
             type="time"
-            value={inputCreate.clockInTime || ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, clockInTime: e.target.value })}
+            value={inputUpdate.id ? inputUpdate.clockInTime || '' : inputCreate.clockInTime || ''}
+            onChange={(e) => {
+              if (inputUpdate.id) {
+                setInputUpdate({ ...inputUpdate, clockInTime: e.target.value });
+              } else {
+                setInputCreate({ ...inputCreate, clockInTime: e.target.value });
+              }
+            }}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
@@ -501,16 +531,28 @@ export default function Page({ params: { id: campaignId } }: any) {
             fullWidth
             label="Clock Out Time"
             type="time"
-            value={inputCreate.clockOutTime || ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, clockOutTime: e.target.value })}
+            value={inputUpdate.id ? inputUpdate.clockOutTime || '' : inputCreate.clockOutTime || ''}
+            onChange={(e) => {
+              if (inputUpdate.id) {
+                setInputUpdate({ ...inputUpdate, clockOutTime: e.target.value });
+              } else {
+                setInputCreate({ ...inputCreate, clockOutTime: e.target.value });
+              }
+            }}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
           <FormControl fullWidth margin="normal">
             <InputLabel>Clock Type</InputLabel>
             <Select
-              value={inputCreate.clockType || ''}
-              onChange={(e) => setInputCreate({ ...inputCreate, clockType: e.target.value })}
+              value={inputUpdate.id ? inputUpdate.clockType || '' : inputCreate.clockType || ''}
+              onChange={(e) => {
+                if (inputUpdate.id) {
+                  setInputUpdate({ ...inputUpdate, clockType: e.target.value });
+                } else {
+                  setInputCreate({ ...inputCreate, clockType: e.target.value });
+                }
+              }}
             >
               <MenuItem value="DYNAMIC">DYNAMIC</MenuItem>
               <MenuItem value="STATIC">STATIC</MenuItem>
@@ -520,16 +562,28 @@ export default function Page({ params: { id: campaignId } }: any) {
             fullWidth
             label="Location Ping Frequency"
             type="number"
-            value={inputCreate.locationPingFrequency || ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, locationPingFrequency: Number(e.target.value) })}
+            value={inputUpdate.id ? inputUpdate.locationPingFrequency || '' : inputCreate.locationPingFrequency || ''}
+            onChange={(e) => {
+              if (inputUpdate.id) {
+                setInputUpdate({ ...inputUpdate, locationPingFrequency: Number(e.target.value) });
+              } else {
+                setInputCreate({ ...inputCreate, locationPingFrequency: Number(e.target.value) });
+              }
+            }}
             margin="normal"
           />
           <TextField
             fullWidth
             label="Close Advert On"
             type="date"
-            value={inputCreate.closeAdvertOn ? inputCreate.closeAdvertOn.toISOString().split('T')[0] : ''}
-            onChange={(e) => setInputCreate({ ...inputCreate, closeAdvertOn: new Date(e.target.value) })}
+            value={inputUpdate.id ? (inputUpdate.closeAdvertOn ? inputUpdate.closeAdvertOn.toISOString().split('T')[0] : '') : (inputCreate.closeAdvertOn ? inputCreate.closeAdvertOn.toISOString().split('T')[0] : '')}
+            onChange={(e) => {
+              if (inputUpdate.id) {
+                setInputUpdate({ ...inputUpdate, closeAdvertOn: new Date(e.target.value) });
+              } else {
+                setInputCreate({ ...inputCreate, closeAdvertOn: new Date(e.target.value) });
+              }
+            }}
             margin="normal"
             InputLabelProps={{ shrink: true }}
           />
@@ -541,16 +595,16 @@ export default function Page({ params: { id: campaignId } }: any) {
             allOptions={optionsCreate}
             options={optionsCreate}
             setOptions={setOptionsCreate}
-            selected={optionsSelectedCreate}
-            setSelected={setOptionsSelectedCreate}
+            selected={inputUpdate.id ? optionsSelectedUpdate : optionsSelectedCreate}
+            setSelected={inputUpdate.id ? setOptionsSelectedUpdate : setOptionsSelectedCreate}
           />
           <DropZone
             name="photo (Max of 3, 230px by 230px)"
             classes="dropzone text-center mt-3"
             acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
             multiple
-            files={documentsCreate}
-            setFiles={setDocumentsCreate}
+            files={inputUpdate.id ? documentsUpdate : documentsCreate}
+            setFiles={inputUpdate.id ? setDocumentsUpdate : setDocumentsCreate}
             maxSize={1375000000} // 1GB
           />
         </DialogContent>
@@ -562,10 +616,10 @@ export default function Page({ params: { id: campaignId } }: any) {
             type="button"
             className="btn btn-primary"
             size="sm"
-            label="Create"
-            icon="mdi mdi-plus"
-            loading={creating}
-            onClick={handleCreate}
+            label={inputUpdate.id ? 'Update' : 'Create'}
+            icon={inputUpdate.id ? 'mdi mdi-pencil' : 'mdi mdi-plus'}
+            loading={creating || updating}
+            onClick={inputUpdate.id ? handleUpdate : handleCreate}
           />
         </DialogActions>
       </Dialog>
