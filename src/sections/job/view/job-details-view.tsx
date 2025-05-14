@@ -25,6 +25,7 @@ import { Iconify } from 'src/components/iconify';
 
 import { JobDetailsToolbar } from '../job-details-toolbar';
 import { JobDetailsCandidates } from '../job-details-candidates';
+import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
 
@@ -205,7 +206,7 @@ export function JobDetailsView({ params }: Props) {
 
       {tabs.value === 'candidates' && (
         <>
-          <Text>Candidates</Text>
+          <Typography variant="h4">Candidates</Typography>
         </>
       )}
     </DashboardContent>
