@@ -95,7 +95,7 @@ export function JobDetailsView({ params }: Props) {
           label={tab.label}
           icon={
             tab.value === 'candidates' ? (
-              <Label variant="filled">{run?.candidates.length}</Label>
+              <Label variant="filled">0</Label>
             ) : (
               ''
             )
