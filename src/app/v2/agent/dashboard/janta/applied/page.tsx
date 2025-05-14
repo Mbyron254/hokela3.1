@@ -1,22 +1,32 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import Box from '@mui/material/Box';
-
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/run-application.mutation';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { sourceImage } from 'src/lib/server';
 import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { DashboardContent } from 'src/layouts/dashboard';
+import {
+  Box,
+  Typography,
+  Badge,
+  Card,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  CircularProgress,
+} from '@mui/material';
 
-export default function Page() {
+const Page = () => {
   const { data: session } = GQLQuery({
     query: Q_SESSION_SELF,
     queryAction: 'sessionSelf',
   });
+
   const {
     action: getApplications,
     loading: loadingApplications,
@@ -27,6 +37,8 @@ export default function Page() {
     toastmsg: false,
   });
 
+  const [tableData, setTableData] = useState([]);
+
   useEffect(() => {
     if (session?.user?.agent?.id) {
       getApplications({
@@ -35,65 +47,77 @@ export default function Page() {
         },
       });
     }
-  }, [session,getApplications]);
+  }, [session, getApplications]);
 
-
-  const handleView = useCallback(
-    (id: string) => {
-      // Implement view logic here
-    },
-    []
-  );
+  useEffect(() => {
+    if (applications?.rows) {
+      setTableData(applications.rows);
+    }
+  }, [applications]);
 
   return (
-    <DashboardContent>
-      <CustomBreadcrumbs
-        heading="Job Applications"
-        links={[
-          { name: 'Dashboard', href: '/dashboard' },
-          { name: 'Agent', href: '/agent' },
-          { name: 'Job Applications' },
-        ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
-      />
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Job Applications
+      </Typography>
 
-      <Box
-        gap={3}
-        display="grid"
-        gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }}
-      >
-        {applications?.rows.map((application: any) => (
-          <div
-            key={application.id}
-            onClick={() => handleView(application.id)}
-            role="button"
-            tabIndex={0}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                handleView(application.id);
-              }
-            }}
-          >
-            <Image
-              className="me-3 mt-1 mb-1 rounded-circle"
-              src={sourceImage(application.run?.poster?.fileName)}
-              loader={() => sourceImage(application.run?.poster?.fileName)}
-              alt=""
-              width={TABLE_IMAGE_WIDTH}
-              height={TABLE_IMAGE_HEIGHT}
-            />
-            <div className="w-100 overflow-hidden">
-              <h6 className="mt-1 mb-1">{application.run?.name}</h6>
-              <span className="font-13">{application.run?.code}</span>
-              <span>{application.run?.campaign?.project?.clientTier2?.clientTier1?.name}</span>
-              <span>{application.created}</span>
-              <span className={`badge bg-${application.status === 'Accepted' ? 'success' : 'warning'} p-1`}>
-                {application.status}
-              </span>
-            </div>
-          </div>
-        ))}
-      </Box>
-    </DashboardContent>
+      <Card>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>#</TableCell>
+                <TableCell>Campaign</TableCell>
+                <TableCell>Institution</TableCell>
+                <TableCell>Applied On</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loadingApplications ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center">
+                    <CircularProgress />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                tableData.map((row: any, index: number) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>
+                      <Box display="flex" alignItems="center">
+                        <Image
+                          src={sourceImage(row.run?.poster?.fileName)}
+                          loader={() => sourceImage(row.run?.poster?.fileName)}
+                          alt=""
+                          width={TABLE_IMAGE_WIDTH}
+                          height={TABLE_IMAGE_HEIGHT}
+                        />
+                        <Box ml={2}>
+                          <Typography variant="subtitle1">{row.run?.name}</Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {row.run?.code}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>{row.run?.campaign?.project?.clientTier2?.clientTier1?.name}</TableCell>
+                    <TableCell>{row.created}</TableCell>
+                    <TableCell>
+                      <Badge
+                        color={row.status === 'Accepted' ? 'success' : 'warning'}
+                        badgeContent={row.status}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Card>
+    </Box>
   );
-}
+};
+
+export default Page;
