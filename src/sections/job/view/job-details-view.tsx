@@ -205,25 +205,7 @@ export function JobDetailsView({ params }: Props) {
 
       {tabs.value === 'candidates' && (
         <>
-          <JobDetailsCandidates candidates={run?.candidates ?? []} />
-          <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            onClick={handleApply}
-            disabled={applying}
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            sx={{
-              mt: 3,
-              position: 'relative',
-              zIndex: 1,
-              width: 'auto',
-              display: 'flex',
-              margin: '24px auto',
-            }}
-          >
-            {applying ? 'Applying...' : 'Apply for this Position'}
-          </Button>
+          <Text>Candidates</Text>
         </>
       )}
     </DashboardContent>
