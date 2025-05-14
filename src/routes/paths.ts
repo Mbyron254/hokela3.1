@@ -63,7 +63,7 @@ const v2_paths = {
     },
     janta: {
       root: `${ROOTS.V2}/agent/dashboard/janta`,
-      applications: `${ROOTS.V2}/agent/dashboard/janta/applications`,
+      applications: `${ROOTS.V2}/agent/dashboard/janta/applied`,
     },
   },
   [ERole.PRODUCER]: {

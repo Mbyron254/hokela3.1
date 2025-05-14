@@ -11,6 +11,7 @@ import { sourceImage } from 'src/lib/server';
 import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { DashboardContent } from 'src/layouts/dashboard';
+
 export default function Page() {
   const { data: session } = GQLQuery({
     query: Q_SESSION_SELF,
