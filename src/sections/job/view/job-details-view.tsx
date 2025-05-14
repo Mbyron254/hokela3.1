@@ -3,6 +3,8 @@
 import { redirect } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 
+import Image from 'next/image';
+import { sourceImage } from 'src/lib/server';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Button from '@mui/material/Button';
@@ -22,10 +24,7 @@ import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
 import { JobDetailsToolbar } from '../job-details-toolbar';
-import { JobDetailsContent } from '../job-details-content';
 import { JobDetailsCandidates } from '../job-details-candidates';
-import Image from 'next/image';
-import { sourceImage } from 'src/lib/server';
 
 // ----------------------------------------------------------------------
 
@@ -134,19 +133,19 @@ export function JobDetailsView({ params }: Props) {
                   <div className="text-start">
                     <p className="text-muted mb-2 font-16">
                       <strong>
-                        <i className="mdi mdi-tag text-muted me-1"></i>
+                        <i className="mdi mdi-tag text-muted me-1"/>
                       </strong>
                       <span className="ms-2 ">{run?.name}</span>
                     </p>
                     <p className="text-muted mb-2 font-14">
                       <strong>
-                        <i className="mdi mdi-google-my-business text-muted me-1"></i>
+                        <i className="mdi mdi-google-my-business text-muted me-1"/>
                       </strong>
                       <span className="ms-2 ">{run?.campaign?.project?.clientTier2?.clientTier1?.name}</span>
                     </p>
                     <p className="text-muted mb-0 font-14">
                       <strong>
-                        <i className="mdi mdi-calendar-remove-outline text-muted me-1"></i>
+                        <i className="mdi mdi-calendar-remove-outline text-muted me-1"/>
                       </strong>
                       <span className="text-warning ms-2">
                         {deadline.date}
