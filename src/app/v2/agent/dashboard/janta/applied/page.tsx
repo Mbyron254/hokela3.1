@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import Box from '@mui/material/Box';
-import Pagination, { paginationClasses } from '@mui/material/Pagination';
 
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/run-application.mutation';
@@ -11,7 +10,7 @@ import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { sourceImage } from 'src/lib/server';
 import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-
+import { DashboardContent } from 'src/layouts/dashboard';
 export default function Page() {
   const { data: session } = GQLQuery({
     query: Q_SESSION_SELF,
@@ -27,7 +26,7 @@ export default function Page() {
     toastmsg: false,
   });
 
-  const loadApplications = () => {
+  useEffect(() => {
     if (session?.user?.agent?.id) {
       getApplications({
         variables: {
@@ -35,7 +34,8 @@ export default function Page() {
         },
       });
     }
-  };
+  }, [session,getApplications]);
+
 
   const handleView = useCallback(
     (id: string) => {
@@ -45,7 +45,7 @@ export default function Page() {
   );
 
   return (
-    <>
+    <DashboardContent>
       <CustomBreadcrumbs
         heading="Job Applications"
         links={[
@@ -93,16 +93,6 @@ export default function Page() {
           </div>
         ))}
       </Box>
-
-      {applications?.count > 8 && (
-        <Pagination
-          count={Math.ceil(applications.count / 8)}
-          sx={{
-            mt: { xs: 8, md: 8 },
-            [`& .${paginationClasses.ul}`]: { justifyContent: 'center' },
-          }}
-        />
-      )}
-    </>
+    </DashboardContent>
   );
 }

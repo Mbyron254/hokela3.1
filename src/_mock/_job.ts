@@ -3,8 +3,7 @@ import { _mock } from './_mock';
 // ----------------------------------------------------------------------
 
 export const JOB_DETAILS_TABS = [
-  { label: 'Job content', value: 'content' },
-  { label: 'Candidates', value: 'candidates' },
+  { label: 'Job content', value: 'content' }
 ];
 
 export const JOB_SKILL_OPTIONS = [
