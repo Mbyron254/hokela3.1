@@ -20,6 +20,9 @@ import {
   TableRow,
   Button,
   CircularProgress,
+  TextField,
+  InputAdornment,
+  Checkbox,
 } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { DashboardContent } from 'src/layouts/dashboard/main';
@@ -67,6 +70,16 @@ export default function Page() {
     }
   };
 
+  const handleSelect = (id: string) => {
+    setSelected((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((selectedId) => selectedId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const isSelected = (id: string) => selected.includes(id);
+
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -80,35 +93,36 @@ export default function Page() {
       />
 
       <Card>
-        <div className="app-search" style={{ marginBottom: '16px' }}>
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search agent..."
-              value={search || ''}
-              onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
-            />
-            <button
-              className="btn btn-primary"
-              type="button"
-              disabled={loadingApplications}
-              onClick={() => getApplications({
-                variables: {
-                  input: { search, clientTier1Id: session.user.role.clientTier1.id },
-                },
-              })}
-            >
-              {loadingApplications ? (
-                <>
-                  <CircularProgress size={20} style={{ marginRight: '8px' }} />
-                  Searching
-                </>
-              ) : (
-                'Search'
-              )}
-            </button>
-          </div>
+        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+          <TextField
+            variant="outlined"
+            placeholder="Search agent..."
+            value={search || ''}
+            onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={loadingApplications}
+                    onClick={() => getApplications({
+                      variables: {
+                        input: { search, clientTier1Id: session.user.role.clientTier1.id },
+                      },
+                    })}
+                  >
+                    {loadingApplications ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      'Search'
+                    )}
+                  </Button>
+                </InputAdornment>
+              ),
+            }}
+            sx={{ flexGrow: 1, marginRight: 2 }}
+          />
         </div>
 
         <Button
@@ -125,6 +139,19 @@ export default function Page() {
           <Table stickyHeader aria-label="applications table">
             <TableHead>
               <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    indeterminate={selected.length > 0 && selected.length < applications?.rows.length}
+                    checked={applications?.rows.length > 0 && selected.length === applications?.rows.length}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        setSelected(applications?.rows.map((row: any) => row.id) || []);
+                      } else {
+                        setSelected([]);
+                      }
+                    }}
+                  />
+                </TableCell>
                 <TableCell>#</TableCell>
                 <TableCell>AGENT</TableCell>
                 <TableCell>PROJECT</TableCell>
@@ -137,13 +164,25 @@ export default function Page() {
             <TableBody>
               {loadingApplications ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={8} align="center">
                     <CircularProgress />
                   </TableCell>
                 </TableRow>
               ) : (
                 applications?.rows.map((row: any, index: number) => (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.id}
+                    selected={isSelected(row.id)}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isSelected(row.id)}
+                        onChange={() => handleSelect(row.id)}
+                      />
+                    </TableCell>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>
                       <Image
