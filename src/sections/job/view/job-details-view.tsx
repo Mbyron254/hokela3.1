@@ -24,13 +24,14 @@ import { Iconify } from 'src/components/iconify';
 import { JobDetailsToolbar } from '../job-details-toolbar';
 import { JobDetailsContent } from '../job-details-content';
 import { JobDetailsCandidates } from '../job-details-candidates';
+import Image from 'next/image';
+import { sourceImage } from 'src/lib/server';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   params: {
     id: string;
-    job: any;
   };
 };
 
@@ -76,7 +77,7 @@ export function JobDetailsView({ params }: Props) {
   }, [run]);
 
   useEffect(() => {
-    if (applied) redirect(`/agent/janta/applied`);
+    if (applied) redirect(`/v2/agent/dashboard/janta/applied`);
   }, [applied]);
 
   const [publish, setPublish] = useState(run?.publish);
@@ -118,25 +119,88 @@ export function JobDetailsView({ params }: Props) {
 
       {tabs.value === 'content' && (
         <>
-          <JobDetailsContent job={run} />
-          <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            onClick={handleApply}
-            disabled={applying}
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            sx={{
-              mt: 3,
-              position: 'relative',
-              zIndex: 1,
-              width: 'auto',
-              display: 'flex',
-              margin: '24px auto',
-            }}
-          >
-            {applying ? 'Applying...' : 'Apply for this Position'}
-          </Button>
+          <div className="row">
+            <div className="col-md-4">
+              <div className="card">
+                <Image
+                  className="card-img-top"
+                  src={sourceImage(run?.poster?.fileName)}
+                  loader={() => sourceImage(run?.poster?.fileName)}
+                  alt=""
+                  width={200}
+                  height={200}
+                />
+                <div className="card-body">
+                  <div className="text-start">
+                    <p className="text-muted mb-2 font-16">
+                      <strong>
+                        <i className="mdi mdi-tag text-muted me-1"></i>
+                      </strong>
+                      <span className="ms-2 ">{run?.name}</span>
+                    </p>
+                    <p className="text-muted mb-2 font-14">
+                      <strong>
+                        <i className="mdi mdi-google-my-business text-muted me-1"></i>
+                      </strong>
+                      <span className="ms-2 ">{run?.campaign?.project?.clientTier2?.clientTier1?.name}</span>
+                    </p>
+                    <p className="text-muted mb-0 font-14">
+                      <strong>
+                        <i className="mdi mdi-calendar-remove-outline text-muted me-1"></i>
+                      </strong>
+                      <span className="text-warning ms-2">
+                        {deadline.date}
+                        <small>{deadline.time}</small>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <Button
+                variant="contained"
+                size="large"
+                color="primary"
+                onClick={handleApply}
+                disabled={applying}
+                startIcon={<Iconify icon="eva:plus-fill" />}
+                sx={{
+                  mt: 3,
+                  position: 'relative',
+                  zIndex: 1,
+                  width: 'auto',
+                  display: 'flex',
+                  margin: '24px auto',
+                }}
+              >
+                {applying ? 'Applying...' : 'Apply for this Position'}
+              </Button>
+            </div>
+
+            <div className="col-md-8">
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="text-uppercase">Description</h5>
+                  <hr />
+                  <div
+                    className="mb-1"
+                    style={{ textAlign: 'justify' }}
+                    dangerouslySetInnerHTML={{
+                      __html: run?.campaign?.jobDescription,
+                    }}
+                  />
+                  <h5 className="text-uppercase mt-3">Qualifications</h5>
+                  <hr />
+                  <div
+                    className="mb-0"
+                    style={{ textAlign: 'justify' }}
+                    dangerouslySetInnerHTML={{
+                      __html: run?.campaign?.jobQualification,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </>
       )}
 
