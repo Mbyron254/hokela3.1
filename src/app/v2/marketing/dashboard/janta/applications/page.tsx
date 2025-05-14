@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
-import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/campaign-run-application.mutation';
+import { M_CAMPAIGN_RUN_APPLICATIONS } from 'src/lib/mutations/run-application.mutation';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { sourceImage } from 'src/lib/server';
 import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
@@ -80,6 +80,37 @@ export default function Page() {
       />
 
       <Card>
+        <div className="app-search" style={{ marginBottom: '16px' }}>
+          <div className="input-group">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search agent..."
+              value={search || ''}
+              onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
+            />
+            <button
+              className="btn btn-primary"
+              type="button"
+              disabled={loadingApplications}
+              onClick={() => getApplications({
+                variables: {
+                  input: { search, clientTier1Id: session.user.role.clientTier1.id },
+                },
+              })}
+            >
+              {loadingApplications ? (
+                <>
+                  <CircularProgress size={20} style={{ marginRight: '8px' }} />
+                  Searching
+                </>
+              ) : (
+                'Search'
+              )}
+            </button>
+          </div>
+        </div>
+
         <Button
           variant="contained"
           color="primary"
