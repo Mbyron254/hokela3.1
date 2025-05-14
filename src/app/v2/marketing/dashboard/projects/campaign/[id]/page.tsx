@@ -319,8 +319,9 @@ export default function Page({ params: { id: campaignId } }: any) {
     router.push(paths.v2.marketing.projects.run(runId));
   };
 
-  const handleEdit = (runid: string) => {
-    getRun({ variables: { input: { id: runid } } });
+  const handleEdit = (runId: string) => {
+    getRun({ variables: { input: { id: runId } } });
+    setOpenDialog(true);
   };
 
   const handleDelete = (runid: string) => {
