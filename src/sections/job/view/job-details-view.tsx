@@ -19,13 +19,13 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { JOB_DETAILS_TABS, JOB_PUBLISH_OPTIONS } from 'src/_mock';
 import { M_OPEN_JOB } from 'src/lib/mutations/run.mutation';
 import { M_CAMPAIGN_RUN_APPLY } from 'src/lib/mutations/run-application.mutation';
+import Typography from '@mui/material/Typography';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
 import { JobDetailsToolbar } from '../job-details-toolbar';
 import { JobDetailsCandidates } from '../job-details-candidates';
-import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
 
