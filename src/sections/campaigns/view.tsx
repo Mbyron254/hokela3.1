@@ -33,8 +33,8 @@ export function CampaignsView({ title = 'Blank' }: { title?: string }) {
     if (session?.user?.agent?.id) {
       getOffers({ variables: { input: { agentId: session.user.agent.id } } });
     }
-  }, [session?.user?.agent?.id]);
-  
+  }, [session?.user?.agent?.id, getOffers]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       getGeoLocation(setGeoLocation);
