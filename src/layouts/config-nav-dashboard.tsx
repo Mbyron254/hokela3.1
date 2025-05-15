@@ -210,7 +210,7 @@ const marketingNavData = [
         path: paths.v2[ERole.MARKETING_AGENCY].projects.list,
         icon: ICONS.folder,
       },
-      { title: 'Runs', path: paths.v2[ERole.MARKETING_AGENCY].runs, icon: ICONS.external },
+      // { title: 'Runs', path: paths.v2[ERole.MARKETING_AGENCY].runs, icon: ICONS.external },
       {
         title: 'Surveys',
         path: paths.v2[ERole.MARKETING_AGENCY].surveys,
