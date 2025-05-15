@@ -47,6 +47,16 @@ import { RunSampling } from 'src/components/run/RunSampling';
 import { RunAgentHistoricSales } from 'src/components/run/RunAgentHistoricSales';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { Box, Grid, Typography, Button, Card, CardContent, Alert, Tab, Tabs } from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { styled } from '@mui/material/styles';
+
+const TabContent = styled('div')({
+  padding: '16px',
+});
+
+const StyledCard = styled(Card)({
+  marginBottom: '16px',
+});
 
 export default function Page({ params: { offerId } }: any) {
   const {
@@ -95,6 +105,11 @@ export default function Page({ params: { offerId } }: any) {
   });
   const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
+  const [tabValue, setTabValue] = useState('0');
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    setTabValue(newValue);
+  };
 
   const handleCreateGiveawayReport = (e: Event) => {
     e.preventDefault();
@@ -256,7 +271,7 @@ export default function Page({ params: { offerId } }: any) {
 
       <Grid container spacing={2.5} sx={{ mb: { xs: 3, md: 5 } }}>
         <Grid item xs={12}>
-          <Card>
+          <StyledCard>
             <CardContent>
               <Grid container justifyContent="space-between">
                 <Typography variant="h6">Name</Typography>
@@ -277,7 +292,7 @@ export default function Page({ params: { offerId } }: any) {
                 </Typography>
               </Grid>
             </CardContent>
-          </Card>
+          </StyledCard>
         </Grid>
 
         {(!offer || !geoLocation?.lat || !geoLocation?.lng) && (
@@ -308,148 +323,108 @@ export default function Page({ params: { offerId } }: any) {
         )}
 
         <Grid item xs={12}>
-          <Tabs value={0} aria-label="activity tabs">
+          <TabContext value={tabValue}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <TabList onChange={handleTabChange} aria-label="activity tabs">
+                {offer?.run?.types?.map((activity: any, i: number) => (
+                  <Tab key={`run-type-${i}`} label={activity.name} value={String(i)} />
+                ))}
+              </TabList>
+            </Box>
             {offer?.run?.types?.map((activity: any, i: number) => (
-              <Tab key={`run-type-${i}`} label={activity.name} />
-            ))}
-          </Tabs>
-        </Grid>
-
-        {geoLocation?.err && (
-          <Grid item xs={12}>
-            <Alert severity="error">
-              <strong>DANGER:</strong> We are unable to ping your device location.
-              <br />
-              {geoLocation?.err}
-            </Alert>
-          </Grid>
-        )}
-
-        <Grid item xs={12}>
-          <div className="tab-content">
-            {offer?.run?.types?.map((activity: any, i: number) => {
-              switch (activity.name) {
-                case RUN_ACTIVITY_SALES:
-                  return (
-                    <Fragment key={`run-type-${i}`}>
-                      <div id={`activity-sales-${activity.id}`} className={`tab-pane ${i === 0 ? 'show active' : ''}`}>
-                        {geoLocation?.lat && geoLocation?.lng && (
-                          <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                              {!allocations?.length ? (
-                                <Alert severity="info">
-                                  {loadingAllocationSales ? <p>Loading...</p> : undefined}
-                                  <strong>Heads Up! - </strong> You have not been allocated products to sale. Kindly follow up with your team leader.
-                                </Alert>
-                              ) : undefined}
-
-                              <Card>
-                                <CardContent>
-                                  <Grid container justifyContent="space-between">
-                                    <Typography>Product search...</Typography>
-                                    <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
-                                      <i className="mdi mdi-cart-outline me-1"/>View Cart
-                                    </Button>
-                                  </Grid>
-                                </CardContent>
-                              </Card>
-
+              <TabPanel key={`run-type-panel-${i}`} value={String(i)} sx={{ padding: '16px' }}>
+                {(() => {
+                  switch (activity.name) {
+                    case RUN_ACTIVITY_SALES:
+                      return (
+                        <Fragment>
+                          <div id={`activity-sales-${activity.id}`} className={`tab-pane ${i === 0 ? 'show active' : ''}`}>
+                            {geoLocation?.lat && geoLocation?.lng && (
                               <Grid container spacing={2}>
-                                {allocations?.map((allocation: any, index: number) => (
-                                  <Grid item xs={12} md={4} key={`allocation-${index}`}>
-                                    <Card>
-                                      <CardContent>
-                                        <Typography variant="h5">{allocation.product?.name}</Typography>
-                                        <Typography>Packaging: {commafy(allocation.product.packaging)}</Typography>
-                                        <Typography>Price: {commafy(allocation.unitPrice)} ksh</Typography>
-                                        <Typography>Sold: {allocation.quantitySold} / {allocation.quantityAllocated} {allocation.product?.package}</Typography>
-                                        <Button variant="outlined" color="info" fullWidth onClick={() => addItem({ sku: allocation.id, id: allocation.id, name: allocation.product?.name, price: parseFloat(allocation.unitPrice), image: allocation.product?.photo }, 1)}>
-                                          <i className="mdi mdi-cart-plus me-1"/>Add to Cart
-                                        </Button>
-                                      </CardContent>
-                                    </Card>
-                                  </Grid>
-                                ))}
+                                <Grid item xs={12}>
+                                  {!allocations?.length ? (
+                                    <Alert severity="info">
+                                      {loadingAllocationSales ? <p>Loading...</p> : undefined}
+                                      <strong>Heads Up! - </strong> You have not been allocated products to sale. Kindly follow up with your team leader.
+                                    </Alert>
+                                  ) : undefined}
 
-                                <Grid item xs={12} className="text-center">
-                                  <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
-                                    <i className="mdi mdi-cart-outline me-1"/>View Cart
-                                  </Button>
+                                  <Card>
+                                    <CardContent>
+                                      <Grid container justifyContent="space-between">
+                                        <Typography>Product search...</Typography>
+                                        <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
+                                          <i className="mdi mdi-cart-outline me-1"/>View Cart
+                                        </Button>
+                                      </Grid>
+                                    </CardContent>
+                                  </Card>
+
+                                  <Grid container spacing={2}>
+                                    {allocations?.map((allocation: any, index: number) => (
+                                      <Grid item xs={12} md={4} key={`allocation-${index}`}>
+                                        <Card>
+                                          <CardContent>
+                                            <Typography variant="h5">{allocation.product?.name}</Typography>
+                                            <Typography>Packaging: {commafy(allocation.product.packaging)}</Typography>
+                                            <Typography>Price: {commafy(allocation.unitPrice)} ksh</Typography>
+                                            <Typography>Sold: {allocation.quantitySold} / {allocation.quantityAllocated} {allocation.product?.package}</Typography>
+                                            <Button variant="outlined" color="info" fullWidth onClick={() => addItem({ sku: allocation.id, id: allocation.id, name: allocation.product?.name, price: parseFloat(allocation.unitPrice), image: allocation.product?.photo }, 1)}>
+                                              <i className="mdi mdi-cart-plus me-1"/>Add to Cart
+                                            </Button>
+                                          </CardContent>
+                                        </Card>
+                                      </Grid>
+                                    ))}
+
+                                    <Grid item xs={12} className="text-center">
+                                      <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
+                                        <i className="mdi mdi-cart-outline me-1"/>View Cart
+                                      </Button>
+                                    </Grid>
+                                  </Grid>
+
+                                  {offer?.run?.id && geoLocation?.lat && geoLocation?.lng && (
+                                    <RunCartSales runId={offer.run.id} lat={geoLocation.lat} lng={geoLocation.lng} />
+                                  )}
                                 </Grid>
                               </Grid>
+                            )}
+                          </div>
 
-                              {offer?.run?.id && geoLocation?.lat && geoLocation?.lng && (
-                                <RunCartSales runId={offer.run.id} lat={geoLocation.lat} lng={geoLocation.lng} />
-                              )}
-                            </Grid>
-                          </Grid>
-                        )}
-                      </div>
+                          <div className="tab-pane" id={`activity-sales-history-${activity.id}`}>
+                            {offer?.run?.id && <RunAgentHistoricSales runId={offer?.run?.id} />}
+                          </div>
+                        </Fragment>
+                      );
 
-                      <div className="tab-pane" id={`activity-sales-history-${activity.id}`}>
-                        {offer?.run?.id && <RunAgentHistoricSales runId={offer?.run?.id} />}
-                      </div>
-                    </Fragment>
-                  );
+                    case RUN_ACTIVITY_SAMPLING:
+                      return (
+                        <div>
+                          {offer?.run?.id && <GiveawayReportFree runId={offer?.run?.id} />}
+                        </div>
+                      );
 
-                case RUN_ACTIVITY_SAMPLING:
-                  return (
-                    <div
-                      className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                      id={`activity-${activity.id}`}
-                      key={`run-type-${i}`}
-                    >
-                      {offer?.run?.id && <GiveawayReportFree runId={offer?.run?.id} />}
-                      {/* {offer?.run?.id && <RunSampling runId={offer?.run?.id} />} */}
-                    </div>
-                  );
+                    case RUN_ACTIVITY_SURVEY:
+                      return (
+                        <div>
+                          {offer?.run?.id && <SurveyReport runId={offer.run.id} />}
+                        </div>
+                      );
 
-                case RUN_ACTIVITY_SURVEY:
-                  return (
-                    <div
-                      className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                      id={`activity-${activity.id}`}
-                      key={`run-type-${i}`}
-                    >
-                      {offer?.run?.id && <SurveyReport runId={offer.run.id} />}
-                    </div>
-                  );
+                    case RUN_ACTIVITY_ROAD_SHOW:
+                      return <p>Road show coming soon...</p>;
 
-                case RUN_ACTIVITY_ROAD_SHOW:
-                  return (
-                    <div
-                      className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                      id={`activity-${activity.id}`}
-                      key={`run-type-${i}`}
-                    >
-                      <p>Road show coming soon...</p>
-                    </div>
-                  );
+                    case RUN_ACTIVITY_STOCK_MAPPING:
+                      return <p>Stock mapping coming soon...</p>;
 
-                case RUN_ACTIVITY_STOCK_MAPPING:
-                  return (
-                    <div
-                      className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                      id={`activity-${activity.id}`}
-                      key={`run-type-${i}`}
-                    >
-                      <p>Stock mapping coming soon...</p>
-                    </div>
-                  );
-
-                default:
-                  return (
-                    <div
-                      className={`tab-pane ${i === 0 ? 'show active' : ''}`}
-                      id="no-activity"
-                      key={`run-type-${i}`}
-                    >
-                      <h4>No Activity</h4>
-                    </div>
-                  );
-              }
-            })}
-          </div>
+                    default:
+                      return <h4>No Activity</h4>;
+                  }
+                })()}
+              </TabPanel>
+            ))}
+          </TabContext>
         </Grid>
       </Grid>
 
