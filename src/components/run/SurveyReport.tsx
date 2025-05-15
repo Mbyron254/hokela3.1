@@ -83,9 +83,13 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
   const handleCreate = (e: Event) => {
     e.preventDefault();
 
+    console.log('survey id:', survey.id);
+    console.log('session user agent id:', session?.user?.agent?.id);
+    console.log('geo location:', geoLocation);
     if (survey.id && session?.user?.agent?.id && geoLocation?.lat && geoLocation?.lng) {
       const _responses: InputSurveyResponse[] = [];
 
+      console.log('questionnaireFields:', questionnaireFields);
       for (let i = 0; i < questionnaireFields.length; i += 1) {
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
