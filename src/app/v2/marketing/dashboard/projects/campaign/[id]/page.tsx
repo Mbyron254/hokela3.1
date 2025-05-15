@@ -226,15 +226,15 @@ export default function Page({ params: { id: campaignId } }: any) {
         posterId: run.poster?.id,
         runTypeIds: [],
         name: run.name,
-        dateStart: run.dateStart,
-        dateStop: run.dateStop,
+        dateStart: run.dateStart ? new Date(run.dateStart) : undefined,
+        dateStop: run.dateStop ? new Date(run.dateStop) : undefined,
         clockType: run.clockType,
         clockInPhotoLabel: run.clockInPhotoLabel,
         clockOutPhotoLabel: run.clockOutPhotoLabel,
         clockInTime: run.clockInTime,
         clockOutTime: run.clockOutTime,
         locationPingFrequency: run.locationPingFrequency,
-        closeAdvertOn: run.closeAdvertOn,
+        closeAdvertOn: run.closeAdvertOn ? new Date(run.closeAdvertOn) : undefined,
       });
       setOptionsSelectedUpdate(run.types);
     }
@@ -448,7 +448,7 @@ export default function Page({ params: { id: campaignId } }: any) {
         )}
       </Paper>
       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
-        <DialogTitle>{inputUpdate.id ? 'Edit Run' : 'New Run'}</DialogTitle>
+        <DialogTitle>{inputUpdate.id ? 'Update Run' : 'New Run'}</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
@@ -486,7 +486,7 @@ export default function Page({ params: { id: campaignId } }: any) {
             fullWidth
             label="Start Date"
             type="date"
-            value={inputUpdate.id ? (inputUpdate.dateStart ? inputUpdate.dateStart.toISOString().split('T')[0] : '') : (inputCreate.dateStart ? inputCreate.dateStart.toISOString().split('T')[0] : '')}
+            value={inputUpdate.id ? (inputUpdate.dateStart instanceof Date ? inputUpdate.dateStart.toISOString().split('T')[0] : '') : (inputCreate.dateStart instanceof Date ? inputCreate.dateStart.toISOString().split('T')[0] : '')}
             onChange={(e) => {
               if (inputUpdate.id) {
                 setInputUpdate({ ...inputUpdate, dateStart: new Date(e.target.value) });
@@ -501,7 +501,7 @@ export default function Page({ params: { id: campaignId } }: any) {
             fullWidth
             label="Stop Date"
             type="date"
-            value={inputUpdate.id ? (inputUpdate.dateStop ? inputUpdate.dateStop.toISOString().split('T')[0] : '') : (inputCreate.dateStop ? inputCreate.dateStop.toISOString().split('T')[0] : '')}
+            value={inputUpdate.id ? (inputUpdate.dateStop instanceof Date ? inputUpdate.dateStop.toISOString().split('T')[0] : '') : (inputCreate.dateStop instanceof Date ? inputCreate.dateStop.toISOString().split('T')[0] : '')}
             onChange={(e) => {
               if (inputUpdate.id) {
                 setInputUpdate({ ...inputUpdate, dateStop: new Date(e.target.value) });
@@ -576,7 +576,7 @@ export default function Page({ params: { id: campaignId } }: any) {
             fullWidth
             label="Close Advert On"
             type="date"
-            value={inputUpdate.id ? (inputUpdate.closeAdvertOn ? inputUpdate.closeAdvertOn.toISOString().split('T')[0] : '') : (inputCreate.closeAdvertOn ? inputCreate.closeAdvertOn.toISOString().split('T')[0] : '')}
+            value={inputUpdate.id ? (inputUpdate.closeAdvertOn instanceof Date ? inputUpdate.closeAdvertOn.toISOString().split('T')[0] : '') : (inputCreate.closeAdvertOn instanceof Date ? inputCreate.closeAdvertOn.toISOString().split('T')[0] : '')}
             onChange={(e) => {
               if (inputUpdate.id) {
                 setInputUpdate({ ...inputUpdate, closeAdvertOn: new Date(e.target.value) });
