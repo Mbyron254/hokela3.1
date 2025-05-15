@@ -84,7 +84,7 @@ export const RunAgent: FC<{ offer: any; lat: number; lng: number }> = ({ offer, 
 
   useEffect(() => {
     if (clocked) {
-      window.location.replace(`/agent/campaigns/${offer.id}`);
+      window.location.replace(`/v2/agent/dashboard/campaigns/${offer.id}`);
     }
   }, [clocked, offer.id]);
 
