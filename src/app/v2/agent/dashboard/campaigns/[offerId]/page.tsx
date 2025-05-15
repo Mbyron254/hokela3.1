@@ -428,7 +428,7 @@ export default function Page({ params: { offerId } }: any) {
         </Grid>
       </Grid>
 
-      <div
+      {/* <div
         id="giveaway-report-modal"
         className="modal fade"
         role="dialog"
@@ -545,7 +545,7 @@ export default function Page({ params: { offerId } }: any) {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </Box>
   );
 }
