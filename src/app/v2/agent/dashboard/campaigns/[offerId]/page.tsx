@@ -337,7 +337,7 @@ export default function Page({ params: { offerId } }: any) {
                   switch (activity.name) {
                     case RUN_ACTIVITY_SALES:
                       return (
-                        <Fragment>
+                        <>
                           <div id={`activity-sales-${activity.id}`} className={`tab-pane ${i === 0 ? 'show active' : ''}`}>
                             {geoLocation?.lat && geoLocation?.lng && (
                               <Grid container spacing={2}>
@@ -395,7 +395,7 @@ export default function Page({ params: { offerId } }: any) {
                           <div className="tab-pane" id={`activity-sales-history-${activity.id}`}>
                             {offer?.run?.id && <RunAgentHistoricSales runId={offer?.run?.id} />}
                           </div>
-                        </Fragment>
+                        </>
                       );
 
                     case RUN_ACTIVITY_SAMPLING:
