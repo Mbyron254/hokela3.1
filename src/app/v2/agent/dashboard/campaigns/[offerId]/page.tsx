@@ -62,33 +62,13 @@ export default function Page({ params: { offerId } }: any) {
   const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
 
-  const loadJanta = () => {
-    if (offerId) {
-      getJanta({ variables: { input: { id: offerId } } });
-    }
-  };
-
-  const loadSalesAllocations = () => {
-    if (offer?.run?.id) {
-      getSalesAllocations({
-        variables: { input: { runId: offer.run.id } },
-      });
-    }
-  };
-
-  const loadSurveySalesGiveaway = () => {
-    if (offer?.run?.id) {
-      getSurveySalesGiveaway({ variables: { input: { runId: offer.run.id } } });
-    }
-  };
-
   const handleCreateGiveawayReport = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (geoLocation?.lat && geoLocation?.lng) {
       const _responses: InputSurveyResponse[] = [];
 
-      for (let i = 0; i < questionnaireFields.length; i++) {
+      for (let i = 0; i < questionnaireFields.length; i+=1) {
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: questionnaireFields[i].feedback || {},
@@ -116,17 +96,26 @@ export default function Page({ params: { offerId } }: any) {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => loadJanta(), [offerId]);
   useEffect(() => {
-    loadSurveySalesGiveaway();
-    loadSalesAllocations();
-  }, [offer?.run?.id]);
+    if (offerId) {
+      getJanta({ variables: { input: { id: offerId } } });
+    }
+  }, [offerId, getJanta]);
+  useEffect(() => {
+    if (offer?.run?.id) {
+      getSalesAllocations({
+        variables: { input: { runId: offer.run.id } },
+      });
+      getSurveySalesGiveaway({ variables: { input: { runId: offer.run.id } } });
+
+    }
+  }, [offer?.run?.id,getSalesAllocations,getSurveySalesGiveaway]);
 
   useEffect(() => {
     if (allocationSales) {
       const _allocations: IAgentAllocation[] = [];
 
-      for (let i = 0; i < allocationSales.length; i++) {
+      for (let i = 0; i < allocationSales.length; i+=1) {
         _allocations.push({
           index: allocationSales[i].index,
           id: allocationSales[i].id,
@@ -167,26 +156,26 @@ export default function Page({ params: { offerId } }: any) {
     if (surveySalesGiveaway) {
       const _fields = [];
 
-      for (let i = 0; i < surveySalesGiveaway.questionnaireFields.length; i++) {
+      for (let i = 0; i < surveySalesGiveaway.questionnaireFields.length; i+=1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceSingle.length; k++) {
+        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
           _singlechoice.push({
             text: surveySalesGiveaway.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: surveySalesGiveaway.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple.length; k++) {
+        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
           _multichoice.push({
             text: surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsDropdown.length; k++) {
+        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsDropdown.length; k+=1) {
           _dropdown.push({
             value: surveySalesGiveaway.questionnaireFields[i].optionsDropdown[k].value,
             label: surveySalesGiveaway.questionnaireFields[i].optionsDropdown[k].label,
@@ -421,10 +410,10 @@ export default function Page({ params: { offerId } }: any) {
                 <>
                   <Grid item md={4}>
                     <div>
-                      <label>
+                      <p>
                         Customer Name
                         {surveySalesGiveaway?.requireRespondentName ? <span>*</span> : undefined}
-                      </label>
+                      </p>
                       <input
                         type="text"
                         required={surveySalesGiveaway?.requireRespondentName}
@@ -440,10 +429,10 @@ export default function Page({ params: { offerId } }: any) {
                   </Grid>
                   <Grid item md={4}>
                     <div>
-                      <label>
+                      <p>
                         Customer Phone
                         {surveySalesGiveaway?.requireRespondentPhone ? <span>*</span> : undefined}
-                      </label>
+                      </p>
                       <PhoneNumberInput
                         phonekey="respondentPhone"
                         required={surveySalesGiveaway?.requireRespondentPhone}
@@ -454,10 +443,10 @@ export default function Page({ params: { offerId } }: any) {
                   </Grid>
                   <Grid item md={4}>
                     <div>
-                      <label>
+                      <p>
                         Customer Email
                         {surveySalesGiveaway?.requireRespondentEmail ? <span>*</span> : undefined}
-                      </label>
+                      </p>
                       <input
                         type="text"
                         required={surveySalesGiveaway?.requireRespondentEmail}
@@ -475,16 +464,16 @@ export default function Page({ params: { offerId } }: any) {
               )}
               <Grid item md={4}>
                 <div>
-                  <label>
+                  <p>
                     Giveaway Quantity<span>*</span>
-                  </label>
+                  </p>
                   <input
                     type="number"
                     defaultValue={inputSalesGiveaway.quantityGiven}
                     onChange={(e) =>
                       setInputSalesGiveaway({
                         ...inputSalesGiveaway,
-                        quantityGiven: parseInt(e.target.value),
+                        quantityGiven: parseInt(e.target.value, 10),
                       })
                     }
                   />
