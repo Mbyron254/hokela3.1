@@ -27,15 +27,14 @@ export function CampaignsView({ title = 'Blank' }: { title?: string }) {
     toastmsg: false,
   });
 
-  const loadOffers = () => {
+  const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
+
+  useEffect(() => {
     if (session?.user?.agent?.id) {
       getOffers({ variables: { input: { agentId: session.user.agent.id } } });
     }
-  };
-
-  const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
-
-  useEffect(() => loadOffers(), [session?.user?.agent?.id]);
+  }, [session?.user?.agent?.id]);
+  
   useEffect(() => {
     const interval = setInterval(() => {
       getGeoLocation(setGeoLocation);
