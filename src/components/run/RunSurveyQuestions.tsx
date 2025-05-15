@@ -12,6 +12,17 @@ import { GQLMutation } from 'src/lib/client';
 import { M_SURVEY, SURVEY_UPSERT } from 'src/lib/mutations/survey.mutation';
 import { RunSurveyTargetReports } from './RunSurveyTargetReports';
 import { QuestionnaireSetup } from '../QuestionnaireSetup';
+import {
+  Box,
+  Tab,
+  Tabs,
+  TextField,
+  FormControlLabel,
+  Switch,
+  Card,
+  CardContent,
+  Typography,
+} from '@mui/material';
 
 export const RunSurveyQuestions: FC<{
   clientTier2Id: string;
@@ -44,10 +55,11 @@ export const RunSurveyQuestions: FC<{
     blockSameLocationReportsPerAgent: undefined,
     questionnaireFields: [],
   });
+  const [tabIndex, setTabIndex] = useState(0);
 
   const handleUpsert = () => {
     if (clientTier2Id && runId && questionnaireFields) {
-      for (let i = 0; i < questionnaireFields.length; i+=1) {
+      for (let i = 0; i < questionnaireFields.length; i += 1) {
         switch (questionnaireFields[i].feedbackType) {
           case DROPDOWN:
             delete questionnaireFields[i].optionsChoiceSingle;
@@ -81,26 +93,26 @@ export const RunSurveyQuestions: FC<{
     if (survey) {
       const _fields = [];
 
-      for (let i = 0; i < survey.questionnaireFields.length; i+=1) {
+      for (let i = 0; i < survey.questionnaireFields.length; i += 1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k += 1) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k += 1) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k += 1) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
             label: survey.questionnaireFields[i].optionsDropdown[k].label,
@@ -136,179 +148,158 @@ export const RunSurveyQuestions: FC<{
   }, [survey, input]);
 
   return (
-    <>
-      <ul className="nav nav-tabs nav-bordered mb-3">
-        <li className="nav-item">
-          <a
-            href="#survey-questions"
-            data-bs-toggle="tab"
-            aria-expanded="true"
-            className="nav-link active"
-          >
-            <span className="d-md-block">Questionnaire</span>
-          </a>
-        </li>
-        <li className="nav-item">
-          <a href="#target-reports" data-bs-toggle="tab" aria-expanded="false" className="nav-link">
-            <span className="d-md-block">Target Reports</span>
-          </a>
-        </li>
-      </ul>
+    <Box sx={{ width: '100%' }}>
+      <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)} aria-label="survey tabs">
+        <Tab label="Questionnaire" />
+        <Tab label="Target Reports" />
+      </Tabs>
 
-      <div className="tab-content">
-        <div className="tab-pane show active" id="survey-questions">
-          <div className="row">
-            <div className="col-md-12">
-              <div className="card border-primary border">
-                <div className="card-body">
-                  <div className="form-floating mb-3">
-                    <input
-                      type="text"
-                      id="surveyName"
-                      className="form-control"
-                      placeholder=""
-                      defaultValue={input.name}
-                      onChange={(e) =>
-                        setInput({
-                          ...input,
-                          name: e.target.value === '' ? undefined : e.target.value,
-                        })
-                      }
-                    />
-                    <p className="form-label">Survey Name</p>
-                  </div>
-                  <div className="form-floating">
-                    <textarea
-                      id="description"
-                      className="form-control"
-                      placeholder=""
-                      style={{ height: '100px' }}
-                      defaultValue={input.description}
-                      onChange={(e) =>
-                        setInput({
-                          ...input,
-                          description: e.target.value === '' ? undefined : e.target.value,
-                        })
-                      }
-                    />
-                    <p>Survey Description</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-4">
-              <div className="card border-primary border">
-                <div className="card-body">
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="hideRespondentFieldsSurvey"
-                      checked={input.hideRespondentFields}
-                      onClick={() =>
-                        setInput({
-                          ...input,
-                          hideRespondentFields: !input.hideRespondentFields,
-                        })
-                      }
-                    />
-                    <p className="form-check-label">Hide Respondent Fields</p>
-                  </div>
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="requireRespondentNameSurvey"
-                      checked={input.requireRespondentName}
-                      onClick={() =>
-                        setInput({
-                          ...input,
-                          requireRespondentName: !input.requireRespondentName,
-                        })
-                      }
-                    />
-                    <p className="form-check-label">Require Respondent Name</p>
-                  </div>
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="requireRespondentPhoneSurvey"
-                      checked={input.requireRespondentPhone}
-                      onClick={() =>
-                        setInput({
-                          ...input,
-                          requireRespondentPhone: !input.requireRespondentPhone,
-                        })
-                      }
-                    />
-                    <p className="form-check-label">Require Respondent Phone</p>
-                  </div>
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="requireRespondentEmailSurvey"
-                      checked={input.requireRespondentEmail}
-                      onClick={() =>
-                        setInput({
-                          ...input,
-                          requireRespondentEmail: !input.requireRespondentEmail,
-                        })
-                      }
-                    />
-                    <p className="form-check-label">Require Respondent Email</p>
-                  </div>
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="blockSameLocationReportsGloballySurvey"
-                      checked={input.blockSameLocationReportsGlobally}
-                      onClick={() =>
-                        setInput({
-                          ...input,
-                          blockSameLocationReportsGlobally: !input.blockSameLocationReportsGlobally,
-                        })
-                      }
-                    />
-                    <p className="form-check-label">Block Same Location Reports Globally</p>
-                  </div>
-                  <div className="form-check form-switch">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="blockSameLocationReportsPerAgentSurvey"
-                      checked={input.blockSameLocationReportsPerAgent}
-                      onClick={() =>
-                        setInput({
-                          ...input,
-                          blockSameLocationReportsPerAgent: !input.blockSameLocationReportsPerAgent,
-                        })
-                      }
-                    />
-                    <p className="form-check-label">Block Same Location Reports Per Agent</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-8">
-              <QuestionnaireSetup
-                questionnaireFields={questionnaireFields}
-                setQuestionnaireFields={setQuestionnaireFields}
-                mutating={upserting}
-                mutation={handleUpsert}
+      {tabIndex === 0 && (
+        <Box sx={{ p: 3 }}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Survey Details
+              </Typography>
+              <TextField
+                fullWidth
+                label="Survey Name"
+                variant="outlined"
+                margin="normal"
+                defaultValue={input.name}
+                onChange={(e) =>
+                  setInput({
+                    ...input,
+                    name: e.target.value === '' ? undefined : e.target.value,
+                  })
+                }
               />
-            </div>
-          </div>
-        </div>
+              <TextField
+                fullWidth
+                label="Survey Description"
+                variant="outlined"
+                margin="normal"
+                multiline
+                rows={4}
+                defaultValue={input.description}
+                onChange={(e) =>
+                  setInput({
+                    ...input,
+                    description: e.target.value === '' ? undefined : e.target.value,
+                  })
+                }
+              />
+            </CardContent>
+          </Card>
 
-        <div className="tab-pane" id="target-reports">
+          <Card variant="outlined" sx={{ mt: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Survey Settings
+              </Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.hideRespondentFields}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        hideRespondentFields: !input.hideRespondentFields,
+                      })
+                    }
+                  />
+                }
+                label="Hide Respondent Fields"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.requireRespondentName}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        requireRespondentName: !input.requireRespondentName,
+                      })
+                    }
+                  />
+                }
+                label="Require Respondent Name"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.requireRespondentPhone}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        requireRespondentPhone: !input.requireRespondentPhone,
+                      })
+                    }
+                  />
+                }
+                label="Require Respondent Phone"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.requireRespondentEmail}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        requireRespondentEmail: !input.requireRespondentEmail,
+                      })
+                    }
+                  />
+                }
+                label="Require Respondent Email"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.blockSameLocationReportsGlobally}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        blockSameLocationReportsGlobally: !input.blockSameLocationReportsGlobally,
+                      })
+                    }
+                  />
+                }
+                label="Block Same Location Reports Globally"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.blockSameLocationReportsPerAgent}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        blockSameLocationReportsPerAgent: !input.blockSameLocationReportsPerAgent,
+                      })
+                    }
+                  />
+                }
+                label="Block Same Location Reports Per Agent"
+              />
+            </CardContent>
+          </Card>
+
+          <Box sx={{ mt: 3 }}>
+            <QuestionnaireSetup
+              questionnaireFields={questionnaireFields}
+              setQuestionnaireFields={setQuestionnaireFields}
+              mutating={upserting}
+              mutation={handleUpsert}
+            />
+          </Box>
+        </Box>
+      )}
+
+      {tabIndex === 1 && (
+        <Box sx={{ p: 3 }}>
           {survey?.id ? <RunSurveyTargetReports surveyId={survey.id} /> : undefined}
-        </div>
-      </div>
-    </>
+        </Box>
+      )}
+    </Box>
   );
 };
