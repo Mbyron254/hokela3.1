@@ -1,14 +1,24 @@
 'use client';
 
-import React, { Fragment, useEffect, useState } from 'react';
-import { GQLMutation } from 'src/lib/client';
+import Image from 'next/image';
+import PhoneNumberInput from 'src/components/PhoneNumberInput';
 
+import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { Fragment, useEffect, useState } from 'react';
 import { M_JANTA } from 'src/lib/mutations/run-offer.mutation';
 import { M_AGENT_ALLOCATIONS, M_UPDATE_SALE } from 'src/lib/mutations/inventory-allocation.mutation';
+import { commafy, formatDate, formatTimeTo12Hr, getGeoLocation } from 'src/lib/helpers';
+import { sourceImage } from 'src/lib/server';
 import {
-  SALES_GIVEAWAY_REPORT_CREATE,
-  SALES_GIVEAWAY_SURVEY,
-} from 'src/lib/mutations/sales-giveaway.mutation';
+  LOCATION_PING_INTERVAL_MS,
+  RUN_ACTIVITY_ROAD_SHOW,
+  RUN_ACTIVITY_SALES,
+  RUN_ACTIVITY_SAMPLING,
+  RUN_ACTIVITY_STOCK_MAPPING,
+  RUN_ACTIVITY_SURVEY,
+  TABLE_IMAGE_HEIGHT,
+  TABLE_IMAGE_WIDTH,
+} from 'src/lib/constant';
 import {
   IAnswerDropdownOption,
   IChoice,
@@ -18,23 +28,51 @@ import {
   IQuestionnairField,
 } from 'src/lib/interface/general.interface';
 import { IAgentAllocation, IInputSale, IInputSaleSurvey } from 'src/lib/interface/campaign.interface';
-import { Box, Button, Card, CardContent, CircularProgress, Grid, Typography, Tabs, Tab, Alert } from '@mui/material';
-import PhoneNumberInput from 'src/components/PhoneNumberInput';
-import { useCart } from 'react-use-cart';
-import { RunCartSales } from 'src/components/run/RunCartSales';
-import { RunAgentHistoricSales } from 'src/components/run/RunAgentHistoricSales';
 import { SurveyReport } from 'src/components/run/SurveyReport';
 import { GiveawayReportFree } from 'src/components/run/GiveawayReportFree';
+import { M_SHOPS_MINI } from 'src/lib/mutations/shop.mutation';
+import { Q_SHOP_SECTORS_MINI } from 'src/lib/queries/shop-sector.query';
+import { Q_SHOP_CATEGORIES_MINI } from 'src/lib/queries/shop-category.query';
 import { QuestionnaireForm } from 'src/components/QuestionnaireForm';
-import { commafy, formatDate, formatTimeTo12Hr, getGeoLocation } from 'src/lib/helpers';
+import {
+  SALES_GIVEAWAY_REPORT_CREATE,
+  SALES_GIVEAWAY_SURVEY,
+} from 'src/lib/mutations/sales-giveaway.mutation';
+import { SALES_SURVEY } from 'src/lib/mutations/sales-survey.mutation';
+import { LoadingDiv } from 'src/components/LoadingDiv';
+import { RunCartSales } from 'src/components/run/RunCartSales';
+import { useCart } from 'react-use-cart';
+import { AGENT_RUN_SALES } from 'src/lib/mutations/inventory.mutation';
+import { RunSampling } from 'src/components/run/RunSampling';
+import { RunAgentHistoricSales } from 'src/components/run/RunAgentHistoricSales';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { Box, Grid, Typography, Button, Card, CardContent, Alert, Tab, Tabs } from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { styled } from '@mui/material/styles';
+
+const TabContent = styled('div')({
+  padding: '16px',
+});
+
+const StyledCard = styled(Card)({
+  marginBottom: '16px',
+});
 
 export default function Page({ params: { offerId } }: any) {
-  const { action: getJanta, loading: loadingJanta, data: offer } = GQLMutation({
+  const {
+    action: getJanta,
+    loading: loadingJanta,
+    data: offer,
+  } = GQLMutation({
     mutation: M_JANTA,
     resolver: 'janta',
     toastmsg: false,
   });
-  const { action: getSalesAllocations, loading: loadingAllocationSales, data: allocationSales } = GQLMutation({
+  const {
+    action: getSalesAllocations,
+    loading: loadingAllocationSales,
+    data: allocationSales,
+  } = GQLMutation({
     mutation: M_AGENT_ALLOCATIONS,
     resolver: 'agentAllocations',
     toastmsg: false,
@@ -44,13 +82,19 @@ export default function Page({ params: { offerId } }: any) {
     resolver: 'salesGiveawaySurvey',
     toastmsg: false,
   });
-  const { action: createGiveawayReport, loading: creatingGiveawayReport, data: createdGiveawayReport } = GQLMutation({
+  
+  const {
+    action: createGiveawayReport,
+    loading: creatingGiveawayReport,
+    data: createdGiveawayReport,
+  } = GQLMutation({
     mutation: SALES_GIVEAWAY_REPORT_CREATE,
     resolver: 'salesGiveawayReportCreate',
     toastmsg: true,
   });
 
   const { addItem } = useCart();
+
   const [allocations, setAllocations] = useState<IAgentAllocation[]>([]);
   const [inputSalesGiveaway, setInputSalesGiveaway] = useState<InputSalesGiveawaySurveyReportCreate>({
     salesGiveawayConfigId: undefined,
@@ -61,8 +105,13 @@ export default function Page({ params: { offerId } }: any) {
   });
   const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
+  const [tabValue, setTabValue] = useState('0');
 
-  const handleCreateGiveawayReport = (e: React.FormEvent) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    setTabValue(newValue);
+  };
+
+  const handleCreateGiveawayReport = (e: Event) => {
     e.preventDefault();
 
     if (geoLocation?.lat && geoLocation?.lng) {
@@ -91,23 +140,21 @@ export default function Page({ params: { offerId } }: any) {
   useEffect(() => {
     const interval = setInterval(() => {
       getGeoLocation(setGeoLocation);
-    }, 10000);
+    }, LOCATION_PING_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, []);
-
   useEffect(() => {
     if (offerId) {
       getJanta({ variables: { input: { id: offerId } } });
     }
-  }, [offerId, getJanta]);
+  }, [offerId,getJanta]);
   useEffect(() => {
     if (offer?.run?.id) {
+      getSurveySalesGiveaway({ variables: { input: { runId: offer.run.id } } });
       getSalesAllocations({
         variables: { input: { runId: offer.run.id } },
       });
-      getSurveySalesGiveaway({ variables: { input: { runId: offer.run.id } } });
-
     }
   }, [offer?.run?.id,getSalesAllocations,getSurveySalesGiveaway]);
 
@@ -151,7 +198,7 @@ export default function Page({ params: { offerId } }: any) {
       setAllocations(_allocations);
     }
   }, [allocationSales]);
-
+  
   useEffect(() => {
     if (surveySalesGiveaway) {
       const _fields = [];
@@ -168,7 +215,11 @@ export default function Page({ params: { offerId } }: any) {
           });
         }
 
-        for (let k = 0; k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
+        for (
+          let k = 0;
+          k < surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple.length;
+          k+=1
+        ) {
           _multichoice.push({
             text: surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: surveySalesGiveaway.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
@@ -197,31 +248,51 @@ export default function Page({ params: { offerId } }: any) {
       setQuestionnaireFields(_fields);
     }
   }, [surveySalesGiveaway]);
-
   useEffect(() => {
-    if (createdGiveawayReport) window.location.reload();
-  }, [createdGiveawayReport]);
+    if (
+      createdGiveawayReport
+    )
+      window.location.reload();
+  }, [
+    createdGiveawayReport,
+  ]);
 
   return (
-    <Box>
-      <Grid container spacing={2}>
+    <Box sx={{ padding: 3 }}>
+      <CustomBreadcrumbs
+        heading="Campaign"
+        links={[
+          { name: 'Agent', href: '/agent' },
+          { name: 'Campaigns', href: '/agent/campaigns' },
+          { name: 'Campaign' },
+        ]}
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
+
+      <Grid container spacing={2.5} sx={{ mb: { xs: 3, md: 5 } }}>
         <Grid item xs={12}>
-          <Card>
+          <StyledCard>
             <CardContent>
-              <Grid container spacing={2}>
-                <Grid item md={6}>
-                  <Typography variant="h6">Name: {offer?.run?.name}</Typography>
-                  <Typography variant="body2">From: {formatDate(offer?.run?.dateStart, 'yyyy MMM dd')}</Typography>
-                </Grid>
-                <Grid item md={6}>
-                  <Typography variant="body2">To: {formatDate(offer?.run?.dateStop, 'yyyy MMM dd')}</Typography>
-                  <Typography variant="body2">
-                    Checking: {formatTimeTo12Hr(offer?.run?.clockInTime)} to {formatTimeTo12Hr(offer?.run?.clockOutTime)}
-                  </Typography>
-                </Grid>
+              <Grid container justifyContent="space-between">
+                <Typography variant="h6">Name</Typography>
+                <Typography>{offer?.run?.name}</Typography>
+              </Grid>
+              <Grid container justifyContent="space-between">
+                <Typography variant="h6">From</Typography>
+                <Typography>{formatDate(offer?.run?.dateStart, 'yyyy MMM dd')}</Typography>
+              </Grid>
+              <Grid container justifyContent="space-between">
+                <Typography variant="h6">To</Typography>
+                <Typography>{formatDate(offer?.run?.dateStop, 'yyyy MMM dd')}</Typography>
+              </Grid>
+              <Grid container justifyContent="space-between">
+                <Typography variant="h6">Checking</Typography>
+                <Typography>
+                  {formatTimeTo12Hr(offer?.run?.clockInTime)} to {formatTimeTo12Hr(offer?.run?.clockOutTime)}
+                </Typography>
               </Grid>
             </CardContent>
-          </Card>
+          </StyledCard>
         </Grid>
 
         {(!offer || !geoLocation?.lat || !geoLocation?.lng) && (
@@ -247,246 +318,231 @@ export default function Page({ params: { offerId } }: any) {
 
         {loadingJanta && (
           <Grid item xs={12}>
-            <CircularProgress />
+            <LoadingDiv label="Please wait..." />
           </Grid>
         )}
 
         <Grid item xs={12}>
-          <Tabs>
+          <TabContext value={tabValue}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <TabList onChange={handleTabChange} aria-label="activity tabs">
+                {offer?.run?.types?.map((activity: any, i: number) => (
+                  <Tab key={`run-type-${i}`} label={activity.name} value={String(i)} />
+                ))}
+              </TabList>
+            </Box>
             {offer?.run?.types?.map((activity: any, i: number) => (
-              <Tab key={`run-type-${i}`} label={activity.name} />
-            ))}
-          </Tabs>
-        </Grid>
+              <TabPanel key={`run-type-panel-${i}`} value={String(i)} sx={{ padding: '16px' }}>
+                {(() => {
+                  switch (activity.name) {
+                    case RUN_ACTIVITY_SALES:
+                      return (
+                        <>
+                          <div id={`activity-sales-${activity.id}`} className={`tab-pane ${i === 0 ? 'show active' : ''}`}>
+                            {geoLocation?.lat && geoLocation?.lng && (
+                              <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                  {!allocations?.length ? (
+                                    <Alert severity="info">
+                                      {loadingAllocationSales ? <p>Loading...</p> : undefined}
+                                      <strong>Heads Up! - </strong> You have not been allocated products to sale. Kindly follow up with your team leader.
+                                    </Alert>
+                                  ) : undefined}
 
-        {geoLocation?.err && (
-          <Grid item xs={12}>
-            <Alert severity="error">
-              <strong>DANGER:</strong> We are unable to ping your device location.
-              <br />
-              {geoLocation?.err}
-            </Alert>
-          </Grid>
-        )}
+                                  <Card>
+                                    <CardContent>
+                                      <Grid container justifyContent="space-between">
+                                        <Typography>Product search...</Typography>
+                                        <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
+                                          <i className="mdi mdi-cart-outline me-1"/>View Cart
+                                        </Button>
+                                      </Grid>
+                                    </CardContent>
+                                  </Card>
 
-        <Grid item xs={12}>
-          <div>
-            {offer?.run?.types?.map((activity: any, i: number) => {
-              switch (activity.name) {
-                case 'Sales':
-                  return (
-                    <Fragment key={`run-type-${i}`}>
-                      <div>
-                        {geoLocation?.lat && geoLocation?.lng && (
-                          <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                              {!allocations?.length ? (
-                                <Alert severity="info">
-                                  {loadingAllocationSales ? <CircularProgress size={20} /> : undefined}
-                                  <strong>Heads Up! - </strong> You have not been allocated products to sale. Kindly
-                                  follow up with your team leader.
-                                </Alert>
-                              ) : undefined}
-
-                              <Card>
-                                <CardContent>
                                   <Grid container spacing={2}>
-                                    <Grid item md={10}>
-                                      Product search...
-                                    </Grid>
-                                    <Grid item md={2} textAlign="center">
-                                      <Button
-                                        variant="contained"
-                                        onClick={() => {
-                                          // Handle view cart
-                                        }}
-                                      >
-                                        View Cart
+                                    {allocations?.map((allocation: any, index: number) => (
+                                      <Grid item xs={12} md={4} key={`allocation-${index}`}>
+                                        <Card>
+                                          <CardContent>
+                                            <Typography variant="h5">{allocation.product?.name}</Typography>
+                                            <Typography>Packaging: {commafy(allocation.product.packaging)}</Typography>
+                                            <Typography>Price: {commafy(allocation.unitPrice)} ksh</Typography>
+                                            <Typography>Sold: {allocation.quantitySold} / {allocation.quantityAllocated} {allocation.product?.package}</Typography>
+                                            <Button variant="outlined" color="info" fullWidth onClick={() => addItem({ sku: allocation.id, id: allocation.id, name: allocation.product?.name, price: parseFloat(allocation.unitPrice), image: allocation.product?.photo }, 1)}>
+                                              <i className="mdi mdi-cart-plus me-1"/>Add to Cart
+                                            </Button>
+                                          </CardContent>
+                                        </Card>
+                                      </Grid>
+                                    ))}
+
+                                    <Grid item xs={12} className="text-center">
+                                      <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
+                                        <i className="mdi mdi-cart-outline me-1"/>View Cart
                                       </Button>
                                     </Grid>
                                   </Grid>
-                                </CardContent>
-                              </Card>
 
-                              <Grid container spacing={2}>
-                                {allocations?.map((allocation: any, index: number) => (
-                                  <Grid item md={4} key={`allocation-${index}`}>
-                                    <Card>
-                                      <CardContent>
-                                        <Typography variant="h5">{allocation.product?.name}</Typography>
-                                        <Typography variant="body2">
-                                          Packaging: {commafy(allocation.product.packaging)}
-                                        </Typography>
-                                        <Typography variant="body2">
-                                          Price: {commafy(allocation.unitPrice)} ksh
-                                        </Typography>
-                                        <Typography variant="body2">
-                                          Sold: {allocation.quantitySold}/{allocation.quantityAllocated}{' '}
-                                          {allocation.product?.package}
-                                        </Typography>
-                                        <Button
-                                          variant="outlined"
-                                          onClick={() =>
-                                            addItem(
-                                              {
-                                                sku: allocation.id,
-                                                id: allocation.id,
-                                                name: allocation.product?.name,
-                                                price: parseFloat(allocation.unitPrice),
-                                                image: allocation.product?.photo,
-                                              },
-                                              1, // quantity
-                                            )
-                                          }
-                                        >
-                                          Add to Cart
-                                        </Button>
-                                      </CardContent>
-                                    </Card>
-                                  </Grid>
-                                ))}
-
-                                <Grid item xs={12} textAlign="center">
-                                  <Button
-                                    variant="contained"
-                                    onClick={() => {
-                                      // Handle view cart
-                                    }}
-                                  >
-                                    View Cart
-                                  </Button>
+                                  {offer?.run?.id && geoLocation?.lat && geoLocation?.lng && (
+                                    <RunCartSales runId={offer.run.id} lat={geoLocation.lat} lng={geoLocation.lng} />
+                                  )}
                                 </Grid>
                               </Grid>
+                            )}
+                          </div>
 
-                              {offer?.run?.id && geoLocation?.lat && geoLocation?.lng && (
-                                <RunCartSales runId={offer.run.id} lat={geoLocation.lat} lng={geoLocation.lng} />
-                              )}
-                            </Grid>
-                          </Grid>
-                        )}
-                      </div>
+                          <div className="tab-pane" id={`activity-sales-history-${activity.id}`}>
+                            {offer?.run?.id && <RunAgentHistoricSales runId={offer?.run?.id} />}
+                          </div>
+                        </>
+                      );
 
-                      <div>
-                        {offer?.run?.id && <RunAgentHistoricSales runId={offer?.run?.id} />}
-                      </div>
-                    </Fragment>
-                  );
+                    case RUN_ACTIVITY_SAMPLING:
+                      return (
+                        <div>
+                          {offer?.run?.id && <GiveawayReportFree runId={offer?.run?.id} />}
+                        </div>
+                      );
 
-                case 'Sampling':
-                  return (
-                    <div key={`run-type-${i}`}>
-                      {offer?.run?.id && <GiveawayReportFree runId={offer?.run?.id} />}
-                    </div>
-                  );
+                    case RUN_ACTIVITY_SURVEY:
+                      return (
+                        <div>
+                          {offer?.run?.id && <SurveyReport runId={offer.run.id} />}
+                        </div>
+                      );
 
-                case 'Survey':
-                  return (
-                    <div key={`run-type-${i}`}>
-                      {offer?.run?.id && <SurveyReport runId={offer.run.id} />}
-                    </div>
-                  );
+                    case RUN_ACTIVITY_ROAD_SHOW:
+                      return <p>Road show coming soon...</p>;
 
-                default:
-                  return (
-                    <div key={`run-type-${i}`}>
-                      <Typography variant="h4">No Activity</Typography>
-                    </div>
-                  );
-              }
-            })}
-          </div>
+                    case RUN_ACTIVITY_STOCK_MAPPING:
+                      return <p>Stock mapping coming soon...</p>;
+
+                    default:
+                      return <h4>No Activity</h4>;
+                  }
+                })()}
+              </TabPanel>
+            ))}
+          </TabContext>
         </Grid>
       </Grid>
 
-      <div>
-        <div>
-          <div>
-            <Typography variant="h4">Sales Giveaway Report</Typography>
-            <Button onClick={() => {}}>Close</Button>
-          </div>
-          <div>
-            <Grid container spacing={2}>
-              {!surveySalesGiveaway?.hideRespondentFields && (
-                <>
-                  <Grid item md={4}>
-                    <div>
-                      <p>
-                        Customer Name
-                        {surveySalesGiveaway?.requireRespondentName ? <span>*</span> : undefined}
-                      </p>
-                      <input
-                        type="text"
-                        required={surveySalesGiveaway?.requireRespondentName}
-                        defaultValue={inputSalesGiveaway.respondentName}
-                        onChange={(e) =>
-                          setInputSalesGiveaway({
-                            ...inputSalesGiveaway,
-                            respondentName: e.target.value === '' ? undefined : e.target.value,
-                          })
-                        }
-                      />
+      <div
+        id="giveaway-report-modal"
+        className="modal fade"
+        role="dialog"
+        aria-labelledby="new-report-modal"
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+        <div className="modal-dialog modal-dialog-centered modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title" id="new-report-modal">
+                Sales Giveaway Report
+              </h4>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
+            </div>
+            <div className="modal-body">
+              <div className="row">
+                {!surveySalesGiveaway?.hideRespondentFields && (
+                  <>
+                    <div className="col-md-4">
+                      <div className="mb-3">
+                        <p className="form-label">
+                          Customer Name
+                          {surveySalesGiveaway?.requireRespondentName ? (
+                            <span className="text-warning ms-1">*</span>
+                          ) : undefined}
+                        </p>
+                        <input
+                          type="text"
+                          id="respondentName"
+                          className="form-control"
+                          placeholder=""
+                          required={surveySalesGiveaway?.requireRespondentName}
+                          defaultValue={inputSalesGiveaway.respondentName}
+                          onChange={(e) =>
+                            setInputSalesGiveaway({
+                              ...inputSalesGiveaway,
+                              respondentName: e.target.value === '' ? undefined : e.target.value,
+                            })
+                          }
+                        />
+                      </div>
                     </div>
-                  </Grid>
-                  <Grid item md={4}>
-                    <div>
-                      <p>
-                        Customer Phone
-                        {surveySalesGiveaway?.requireRespondentPhone ? <span>*</span> : undefined}
-                      </p>
-                      <PhoneNumberInput
-                        phonekey="respondentPhone"
-                        required={surveySalesGiveaway?.requireRespondentPhone}
-                        input={inputSalesGiveaway}
-                        onChange={setInputSalesGiveaway}
-                      />
+                    <div className="col-md-4">
+                      <div className="mb-3">
+                        <p className="form-label">
+                          Customer Phone
+                          {surveySalesGiveaway?.requireRespondentPhone ? (
+                            <span className="text-warning ms-1">*</span>
+                          ) : undefined}
+                        </p>
+                        <PhoneNumberInput
+                          phonekey="respondentPhone"
+                          required={surveySalesGiveaway?.requireRespondentPhone}
+                          input={inputSalesGiveaway}
+                          onChange={setInputSalesGiveaway}
+                        />
+                      </div>
                     </div>
-                  </Grid>
-                  <Grid item md={4}>
-                    <div>
-                      <p>
-                        Customer Email
-                        {surveySalesGiveaway?.requireRespondentEmail ? <span>*</span> : undefined}
-                      </p>
-                      <input
-                        type="text"
-                        required={surveySalesGiveaway?.requireRespondentEmail}
-                        defaultValue={inputSalesGiveaway.respondentEmail}
-                        onChange={(e) =>
-                          setInputSalesGiveaway({
-                            ...inputSalesGiveaway,
-                            respondentEmail: e.target.value === '' ? undefined : e.target.value,
-                          })
-                        }
-                      />
+                    <div className="col-md-4">
+                      <div className="mb-3">
+                        <p className="form-label">
+                          Customer Email
+                          {surveySalesGiveaway?.requireRespondentEmail ? (
+                            <span className="text-warning ms-1">*</span>
+                          ) : undefined}
+                        </p>
+                        <input
+                          type="text"
+                          id="respondentEmail"
+                          className="form-control"
+                          placeholder=""
+                          required={surveySalesGiveaway?.requireRespondentEmail}
+                          defaultValue={inputSalesGiveaway.respondentEmail}
+                          onChange={(e) =>
+                            setInputSalesGiveaway({
+                              ...inputSalesGiveaway,
+                              respondentEmail: e.target.value === '' ? undefined : e.target.value,
+                            })
+                          }
+                        />
+                      </div>
                     </div>
-                  </Grid>
-                </>
-              )}
-              <Grid item md={4}>
-                <div>
-                  <p>
-                    Giveaway Quantity<span>*</span>
-                  </p>
-                  <input
-                    type="number"
-                    defaultValue={inputSalesGiveaway.quantityGiven}
-                    onChange={(e) =>
-                      setInputSalesGiveaway({
-                        ...inputSalesGiveaway,
-                        quantityGiven: parseInt(e.target.value, 10),
-                      })
-                    }
-                  />
+                  </>
+                )}
+                <div className="col-md-4">
+                  <div className="mb-3">
+                    <p className="form-label">
+                      Giveaway Quantity<span className="text-warning ms-1">*</span>
+                    </p>
+                    <input
+                      type="number"
+                      id="giveawayUnits"
+                      className="form-control"
+                      placeholder=""
+                      defaultValue={inputSalesGiveaway.quantityGiven}
+                      onChange={(e) =>
+                        setInputSalesGiveaway({
+                          ...inputSalesGiveaway,
+                          quantityGiven: parseInt(e.target.value,10),
+                        })
+                      }
+                    />
+                  </div>
                 </div>
-              </Grid>
-            </Grid>
+              </div>
 
-            <QuestionnaireForm
-              questionnaireFields={questionnaireFields}
-              setQuestionnaireFields={setQuestionnaireFields}
-              submitting={creatingGiveawayReport}
-              handleSubmit={handleCreateGiveawayReport as any}
-            />
+              <QuestionnaireForm
+                questionnaireFields={questionnaireFields}
+                setQuestionnaireFields={setQuestionnaireFields}
+                submitting={creatingGiveawayReport}
+                handleSubmit={handleCreateGiveawayReport}
+              />
+            </div>
           </div>
         </div>
       </div>
