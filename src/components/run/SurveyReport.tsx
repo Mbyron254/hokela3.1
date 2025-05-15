@@ -1,6 +1,5 @@
 'use client';
 
-
 import { FC, useEffect, useState } from 'react';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import {
@@ -12,19 +11,31 @@ import {
   IGeoLocation,
 } from 'src/lib/interface/general.interface';
 import {
-  M_SURVEY,
   M_SURVEY_4_AGENT,
   M_SURVEY_REPORT_AGENT_TARGET,
-  M_SURVEY_REPORTS_AGENT,
   SURVEY_REPORT_CREATE,
 } from 'src/lib/mutations/survey.mutation';
 import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 import { QuestionnaireForm } from 'src/components/QuestionnaireForm';
-import { LoadingDiv } from 'src/components/LoadingDiv';
-import { LoadingSpan } from 'src/components/LoadingSpan';
 import { getGeoLocation } from 'src/lib/helpers';
 import { LOCATION_PING_INTERVAL_MS } from 'src/lib/constant';
 import PhoneNumberInput from '../PhoneNumberInput';
+
+// Material UI imports
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
   const { data: session } = GQLQuery({
@@ -49,15 +60,6 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
     resolver: 'surveyReportAgentTarget',
     toastmsg: false,
   });
-  // const {
-  //   action: getReports,
-  //   loading: loadingReports,
-  //   data: reports,
-  // } = GQLMutation({
-  //   mutation: M_SURVEY_REPORTS_AGENT,
-  //   resolver: 'surveyReports',
-  //   toastmsg: false,
-  // });
   const {
     action: create,
     loading: creating,
@@ -76,25 +78,43 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
   const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
   const [inputCreate, setInputCreate] = useState(_inputCreate);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
+  const [openDialog, setOpenDialog] = useState(false);
 
-  
-  
-  // const loadReports = () => {
-  //   if (survey?.id && session?.user?.agent?.id) {
-  //     getReports({
-  //       variables: {
-  //         input: { surveyId: survey.id, agentId: session.user.agent.id },
-  //       },
-  //     });
-  //   }
-  // };
   const handleCreate = (e: Event) => {
     e.preventDefault();
 
     if (survey.id && session?.user?.agent?.id && geoLocation?.lat && geoLocation?.lng) {
       const _responses: InputSurveyResponse[] = [];
 
-      for (let i = 0; i < questionnaireFields.length; i+=1) {
+      for (let i = 0; i < questionnaireFields.length; i += 1) {
+        _responses.push({
+          questionnaireFieldId: questionnaireFields[i].id,
+          feedback: questionnaireFields[i].feedback || {},
+        });
+      }
+
+      create({
+        variables: {
+          input: {
+            ...inputCreate,
+            agentId: session.user.agent.id,
+            surveyId: survey.id,
+            lat: geoLocation.lat,
+            lng: geoLocation.lng,
+            responses: _responses,
+          },
+        },
+      });
+    }
+  };
+
+  const handleCreateButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (survey.id && session?.user?.agent?.id && geoLocation?.lat && geoLocation?.lng) {
+      const _responses: InputSurveyResponse[] = [];
+
+      for (let i = 0; i < questionnaireFields.length; i += 1) {
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: questionnaireFields[i].feedback || {},
@@ -141,26 +161,26 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
     if (survey) {
       const _fields = [];
 
-      for (let i = 0; i < survey.questionnaireFields.length; i+=1) {
+      for (let i = 0; i < survey.questionnaireFields.length; i += 1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k += 1) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k += 1) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k += 1) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
             label: survey.questionnaireFields[i].optionsDropdown[k].label,
@@ -190,189 +210,101 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
       {geoLocation?.lat && geoLocation?.lng && (
         <>
           {loadingSurvey ? (
-            <LoadingDiv />
+            <CircularProgress />
           ) : (
             survey && (
-              <div className="row">
-                <div className="col-md-8">
-                  <div className="card">
-                    <div className="card-body">
-                      <h4 className="header-title">{survey?.name}</h4>
-                      <p className="text-muted font-14 mb-3">{survey?.description}</p>
-                    </div>
-                  </div>
-                </div>
+              <Grid container spacing={2}>
+                <Grid item md={8}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h4">{survey?.name}</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {survey?.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
 
-                <div className="col-md-4">
-                  <div className="card">
-                    <div className="card-body">
-                      <div className="row mb-3">
-                        <div className="col-12 d-grid">
-                          <button
-                            type="button"
-                            className="btn btn-info btn-sm float-end"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-report-new"
-                          >
-                            <i className="mdi mdi-plus me-1"/>New Report
-                          </button>
-                        </div>
-                      </div>
+                <Grid item md={4}>
+                  <Card>
+                    <CardContent>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setOpenDialog(true)}
+                        startIcon={<i className="mdi mdi-plus" />}
+                      >
+                        New Report
+                      </Button>
 
-                      <dl className="row mb-0">
-                        <dt className="col-6">Target</dt>
-                        <dd className="col-6">
-                          {loadingTarget ? (
-                            <LoadingSpan />
-                          ) : (
-                            <span className="float-end">
-                              <b className="me-1 text-warning">{agentTarget?.target}</b>
-                              <span className="text-muted">Reports</span>
-                            </span>
-                          )}
-                        </dd>
-                        <dt className="col-6 mb-0">Submitted</dt>
-                        <dd className="col-6 mb-0">
-                          {loadingTarget ? (
-                            <LoadingSpan />
-                          ) : (
-                            <span className="float-end">
-                              <b className="me-1 text-success">{agentTarget?.filled}</b>
-                              <span className="text-muted">Reports</span>
-                            </span>
-                          )}
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                      <Box mt={2}>
+                        <Typography variant="subtitle1">Target</Typography>
+                        {loadingTarget ? (
+                          <CircularProgress size={20} />
+                        ) : (
+                          <Typography variant="body2">
+                            <b className="me-1 text-warning">{agentTarget?.target}</b> Reports
+                          </Typography>
+                        )}
+                      </Box>
+                      <Box mt={1}>
+                        <Typography variant="subtitle1">Submitted</Typography>
+                        {loadingTarget ? (
+                          <CircularProgress size={20} />
+                        ) : (
+                          <Typography variant="body2">
+                            <b className="me-1 text-success">{agentTarget?.filled}</b> Reports
+                          </Typography>
+                        )}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
             )
           )}
 
-          {/* <div className="card">
-            <div className="card-body">
-              <h4 className="header-title mb-3">
-                <span className="me-2">Submitted Reports</span>
-                {loadingReports && <LoadingSpan />}
-              </h4>
-
-              <div className="table-responsive">
-                <table className="table table-centered table-nowrap table-hover mb-0">
-                  <tbody>
-                    {reports?.rows?.map((surveyReport: any, index: number) => (
-                      <tr key={`report-${index}`}>
-                        <td>
-                          <h5 className="font-14 my-1">
-                            <a href="#" className="text-body">
-                              {surveyReport.respondentName}
-                            </a>
-                          </h5>
-                          <span className="text-muted font-13">{surveyReport.created}</span>
-                        </td>
-                        <td className='table-action' style={{ width: '90px' }}>
-                          <a href='#' className='action-icon'>
-                            <i className='mdi mdi-pencil'></i>
-                          </a>
-                          <a href='#' className='action-icon'>
-                            <i className='mdi mdi-delete'></i>
-                          </a>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div> */}
-        </>
-      )}
-
-      <div
-        tabIndex={-1}
-        id="modal-report-new"
-        className="modal fade"
-        role="dialog"
-        aria-labelledby="new-report-modal"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h4 className="modal-title" id="new-report-modal">
-                New Survey Report
-              </h4>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
-            </div>
-            <div className="modal-body">
-              <div className="row">
-                <div className="col-md-4">
-                  <div className="mb-3">
-                    <p className="form-label">
-                      Customer Name
-                      {survey?.requireRespondentName ? (
-                        <span className="text-warning ms-1">*</span>
-                      ) : undefined}
-                    </p>
-                    <input
-                      type="text"
-                      id="respondentName"
-                      className="form-control"
-                      placeholder=""
-                      required={survey?.requireRespondentName}
-                      value={inputCreate.respondentName}
-                      onChange={(e) =>
-                        setInputCreate({
-                          ...inputCreate,
-                          respondentName: e.target.value === '' ? undefined : e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="mb-3">
-                    <p className="form-label">
-                      Customer Phone
-                      {survey?.requireRespondentPhone ? (
-                        <span className="text-warning ms-1">*</span>
-                      ) : undefined}
-                    </p>
-                    <PhoneNumberInput
-                      phonekey="respondentPhone"
-                      required={survey?.requireRespondentPhone}
-                      input={inputCreate}
-                      onChange={setInputCreate}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="mb-3">
-                    <p className="form-label">
-                      Customer Email
-                      {survey?.requireRespondentEmail ? (
-                        <span className="text-warning ms-1">*</span>
-                      ) : undefined}
-                    </p>
-                    <input
-                      type="text"
-                      id="respondentEmail"
-                      className="form-control"
-                      placeholder=""
-                      required={survey?.requireRespondentEmail}
-                      value={inputCreate.respondentEmail}
-                      onChange={(e) =>
-                        setInputCreate({
-                          ...inputCreate,
-                          respondentEmail: e.target.value === '' ? undefined : e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <hr className="mt-0" />
+          <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="lg">
+            <DialogTitle>New Survey Report</DialogTitle>
+            <DialogContent>
+              <Grid container spacing={2}>
+                <Grid item md={4}>
+                  <TextField
+                    fullWidth
+                    label="Customer Name"
+                    required={survey?.requireRespondentName}
+                    value={inputCreate.respondentName}
+                    onChange={(e) =>
+                      setInputCreate({
+                        ...inputCreate,
+                        respondentName: e.target.value === '' ? undefined : e.target.value,
+                      })
+                    }
+                  />
+                </Grid>
+                <Grid item md={4}>
+                  <PhoneNumberInput
+                    phonekey="respondentPhone"
+                    required={survey?.requireRespondentPhone}
+                    input={inputCreate}
+                    onChange={setInputCreate}
+                  />
+                </Grid>
+                <Grid item md={4}>
+                  <TextField
+                    fullWidth
+                    label="Customer Email"
+                    required={survey?.requireRespondentEmail}
+                    value={inputCreate.respondentEmail}
+                    onChange={(e) =>
+                      setInputCreate({
+                        ...inputCreate,
+                        respondentEmail: e.target.value === '' ? undefined : e.target.value,
+                      })
+                    }
+                  />
+                </Grid>
+              </Grid>
 
               <QuestionnaireForm
                 questionnaireFields={questionnaireFields}
@@ -380,10 +312,18 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
                 submitting={creating}
                 handleSubmit={handleCreate}
               />
-            </div>
-          </div>
-        </div>
-      </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpenDialog(false)} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={handleCreateButton} color="primary" disabled={creating}>
+                {creating ? <CircularProgress size={24} /> : 'Submit'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </>
+      )}
     </>
   );
 };

@@ -9,8 +9,6 @@ import {
 } from 'src/lib/interface/general.interface';
 import { GQLMutation } from 'src/lib/client';
 import { M_SURVEY, SURVEY_UPSERT } from 'src/lib/mutations/survey.mutation';
-import { RunSurveyTargetReports } from './RunSurveyTargetReports';
-import { QuestionnaireSetup } from '../QuestionnaireSetup';
 import { DROPDOWN, CHOICE_SINGLE, CHOICE_MULTIPLE } from 'src/lib/constant';
 import {
   Box,
@@ -23,6 +21,8 @@ import {
   CardContent,
   Typography,
 } from '@mui/material';
+import { RunSurveyTargetReports } from './RunSurveyTargetReports';
+import { QuestionnaireSetup } from '../QuestionnaireSetup';
 
 export const RunSurveyQuestions: FC<{
   clientTier2Id: string;
