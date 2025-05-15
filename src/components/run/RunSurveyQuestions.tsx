@@ -1,17 +1,17 @@
 'use client';
 
-import { DROPDOWN, CHOICE_SINGLE, CHOICE_MULTIPLE } from 'src/lib/constant';
+import { FC, useEffect, useState } from 'react';
 import {
   IChoice,
   IAnswerDropdownOption,
   IQuestionnairField,
   InputSurveyUpdate,
 } from 'src/lib/interface/general.interface';
-import { FC, useEffect, useState } from 'react';
 import { GQLMutation } from 'src/lib/client';
 import { M_SURVEY, SURVEY_UPSERT } from 'src/lib/mutations/survey.mutation';
 import { RunSurveyTargetReports } from './RunSurveyTargetReports';
 import { QuestionnaireSetup } from '../QuestionnaireSetup';
+import { DROPDOWN, CHOICE_SINGLE, CHOICE_MULTIPLE } from 'src/lib/constant';
 import {
   Box,
   Tab,
