@@ -18,8 +18,8 @@ import { M_JANTAS } from 'src/lib/mutations/run-offer.mutation';
 
 import { Iconify } from 'src/components/iconify';
 
-import { CampaignContinue } from '../campaign-continue';
-import { AnalyticsWebsiteVisits } from '../analytics-website-visits';
+// import { CampaignContinue } from '../campaign-continue';
+// import { AnalyticsWebsiteVisits } from '../analytics-website-visits';
 import { AnalyticsWidgetSummary } from '../analytics-widget-summary';
 
 // ----------------------------------------------------------------------
@@ -162,13 +162,13 @@ export function AgentsAnalyticsView() {
           />
         </Grid>
 
-        <Grid xs={12}>
+        {/* <Grid xs={12}>
           <CampaignContinue
             title="Continue With Active Runs"
             runs={offers?.rows || []}
             list={_coursesContinue}
           />
-        </Grid>
+        </Grid> */}
       </Grid>
     </DashboardContent>
   );
