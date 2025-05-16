@@ -30,6 +30,7 @@ import {
   Tabs,
   Tab,
   Checkbox,
+  InputAdornment,
 } from '@mui/material';
 
 export default function Page() {
@@ -175,32 +176,43 @@ export default function Page() {
       <div className="tab-content mt-3 pt-5">
         {tabIndex === 0 && (
           <div className="tab-pane mt-3 show active" id="active-offers">
-            <div className="btn-group btn-group-sm mb-2">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleRecall}
-                disabled={recalling}
-                sx={{ mb: 2 }}>
-                Recall
-              </Button>
-              
+            <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
               <TextField
                 variant="outlined"
-                size="small"
                 placeholder="Search agent..."
                 value={searchActive || ''}
                 onChange={(e) => setSearchActive(e.target.value === '' ? undefined : e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={loadingOffersActive}
+                        onClick={() => loadOffersActive()}
+                      >
+                        {loadingOffersActive ? (
+                          <CircularProgress size={20} />
+                        ) : (
+                          'Search'
+                        )}
+                      </Button>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ flexGrow: 1, marginRight: 2 }}
               />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => loadOffersActive()}
-                disabled={loadingOffersActive}
-              >
-                {loadingOffersActive ? 'Searching...' : 'Search'}
-              </Button>
             </div>
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleRecall}
+              disabled={recalling}
+              sx={{ mb: 2 }}
+            >
+              Recall
+            </Button>
 
             <Card>
               <TableContainer>
@@ -298,38 +310,63 @@ export default function Page() {
 
         {tabIndex === 1 && (
           <div className="tab-pane mt-3" id="recalled-offers">
-            <div className="btn-group btn-group-sm mb-2">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleReinstate}
-                disabled={reinstating}
-                sx={{ mb: 2 }}>
-                Reinstate
-              </Button>
+            <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
               <TextField
                 variant="outlined"
-                size="small"
                 placeholder="Search agent..."
                 value={searchRecycled || ''}
                 onChange={(e) => setSearchRecycled(e.target.value === '' ? undefined : e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={loadingOffersRecycled}
+                        onClick={() => loadOffersRecycled()}
+                      >
+                        {loadingOffersRecycled ? (
+                          <CircularProgress size={20} />
+                        ) : (
+                          'Search'
+                        )}
+                      </Button>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ flexGrow: 1, marginRight: 2 }}
               />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => loadOffersRecycled()}
-                disabled={loadingOffersRecycled}
-              >
-                {loadingOffersRecycled ? 'Searching...' : 'Search'}
-              </Button>
             </div>
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleReinstate}
+              disabled={reinstating}
+              sx={{ mb: 2 }}
+            >
+              Reinstate
+            </Button>
 
             <Card>
               <TableContainer>
                 <Table stickyHeader aria-label="recalled offers table">
                   <TableHead>
                     <TableRow>
-                      {columns.map((column) => (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          indeterminate={selectedRecycled.length > 0 && selectedRecycled.length < offersRecycled?.rows.length}
+                          checked={offersRecycled?.rows.length > 0 && selectedRecycled.length === offersRecycled?.rows.length}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              setSelectedRecycled(offersRecycled?.rows.map((row: any) => row.id) || []);
+                            } else {
+                              setSelectedRecycled([]);
+                            }
+                          }}
+                        />
+                      </TableCell>
+                      {columns.slice(1).map((column) => (
                         <TableCell key={column.id} style={{ minWidth: column.minWidth }}>
                           {column.label}
                         </TableCell>
@@ -345,7 +382,31 @@ export default function Page() {
                       </TableRow>
                     ) : (
                       offersRecycled?.rows.map((row: any, index: number) => (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id} selected={selectedRecycled.includes(row.id)}>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selectedRecycled.includes(row.id)}
+                              onChange={() => {
+                                const selectedIndex = selectedRecycled.indexOf(row.id);
+                                let newSelected: string[] = [];
+
+                                if (selectedIndex === -1) {
+                                  newSelected = newSelected.concat(selectedRecycled, row.id);
+                                } else if (selectedIndex === 0) {
+                                  newSelected = newSelected.concat(selectedRecycled.slice(1));
+                                } else if (selectedIndex === selectedRecycled.length - 1) {
+                                  newSelected = newSelected.concat(selectedRecycled.slice(0, -1));
+                                } else if (selectedIndex > 0) {
+                                  newSelected = newSelected.concat(
+                                    selectedRecycled.slice(0, selectedIndex),
+                                    selectedRecycled.slice(selectedIndex + 1),
+                                  );
+                                }
+
+                                setSelectedRecycled(newSelected);
+                              }}
+                            />
+                          </TableCell>
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>{row.campaignRun?.project?.name}</TableCell>
                           <TableCell>
