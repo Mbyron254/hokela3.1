@@ -105,9 +105,10 @@ export const QuestionnaireSetup = ({
     }
   }, [documentsMultiChoice, setMultichoice, multichoice]);
 
-  useEffect(() => {
-    console.log(questionnaireFields);
-  }, [questionnaireFields]);
+  const addElement = () => {
+    formElementAdd(questionnaireFields, setQuestionnaireFields)
+    console.log(questionnaireFields)
+  }
 
   return (
     <>
@@ -527,7 +528,7 @@ export const QuestionnaireSetup = ({
         variant="contained"
         color="primary"
         startIcon={<Iconify icon="mdi:plus" />}
-        onClick={() => formElementAdd(questionnaireFields, setQuestionnaireFields)}
+        onClick={addElement}
         style={{ marginTop: '16px' }}
       >
         Add Question
