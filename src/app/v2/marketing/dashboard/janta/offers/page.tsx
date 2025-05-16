@@ -274,13 +274,13 @@ export default function Page() {
                             />
                           </TableCell>
                           <TableCell>{index + 1}</TableCell>
-                          <TableCell>{row.campaignRun?.project?.name}</TableCell>
+                          <TableCell>{row.run?.name}</TableCell>
                           <TableCell>
                             <div className='w-100 overflow-hidden'>
-                              <h6 className='mt-1 mb-1'>{row.campaignRun?.campaign?.name}</h6>
+                              <h6 className='mt-1 mb-1'>{row.run?.code}</h6>
                               <span className='font-13'>
                                 RID:
-                                <strong className='text-muted ms-1'>{row.campaignRun?.code}</strong>
+                                <strong className='text-muted ms-1'>{row.run?.code}</strong>
                               </span>
                             </div>
                           </TableCell>
@@ -408,13 +408,13 @@ export default function Page() {
                             />
                           </TableCell>
                           <TableCell>{index + 1}</TableCell>
-                          <TableCell>{row.campaignRun?.project?.name}</TableCell>
+                          <TableCell>{row.run?.name}</TableCell>
                           <TableCell>
                             <div className='w-100 overflow-hidden'>
-                              <h6 className='mt-1 mb-1'>{row.campaignRun?.campaign?.name}</h6>
+                              <h6 className='mt-1 mb-1'>{row.run?.code}</h6>
                               <span className='font-13'>
                                 RID:
-                                <strong className='text-muted ms-1'>{row.campaignRun?.code}</strong>
+                                <strong className='text-muted ms-1'>{row.run?.code}</strong>
                               </span>
                             </div>
                           </TableCell>
