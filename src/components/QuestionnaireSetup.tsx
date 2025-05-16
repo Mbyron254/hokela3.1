@@ -2,6 +2,25 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Button,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
+// import { Icon } from '@iconify/react';
+// import expandMore from '@iconify/icons-mdi/chevron-down';
+// import addIcon from '@iconify/icons-mdi/plus';
+// import deleteIcon from '@iconify/icons-mdi/delete';
+// import cloudUpload from '@iconify/icons-mdi/cloud-upload';
 
 import {
   CHOICE_MULTIPLE,
@@ -40,6 +59,7 @@ import { sourceImage } from 'src/lib/server';
 import { IDocumentWrapper } from 'src/lib/interface/dropzone.type';
 import { DropZone } from './dropzone/DropZone';
 import { MutationButton } from './MutationButton';
+import { Iconify } from './iconify/iconify';
 
 export const QuestionnaireSetup = ({
   questionnaireFields,
@@ -87,478 +107,438 @@ export const QuestionnaireSetup = ({
 
   return (
     <>
-      <div className="accordion custom-accordion" id="questionnaire-setup">
+      <div>
         {questionnaireFields.map((element, i: number) => (
-          <div className="card mb-0" key={`element-${i}`}>
-            <div className="card-header" id={`heading-${i}`}>
-              <h5 className="m-0">
-                <a
-                  className={`custom-accordion-title d-block py-1 ${i !== 0 ? 'collapsed' : ''}`}
-                  data-bs-toggle="collapse"
-                  href={`#collapse-${i}`}
-                  aria-expanded="true"
-                  aria-controls={`collapse-${i}`}
-                >
-                  <span className="me-1">{i + 1}.</span>
-                  {element.question}
-                  <span className="text-warning">{element.isRequired ? '*' : ''}</span>
-                  <i className="mdi mdi-chevron-down accordion-arrow" />
-                </a>
-              </h5>
-            </div>
-
-            <div
-              id={`collapse-${i}`}
-              className={`collapse ${i === 0 ? 'show' : ''}`}
-              aria-labelledby={`heading-${i}`}
-              data-bs-parent="#questionnaire-setup"
+          <Accordion key={`element-${i}`} defaultExpanded={i === 0}>
+            <AccordionSummary
+              expandIcon={<Iconify icon="mdi:chevron-down" />}
+              aria-controls={`panel${i}-content`}
+              id={`panel${i}-header`}
             >
-              <div className="card-body">
-                <div className="row" key={`element-${element.id}`}>
-                  <div className="col-md-8">
-                    <div className="form-floating mb-2">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="question"
-                        placeholder=""
-                        defaultValue={element.question}
-                        onChange={(e) =>
-                          formElementQuestionEdit(
-                            element.id,
-                            e.target.value,
-                            questionnaireFields,
-                            setQuestionnaireFields,
-                          )
-                        }
-                      />
-                      <p>Question</p>
-                    </div>
-                  </div>
+              <Typography variant="h6">
+                {i + 1}. {element.question} {element.isRequired && <span style={{ color: 'orange' }}>*</span>}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <div>
+                <TextField
+                  fullWidth
+                  label="Question"
+                  variant="outlined"
+                  defaultValue={element.question}
+                  onChange={(e) =>
+                    formElementQuestionEdit(
+                      element.id,
+                      e.target.value,
+                      questionnaireFields,
+                      setQuestionnaireFields,
+                    )
+                  }
+                  margin="normal"
+                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Answer Type</InputLabel>
+                  <Select
+                    value={element.feedbackType}
+                    onChange={(e) =>
+                      answerTypeEdit(
+                        element.id,
+                        e.target.value,
+                        questionnaireFields,
+                        setQuestionnaireFields,
+                      )
+                    }
+                  >
+                    {FORM_ANSWER_TYPES.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
 
-                  <div className="col-md-4">
-                    <div className="form-floating mb-2">
-                      <select
-                        id={`feedback-type-${element.id}`}
-                        className="form-select"
-                        aria-label="Answer Type"
-                        defaultValue={element.feedbackType}
-                        onChange={(e) =>
-                          answerTypeEdit(
-                            element.id,
-                            e.target.value,
-                            questionnaireFields,
-                            setQuestionnaireFields,
-                          )
-                        }
-                      >
-                        {FORM_ANSWER_TYPES.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      <p>Answer Type</p>
-                    </div>
-                  </div>
-
-                  <div className="col-md-12">
-                    {element.feedbackType === CHOICE_SINGLE && (
-                      <>
-                        <DropZone
-                          name="photo"
-                          classes="dropzone text-center mt-2"
-                          acceptedImageTypes={['.png', '.jpeg', '.jpg']}
-                          maxSize={1375000000} // 1 GB
-                          multiple={false}
-                          reference={element.id}
-                          // hideProgressBar={true}
-                          files={documentsSingleChoice}
-                          setFiles={setDocumentsSingleChoice}
-                        />
-                        <div className="input-group mt-2">
-                          <input
-                            type="text"
-                            className="form-control"
-                            aria-label="Single choice option"
-                            placeholder="Single choice option"
-                            value={singleChoice.text}
-                            onChange={(e) =>
-                              setSingleChoice({
-                                ...singleChoice,
-                                text: e.target.value,
-                              })
-                            }
-                          />
-                          <button
-                            className="btn btn-dark"
-                            type="button"
-                            onClick={() =>
-                              singleChoiceAdd(
-                                element.id,
-                                singleChoice,
-                                setSingleChoice,
-                                questionnaireFields,
-                                setQuestionnaireFields,
-                              )
-                            }
-                          >
-                            Add
-                          </button>
-                        </div>
-
-                        <div className="row mx-n1 g-0 mt-2 mb-0">
-                          {element.optionsChoiceSingle?.map((option) => (
-                            <div
-                              className="col-xxl-12 col-lg-12"
-                              key={`option-${slugify(option.text as string)}`}
-                            >
-                              <div className="card m-1 shadow-none border">
-                                <div className="p-2">
-                                  <div className="row align-items-center">
-                                    <div className="col-auto">
-                                      <div className="avatar-sm me-3">
-                                        <Image
-                                          className="me-2 mt-1 mb-1"
-                                          src={sourceImage(option.documentId)}
-                                          loader={() => sourceImage(option.documentId)}
-                                          alt=""
-                                          width={60}
-                                          height={40}
-                                        />
-                                      </div>
-                                    </div>
-                                    <div className="col ps-0">
-                                      <a
-                                        href="#"
-                                        className="text-muted fw-bold"
-                                        role="button"
-                                        tabIndex={0}
-                                        onClick={() =>
-                                          singleChoiceRemove(
-                                            element.id,
-                                            option,
-                                            setSingleChoice,
-                                            questionnaireFields,
-                                            setQuestionnaireFields,
-                                          )
-                                        }
-                                        onKeyDown={(e) => {
-                                          if (e.key === 'Enter' || e.key === ' ') {
-                                            singleChoiceRemove(
-                                              element.id,
-                                              option,
-                                              setSingleChoice,
-                                              questionnaireFields,
-                                              setQuestionnaireFields,
-                                            );
-                                          }
-                                        }}
-                                      >
-                                        {option.text}
-                                      </a>
-                                      <button
-                                        type="button"
-                                        className="btn btn-outline-warning btn-sm text-warning p-0 px-1 float-end"
-                                        onClick={() =>
-                                          singleChoiceRemove(
-                                            element.id,
-                                            option,
-                                            setSingleChoice,
-                                            questionnaireFields,
-                                            setQuestionnaireFields,
-                                          )
-                                        }
-                                      >
-                                        Remove
-                                      </button>
-                                    </div>
+                {element.feedbackType === CHOICE_SINGLE && (
+                  <>
+                    <DropZone
+                      name="photo"
+                      classes="dropzone text-center mt-2"
+                      acceptedImageTypes={['.png', '.jpeg', '.jpg']}
+                      maxSize={1375000000} // 1 GB
+                      multiple={false}
+                      reference={element.id}
+                      files={documentsSingleChoice}
+                      setFiles={setDocumentsSingleChoice}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Single choice option"
+                      variant="outlined"
+                      value={singleChoice.text}
+                      onChange={(e) =>
+                        setSingleChoice({
+                          ...singleChoice,
+                          text: e.target.value,
+                        })
+                      }
+                      margin="normal"
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Iconify icon="mdi:plus" />}
+                      onClick={() =>
+                        singleChoiceAdd(
+                          element.id,
+                          singleChoice,
+                          setSingleChoice,
+                          questionnaireFields,
+                          setQuestionnaireFields,
+                        )
+                      }
+                    >
+                      Add
+                    </Button>
+                    <div className="row mx-n1 g-0 mt-2 mb-0">
+                      {element.optionsChoiceSingle?.map((option) => (
+                        <div
+                          className="col-xxl-12 col-lg-12"
+                          key={`option-${slugify(option.text as string)}`}
+                        >
+                          <div className="card m-1 shadow-none border">
+                            <div className="p-2">
+                              <div className="row align-items-center">
+                                <div className="col-auto">
+                                  <div className="avatar-sm me-3">
+                                    <Image
+                                      className="me-2 mt-1 mb-1"
+                                      src={sourceImage(option.documentId)}
+                                      loader={() => sourceImage(option.documentId)}
+                                      alt=""
+                                      width={60}
+                                      height={40}
+                                    />
                                   </div>
+                                </div>
+                                <div className="col ps-0">
+                                  <a
+                                    href="#"
+                                    className="text-muted fw-bold"
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() =>
+                                      singleChoiceRemove(
+                                        element.id,
+                                        option,
+                                        setSingleChoice,
+                                        questionnaireFields,
+                                        setQuestionnaireFields,
+                                      )
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        singleChoiceRemove(
+                                          element.id,
+                                          option,
+                                          setSingleChoice,
+                                          questionnaireFields,
+                                          setQuestionnaireFields,
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    {option.text}
+                                  </a>
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline-warning btn-sm text-warning p-0 px-1 float-end"
+                                    onClick={() =>
+                                      singleChoiceRemove(
+                                        element.id,
+                                        option,
+                                        setSingleChoice,
+                                        questionnaireFields,
+                                        setQuestionnaireFields,
+                                      )
+                                    }
+                                  >
+                                    Remove
+                                  </button>
                                 </div>
                               </div>
                             </div>
-                          ))}
+                          </div>
                         </div>
-                      </>
-                    )}
+                      ))}
+                    </div>
+                  </>
+                )}
 
-                    {element.feedbackType === CHOICE_MULTIPLE && (
-                      <>
-                        <DropZone
-                          name="photo"
-                          classes="dropzone text-center mt-2"
-                          acceptedImageTypes={['.png', '.jpeg', '.jpg']}
-                          maxSize={1375000000} // 1 GB
-                          multiple={false}
-                          reference={element.id}
-                          // hideProgressBar={true}
-                          files={documentsMultiChoice}
-                          setFiles={setDocumentsMultiChoice}
-                        />
-                        <div className="input-group mt-2">
-                          <input
-                            type="text"
-                            className="form-control"
-                            aria-label="Multichoice"
-                            placeholder="Multichoice"
-                            value={multichoice.text}
-                            onChange={(e) =>
-                              setMultichoice({
-                                ...multichoice,
-                                text: e.target.value,
-                              })
-                            }
-                          />
-                          <button
-                            className="btn btn-dark"
-                            type="button"
-                            onClick={() =>
-                              formElementMultichoiceAdd(
-                                element.id,
-                                multichoice,
-                                setMultichoice,
-                                questionnaireFields,
-                                setQuestionnaireFields,
-                              )
-                            }
-                          >
-                            Add
-                          </button>
-                        </div>
-
-                        <div className="row mx-n1 g-0 mt-2 mb-2">
-                          {element.optionsChoiceMultiple?.map((option) => (
-                            <div
-                              className="col-xxl-12 col-lg-12"
-                              key={`option-${slugify(option.text as string)}`}
-                            >
-                              <div className="card m-1 shadow-none border">
-                                <div className="p-2">
-                                  <div className="row align-items-center">
-                                    {option.documentId ? (
-                                      <div className="col-auto">
-                                        <div className="avatar-sm">
-                                          <Image
-                                            className="me-2 mt-1 mb-1"
-                                            src={sourceImage(option.documentId)}
-                                            loader={() => sourceImage(option.documentId)}
-                                            alt=""
-                                            width={60}
-                                            height={40}
-                                          />
-                                        </div>
-                                      </div>
-                                    ) : undefined}
-                                    <div className="col ps-0 ms-3">
-                                      <a
-                                        href="#"
-                                        className="text-muted fw-bold"
-                                        role="button"
-                                        tabIndex={0}
-                                        onClick={() =>
-                                          singleChoiceRemove(
-                                            element.id,
-                                            option,
-                                            setSingleChoice,
-                                            questionnaireFields,
-                                            setQuestionnaireFields,
-                                          )
-                                        }
-                                        onKeyDown={(e) => {
-                                          if (e.key === 'Enter' || e.key === ' ') {
-                                            singleChoiceRemove(
-                                              element.id,
-                                              option,
-                                              setSingleChoice,
-                                              questionnaireFields,
-                                              setQuestionnaireFields,
-                                            );
-                                          }
-                                        }}
-                                      >
-                                        {option.text}
-                                      </a>
-                                      <button
-                                        type="button"
-                                        className="btn btn-outline-warning btn-sm text-warning p-0 px-1 float-end"
-                                        onClick={() =>
-                                          singleChoiceRemove(
-                                            element.id,
-                                            option,
-                                            setSingleChoice,
-                                            questionnaireFields,
-                                            setQuestionnaireFields,
-                                          )
-                                        }
-                                      >
-                                        Remove
-                                      </button>
+                {element.feedbackType === CHOICE_MULTIPLE && (
+                  <>
+                    <DropZone
+                      name="photo"
+                      classes="dropzone text-center mt-2"
+                      acceptedImageTypes={['.png', '.jpeg', '.jpg']}
+                      maxSize={1375000000} // 1 GB
+                      multiple={false}
+                      reference={element.id}
+                      files={documentsMultiChoice}
+                      setFiles={setDocumentsMultiChoice}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Multichoice"
+                      variant="outlined"
+                      value={multichoice.text}
+                      onChange={(e) =>
+                        setMultichoice({
+                          ...multichoice,
+                          text: e.target.value,
+                        })
+                      }
+                      margin="normal"
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Iconify icon="mdi:plus" />}
+                      onClick={() =>
+                        formElementMultichoiceAdd(
+                          element.id,
+                          multichoice,
+                          setMultichoice,
+                          questionnaireFields,
+                          setQuestionnaireFields,
+                        )
+                      }
+                    >
+                      Add
+                    </Button>
+                    <div className="row mx-n1 g-0 mt-2 mb-2">
+                      {element.optionsChoiceMultiple?.map((option) => (
+                        <div
+                          className="col-xxl-12 col-lg-12"
+                          key={`option-${slugify(option.text as string)}`}
+                        >
+                          <div className="card m-1 shadow-none border">
+                            <div className="p-2">
+                              <div className="row align-items-center">
+                                {option.documentId ? (
+                                  <div className="col-auto">
+                                    <div className="avatar-sm">
+                                      <Image
+                                        className="me-2 mt-1 mb-1"
+                                        src={sourceImage(option.documentId)}
+                                        loader={() => sourceImage(option.documentId)}
+                                        alt=""
+                                        width={60}
+                                        height={40}
+                                      />
                                     </div>
                                   </div>
+                                ) : undefined}
+                                <div className="col ps-0 ms-3">
+                                  <a
+                                    href="#"
+                                    className="text-muted fw-bold"
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() =>
+                                      singleChoiceRemove(
+                                        element.id,
+                                        option,
+                                        setSingleChoice,
+                                        questionnaireFields,
+                                        setQuestionnaireFields,
+                                      )
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        singleChoiceRemove(
+                                          element.id,
+                                          option,
+                                          setSingleChoice,
+                                          questionnaireFields,
+                                          setQuestionnaireFields,
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    {option.text}
+                                  </a>
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline-warning btn-sm text-warning p-0 px-1 float-end"
+                                    onClick={() =>
+                                      singleChoiceRemove(
+                                        element.id,
+                                        option,
+                                        setSingleChoice,
+                                        questionnaireFields,
+                                        setQuestionnaireFields,
+                                      )
+                                    }
+                                  >
+                                    Remove
+                                  </button>
                                 </div>
                               </div>
                             </div>
-                          ))}
+                          </div>
                         </div>
-                      </>
-                    )}
+                      ))}
+                    </div>
+                  </>
+                )}
 
-                    {element.feedbackType === DROPDOWN && (
-                      <>
-                        <div className="input-group">
-                          <input
-                            type="text"
-                            className="form-control"
-                            aria-label="Dropdown Option"
-                            placeholder="Dropdown option"
-                            value={dropDownOption}
-                            onChange={(e) => setDropdownOption(e.target.value)}
-                          />
+                {element.feedbackType === DROPDOWN && (
+                  <>
+                    <TextField
+                      fullWidth
+                      label="Dropdown Option"
+                      variant="outlined"
+                      value={dropDownOption}
+                      onChange={(e) => setDropdownOption(e.target.value)}
+                      margin="normal"
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Iconify icon="mdi:plus" />}
+                      onClick={() =>
+                        formElementDropDownOptionAdd(
+                          element.id,
+                          dropDownOption,
+                          setDropdownOption,
+                          questionnaireFields,
+                          setQuestionnaireFields,
+                        )
+                      }
+                    >
+                      Add
+                    </Button>
+                    <ul className="list-group list-group-vertical mt-3 mb-3">
+                      {element.optionsDropdown?.map((option) => (
+                        <li key={`option-${slugify(option.value)}`} className="list-group-item">
+                          {option.label}
                           <button
-                            className="btn btn-dark"
                             type="button"
+                            className="btn btn-link p-0 ms-2 float-end"
                             onClick={() =>
-                              formElementDropDownOptionAdd(
+                              formElementDropDownOptionRemove(
                                 element.id,
-                                dropDownOption,
+                                option.value,
                                 setDropdownOption,
                                 questionnaireFields,
                                 setQuestionnaireFields,
                               )
                             }
                           >
-                            Add
+                            <Iconify icon="mdi:delete" style={{ color: 'orange' }} />
                           </button>
-                        </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
 
-                        <ul className="list-group list-group-vertical mt-3 mb-3">
-                          {element.optionsDropdown?.map((option) => (
-                            <li key={`option-${slugify(option.value)}`} className="list-group-item">
-                              {option.label}
-                              <button
-                                type="button"
-                                className="btn btn-link p-0 ms-2 float-end"
-                                onClick={() =>
-                                  formElementDropDownOptionRemove(
-                                    element.id,
-                                    option.value,
-                                    setDropdownOption,
-                                    questionnaireFields,
-                                    setQuestionnaireFields,
-                                  )
-                                }
-                              >
-                                <i className="mdi mdi-cancel text-warning" />
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    )}
-
-                    {element.feedbackType === MULTIMEDIA && (
-                      <div className="form-check form-switch float-end">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="allowMultipleFilesUpload"
-                          onClick={() =>
-                            editFormElementAllowMultipleFileUploads(
-                              element.id,
-                              questionnaireFields,
-                              setQuestionnaireFields,
-                            )
-                          }
-                        />
-                        <p>Allow Multiple Files Upload</p>
-                      </div>
-                    )}
+                {element.feedbackType === MULTIMEDIA && (
+                  <div className="form-check form-switch float-end">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="allowMultipleFilesUpload"
+                      onClick={() =>
+                        editFormElementAllowMultipleFileUploads(
+                          element.id,
+                          questionnaireFields,
+                          setQuestionnaireFields,
+                        )
+                      }
+                    />
+                    <p>Allow Multiple Files Upload</p>
                   </div>
-                </div>
+                )}
 
-                <div className="row">
-                  <div className="col-md-8">
-                    <div className="form-check form-check-inline mt-0 mb-2">
-                      <input
-                        type="checkbox"
-                        id={`compulsory-${element.id}`}
-                        className="form-check-input"
-                        defaultChecked={element.isRequired}
-                        onClick={() =>
-                          editFormElementIsRequired(
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={element.isRequired}
+                      onChange={() =>
+                        editFormElementIsRequired(
+                          element.id,
+                          !element.isRequired,
+                          questionnaireFields,
+                          setQuestionnaireFields,
+                        )
+                      }
+                    />
+                  }
+                  label="Compulsory"
+                />
+
+                {element.feedbackType === TEXT_SHORT ||
+                element.feedbackType === NUMBER ||
+                element.feedbackType === PHONE_NUMBER ||
+                element.feedbackType === DATE ||
+                element.feedbackType === EMAIL ||
+                element.feedbackType === URL ||
+                element.feedbackType === RATING ||
+                element.feedbackType === GEOLOCATION ? (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={element.noDuplicateResponse}
+                        onChange={() =>
+                          editFormElementNoDuplicateResponse(
                             element.id,
-                            !element.isRequired,
+                            !element.noDuplicateResponse,
                             questionnaireFields,
                             setQuestionnaireFields,
                           )
                         }
                       />
-                      <p>Compulsory</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    {element.feedbackType === TEXT_SHORT ||
-                    element.feedbackType === NUMBER ||
-                    element.feedbackType === PHONE_NUMBER ||
-                    element.feedbackType === DATE ||
-                    element.feedbackType === EMAIL ||
-                    element.feedbackType === URL ||
-                    element.feedbackType === RATING ||
-                    element.feedbackType === GEOLOCATION ? (
-                      <div className="form-check form-check-inline mt-0 mb-2">
-                        <input
-                          type="checkbox"
-                          id={`no-duplicate-${element.id}`}
-                          className="form-check-input"
-                          defaultChecked={element.noDuplicateResponse}
-                          onClick={() =>
-                            editFormElementNoDuplicateResponse(
-                              element.id,
-                              !element.noDuplicateResponse,
-                              questionnaireFields,
-                              setQuestionnaireFields,
-                            )
-                          }
-                        />
-                        <p>No Duplicate Responses</p>
-                      </div>
-                    ) : undefined}
-                  </div>
-                </div>
-                <hr className="mt-0" />
-                <button
-                  type="button"
-                  className="btn btn-outline-warning btn-sm mb-0"
+                    }
+                    label="No Duplicate Responses"
+                  />
+                ) : null}
+
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<Iconify icon="mdi:delete" />}
                   onClick={() =>
                     formElementRemove(element.id, questionnaireFields, setQuestionnaireFields)
                   }
                 >
-                  <i className="mdi mdi-cancel me-1" />
                   Remove
-                </button>
+                </Button>
               </div>
-            </div>
-          </div>
+            </AccordionDetails>
+          </Accordion>
         ))}
       </div>
 
-      <button
-        type="button"
-        className="btn btn-sm btn-primary mt-3"
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<Iconify icon="mdi:plus" />}
         onClick={() => formElementAdd(questionnaireFields, setQuestionnaireFields)}
+        style={{ marginTop: '16px' }}
       >
-        <i className="mdi mdi-plus me-1"/>Add Question
-      </button>
+        Add Question
+      </Button>
 
-      <MutationButton
-        type="button"
-        className="btn btn-success float-end mt-3"
-        size="sm"
-        label="Submit"
-        icon="mdi mdi-cloud-upload"
-        loading={mutating}
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<Iconify icon="mdi:plus" />}
+        disabled={mutating}
         onClick={mutation}
-      />
+        style={{ marginTop: '16px' }}
+      >
+        Submit
+      </Button>
     </>
   );
 };
