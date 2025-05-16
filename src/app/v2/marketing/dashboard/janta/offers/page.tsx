@@ -119,9 +119,6 @@ export default function Page() {
   }, [session, getOffersActive, getOffersRecycled, searchActive, searchRecycled]);
 
   useEffect(() => {
-    if(getOffersActive?.rows.length > 0) {
-      return;
-    }
     if (session?.user?.role?.clientTier1?.id) {
       console.log('Input:', {
         search: searchActive,
