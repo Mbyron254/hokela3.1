@@ -106,8 +106,8 @@ export const QuestionnaireSetup = ({
   }, [documentsMultiChoice, setMultichoice, multichoice]);
 
   const addElement = () => {
-    formElementAdd(questionnaireFields, setQuestionnaireFields)
-    console.log(questionnaireFields)
+    formElementAdd(questionnaireFields, setQuestionnaireFields);
+    console.log('Updated questionnaireFields:', questionnaireFields);
   }
 
   return (

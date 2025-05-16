@@ -18,7 +18,7 @@ export const formElementAdd = (
     optionsDropdown: [],
     allowMultipleFileUploads: false,
   };
-  setQuestionnaireFields([...questionnaireFields, formElement]);
+  setQuestionnaireFields((prevFields) => [...prevFields, formElement]);
 };
 
 export const formElementRemove = (
