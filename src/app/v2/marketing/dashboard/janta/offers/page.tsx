@@ -13,7 +13,6 @@ import {
   M_RUN_OFFERS_RECYCLED,
 } from 'src/lib/mutations/run-offer.mutation';
 
-import { MutationButton } from 'src/components/MutationButton';
 import { DashboardContent } from 'src/layouts/dashboard/main';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
@@ -112,7 +111,7 @@ export default function Page() {
         },
       });
     }
-  }, [session?.user?.role?.clientTier1?.id, getOffersActive, getOffersRecycled]);
+  }, [session?.user?.role?.clientTier1?.id, getOffersActive, getOffersRecycled, searchActive, searchRecycled]);
 
   const loadOffersActive = () => {
     if (session?.user?.role?.clientTier1?.id) {
