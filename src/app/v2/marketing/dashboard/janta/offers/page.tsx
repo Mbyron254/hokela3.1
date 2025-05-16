@@ -30,6 +30,7 @@ import {
   TextField,
   Tabs,
   Tab,
+  Checkbox,
 } from '@mui/material';
 
 export default function Page() {
@@ -83,6 +84,7 @@ export default function Page() {
   const [tabIndex, setTabIndex] = useState(0);
 
   const columns = [
+    { id: 'select', label: '', minWidth: 50 },
     { id: 'index', label: '#', minWidth: 60 },
     { id: 'project', label: 'PROJECT', minWidth: 100 },
     { id: 'campaign', label: 'CAMPAIGN', minWidth: 100 },
@@ -206,7 +208,20 @@ export default function Page() {
                 <Table stickyHeader aria-label="active offers table">
                   <TableHead>
                     <TableRow>
-                      {columns.map((column) => (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          indeterminate={selectedActive.length > 0 && selectedActive.length < offersActive?.rows.length}
+                          checked={offersActive?.rows.length > 0 && selectedActive.length === offersActive?.rows.length}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              setSelectedActive(offersActive?.rows.map((row: any) => row.id) || []);
+                            } else {
+                              setSelectedActive([]);
+                            }
+                          }}
+                        />
+                      </TableCell>
+                      {columns.slice(1).map((column) => (
                         <TableCell key={column.id} style={{ minWidth: column.minWidth }}>
                           {column.label}
                         </TableCell>
@@ -222,7 +237,31 @@ export default function Page() {
                       </TableRow>
                     ) : (
                       offersActive?.rows.map((row: any, index: number) => (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id} selected={selectedActive.includes(row.id)}>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selectedActive.includes(row.id)}
+                              onChange={() => {
+                                const selectedIndex = selectedActive.indexOf(row.id);
+                                let newSelected: string[] = [];
+
+                                if (selectedIndex === -1) {
+                                  newSelected = newSelected.concat(selectedActive, row.id);
+                                } else if (selectedIndex === 0) {
+                                  newSelected = newSelected.concat(selectedActive.slice(1));
+                                } else if (selectedIndex === selectedActive.length - 1) {
+                                  newSelected = newSelected.concat(selectedActive.slice(0, -1));
+                                } else if (selectedIndex > 0) {
+                                  newSelected = newSelected.concat(
+                                    selectedActive.slice(0, selectedIndex),
+                                    selectedActive.slice(selectedIndex + 1),
+                                  );
+                                }
+
+                                setSelectedActive(newSelected);
+                              }}
+                            />
+                          </TableCell>
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>{row.campaignRun?.project?.name}</TableCell>
                           <TableCell>
