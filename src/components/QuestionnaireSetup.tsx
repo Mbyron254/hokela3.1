@@ -105,6 +105,10 @@ export const QuestionnaireSetup = ({
     }
   }, [documentsMultiChoice, setMultichoice, multichoice]);
 
+  useEffect(() => {
+    console.log(questionnaireFields);
+  }, [questionnaireFields]);
+
   return (
     <>
       <div>
