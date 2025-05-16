@@ -90,6 +90,28 @@ export default function Page() {
     { id: 'joined', label: 'JOINED RUN ON', minWidth: 100 },
   ];
 
+  useEffect(() => {
+    if (session?.user?.role?.clientTier1?.id) {
+      getOffersActive({
+        variables: {
+          input: {
+            search: searchActive,
+            clientTier1Id: session.user.role.clientTier1.id,
+          },
+        },
+      });
+
+      getOffersRecycled({
+        variables: {
+          input: {
+            search: searchRecycled,
+            clientTier1Id: session.user.role.clientTier1.id,
+          },
+        },
+      });
+    }
+  }, [session?.user?.role?.clientTier1?.id, getOffersActive, getOffersRecycled]);
+
   const loadOffersActive = () => {
     if (session?.user?.role?.clientTier1?.id) {
       getOffersActive({
@@ -144,14 +166,14 @@ export default function Page() {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <Tabs value={tabIndex} onChange={handleTabChange} aria-label="offers tabs">
+      <Tabs value={tabIndex} onChange={handleTabChange} aria-label="offers tabs" className='mb-3' sx={{ marginBottom: '10px' }}>
         <Tab label="Active Offers" />
         <Tab label="Recalled Offers" />
       </Tabs>
 
-      <div className="tab-content">
+      <div className="tab-content mt-3 pt-5">
         {tabIndex === 0 && (
-          <div className="tab-pane show active" id="active-offers">
+          <div className="tab-pane mt-3 show active" id="active-offers">
             <div className="btn-group btn-group-sm mb-2">
               <Button
                 variant="contained"
@@ -237,17 +259,16 @@ export default function Page() {
         )}
 
         {tabIndex === 1 && (
-          <div className="tab-pane" id="recalled-offers">
+          <div className="tab-pane mt-3" id="recalled-offers">
             <div className="btn-group btn-group-sm mb-2">
-              <MutationButton
-                type="button"
-                className="btn btn-warning me-2"
-                size="sm"
-                label="Reinstate"
-                icon="mdi mdi-subdirectory-arrow-right"
-                loading={reinstating}
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={handleReinstate}
-              />
+                disabled={reinstating}
+                sx={{ mb: 2 }}>
+                Reinstate
+              </Button>
               <TextField
                 variant="outlined"
                 size="small"
