@@ -151,7 +151,7 @@ export const RunSurveyQuestions: FC<{
     <Box sx={{ width: '100%' }}>
       <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)} aria-label="survey tabs">
         <Tab label="Questionnaire" />
-        <Tab label="Target Reports" />
+        <Tab label="Target Reports." />
       </Tabs>
 
       {tabIndex === 0 && (
