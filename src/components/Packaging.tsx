@@ -93,6 +93,23 @@ export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
   const [selectedActive, setSelectedActive] = useState<string[]>([]);
   const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
 
+  // Add a state variable to control the dialog's open state
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Add a state variable to control the selected tab
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  // Function to open the dialog
+  const openDialog = () => setIsDialogOpen(true);
+
+  // Function to close the dialog
+  const closeDialog = () => setIsDialogOpen(false);
+
+  // Function to handle tab change
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSelectedTab(newValue);
+  };
+
   const loadPackagingsActive = () => {
     if (productId) getPackagingsActive({ variables: { input: { productId } } });
   };
@@ -195,8 +212,8 @@ export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
 
   return (
     <Dialog
-      open
-      onClose={() => {}}
+      open={isDialogOpen}
+      onClose={closeDialog}
       aria-labelledby="packaging-dialog"
       fullWidth
       maxWidth="lg"
@@ -281,85 +298,89 @@ export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
           </div>
         </div>
 
-        <Tabs value={0} aria-label="packaging tabs">
+        <Tabs value={selectedTab} onChange={handleTabChange} aria-label="packaging tabs">
           <Tab label="Active" />
           <Tab label="Recycled" />
         </Tabs>
 
         <div className="tab-content">
-          <div className="tab-pane show active" id="packagings-active">
-            <div className="btn-group btn-group-sm mb-2">
-              <Button
-                type="button"
-                variant="outlined"
-                color="error"
-                onClick={handleRecycle}
-                disabled={recycling}
-              >
-                Recycle
-              </Button>
-            </div>
+          {selectedTab === 0 && (
+            <div className="tab-pane show active" id="packagings-active">
+              <div className="btn-group btn-group-sm mb-2">
+                <Button
+                  type="button"
+                  variant="outlined"
+                  color="error"
+                  onClick={handleRecycle}
+                  disabled={recycling}
+                >
+                  Recycle
+                </Button>
+              </div>
 
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {columnsActive.map((column) => (
-                      <TableCell key={column.name}>{column.name}</TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {packagingsActive?.rows.map((row: any, index: number) => (
-                    <TableRow key={index}>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
                       {columnsActive.map((column) => (
-                        <TableCell key={column.name}>{column.cell(row)}</TableCell>
+                        <TableCell key={column.name}>{column.name}</TableCell>
                       ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-
-          <div className="tab-pane" id="packagings-recycled">
-            <div className="btn-group btn-group-sm mb-2">
-              <Button
-                type="button"
-                variant="outlined"
-                color="warning"
-                onClick={handleRestore}
-                disabled={restoring}
-              >
-                Restore
-              </Button>
-            </div>
-
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {columnsRecycled.map((column) => (
-                      <TableCell key={column.name}>{column.name}</TableCell>
+                  </TableHead>
+                  <TableBody>
+                    {packagingsActive?.rows.map((row: any, index: number) => (
+                      <TableRow key={index}>
+                        {columnsActive.map((column) => (
+                          <TableCell key={column.name}>{column.cell(row)}</TableCell>
+                        ))}
+                      </TableRow>
                     ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {packagingsRecycled?.rows.map((row: any, index: number) => (
-                    <TableRow key={index}>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
+
+          {selectedTab === 1 && (
+            <div className="tab-pane" id="packagings-recycled">
+              <div className="btn-group btn-group-sm mb-2">
+                <Button
+                  type="button"
+                  variant="outlined"
+                  color="warning"
+                  onClick={handleRestore}
+                  disabled={restoring}
+                >
+                  Restore
+                </Button>
+              </div>
+
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
                       {columnsRecycled.map((column) => (
-                        <TableCell key={column.name}>{column.cell(row)}</TableCell>
+                        <TableCell key={column.name}>{column.name}</TableCell>
                       ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
+                  </TableHead>
+                  <TableBody>
+                    {packagingsRecycled?.rows.map((row: any, index: number) => (
+                      <TableRow key={index}>
+                        {columnsRecycled.map((column) => (
+                          <TableCell key={column.name}>{column.cell(row)}</TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
         </div>
       </DialogContent>
       <DialogActions>
-        <Button type="button" variant="contained" color="secondary" onClick={() => {}}>
+        <Button type="button" variant="contained" color="secondary" onClick={closeDialog}>
           Close
         </Button>
       </DialogActions>
