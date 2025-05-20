@@ -173,7 +173,7 @@ export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
   useEffect(() => {
     if (documents.length) {
       const photoIds: string[] = documents.map(doc => doc.meta?.id).filter(id => id) as string[];
-      setFormData({ ...formData, photoIds });
+      setFormData(prevFormData => ({ ...prevFormData, photoIds }));
     }
   }, [documents]);
 
@@ -303,9 +303,9 @@ export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
           <Box sx={{ my: 2 }} />
           <DropZone
             name="photos (Max of 3, 230px by 230px)"
-            classes={`dropzone text-center mt-3`}
+            classes="dropzone text-center mt-3"
             acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
-            multiple={true}
+            multiple
             files={documents}
             setFiles={setDocuments}
             maxSize={1375000000} // 1GB
