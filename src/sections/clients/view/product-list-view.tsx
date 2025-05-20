@@ -231,6 +231,9 @@ export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
     }
   }, [categoryIdCreate, categoryIdUpdate, getSubcategories]);
   useEffect(() => {
+    console.log('Categories:', categories);
+  }, [categories]);
+  useEffect(() => {
     if (documentsCreate.length) {
       const photoIds: string[] = [];
 
