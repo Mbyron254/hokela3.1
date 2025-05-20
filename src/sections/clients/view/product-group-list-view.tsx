@@ -216,10 +216,15 @@ export function ProductGroupList({ clientTier2Id }: Props) {
   };
 
   const handleSubmit = () => {
+    const input = {
+      ...formData,
+      markup: parseInt(formData.markup, 10),
+    };
+
     if (isEdit.value) {
-      update({ variables: { input: { ...formData, id: group.id } } });
+      update({ variables: { input: { ...input, id: group.id } } });
     } else {
-      create({ variables: { input: { ...formData, clientTier2Id } } });
+      create({ variables: { input: { ...input, clientTier2Id } } });
     }
     handleDialogClose();
   };
