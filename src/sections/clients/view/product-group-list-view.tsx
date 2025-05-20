@@ -27,20 +27,20 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 const columns: GridColDef[] = [
   {
-    field: 'firstName',
-    headerName: 'First name',
+    field: 'name',
+    headerName: 'Group Name',
     width: 160,
     editable: true,
   },
   {
-    field: 'lastName',
-    headerName: 'Last name',
-    width: 160,
+    field: 'description',
+    headerName: 'Description',
+    width: 200,
     editable: true,
   },
   {
-    field: 'age',
-    headerName: 'Age',
+    field: 'markup',
+    headerName: 'Markup',
     type: 'number',
     width: 120,
     editable: true,
@@ -48,11 +48,14 @@ const columns: GridColDef[] = [
     headerAlign: 'center',
   },
   {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    flex: 1,
-    renderCell: (params) => `${params.row.firstName} ${params.row.lastName}`,
+    field: 'created',
+    headerName: 'Created Date',
+    width: 180
+  },
+  {
+    field: 'updated',
+    headerName: 'Updated Date',
+    width: 180
   },
   {
     type: 'actions',

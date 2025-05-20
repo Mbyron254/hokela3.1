@@ -1,327 +1,540 @@
-import type { IDateValue } from 'src/types/common';
-import type { GridColDef } from '@mui/x-data-grid';
+'use client';
 
-import { useState, useEffect } from 'react';
-
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import { Box , Grid , Button , Dialog, TextField, DialogTitle, DialogContent, DialogActions, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { DashboardContent } from 'src/layouts/dashboard';
-
-import { Iconify } from 'src/components/iconify';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import React, { useEffect, useState } from 'react';
+import { LoadingDiv } from 'src/components/LoadingDiv';
+import { MutationButton } from 'src/components/MutationButton';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import {
   M_PRODUCTS_ACTIVE,
   M_PRODUCTS_RECYCLED,
+  PRODUCT,
   PRODUCT_CREATE,
   PRODUCT_RECYCLE,
   PRODUCT_RESTORE,
   PRODUCT_UPDATE,
 } from 'src/lib/mutations/product.mutation';
+import { IProductCreate, IProductUpdate } from 'src/lib/interface/product.interface';
 import { M_PRODUCT_SUB_CATEGORIES_MINI } from 'src/lib/mutations/product-sub-category.mutation';
 import { Q_PRODUCT_CATEGORIES_MINI } from 'src/lib/queries/product-category.query';
-import { IProductCreate, IProductUpdate } from 'src/lib/interface/product.interface';
-import { DropZone } from 'src/components/dropzone/DropZone';
 import { IDocumentWrapper } from 'src/lib/interface/dropzone.type';
+import { DropZone } from 'src/components/dropzone/DropZone';
+import { M_PRODUCT_GROUPS_MINI } from 'src/lib/mutations/product-group.mutation';
+import { LoadingSpan } from 'src/components/LoadingSpan';
+import { Packaging } from 'src/components/Packaging';
+import { Tabs, Tab, Box, Button, Modal, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox } from '@mui/material';
 
-// ----------------------------------------------------------------------
-
-const columns: GridColDef[] = [
-  {
-    field: 'code',
-    headerName: 'Code',
-    width: 160,
-    editable: true,
-  },
-  {
-    field: 'name',
-    headerName: 'Name',
-    width: 160,
-    editable: true,
-  },
-  {
-    field: 'group',
-    headerName: 'Group',
-    width: 120,
-    editable: true,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    field: 'createdAt',
-    headerName: 'Created At',
-    width: 120,
-    editable: true,
-    align: 'center',
-    headerAlign: 'center',
-  },
-
-  {
-    type: 'actions',
-    field: 'actions',
-    headerName: 'Actions',
-    align: 'right',
-    headerAlign: 'right',
-    width: 80,
-    sortable: false,
-    filterable: false,
-    disableColumnMenu: true,
-    getActions: (params) => [
-      <GridActionsCellItem
-        showInMenu
-        icon={<Iconify icon="solar:pen-bold" />}
-        label="Edit"
-        onClick={() => console.info('EDIT', params.row.id)}
-      />,
-      <GridActionsCellItem
-        showInMenu
-        icon={<Iconify icon="solar:pen-bold" />}
-        label="Add Package"
-        onClick={() => console.info('EDIT', params.row.id)}
-      />,
-    ],
-  },
-];
-
-export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
-  const dialog = useBoolean();
-  const isEdit = useBoolean();
-  const [formData, setFormData] = useState<IProductCreate>({
-    name: '',
-    groupId: undefined,
-    productSubCategoryId: undefined,
-    description: '',
-    photoIds: [],
-  });
-  const [categoryId, setCategoryId] = useState<string>();
-  const [productsActive, setProductsActive] = useState([]);
-  const [productsRecycled, setProductsRecycled] = useState([]);
-  const [selectedActive, setSelectedActive] = useState<string[]>([]);
-  const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
-  const [documents, setDocuments] = useState<IDocumentWrapper[]>([]);
-
-  const { action: getProductsActive, data: activeData } = GQLMutation({
-    mutation: M_PRODUCTS_ACTIVE,
-    resolver: 'm_products',
+export default function ProductListView({ clientTier2Id }: { clientTier2Id: string }) {
+  const {
+    action: getGroups,
+    loading: loadingGroups,
+    data: groups,
+  } = GQLMutation({
+    mutation: M_PRODUCT_GROUPS_MINI,
+    resolver: 'productGroups',
     toastmsg: false,
   });
-
-  const { action: getProductsRecycled, data: recycledData } = GQLMutation({
-    mutation: M_PRODUCTS_RECYCLED,
-    resolver: 'm_productsRecycled',
-    toastmsg: false,
-  });
-
-  const { action: createProduct } = GQLMutation({
-    mutation: PRODUCT_CREATE,
-    resolver: 'productCreate',
-    toastmsg: true,
-  });
-
-  const { action: recycleProduct } = GQLMutation({
-    mutation: PRODUCT_RECYCLE,
-    resolver: 'productRecycle',
-    toastmsg: true,
-  });
-
-  const { action: restoreProduct } = GQLMutation({
-    mutation: PRODUCT_RESTORE,
-    resolver: 'productRestore',
-    toastmsg: true,
-  });
-
   const { data: categories, loading: loadingCategories } = GQLQuery({
     query: Q_PRODUCT_CATEGORIES_MINI,
     queryAction: 'productCategories',
     variables: { input: {} },
   });
-
-  const { action: getSubcategories, data: subcategories, loading: loadingSubCategories } = GQLMutation({
+  const {
+    action: getSubcategories,
+    data: subcategories,
+    loading: loadingSubCategories,
+  } = GQLMutation({
     mutation: M_PRODUCT_SUB_CATEGORIES_MINI,
     resolver: 'm_productSubCategories',
     toastmsg: false,
   });
+  const {
+    action: getProductsActive,
+    loading: loadingProductsActive,
+    data: productsActive,
+  } = GQLMutation({
+    mutation: M_PRODUCTS_ACTIVE,
+    resolver: 'm_products',
+    toastmsg: false,
+  });
+  const {
+    action: getProductsRecycled,
+    loading: loadingProductsRecycled,
+    data: productsRecycled,
+  } = GQLMutation({
+    mutation: M_PRODUCTS_RECYCLED,
+    resolver: 'm_productsRecycled',
+    toastmsg: false,
+  });
+  const {
+    action: getProduct,
+    loading: loadingProduct,
+    data: product,
+  } = GQLMutation({
+    mutation: PRODUCT,
+    resolver: 'm_product',
+    toastmsg: false,
+  });
+  const {
+    action: create,
+    loading: creating,
+    data: created,
+  } = GQLMutation({
+    mutation: PRODUCT_CREATE,
+    resolver: 'productCreate',
+    toastmsg: true,
+  });
+  const {
+    action: update,
+    loading: updating,
+    data: updated,
+  } = GQLMutation({
+    mutation: PRODUCT_UPDATE,
+    resolver: 'productUpdate',
+    toastmsg: true,
+  });
+  const {
+    action: recycle,
+    loading: recycling,
+    data: recycled,
+  } = GQLMutation({
+    mutation: PRODUCT_RECYCLE,
+    resolver: 'productRecycle',
+    toastmsg: true,
+  });
+  const {
+    action: restore,
+    loading: restoring,
+    data: restored,
+  } = GQLMutation({
+    mutation: PRODUCT_RESTORE,
+    resolver: 'productRestore',
+    toastmsg: true,
+  });
 
-  useEffect(() => {
+  const _inputUpdate: IProductUpdate = {
+    id: undefined,
+    groupId: undefined,
+    productSubCategoryId: undefined,
+    name: undefined,
+    description: undefined,
+    photoIds: undefined,
+  };
+  const [inputUpdate, setInputUpdate] = useState(_inputUpdate);
+  const [inputCreate, setInputCreate] = useState<IProductCreate>({
+    groupId: undefined,
+    productSubCategoryId: undefined,
+    name: undefined,
+    description: undefined,
+    photoIds: [],
+  });
+  const [categoryIdCreate, setCategoryIdCreate] = useState<string>();
+  const [categoryIdUpdate, setCategoryIdUpdate] = useState<string>();
+  const [selectedActive, setSelectedActive] = useState<string[]>([]);
+  const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
+  const [documentsCreate, setDocumentsCreate] = useState<IDocumentWrapper[]>([]);
+  const [documentsUpdate, setDocumentsUpdate] = useState<IDocumentWrapper[]>([]);
+  const [productId, setProductId] = useState<string>();
+  const [tabValue, setTabValue] = useState(0);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+
+  const loadGroups = () => {
+    if (clientTier2Id) {
+      getGroups({ variables: { input: { clientTier2Id } } });
+    }
+  };
+  const loadSubcategories = () => {
+    if (categoryIdCreate || categoryIdUpdate) {
+      getSubcategories({
+        variables: {
+          input: { productCategoryId: categoryIdCreate || categoryIdUpdate },
+        },
+      });
+    }
+  };
+  const loadProductsActive = () => {
     if (clientTier2Id) {
       getProductsActive({ variables: { input: { clientTier2Id } } });
+    }
+  };
+  const loadProductsRecycled = () => {
+    if (clientTier2Id) {
       getProductsRecycled({ variables: { input: { clientTier2Id } } });
     }
-  }, [clientTier2Id, getProductsActive, getProductsRecycled]);
-
-  useEffect(() => {
-    if (activeData) {
-      setProductsActive(activeData.rows || []);
-    }
-  }, [activeData]);
-
-  useEffect(() => {
-    if (recycledData) {
-      setProductsRecycled(recycledData.rows || []);
-    }
-  }, [recycledData]);
-
-  useEffect(() => {
-    if (categoryId) {
-      getSubcategories({ variables: { input: { productCategoryId: categoryId } } });
-    }
-  }, [categoryId, getSubcategories]);
-
-  useEffect(() => {
-    if (documents.length) {
-      const photoIds: string[] = documents.map(doc => doc.meta?.id).filter(id => id) as string[];
-      setFormData(prevFormData => ({ ...prevFormData, photoIds }));
-    }
-  }, [documents]);
-
-  const handleDialogClose = () => {
-    dialog.onFalse();
-    isEdit.onFalse();
   };
-
-  const handleNewRow = () => {
-    dialog.onTrue();
-    isEdit.onFalse();
+  const loadProduct = (id: string) => {
+    getProduct({ variables: { input: { id } } });
   };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleCreate = () => {
+    if (clientTier2Id) create({ variables: { input: { ...inputCreate, clientTier2Id } } });
   };
-
-  const handleSubmit = () => {
-    if (clientTier2Id) {
-      createProduct({ variables: { input: { ...formData, clientTier2Id } } });
-    }
+  const handleUpdate = () => {
+    update({ variables: { input: inputUpdate } });
   };
-
   const handleRecycle = () => {
     if (selectedActive.length) {
-      recycleProduct({ variables: { input: { ids: selectedActive } } });
+      recycle({ variables: { input: { ids: selectedActive } } });
     }
   };
-
   const handleRestore = () => {
     if (selectedRecycled.length) {
-      restoreProduct({ variables: { input: { ids: selectedRecycled } } });
+      restore({ variables: { input: { ids: selectedRecycled } } });
     }
   };
 
-  return (
-    <DashboardContent>
-      <CustomBreadcrumbs
-        heading="Products"
-        links={[{ name: 'List', href: '/dashboard' }]}
-        action={
+  const renderTableRows = (data: any[], isRecycled: boolean) => {
+    return data.map((row: any, index: number) => (
+      <TableRow key={row.id}>
+        <TableCell padding="checkbox">
+          <Checkbox
+            checked={isRecycled ? selectedRecycled.includes(row.id) : selectedActive.includes(row.id)}
+            onChange={(e) => {
+              const selected = isRecycled ? selectedRecycled : selectedActive;
+              const setSelected = isRecycled ? setSelectedRecycled : setSelectedActive;
+              if (e.target.checked) {
+                setSelected([...selected, row.id]);
+              } else {
+                setSelected(selected.filter((id) => id !== row.id));
+              }
+            }}
+          />
+        </TableCell>
+        <TableCell>{index + 1}</TableCell>
+        <TableCell>{row.code}</TableCell>
+        <TableCell>{row.name}</TableCell>
+        <TableCell>{`${row.group?.name} (${row.group?.markup}%)`}</TableCell>
+        <TableCell>{isRecycled ? row.recycled : row.created}</TableCell>
+        <TableCell>
           <Button
-            onClick={handleNewRow}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
+            variant="outlined"
+            size="small"
+            onClick={() => setProductId(row.id)}
           >
-            New Product
+            <i className="mdi mdi-sack"></i>
           </Button>
-        }
-        sx={{ mb: { xs: 3, md: 5 } }}
-      />
-      <Dialog open={dialog.value} onClose={handleDialogClose} fullWidth maxWidth="sm">
-        <DialogTitle>{isEdit.value ? 'Edit Product ' : 'New Product '}</DialogTitle>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => {
+              setInputUpdate(_inputUpdate);
+              loadProduct(row.id);
+              setOpenEditModal(true);
+            }}
+          >
+            <i className="mdi mdi-pen"></i>
+          </Button>
+        </TableCell>
+      </TableRow>
+    ));
+  };
 
-        <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+  useEffect(() => {
+    loadGroups();
+  }, []);
+  useEffect(() => loadSubcategories(), [categoryIdCreate, categoryIdUpdate]);
+  useEffect(() => {
+    if (documentsCreate.length) {
+      const photoIds: string[] = [];
+
+      for (let i = 0; i < documentsCreate.length; i++) {
+        if (documentsCreate[i].meta?.id) {
+          if (photoIds.length < 3) {
+            photoIds.push(documentsCreate[i].meta?.id);
+          } else {
+            photoIds.shift();
+            photoIds.push(documentsCreate[i].meta?.id);
+          }
+        }
+      }
+      setInputCreate({ ...inputCreate, photoIds });
+    }
+  }, [documentsCreate]);
+  useEffect(() => {
+    if (documentsUpdate.length) {
+      const photoIds: string[] = [];
+
+      for (let i = 0; i < documentsUpdate.length; i++) {
+        if (documentsUpdate[i].meta?.id) {
+          if (photoIds.length < 3) {
+            photoIds.push(documentsUpdate[i].meta?.id);
+          } else {
+            photoIds.shift();
+            photoIds.push(documentsUpdate[i].meta?.id);
+          }
+        }
+      }
+      setInputUpdate({ ...inputUpdate, photoIds });
+    }
+  }, [documentsUpdate]);
+  useEffect(() => {
+    if (product) {
+      setCategoryIdUpdate(product.subCategory?.productCategory?.id);
+      setInputUpdate({
+        id: product.id,
+        groupId: product.group?.id,
+        productSubCategoryId: product.subCategory?.id,
+        name: product.name,
+        description: product.description,
+        photoIds: product.photos?.map((photo: any) => photo.id) || [],
+      });
+    }
+  }, [product]);
+
+  return (
+    <>
+      <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} aria-label="product tabs">
+        <Tab label="Active" />
+        <Tab label="Recycled" />
+      </Tabs>
+
+      <Box hidden={tabValue !== 0}>
+        <Button variant="outlined" onClick={() => setOpenCreateModal(true)} disabled={recycling}>
+          New
+        </Button>
+        <Button variant="outlined" color="error" onClick={handleRecycle} disabled={recycling}>
+          Recycle
+        </Button>
+
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    indeterminate={selectedActive.length > 0 && selectedActive.length < productsActive?.rows.length}
+                    checked={productsActive?.rows.length > 0 && selectedActive.length === productsActive?.rows.length}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedActive(productsActive?.rows.map((row: any) => row.id) || []);
+                      } else {
+                        setSelectedActive([]);
+                      }
+                    }}
+                  />
+                </TableCell>
+                <TableCell>#</TableCell>
+                <TableCell>CODE</TableCell>
+                <TableCell>NAME</TableCell>
+                <TableCell>GROUP</TableCell>
+                <TableCell>CREATED</TableCell>
+                <TableCell>ACTIONS</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {renderTableRows(productsActive?.rows || [], false)}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      <Box hidden={tabValue !== 1}>
+        <Button variant="outlined" color="warning" onClick={handleRestore} disabled={restoring}>
+          Restore
+        </Button>
+
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    indeterminate={selectedRecycled.length > 0 && selectedRecycled.length < productsRecycled?.rows.length}
+                    checked={productsRecycled?.rows.length > 0 && selectedRecycled.length === productsRecycled?.rows.length}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedRecycled(productsRecycled?.rows.map((row: any) => row.id) || []);
+                      } else {
+                        setSelectedRecycled([]);
+                      }
+                    }}
+                  />
+                </TableCell>
+                <TableCell>#</TableCell>
+                <TableCell>CODE</TableCell>
+                <TableCell>NAME</TableCell>
+                <TableCell>GROUP</TableCell>
+                <TableCell>RECYCLED</TableCell>
+                <TableCell>ACTIONS</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {renderTableRows(productsRecycled?.rows || [], true)}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      <Packaging productId={productId} />
+
+      <Modal open={openCreateModal} onClose={() => setOpenCreateModal(false)}>
+        <Box sx={{ ...modalStyle }}>
+          <h4>New Product</h4>
+          <TextField
+            label="Product Name"
+            value={inputCreate.name}
+            onChange={(e) => setInputCreate({ ...inputCreate, name: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Group</InputLabel>
+            <Select
+              value={inputCreate.groupId}
+              onChange={(e) => setInputCreate({ ...inputCreate, groupId: e.target.value })}
+            >
+              <MenuItem value=""><em>None</em></MenuItem>
+              {groups?.rows.map((group: any, index: number) => (
+                <MenuItem value={group.id} key={`group-${index}`}>
+                  {`${group.name} (${group.markup}%)`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={categoryIdCreate}
+              onChange={(e) => setCategoryIdCreate(e.target.value)}
+            >
+              <MenuItem value=""><em>None</em></MenuItem>
+              {categories?.rows.map((category: any, index: number) => (
+                <MenuItem value={category.id} key={`category-${index}`}>
+                  {category.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Subcategory</InputLabel>
+            <Select
+              value={inputCreate.productSubCategoryId}
+              onChange={(e) => setInputCreate({ ...inputCreate, productSubCategoryId: e.target.value })}
+            >
+              <MenuItem value=""><em>None</em></MenuItem>
+              {subcategories?.rows.map((subcategory: any, index: number) => (
+                <MenuItem value={subcategory.id} key={`subcategory-${index}`}>
+                  {subcategory.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            placeholder="Product description"
+            value={inputCreate.description}
+            onChange={(e) => setInputCreate((prevState) => ({ ...prevState, description: e.target.value }))}
+            multiline
+            rows={4}
+            fullWidth
+            margin="normal"
+          />
+          <DropZone
+            name="photos (Max of 3, 230px by 230px)"
+            classes={`dropzone text-center mt-3`}
+            acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
+            multiple={true}
+            files={documentsCreate}
+            setFiles={setDocumentsCreate}
+            maxSize={1375000000} // 1GB
+          />
+          <Button variant="contained" onClick={handleCreate} disabled={creating}>
+            Create
+          </Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
+        <Box sx={{ ...modalStyle }}>
+          {loadingProduct ? (
+            <LoadingDiv />
+          ) : (
+            <>
+              <h4>Edit Product</h4>
               <TextField
-                autoFocus
-                fullWidth
-                name="name"
-                margin="dense"
-                variant="outlined"
                 label="Product Name"
-                value={formData.name}
-                onChange={handleInputChange}
+                value={inputUpdate.name}
+                onChange={(e) => setInputUpdate({ ...inputUpdate, name: e.target.value })}
+                fullWidth
+                margin="normal"
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth margin="dense">
-                <InputLabel>Group ID</InputLabel>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Group</InputLabel>
                 <Select
-                  name="groupId"
-                  value={formData.groupId || ''}
-                  onChange={(e) => setFormData({ ...formData, groupId: e.target.value })}
+                  value={inputUpdate.groupId}
+                  onChange={(e) => setInputUpdate({ ...inputUpdate, groupId: e.target.value })}
                 >
-                  {/* Add options for groups here */}
+                  <MenuItem value=""><em>None</em></MenuItem>
+                  {groups?.rows.map((group: any, index: number) => (
+                    <MenuItem value={group.id} key={`group-${index}`}>
+                      {`${group.name} (${group.markup}%)`}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth margin="dense">
+              <FormControl fullWidth margin="normal">
                 <InputLabel>Category</InputLabel>
                 <Select
-                  value={categoryId || ''}
-                  onChange={(e) => setCategoryId(e.target.value)}
+                  value={categoryIdUpdate}
+                  onChange={(e) => setCategoryIdUpdate(e.target.value)}
                 >
-                  {categories?.rows.map((category: any) => (
-                    <MenuItem key={category.id} value={category.id}>
+                  <MenuItem value=""><em>None</em></MenuItem>
+                  {categories?.rows.map((category: any, index: number) => (
+                    <MenuItem value={category.id} key={`category-${index}`}>
                       {category.name}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth margin="dense">
+              <FormControl fullWidth margin="normal">
                 <InputLabel>Subcategory</InputLabel>
                 <Select
-                  name="productSubCategoryId"
-                  value={formData.productSubCategoryId || ''}
-                  onChange={(e) => setFormData({ ...formData, productSubCategoryId: e.target.value })}
+                  value={inputUpdate.productSubCategoryId}
+                  onChange={(e) => setInputUpdate({ ...inputUpdate, productSubCategoryId: e.target.value })}
                 >
-                  {subcategories?.rows.map((subcategory: any) => (
-                    <MenuItem key={subcategory.id} value={subcategory.id}>
+                  <MenuItem value=""><em>None</em></MenuItem>
+                  {subcategories?.rows.map((subcategory: any, index: number) => (
+                    <MenuItem value={subcategory.id} key={`subcategory-u-${index}`}>
                       {subcategory.name}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
-          </Grid>
-          <Box sx={{ my: 2 }} />
-          <TextField
-            variant="outlined"
-            rows={4}
-            fullWidth
-            multiline
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-          />
-          <Box sx={{ my: 2 }} />
-          <DropZone
-            name="photos (Max of 3, 230px by 230px)"
-            classes="dropzone text-center mt-3"
-            acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
-            multiple
-            files={documents}
-            setFiles={setDocuments}
-            maxSize={1375000000} // 1GB
-          />
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={handleDialogClose} variant="outlined" color="inherit">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} variant="contained">
-            {isEdit.value ? 'Update' : 'Create'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <DataGrid columns={columns} rows={productsActive} checkboxSelection disableRowSelectionOnClick />
-    </DashboardContent>
+              <TextField
+                placeholder="Product description"
+                value={inputUpdate.description}
+                onChange={(e) => setInputUpdate((prevState) => ({ ...prevState, description: e.target.value }))}
+                multiline
+                rows={4}
+                fullWidth
+                margin="normal"
+              />
+              <DropZone
+                name="photos (Max of 3, 230px by 230px)"
+                classes={`dropzone text-center mt-2`}
+                acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
+                multiple={true}
+                files={documentsUpdate}
+                setFiles={setDocumentsUpdate}
+                maxSize={1375000000} // 1GB
+              />
+              <Button variant="contained" onClick={handleUpdate} disabled={updating}>
+                Update
+              </Button>
+            </>
+          )}
+        </Box>
+      </Modal>
+    </>
   );
 }
+
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
