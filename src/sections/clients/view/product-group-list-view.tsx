@@ -168,7 +168,7 @@ export function ProductGroupList({ clientTier2Id }: Props) {
 
   const [formData, setFormData] = useState({
     name: '',
-    markUp: '',
+    markup: '',
     description: '',
   });
 
@@ -185,7 +185,7 @@ export function ProductGroupList({ clientTier2Id }: Props) {
     if (group) {
       setFormData({
         name: group.name,
-        markUp: group.markup,
+        markup: group.markup,
         description: group.description,
       });
     }
@@ -199,7 +199,7 @@ export function ProductGroupList({ clientTier2Id }: Props) {
   const handleNewRow = () => {
     dialog.onTrue();
     isEdit.onFalse();
-    setFormData({ name: '', markUp: '', description: '' });
+    setFormData({ name: '', markup: '', description: '' });
   };
 
   const handleEditRow = (row: any) => {
@@ -272,11 +272,11 @@ export function ProductGroupList({ clientTier2Id }: Props) {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                name="markUp"
+                name="markup"
                 margin="dense"
                 variant="outlined"
                 label="Mark Up"
-                value={formData.markUp}
+                value={formData.markup}
                 onChange={handleInputChange}
               />
             </Grid>
