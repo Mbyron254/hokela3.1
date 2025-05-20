@@ -23,7 +23,7 @@ import { LoadingSpan } from 'src/components/LoadingSpan';
 import { Packaging } from 'src/components/Packaging';
 import { Tabs, Tab, Box, Button, Modal, TextField, Select, MenuItem, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox } from '@mui/material';
 
-export default function ProductListView({ clientTier2Id }: { clientTier2Id: string }) {
+export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
   const {
     action: getGroups,
     loading: loadingGroups,
@@ -138,20 +138,12 @@ export default function ProductListView({ clientTier2Id }: { clientTier2Id: stri
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const loadGroups = () => {
-    if (clientTier2Id) {
-      getGroups({ variables: { input: { clientTier2Id } } });
-    }
-  };
-  const loadSubcategories = () => {
-    if (categoryIdCreate || categoryIdUpdate) {
-      getSubcategories({
-        variables: {
-          input: { productCategoryId: categoryIdCreate || categoryIdUpdate },
-        },
-      });
-    }
-  };
+  // const loadGroups = () => {
+  //   if (clientTier2Id) {
+  //     getGroups({ variables: { input: { clientTier2Id } } });
+  //   }
+  // };
+
   const loadProductsActive = () => {
     if (clientTier2Id) {
       getProductsActive({ variables: { input: { clientTier2Id } } });
@@ -182,61 +174,67 @@ export default function ProductListView({ clientTier2Id }: { clientTier2Id: stri
     }
   };
 
-  const renderTableRows = (data: any[], isRecycled: boolean) => {
-    return data.map((row: any, index: number) => (
-      <TableRow key={row.id}>
-        <TableCell padding="checkbox">
-          <Checkbox
-            checked={isRecycled ? selectedRecycled.includes(row.id) : selectedActive.includes(row.id)}
-            onChange={(e) => {
-              const selected = isRecycled ? selectedRecycled : selectedActive;
-              const setSelected = isRecycled ? setSelectedRecycled : setSelectedActive;
-              if (e.target.checked) {
-                setSelected([...selected, row.id]);
-              } else {
-                setSelected(selected.filter((id) => id !== row.id));
-              }
-            }}
-          />
-        </TableCell>
-        <TableCell>{index + 1}</TableCell>
-        <TableCell>{row.code}</TableCell>
-        <TableCell>{row.name}</TableCell>
-        <TableCell>{`${row.group?.name} (${row.group?.markup}%)`}</TableCell>
-        <TableCell>{isRecycled ? row.recycled : row.created}</TableCell>
-        <TableCell>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => setProductId(row.id)}
-          >
-            <i className="mdi mdi-sack"></i>
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => {
-              setInputUpdate(_inputUpdate);
-              loadProduct(row.id);
-              setOpenEditModal(true);
-            }}
-          >
-            <i className="mdi mdi-pen"></i>
-          </Button>
-        </TableCell>
-      </TableRow>
-    ));
-  };
+  const renderTableRows = (data: any[], isRecycled: boolean) => data.map((row: any, index: number) => (
+    <TableRow key={row.id}>
+      <TableCell padding="checkbox">
+        <Checkbox
+          checked={isRecycled ? selectedRecycled.includes(row.id) : selectedActive.includes(row.id)}
+          onChange={(e) => {
+            const selected = isRecycled ? selectedRecycled : selectedActive;
+            const setSelected = isRecycled ? setSelectedRecycled : setSelectedActive;
+            if (e.target.checked) {
+              setSelected([...selected, row.id]);
+            } else {
+              setSelected(selected.filter((id) => id !== row.id));
+            }
+          }}
+        />
+      </TableCell>
+      <TableCell>{index + 1}</TableCell>
+      <TableCell>{row.code}</TableCell>
+      <TableCell>{row.name}</TableCell>
+      <TableCell>{`${row.group?.name} (${row.group?.markup}%)`}</TableCell>
+      <TableCell>{isRecycled ? row.recycled : row.created}</TableCell>
+      <TableCell>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => setProductId(row.id)}
+        >
+          <i className="mdi mdi-sack" />
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => {
+            setInputUpdate(_inputUpdate);
+            loadProduct(row.id);
+            setOpenEditModal(true);
+          }}
+        >
+          <i className="mdi mdi-pen" />
+        </Button>
+      </TableCell>
+    </TableRow>
+  ));
 
   useEffect(() => {
-    loadGroups();
-  }, []);
-  useEffect(() => loadSubcategories(), [categoryIdCreate, categoryIdUpdate]);
+    if (clientTier2Id) { getGroups({ variables: { input: { clientTier2Id } } }); }
+  }, [getGroups, clientTier2Id]);
+  useEffect(() => {
+    if (categoryIdCreate || categoryIdUpdate) {
+      getSubcategories({
+        variables: {
+          input: { productCategoryId: categoryIdCreate || categoryIdUpdate },
+        },
+      });
+    }
+  }, [categoryIdCreate, categoryIdUpdate, getSubcategories]);
   useEffect(() => {
     if (documentsCreate.length) {
       const photoIds: string[] = [];
 
-      for (let i = 0; i < documentsCreate.length; i++) {
+      for (let i = 0; i < documentsCreate.length; i+=1) {
         if (documentsCreate[i].meta?.id) {
           if (photoIds.length < 3) {
             photoIds.push(documentsCreate[i].meta?.id);
@@ -248,12 +246,12 @@ export default function ProductListView({ clientTier2Id }: { clientTier2Id: stri
       }
       setInputCreate({ ...inputCreate, photoIds });
     }
-  }, [documentsCreate]);
+  }, [documentsCreate, inputCreate]);
   useEffect(() => {
     if (documentsUpdate.length) {
       const photoIds: string[] = [];
 
-      for (let i = 0; i < documentsUpdate.length; i++) {
+      for (let i = 0; i < documentsUpdate.length; i+=1) {
         if (documentsUpdate[i].meta?.id) {
           if (photoIds.length < 3) {
             photoIds.push(documentsUpdate[i].meta?.id);
@@ -265,7 +263,7 @@ export default function ProductListView({ clientTier2Id }: { clientTier2Id: stri
       }
       setInputUpdate({ ...inputUpdate, photoIds });
     }
-  }, [documentsUpdate]);
+  }, [documentsUpdate, inputUpdate]);
   useEffect(() => {
     if (product) {
       setCategoryIdUpdate(product.subCategory?.productCategory?.id);
@@ -429,9 +427,9 @@ export default function ProductListView({ clientTier2Id }: { clientTier2Id: stri
           />
           <DropZone
             name="photos (Max of 3, 230px by 230px)"
-            classes={`dropzone text-center mt-3`}
+            classes="dropzone text-center mt-3"
             acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
-            multiple={true}
+            multiple
             files={documentsCreate}
             setFiles={setDocumentsCreate}
             maxSize={1375000000} // 1GB
@@ -509,9 +507,9 @@ export default function ProductListView({ clientTier2Id }: { clientTier2Id: stri
               />
               <DropZone
                 name="photos (Max of 3, 230px by 230px)"
-                classes={`dropzone text-center mt-2`}
+                classes="dropzone text-center mt-2"
                 acceptedImageTypes={['.png', '.jpeg', '.jpg', '.webp', '.ico']}
-                multiple={true}
+                multiple
                 files={documentsUpdate}
                 setFiles={setDocumentsUpdate}
                 maxSize={1375000000} // 1GB
