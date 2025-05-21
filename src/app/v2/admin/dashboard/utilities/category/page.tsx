@@ -120,22 +120,20 @@ export default function Page() {
       sortable: false,
       center: true,
       selector: (row: any) => row.id,
-      cell: (row: any) => {
-        return (
-          <button
-            type='button'
-            className='btn btn-light btn-sm me-2'
-            data-bs-toggle='modal'
-            data-bs-target='#update-modal'
-            onClick={() => {
-              setInputUpdate(_inputUpdate);
-              loadCategory(row.id);
-            }}
-          >
-            <i className='mdi mdi-circle-edit-outline'></i>
-          </button>
-        );
-      },
+      cell: (row: any) => (
+        <button
+          type='button'
+          className='btn btn-light btn-sm me-2'
+          data-bs-toggle='modal'
+          data-bs-target='#update-modal'
+          onClick={() => {
+            setInputUpdate(_inputUpdate);
+            loadCategory(row.id);
+          }}
+        >
+          <i className='mdi mdi-circle-edit-outline'/>
+        </button>
+      )
     },
   ];
   const columnsRecycled = [
