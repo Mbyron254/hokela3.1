@@ -182,51 +182,56 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
         <div className="col-md-5">
           <div className="card border border-primary">
             <div className="card-body">
-              {loadingTeams ? (
-                <LoadingSpan />
-              ) : (
-                <FormControl fullWidth variant="outlined" className="mb-3">
-                  <InputLabel id="team-label">Filter by team</InputLabel>
-                  <Select
-                    labelId="team-label"
-                    id="team"
-                    value={teamId}
-                    onChange={(e) => setTeamId(e.target.value)}
-                    label="Filter by team"
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    {teams?.rows.map((team: any, index: number) => (
-                      <MenuItem value={team.id} key={`team-${index}`}>
-                        {team.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-
-              <TextField
-                id="top-search"
-                label="Search agent..."
-                variant="outlined"
-                fullWidth
-                className="mb-3"
-                defaultValue={search}
-                onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
-                InputProps={{
-                  endAdornment: (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={loadingAgents}
-                      onClick={() => loadAgents(0, 10)}
-                    >
-                      {loadingAgents ? 'Loading...' : 'Search'}
-                    </Button>
-                  ),
-                }}
-              />
+              <div className="row">
+                <div className="col-md-6">
+                  {loadingTeams ? (
+                    <LoadingSpan />
+                  ) : (
+                    <FormControl fullWidth variant="outlined" className="mb-3">
+                      <InputLabel id="team-label">Filter by team</InputLabel>
+                      <Select
+                        labelId="team-label"
+                        id="team"
+                        value={teamId}
+                        onChange={(e) => setTeamId(e.target.value)}
+                        label="Filter by team"
+                      >
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
+                        {teams?.rows.map((team: any, index: number) => (
+                          <MenuItem value={team.id} key={`team-${index}`}>
+                            {team.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                </div>
+                <div className="col-md-6">
+                  <TextField
+                    id="top-search"
+                    label="Search agent..."
+                    variant="outlined"
+                    fullWidth
+                    className="mb-3"
+                    defaultValue={search}
+                    onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
+                    InputProps={{
+                      endAdornment: (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={loadingAgents}
+                          onClick={() => loadAgents(0, 10)}
+                        >
+                          {loadingAgents ? 'Loading...' : 'Search'}
+                        </Button>
+                      ),
+                    }}
+                  />
+                </div>
+              </div>
 
               <hr className="mb-2" />
 
@@ -269,7 +274,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
         </div>
 
         <div className="col-md-7">
-          <div className="card border-primary border">
+          <div className="card border-primary border mb-3">
             <div className="card-body">
               <div className="row">
                 <div className="col-md-6">
