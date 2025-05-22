@@ -144,16 +144,6 @@ export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
   //   }
   // };
 
-  const loadProductsActive = () => {
-    if (clientTier2Id) {
-      getProductsActive({ variables: { input: { clientTier2Id } } });
-    }
-  };
-  const loadProductsRecycled = () => {
-    if (clientTier2Id) {
-      getProductsRecycled({ variables: { input: { clientTier2Id } } });
-    }
-  };
   const loadProduct = (id: string) => {
     getProduct({ variables: { input: { id } } });
   };
@@ -280,6 +270,16 @@ export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
       });
     }
   }, [product]);
+  useEffect(() => {
+    if (clientTier2Id) {
+      getProductsActive({ variables: { input: { clientTier2Id } } });
+    }
+  }, [getProductsActive, clientTier2Id]);
+  useEffect(() => {
+    if (clientTier2Id) {
+      getProductsRecycled({ variables: { input: { clientTier2Id } } });
+    }
+  }, [getProductsRecycled, clientTier2Id]);
   useEffect(() => {
     if (productsActive) {
       console.log('Active Products:', productsActive);
