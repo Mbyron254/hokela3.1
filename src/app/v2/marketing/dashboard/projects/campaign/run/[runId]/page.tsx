@@ -1,11 +1,11 @@
 'use client';
 
 import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocation';
-import { RunKPIs } from 'src/components/run/RunKPIs';
-import { RunPayroll } from 'src/components/run/RunPayroll';
-import { RunPayRate } from 'src/components/run/RunPayRate';
+// import { RunKPIs } from 'src/components/run/RunKPIs';
+// import { RunPayroll } from 'src/components/run/RunPayroll';
+// import { RunPayRate } from 'src/components/run/RunPayRate';
 import { RunProfile } from 'src/components/run/RunProfile';
-import { RunSampling } from 'src/components/run/RunSampling';
+// import { RunSampling } from 'src/components/run/RunSampling';
 import { GQLMutation } from 'src/lib/client';
 import {
   RUN_ACTIVITY_ROAD_SHOW,
@@ -20,11 +20,11 @@ import { RunSalesGiveawayConfig } from 'src/components/run/RunSalesGiveawayConfi
 import { RunSalesGiveawayQuestions } from 'src/components/run/RunSalesGiveawayQuestions';
 import { RunSalesQuestions } from 'src/components/run/RunSalesQuestions';
 import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
-import { RunRollCall } from 'src/components/run/RunRollCall';
-import { RunStockCounterEntry } from 'src/components/run/RunStockCounterEntry';
+// import { RunRollCall } from 'src/components/run/RunRollCall';
+// import { RunStockCounterEntry } from 'src/components/run/RunStockCounterEntry';
 import { RunDashboardSurvey } from 'src/components/run/RunDashboardSurvey';
 import { RunDashboardSales } from 'src/components/run/RunDashboardSales';
-import { RunTeam } from 'src/components/run/RunTeam';
+// import { RunTeam } from 'src/components/run/RunTeam';
 
 export default function Page({ params: { runId } }: any) {
   const { action: getRun, data: run } = GQLMutation({
@@ -173,7 +173,8 @@ export default function Page({ params: { runId } }: any) {
         </div>
 
         <div className="tab-pane" id="team">
-          {run && <RunTeam run={run} />}
+          {run && <p>Team</p>}
+          {/* {run && <RunTeam run={run} />} */}
         </div>
 
         <div className="tab-pane" id="analytics">
@@ -341,7 +342,8 @@ export default function Page({ params: { runId } }: any) {
         </div>
 
         <div className="tab-pane" id="attendance">
-          {run && <RunRollCall run={run} />}
+          {/* {run && <RunRollCall run={run} />} */}
+          <p>Attendance</p>
         </div>
 
         <div className="tab-pane" id="payroll">
@@ -365,15 +367,18 @@ export default function Page({ params: { runId } }: any) {
 
           <div className="tab-content">
             <div className="tab-pane show active" id="payrates">
-              {run?.id && <RunPayRate runId={run.id} />}
+              {/* {run?.id && <RunPayRate runId={run.id} />} */}
+              <p>Pay Rates</p>
             </div>
 
             <div className="tab-pane" id="kpis">
-              {run?.id && <RunKPIs runId={run.id} />}
+              {/* {run?.id && <RunKPIs runId={run.id} />} */}
+              <p>KPI&apos;s</p>
             </div>
 
             <div className="tab-pane" id="agent-scores">
-              {run?.id && <RunPayroll runId={run.id} />}
+              {/* {run?.id && <RunPayroll runId={run.id} />} */}
+              <p>Scores & Earnings</p>
             </div>
           </div>
         </div>
@@ -465,10 +470,11 @@ export default function Page({ params: { runId } }: any) {
 
                     <div className="tab-pane" id="stock-correction">
                       {run?.id ? (
-                        <RunStockCounterEntry
-                          runId={run.id}
-                          clientTier2Id={run.campaign.project.clientTier2.id}
-                        />
+                        <p>Stock Correction</p>
+                        // <RunStockCounterEntry
+                        //   runId={run.id}
+                        //   clientTier2Id={run.campaign.project.clientTier2.id}
+                        // />
                       ) : null}
                     </div>
                   </div>
@@ -479,7 +485,8 @@ export default function Page({ params: { runId } }: any) {
               return (
                 <div className="tab-pane" id={`activity-${activity.id}`} key={`run-type-${i}`}>
                   {run?.id && run?.campaign?.project?.clientTier2?.id ? (
-                    <RunSampling runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    <p>Sampling</p>
+                    // <RunSampling runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
                   ) : null}
                 </div>
               );
