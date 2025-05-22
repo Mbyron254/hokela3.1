@@ -128,8 +128,7 @@ export default function Page() {
       sortable: false,
       center: true,
       selector: (row: any) => row.id,
-      cell: (row: any) => {
-        return (
+      cell: (row: any) => (
           <button
             type='button'
             className='btn btn-light btn-sm me-2'
@@ -140,10 +139,10 @@ export default function Page() {
               loadUnit(row.id);
             }}
           >
-            <i className='mdi mdi-circle-edit-outline'></i>
+            <i className='mdi mdi-circle-edit-outline'/>
           </button>
-        );
-      },
+        )
+      
     },
   ];
   const columnsRecycled = [
