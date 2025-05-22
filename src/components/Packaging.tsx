@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { IPackagingCreate } from 'src/lib/interface/product.interface';
 import {
@@ -209,6 +209,13 @@ export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
       cell: (row: any) => row.cost,
     },
   ];
+
+  // Add this useEffect to open the dialog when productId is set
+  useEffect(() => {
+    if (productId) {
+      openDialog();
+    }
+  }, [productId]);
 
   return (
     <Dialog
