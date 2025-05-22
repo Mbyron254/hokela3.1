@@ -33,13 +33,11 @@ export default function Page({ params: { runId } }: any) {
     toastmsg: false,
   });
 
-  const loadRun = () => {
+  useEffect(() => {
     if (runId) {
       getRun({ variables: { input: { id: runId } } });
     }
-  };
-
-  useEffect(() => loadRun(), []);
+  }, [runId, getRun]);
 
   return (
     <>
@@ -156,7 +154,7 @@ export default function Page({ params: { runId } }: any) {
               return (
                 <li className="nav-item" key={`run-type-${i}`}>
                   <a
-                    href={`#no-activity`}
+                    href="#no-activity"
                     data-bs-toggle="tab"
                     aria-expanded="false"
                     className="nav-link rounded-0"
@@ -188,7 +186,7 @@ export default function Page({ params: { runId } }: any) {
                       <a
                         href={`#run-dashboard-${i}`}
                         data-bs-toggle="tab"
-                        aria-expanded={`${i === 0 ? 'true' : 'false'}`}
+                        aria-expanded={i === 0}
                         className={`nav-link ${i === 0 ? 'active' : ''}`}
                       >
                         <span className="d-md-block">{activity.name}</span>
@@ -202,7 +200,7 @@ export default function Page({ params: { runId } }: any) {
                       <a
                         href={`#run-dashboard-${i}`}
                         data-bs-toggle="tab"
-                        aria-expanded={`${i === 0 ? 'true' : 'false'}`}
+                        aria-expanded={i === 0}
                         className={`nav-link ${i === 0 ? 'active' : ''}`}
                       >
                         <span className="d-md-block">{activity.name}</span>
@@ -216,7 +214,7 @@ export default function Page({ params: { runId } }: any) {
                       <a
                         href={`#run-dashboard-${i}`}
                         data-bs-toggle="tab"
-                        aria-expanded={`${i === 0 ? 'true' : 'false'}`}
+                        aria-expanded={i === 0}
                         className={`nav-link ${i === 0 ? 'active' : ''}`}
                       >
                         <span className="d-md-block">{activity.name}</span>
@@ -230,7 +228,7 @@ export default function Page({ params: { runId } }: any) {
                       <a
                         href={`#run-dashboard-${i}`}
                         data-bs-toggle="tab"
-                        aria-expanded={`${i === 0 ? 'true' : 'false'}`}
+                        aria-expanded={i === 0}
                         className={`nav-link ${i === 0 ? 'active' : ''}`}
                       >
                         <span className="d-md-block">{activity.name}</span>
@@ -244,7 +242,7 @@ export default function Page({ params: { runId } }: any) {
                       <a
                         href={`#run-dashboard-${i}`}
                         data-bs-toggle="tab"
-                        aria-expanded={`${i === 0 ? 'true' : 'false'}`}
+                        aria-expanded={i === 0}
                         className={`nav-link ${i === 0 ? 'active' : ''}`}
                       >
                         <span className="d-md-block">{activity.name}</span>
@@ -258,7 +256,7 @@ export default function Page({ params: { runId } }: any) {
                       <a
                         href={`#run-dashboard-${i}`}
                         data-bs-toggle="tab"
-                        aria-expanded={`${i === 0 ? 'true' : 'false'}`}
+                        aria-expanded={i === 0}
                         className={`nav-link ${i === 0 ? 'active' : ''}`}
                       >
                         <span className="d-md-block">Unsupported Run Activity</span>
