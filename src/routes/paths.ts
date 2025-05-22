@@ -29,7 +29,7 @@ const v2_paths = {
       root: `${ROOTS.V2}/admin/dashboard/utilities`,
       products: {
         category: `${ROOTS.V2}/admin/dashboard/utilities/category`,
-        sub_category: `${ROOTS.V2}/admin/dashboard/utilities/sub-category`,
+        sub_category: `${ROOTS.V2}/admin/dashboard/utilities/subcategory`,
       },
     },
 

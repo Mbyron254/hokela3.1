@@ -2,129 +2,187 @@
 
 import { useEffect, useState } from 'react';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
+import { IUnitCreate, IUnitUpdate } from 'src/lib/interface/unit.interface';
 import {
-  PRODUCT_SUB_CATEGORY,
-  PRODUCT_SUB_CATEGORY_CREATE,
-  PRODUCT_SUB_CATEGORY_RECYCLE,
-  PRODUCT_SUB_CATEGORY_RESTORE,
-  PRODUCT_SUB_CATEGORY_UPDATE,
-} from 'src/lib/mutations/product-sub-category.mutation';
-import {
-  Q_PRODUCT_SUB_CATEGORIES_ACTIVE,
-  Q_PRODUCT_SUB_CATEGORIES_RECYCLED,
-} from 'src/lib/queries/product-sub-category.query';
-import { Q_PRODUCT_CATEGORIES_MINI } from 'src/lib/queries/product-category.query';
-import {
-  IProductSubCategoryCreate,
-  IProductSubCategoryUpdate,
-} from 'src/lib/interface/product-sub-category.interface';
-import { LoadingDiv } from 'src/components/LoadingDiv';
+  UNIT,
+  UNIT_CREATE,
+  UNIT_RECYCLE,
+  UNIT_RESTORE,
+  UNIT_UPDATE,
+} from 'src/lib/mutations/unit.mutation';
+import { Q_UNITS_ACTIVE, Q_UNITS_RECYCLED } from 'src/lib/queries/unit.query';
 import { Button, Tab, Tabs, TextField, Modal, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { LoadingDiv } from 'src/components/LoadingDiv';
+import { MutationButton } from 'src/components/MutationButton';
 
 export default function Page() {
   const queryFilters = { page: 0, pageSize: 10 };
-
-  const { data: categories } = GQLQuery({
-    query: Q_PRODUCT_CATEGORIES_MINI,
-    queryAction: 'productCategories',
-    variables: { input: {} },
-  });
   const {
-    refetch: refetchSubcategoriesActive,
-    data: subcategoriesActive,
-    loading: loadingSubcategoriesActive,
+    refetch: refetchUnitsActive,
+    data: unitsActive,
+    loading: loadingUnitsActive,
   } = GQLQuery({
-    query: Q_PRODUCT_SUB_CATEGORIES_ACTIVE,
-    queryAction: 'productSubCategories',
+    query: Q_UNITS_ACTIVE,
+    queryAction: 'units',
     variables: { input: queryFilters },
   });
   const {
-    refetch: refetchSubcategoriesRecycled,
-    data: subcategoriesRecycled,
-    loading: loadingSubcategoriesRecycled,
+    refetch: refetchUnitsRecycled,
+    data: unitsRecycled,
+    loading: loadingUnitsRecycled,
   } = GQLQuery({
-    query: Q_PRODUCT_SUB_CATEGORIES_RECYCLED,
-    queryAction: 'productSubCategoriesRecycled',
+    query: Q_UNITS_RECYCLED,
+    queryAction: 'unitsRecycled',
     variables: { input: queryFilters },
   });
   const {
-    action: getSubcategory,
-    loading: loadingSubcategory,
-    data: subcategory,
+    action: getUnit,
+    loading: loadingUnit,
+    data: unit,
   } = GQLMutation({
-    mutation: PRODUCT_SUB_CATEGORY,
-    resolver: 'm_productSubCategory',
+    mutation: UNIT,
+    resolver: 'm_unit',
     toastmsg: false,
   });
   const { action: create, loading: creating } = GQLMutation({
-    mutation: PRODUCT_SUB_CATEGORY_CREATE,
-    resolver: 'productSubCategoryCreate',
+    mutation: UNIT_CREATE,
+    resolver: 'unitCreate',
     toastmsg: true,
   });
   const { action: update, loading: updating } = GQLMutation({
-    mutation: PRODUCT_SUB_CATEGORY_UPDATE,
-    resolver: 'productSubCategoryUpdate',
+    mutation: UNIT_UPDATE,
+    resolver: 'unitUpdate',
     toastmsg: true,
   });
   const { action: recycle, loading: recycling } = GQLMutation({
-    mutation: PRODUCT_SUB_CATEGORY_RECYCLE,
-    resolver: 'productSubCategoryRecycle',
+    mutation: UNIT_RECYCLE,
+    resolver: 'unitRecycle',
     toastmsg: true,
   });
   const { action: restore, loading: restoring } = GQLMutation({
-    mutation: PRODUCT_SUB_CATEGORY_RESTORE,
-    resolver: 'productSubCategoryRestore',
+    mutation: UNIT_RESTORE,
+    resolver: 'unitRestore',
     toastmsg: true,
   });
-
-  const _inputUpdate: IProductSubCategoryUpdate = {
+  const _inputUpdate: IUnitUpdate = {
     id: undefined,
-    productCategoryId: undefined,
     name: undefined,
+    abbreviation: undefined,
   };
 
   const [selectedActive, setSelectedActive] = useState<string[]>([]);
   const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
-  const [inputCreate, setInputCreate] = useState<IProductSubCategoryCreate>({
-    productCategoryId: undefined,
+  const [inputCreate, setInputCreate] = useState<IUnitCreate>({
     name: undefined,
+    abbreviation: undefined,
   });
   const [inputUpdate, setInputUpdate] = useState(_inputUpdate);
   const [tabValue, setTabValue] = useState(0);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
   const columnsActive = [
-    { name: '#', selector: (row: any) => row.index },
-    { name: 'NAME', selector: (row: any) => row.name },
-    { name: 'CATEGORY', selector: (row: any) => row.productCategory?.name },
-    { name: 'PRODUCTS', selector: (row: any) => row.products?.length },
-    { name: 'REGISTERED', selector: (row: any) => row.created },
+    {
+      name: '#',
+      width: '60px',
+      sortable: true,
+      selector: (row: any) => row.index,
+      cell: (row: any) => row.index,
+    },
+    {
+      name: 'NAME',
+      sortable: true,
+      wrap: true,
+      grow: 2,
+      selector: (row: any) => row.name,
+      cell: (row: any) => row.name,
+    },
+    {
+      name: 'ABBREVIATION',
+      sortable: true,
+      wrap: true,
+      selector: (row: any) => row.abbreviation,
+      cell: (row: any) => row.abbreviation,
+    },
+    {
+      name: 'PACKAGINGS',
+      sortable: true,
+      wrap: true,
+      selector: (row: any) => row.packagings?.length,
+      cell: (row: any) => row.packagings?.length,
+    },
+    {
+      name: 'CREATED',
+      sortable: true,
+      wrap: true,
+      selector: (row: any) => row.created,
+      cell: (row: any) => row.created,
+    },
     {
       name: 'MORE',
+      sortable: false,
+      center: true,
       selector: (row: any) => row.id,
-      cell: (row: any) => (
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() => {
-            setInputUpdate(_inputUpdate);
-            loadSubCategory(row.id);
-            setUpdateModalOpen(true);
-          }}
-        >
-          Edit
-        </Button>
-      ),
+      cell: (row: any) => {
+        return (
+          <button
+            type='button'
+            className='btn btn-light btn-sm me-2'
+            data-bs-toggle='modal'
+            data-bs-target='#update-modal'
+            onClick={() => {
+              setInputUpdate(_inputUpdate);
+              loadUnit(row.id);
+            }}
+          >
+            <i className='mdi mdi-circle-edit-outline'></i>
+          </button>
+        );
+      },
     },
   ];
   const columnsRecycled = [
-    { name: '#', selector: (row: any) => row.index },
-    { name: 'NAME', selector: (row: any) => row.name },
-    { name: 'CATEGORY', selector: (row: any) => row.productCategory?.name },
-    { name: 'PRODUCTS', selector: (row: any) => row.products?.length },
-    { name: 'RECYCLED', selector: (row: any) => row.recycled },
+    {
+      name: '#',
+      width: '60px',
+      sortable: true,
+      selector: (row: any) => row.index,
+      cell: (row: any) => row.index,
+    },
+    {
+      name: 'NAME',
+      sortable: true,
+      wrap: true,
+      grow: 2,
+      selector: (row: any) => row.name,
+      cell: (row: any) => row.name,
+    },
+    {
+      name: 'ABBREVIATION',
+      sortable: true,
+      wrap: true,
+      selector: (row: any) => row.abbreviation,
+      cell: (row: any) => row.abbreviation,
+    },
+    {
+      name: 'PACKAGINGS',
+      sortable: true,
+      wrap: true,
+      selector: (row: any) => row.packagings?.length,
+      cell: (row: any) => row.packagings?.length,
+    },
+    {
+      name: 'RECYCLED',
+      sortable: true,
+      wrap: true,
+      selector: (row: any) => row.recycled,
+      cell: (row: any) => row.recycled,
+    },
   ];
 
   const handleCreate = () => {
@@ -143,52 +201,48 @@ export default function Page() {
       restore({ variables: { input: { ids: selectedRecycled } } });
     }
   };
-  const loadSubCategory = (id: string) => {
-    getSubcategory({ variables: { input: { id } } });
-  };
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
+  const loadUnit = (id: string) => {
+    getUnit({ variables: { input: { id } } });
   };
 
   useEffect(() => {
-    if (subcategory) {
+    if (unit) {
       setInputUpdate({
-        id: subcategory.id,
-        name: subcategory.name,
-        productCategoryId: subcategory.productCategory?.id,
+        id: unit.id,
+        name: unit.name,
+        abbreviation: unit.abbreviation,
       });
     }
-  }, [subcategory]);
+  }, [unit]);
 
   return (
     <>
       <CustomBreadcrumbs
-        heading="Product Subcategories"
+        heading="Units of Measurement"
         links={[
           { name: 'Admin', href: '/admin' },
-          { name: 'Product Subcategories' },
+          { name: 'Units of Measurement' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <div className="row">
-        <div className="col-12">
-          <Tabs value={tabValue} onChange={handleTabChange} aria-label="subcategory tabs">
+      <div className='row'>
+        <div className='col-12'>
+          <Tabs value={tabValue} onChange={handleTabChange} aria-label="unit tabs">
             <Tab label="Active Records" />
             <Tab label="Recycled Records" />
           </Tabs>
 
-          <div className="tab-content">
+          <div className='tab-content'>
             {tabValue === 0 && (
               <div>
-                <div className="btn-group mb-2">
+                <div className='btn-group mb-2'>
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={() => setCreateModalOpen(true)}
                   >
-                    New Subcategory
+                    New Unit
                   </Button>
                   <Button
                     variant="outlined"
@@ -210,10 +264,10 @@ export default function Page() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {subcategoriesActive?.rows.map((row: any, index: any) => (
+                      {unitsActive?.rows.map((row: any, index: any) => (
                         <TableRow key={index}>
                           {columnsActive.map((column) => (
-                            <TableCell key={column.name}>{column.cell ? column.cell(row) : column.selector(row)}</TableCell>
+                            <TableCell key={column.name}>{column.cell(row)}</TableCell>
                           ))}
                         </TableRow>
                       ))}
@@ -225,7 +279,7 @@ export default function Page() {
 
             {tabValue === 1 && (
               <div>
-                <div className="btn-group mb-2">
+                <div className='btn-group mb-2'>
                   <Button
                     variant="outlined"
                     color="secondary"
@@ -246,10 +300,10 @@ export default function Page() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {subcategoriesRecycled?.rows.map((row: any, index: any) => (
+                      {unitsRecycled?.rows.map((row: any, index: any) => (
                         <TableRow key={index}>
                           {columnsRecycled.map((column) => (
-                            <TableCell key={column.name}>{column.selector(row)}</TableCell>
+                            <TableCell key={column.name}>{column.cell(row)}</TableCell>
                           ))}
                         </TableRow>
                       ))}
@@ -263,14 +317,14 @@ export default function Page() {
           <Modal
             open={createModalOpen}
             onClose={() => setCreateModalOpen(false)}
-            aria-labelledby="create-subcategory-modal"
+            aria-labelledby="create-unit-modal"
           >
             <Box sx={{ ...modalStyle }}>
               <Typography variant="h6" component="h2">
-                New Subcategory
+                New Unit
               </Typography>
               <TextField
-                label="Subcategory Name"
+                label="Unit Name"
                 variant="outlined"
                 fullWidth
                 value={inputCreate.name}
@@ -282,28 +336,17 @@ export default function Page() {
                 }
               />
               <TextField
-                select
-                label="Category"
+                label="Abbreviation"
                 variant="outlined"
                 fullWidth
-                value={inputCreate.productCategoryId}
+                value={inputCreate.abbreviation}
                 onChange={(e) =>
                   setInputCreate({
                     ...inputCreate,
-                    productCategoryId: e.target.value,
+                    abbreviation: e.target.value,
                   })
                 }
-                SelectProps={{
-                  native: true,
-                }}
-              >
-                <option value="">Select a category</option>
-                {categories?.rows.map((category: any) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </TextField>
+              />
               <Button
                 variant="contained"
                 color="primary"
@@ -318,18 +361,18 @@ export default function Page() {
           <Modal
             open={updateModalOpen}
             onClose={() => setUpdateModalOpen(false)}
-            aria-labelledby="update-subcategory-modal"
+            aria-labelledby="update-unit-modal"
           >
             <Box sx={{ ...modalStyle }}>
-              {loadingSubcategory ? (
+              {loadingUnit ? (
                 <LoadingDiv />
               ) : (
                 <>
                   <Typography variant="h6" component="h2">
-                    Edit Subcategory
+                    Edit Unit
                   </Typography>
                   <TextField
-                    label="Subcategory Name"
+                    label="Unit Name"
                     variant="outlined"
                     fullWidth
                     value={inputUpdate.name}
@@ -337,6 +380,18 @@ export default function Page() {
                       setInputUpdate({
                         ...inputUpdate,
                         name: e.target.value,
+                      })
+                    }
+                  />
+                  <TextField
+                    label="Abbreviation"
+                    variant="outlined"
+                    fullWidth
+                    value={inputUpdate.abbreviation}
+                    onChange={(e) =>
+                      setInputUpdate({
+                        ...inputUpdate,
+                        abbreviation: e.target.value,
                       })
                     }
                   />
