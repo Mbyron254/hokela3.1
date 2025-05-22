@@ -1,24 +1,33 @@
 'use client';
 
-import Image from 'next/image';
 
 import { FC, useEffect, useState } from 'react';
-// import { MutationButton } from '../MutationButton';
+import Image from 'next/image';
 import {
   ALLOCATE_INVENTORY,
   M_AGENTS_ALLOCATIONS,
   M_STOCK_BALANCE,
 } from 'src/lib/mutations/inventory-allocation.mutation';
-import { M_RUN_TEAMS_MINI } from 'src/lib/mutations/run-team.mutation';
 import { GQLMutation } from 'src/lib/client';
 import { M_PRODUCTS_MINI } from 'src/lib/mutations/product.mutation';
 import { M_CAMPAIGN_AGENTS } from 'src/lib/mutations/run-offer.mutation';
 import { sourceImage } from 'src/lib/server';
 import { TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
 import { M_PACKAGINGS_MINI } from 'src/lib/mutations/packaging.mutation';
-import { IAllocations, IInventoryAllocation } from 'src/lib/interface/general.interface';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, TextField, Button, Select, MenuItem, FormControl, InputLabel, FormControlLabel } from '@mui/material';
 import { LoadingSpan } from '../LoadingSpan';
+import { IAllocations, IInventoryAllocation } from 'src/lib/interface/general.interface';
+
+import { M_RUN_TEAMS_MINI } from 'src/lib/mutations/run-team.mutation';
+import { MutationButton } from '../MutationButton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Checkbox from '@mui/material/Checkbox';
+
 
 export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) => {
   const {
@@ -92,17 +101,53 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   const [search, setSearch] = useState<string>();
   const [teamId, setTeamId] = useState<string>();
 
+  const loadTeams = () => {
+    if (runId) {
+      getTeams({ variables: { input: { runId } } });
+    }
+  };
   const loadAgents = (page?: number, pageSize?: number) => {
     if (runId) {
       getAgents({ variables: { input: { search, runId, teamId, page, pageSize } } });
     }
   };
-
+  const loadProducts = () => {
+    getProducts({ variables: { input: { clientTier2Id } } });
+  };
+  const loadPackagings = () => {
+    if (product.id) {
+      getPackagings({
+        variables: { input: { productId: product.id } },
+      });
+    }
+  };
+  const loadStock = () => {
+    if (product.id && product.packagingId) {
+      getStock({
+        variables: {
+          input: { productId: product.id, packagingId: product.packagingId },
+        },
+      });
+    }
+  };
+  const loadAllocations = () => {
+    if (runId && product.id && product.packagingId && selectedAgents) {
+      getAllocations({
+        variables: {
+          input: {
+            runId,
+            packagingId: product.packagingId,
+            agents: selectedAgents,
+          },
+        },
+      });
+    }
+  };
   const handleAllocate = () => {
     if (allocations.length) {
       const _allocations: { agentId: string; quantity: number }[] = [];
 
-      for (let x = 0; x < allocations.length; x += 1) {
+      for (let x = 0; x < allocations.length; x++) {
         _allocations.push({
           agentId: allocations[x].id,
           quantity: allocations[x].allocated,
@@ -120,7 +165,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
           },
         });
       } else {
-        alert("Please select agent(s), a product and its packaging");
+        alert("Please select agent(s), a product and it's packaging");
       }
     }
   };
@@ -129,14 +174,15 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
 
     let _allocationTotal = 0;
 
-    for (let i = 0; i < _curr.length; i += 1) {
+    for (let i = 0; i < _curr.length; i++) {
       if (bulkFill) {
-        _curr[i].allocated = parseInt(event.target.value, 10) || 0;
-      } else if (_curr[i].id === id) {
-        const newAllocation = parseInt(event.target.value, 10) || 0;
+        _curr[i].allocated = parseInt(event.target.value) | 0;
+      } else {
+        if (_curr[i].id === id) {
+          const newAllocation = parseInt(event.target.value) | 0;
 
-        _curr[i].allocated = newAllocation < _curr[i].sold ? _curr[i].sold : newAllocation;
-
+          _curr[i].allocated = newAllocation < _curr[i].sold ? _curr[i].sold : newAllocation;
+        }
       }
       _allocationTotal += _curr[i].allocated;
     }
@@ -145,22 +191,49 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   };
 
   const columns = [
-    { id: 'index', label: '#', minWidth: 60 },
-    { id: 'agent', label: 'AGENT', minWidth: 170 },
+    {
+      name: '#',
+      width: '60px',
+      sortable: true,
+      selector: (row: any) => row.index,
+      cell: (row: any) => row.index,
+    },
+    {
+      name: 'AGENT',
+      sortable: true,
+      wrap: true,
+      selector: (row: any) => row.date,
+      cell: (row: any) => (
+        <>
+          <Image
+            className="me-1 mt-1 mb-1 rounded-circle"
+            src={sourceImage(row.agent?.user?.photo?.fileName)}
+            loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
+            alt=""
+            width={TABLE_IMAGE_WIDTH}
+            height={TABLE_IMAGE_HEIGHT}
+          />
+          <div className="w-100 overflow-hidden">
+            <h6 className="mt-1 mb-1">{row.agent?.user?.name}</h6>
+            <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
+          </div>
+        </>
+      ),
+    },
   ];
 
-  useEffect(() => getProducts({ variables: { input: { clientTier2Id } } }), [clientTier2Id, getProducts]);
-  useEffect(() => getTeams({ variables: { input: { runId } } }), [runId, getTeams]);
-  useEffect(() => getPackagings({ variables: { input: { productId: product.id } } }), [product.id, getPackagings]);
-  useEffect(() => getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } }), [product.id, product.packagingId, getStock]);
-  useEffect(() => getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } }), [product.id, product.packagingId, selectedAgents, getAllocations, runId]);
+  useEffect(() => loadProducts(), []);
+  useEffect(() => loadTeams(), [runId]);
+  useEffect(() => loadPackagings(), [product.id]);
+  useEffect(() => loadStock(), [product.id, product.packagingId]);
+  useEffect(() => loadAllocations(), [product.id, product.packagingId, selectedAgents]);
   useEffect(() => {
     if (allocation?.entries) {
       const _allocations: IAllocations[] = [];
 
       let _allocationTotal = 0;
 
-      for (let i = 0; i < allocation.entries.length; i += 1) {
+      for (let i = 0; i < allocation.entries.length; i++) {
         _allocations.push({
           index: allocation.entries[i].index,
           id: allocation.entries[i].agent?.id,
@@ -182,74 +255,74 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
         <div className="col-md-5">
           <div className="card border border-primary">
             <div className="card-body">
-              <div className="row">
-                <div className="col-md-6">
-                  {loadingTeams ? (
-                    <LoadingSpan />
-                  ) : (
-                    <FormControl fullWidth variant="outlined" className="mb-3">
-                      <InputLabel id="team-label">Filter by team</InputLabel>
-                      <Select
-                        labelId="team-label"
-                        id="team"
-                        value={teamId}
-                        onChange={(e) => setTeamId(e.target.value)}
-                        label="Filter by team"
-                      >
-                        <MenuItem value="">
-                          <em>None</em>
-                        </MenuItem>
-                        {teams?.rows.map((team: any, index: number) => (
-                          <MenuItem value={team.id} key={`team-${index}`}>
-                            {team.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  )}
+              {loadingTeams ? (
+                <LoadingSpan />
+              ) : (
+                <div className="mb-3">
+                  <label htmlFor="team">Filter by team</label>
+                  <select
+                    id="team"
+                    className="form-select mt-2"
+                    aria-label="Filter By Team"
+                    value={teamId}
+                    onChange={(e) => setTeamId(e.target.value)}
+                  >
+                    <option></option>
+                    {teams?.rows.map((team: any, index: number) => (
+                      <option value={team.id} key={`team-${index}`}>
+                        {team.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="col-md-6">
-                  <TextField
+              )}
+
+              <div className="app-search mb-3">
+                <div className="input-group">
+                  <input
+                    type="text"
                     id="top-search"
-                    label="Search agent..."
-                    variant="outlined"
-                    fullWidth
-                    className="mb-3"
+                    className="form-control dropdown-toggle"
+                    placeholder="Search agent..."
                     defaultValue={search}
                     onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
-                    InputProps={{
-                      endAdornment: (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          disabled={loadingAgents}
-                          onClick={() => loadAgents(0, 10)}
-                        >
-                          {loadingAgents ? 'Loading...' : 'Search'}
-                        </Button>
-                      ),
-                    }}
                   />
+                  <span className="mdi mdi-magnify search-icon"></span>
+                  <button
+                    className="input-group-text btn-primary"
+                    type="button"
+                    disabled={loadingAgents}
+                    onClick={() => loadAgents(0, 10)}
+                  >
+                    {loadingAgents && (
+                      <>
+                        <i className="spinner-border spinner-border-sm me-1" role="status" />
+                        Loading
+                      </>
+                    )}
+
+                    {!loadingAgents && <>Search</>}
+                  </button>
                 </div>
               </div>
 
               <hr className="mb-2" />
 
               <TableContainer component={Paper}>
-                <Table stickyHeader aria-label="agents table">
+                <Table size="small" aria-label="agents table">
                   <TableHead>
                     <TableRow>
-                      {columns.map((column) => (
-                        <TableCell key={column.id} style={{ minWidth: column.minWidth }}>
-                          {column.label}
-                        </TableCell>
-                      ))}
+                      <TableCell>#</TableCell>
+                      <TableCell>Agent</TableCell>
+                      <TableCell align="right">Select</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {agents?.rows.map((row: any, index: number) => (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                        <TableCell>{row.index}</TableCell>
+                      <TableRow key={row.id}>
+                        <TableCell component="th" scope="row">
+                          {index + 1}
+                        </TableCell>
                         <TableCell>
                           <Image
                             className="me-1 mt-1 mb-1 rounded-circle"
@@ -264,6 +337,17 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
                             <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
                           </div>
                         </TableCell>
+                        <TableCell align="right">
+                          <Checkbox
+                            checked={selectedAgents.includes(row.id)}
+                            onChange={() => {
+                              const newSelectedAgents = selectedAgents.includes(row.id)
+                                ? selectedAgents.filter((id) => id !== row.id)
+                                : [...selectedAgents, row.id];
+                              setSelectedAgents(newSelectedAgents);
+                            }}
+                          />
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -274,67 +358,63 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
         </div>
 
         <div className="col-md-7">
-          <div className="card border-primary border mb-3">
+          <div className="card border-primary border">
             <div className="card-body">
               <div className="row">
                 <div className="col-md-6">
                   {loadingProducts ? (
                     <LoadingSpan />
                   ) : (
-                    <FormControl fullWidth variant="outlined" className="mb-3">
-                      <InputLabel id="product-label">Product</InputLabel>
-                      <Select
-                        labelId="product-label"
+                    <div className="form-floating mb-3">
+                      <select
                         id="product"
-                        value={product.id}
+                        className="form-select"
+                        aria-label="Product"
+                        defaultValue={product.id}
                         onChange={(e) =>
                           setProduct({
                             ...product,
                             id: e.target.value === '' ? undefined : e.target.value,
                           })
                         }
-                        label="Product"
                       >
-                        <MenuItem value="">
-                          <em>None</em>
-                        </MenuItem>
-                        {products?.rows.map((prod: any, index: number) => (
-                          <MenuItem value={prod.id} key={`product-${index}`}>
-                            {prod.name}
-                          </MenuItem>
+                        <option></option>
+                        {products?.rows.map((product: any, index: number) => (
+                          <option value={product.id} key={`product-${index}`}>
+                            {product.name}
+                          </option>
                         ))}
-                      </Select>
-                    </FormControl>
+                      </select>
+                      <label htmlFor="product">Product</label>
+                    </div>
                   )}
                 </div>
                 <div className="col-md-6">
                   {loadingPackagings ? (
                     <LoadingSpan />
                   ) : (
-                    <FormControl fullWidth variant="outlined" className="mb-3">
-                      <InputLabel id="packaging-label">Packaging</InputLabel>
-                      <Select
-                        labelId="packaging-label"
+                    <div className="form-floating mb-3">
+                      <select
                         id="packaging"
-                        value={product.packagingId}
+                        className="form-select"
+                        aria-label="Packaging"
+                        defaultValue={product.packagingId}
                         onChange={(e) =>
                           setProduct({
                             ...product,
                             packagingId: e.target.value === '' ? undefined : e.target.value,
                           })
                         }
-                        label="Packaging"
                       >
-                        <MenuItem value="">
-                          <em>None</em>
-                        </MenuItem>
+                        <option></option>
                         {packagings?.rows.map((packaging: any, index: number) => (
-                          <MenuItem key={`packaging-${index}`} value={packaging.id}>
+                          <option key={`packaging-${index}`} value={packaging.id}>
                             {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
-                          </MenuItem>
+                          </option>
                         ))}
-                      </Select>
-                    </FormControl>
+                      </select>
+                      <label htmlFor="packaging">Packaging</label>
+                    </div>
                   )}
                 </div>
               </div>
@@ -354,57 +434,54 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
                 {loadingAllocations ? <LoadingSpan /> : undefined}
 
                 <span className="float-end">
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={bulkFill}
-                        onChange={() => setBulkFill(!bulkFill)}
-                        name="bulkFill"
-                        color="primary"
-                        disabled={allocation?.canBulkFill}
-                      />
-                    }
-                    label="Bulk Fill"
-                  />
+                  <div className="form-check form-check-inline">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="bulkFill"
+                      disabled={allocation?.canBulkFill}
+                      onClick={() => setBulkFill(!bulkFill)}
+                    />
+                    <label className="form-check-label" htmlFor="bulkFill" style={{ marginTop: '3px' }}>
+                      Bulk Fill
+                    </label>
+                  </div>
                 </span>
               </h5>
 
               <hr className="mt-0 mb-1" />
 
               <div className="mb-2">
-                {allocations?.map((alloc: any, index: number) => (
+                {allocations?.map((allocation: any, index: number) => (
                   <div key={`allocation-${index}`}>
                     <dl className="row mb-0">
                       <dt className="col-sm-8">
-                        <span className="me-2">{alloc.index}.</span>
+                        <span className="me-2">{allocation.index}.</span>
                         <Image
                           className="me-2 mt-1 mb-1"
-                          src={sourceImage(alloc.photo)}
-                          loader={() => sourceImage(alloc.photo)}
+                          src={sourceImage(allocation.photo)}
+                          loader={() => sourceImage(allocation.photo)}
                           alt=""
                           width={TABLE_IMAGE_WIDTH}
                           height={TABLE_IMAGE_HEIGHT}
                         />
-                        {alloc.name}
+                        {allocation.name}
                       </dt>
                       <dd className="col-sm-4">
                         <div className="input-group input-group-sm">
-                          <TextField
+                          <input
                             type="text"
-                            variant="outlined"
-                            size="small"
-                            disabled
-                            placeholder={`Sold: ${alloc.sold}`}
-                            fullWidth
+                            className="form-control form-control-sm font-14"
+                            disabled={true}
+                            placeholder={`Sold: ${allocation.sold}`}
                           />
-                          <TextField
+                          <input
                             type="number"
-                            variant="outlined"
-                            size="small"
-                            value={alloc.allocated}
-                            onChange={(e) => handleChange(alloc.id, e)}
-                            fullWidth
-                            inputProps={{ min: alloc.sold }}
+                            id="quantity-1"
+                            className="form-control form-control-sm font-14"
+                            min={allocation.sold}
+                            value={allocation.allocated}
+                            onChange={(e) => handleChange(allocation.id, e)}
                           />
                         </div>
                       </dd>
@@ -417,17 +494,15 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
             </div>
           </div>
 
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
+          <MutationButton
+            type="button"
+            size="sm"
+            label="Save"
+            icon="mdi mdi-refresh"
             className="float-end"
-            startIcon={<i className="mdi mdi-refresh" />}
+            loading={allocating}
             onClick={handleAllocate}
-            disabled={allocating}
-          >
-            {allocating ? 'Saving...' : 'Save'}
-          </Button>
+          />
         </div>
       </div>
     </>
