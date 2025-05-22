@@ -35,6 +35,7 @@ export default function Page({ params: { runId } }: any) {
   });
 
   const [activeTab, setActiveTab] = useState(0);
+  const [activeSalesSubTab, setActiveSalesSubTab] = useState(0);
 
   useEffect(() => {
     if (runId) {
@@ -44,6 +45,10 @@ export default function Page({ params: { runId } }: any) {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
+  };
+
+  const handleSalesSubTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveSalesSubTab(newValue);
   };
 
   return (
@@ -217,11 +222,34 @@ export default function Page({ params: { runId } }: any) {
               <Typography variant="h6">{activity.name} Content</Typography>
               {activity.name === RUN_ACTIVITY_SALES && (
                 <div>
-                  <RunSalesQuestions runId={run.id} />
-                  <RunSalesStockAllocation runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
-                  <RunSalesGiveawayQuestions runId={run.id} />
-                  <RunSalesGiveawayConfig runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
-                  <RunStockCounterEntry runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                  <Tabs
+                    value={activeSalesSubTab}
+                    onChange={handleSalesSubTabChange}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="fullWidth"
+                    aria-label="sales sub-tabs"
+                  >
+                    <Tab label="Questions" />
+                    <Tab label="Stock Allocation" />
+                    <Tab label="Giveaway Questions" />
+                    <Tab label="Giveaway Config" />
+                    <Tab label="Stock Counter Entry" />
+                  </Tabs>
+
+                  <div>
+                    {activeSalesSubTab === 0 && <RunSalesQuestions runId={run.id} />}
+                    {activeSalesSubTab === 1 && (
+                      <RunSalesStockAllocation runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    )}
+                    {activeSalesSubTab === 2 && <RunSalesGiveawayQuestions runId={run.id} />}
+                    {activeSalesSubTab === 3 && (
+                      <RunSalesGiveawayConfig runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    )}
+                    {activeSalesSubTab === 4 && (
+                      <RunStockCounterEntry runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    )}
+                  </div>
                 </div>
               )}
               {activity.name === RUN_ACTIVITY_SAMPLING && (
