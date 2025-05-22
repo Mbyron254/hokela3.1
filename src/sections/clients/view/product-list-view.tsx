@@ -280,6 +280,11 @@ export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
       });
     }
   }, [product]);
+  useEffect(() => {
+    if (productsActive) {
+      console.log('Active Products:', productsActive);
+    }
+  }, [productsActive]);
 
   return (
     <>

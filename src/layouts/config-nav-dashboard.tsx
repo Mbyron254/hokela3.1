@@ -80,7 +80,7 @@ const adminNavData = [
         path: paths.v2[ERole.ADMIN].utilities.root,
         icon: ICONS.utilities,
         children: [
-          { title: 'Unit Of Measure', path: paths.v2[ERole.ADMIN].utilities.root },
+          { title: 'Unit Of Measure', path: paths.v2[ERole.ADMIN].utilities.units },
           {
             title: 'Products',
             path: paths.v2[ERole.ADMIN].utilities.products.category,

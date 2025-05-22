@@ -27,6 +27,7 @@ const v2_paths = {
     },
     utilities: {
       root: `${ROOTS.V2}/admin/dashboard/utilities`,
+      units: `${ROOTS.V2}/admin/dashboard/utilities/units`,
       products: {
         category: `${ROOTS.V2}/admin/dashboard/utilities/category`,
         sub_category: `${ROOTS.V2}/admin/dashboard/utilities/subcategory`,
