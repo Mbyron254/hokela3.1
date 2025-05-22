@@ -262,7 +262,7 @@ export default function Page({ params: { runId } }: any) {
                     )}
                     {activeSalesSubTab === 4 && (
                       // <RunStockCounterEntry runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
-                      <p>Stock Correction</p>
+                      <p>Stock Correction.</p>
                     )}
                   </div>
                 </div>
