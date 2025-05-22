@@ -151,7 +151,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
 
   useEffect(() => getProducts({ variables: { input: { clientTier2Id } } }), [clientTier2Id, getProducts]);
   useEffect(() => getTeams({ variables: { input: { runId } } }), [runId, getTeams]);
-  useEffect(() => getPackagings({ variables: { input: { productId: product.packagingId } } }), [product.packagingId, getPackagings]);
+  useEffect(() => getPackagings({ variables: { input: { productId: product.id } } }), [product.id, getPackagings]);
   useEffect(() => getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } }), [product.id, product.packagingId, getStock]);
   useEffect(() => getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } }), [product.id, product.packagingId, selectedAgents, getAllocations, runId]);
   useEffect(() => {
