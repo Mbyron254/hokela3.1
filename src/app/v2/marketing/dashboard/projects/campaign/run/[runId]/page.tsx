@@ -13,17 +13,17 @@ import {
 import { M_CAMPAIGN_RUN } from 'src/lib/mutations/campaign-run.mutation';
 import { RunProfile } from 'src/components/RunProfile';
 // import { RunRollCall } from 'src/components/RunRollCall';
-import { RunDashboardSurvey } from 'src/components/run/RunDashboardSurvey';
+// import { RunDashboardSurvey } from 'src/components/run/RunDashboardSurvey';
 import { RunDashboardSales } from 'src/components/run/RunDashboardSales';
-import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocation';
+// import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocation';
 // import { RunKPIs } from 'src/components/run/RunKPIs';
 // import { RunPayroll } from 'src/components/run/RunPayroll';
 // import { RunPayRate } from 'src/components/run/RunPayRate';
 // import { RunSampling } from 'src/components/run/RunSampling';
-import { RunSalesGiveawayConfig } from 'src/components/run/RunSalesGiveawayConfig';
-import { RunSalesGiveawayQuestions } from 'src/components/run/RunSalesGiveawayQuestions';
-import { RunSalesQuestions } from 'src/components/run/RunSalesQuestions';
-import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
+// import { RunSalesGiveawayConfig } from 'src/components/run/RunSalesGiveawayConfig';
+// import { RunSalesGiveawayQuestions } from 'src/components/run/RunSalesGiveawayQuestions';
+// import { RunSalesQuestions } from 'src/components/run/RunSalesQuestions';
+// import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
 // import { RunStockCounterEntry } from 'src/components/run/RunStockCounterEntry';
 // import { RunTeam } from 'src/components/run/RunTeam';
 
@@ -136,7 +136,8 @@ export default function Page({ params: { runId } }: any) {
                         id={`run-dashboard-${i}`}
                         key={`run-dash-${i}`}
                       >
-                        {run?.id ? <RunDashboardSurvey runId={run.id} /> : null}
+                        {/* {run?.id ? <RunDashboardSurvey runId={run.id} /> : null} */}
+                        <p>Survey</p>
                       </div>
                     );
 
@@ -243,13 +244,21 @@ export default function Page({ params: { runId } }: any) {
                   </Tabs>
 
                   <div>
-                    {activeSalesSubTab === 0 && <RunSalesQuestions runId={run.id} />}
+                    {activeSalesSubTab === 0 && 
+                    // <RunSalesQuestions runId={run.id} />
+                    <p>Questions</p>
+                    }
                     {activeSalesSubTab === 1 && (
-                      <RunSalesStockAllocation runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    // <RunSalesStockAllocation runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    <p>Stock Allocation</p>
                     )}
-                    {activeSalesSubTab === 2 && <RunSalesGiveawayQuestions runId={run.id} />}
+                    {activeSalesSubTab === 2 && 
+                    // <RunSalesGiveawayQuestions runId={run.id} />
+                    <p>Giveaway Questions</p>
+                    }
                     {activeSalesSubTab === 3 && (
-                      <RunSalesGiveawayConfig runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    // <RunSalesGiveawayConfig runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    <p>Giveaway Config</p>
                     )}
                     {activeSalesSubTab === 4 && (
                       // <RunStockCounterEntry runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
@@ -263,7 +272,8 @@ export default function Page({ params: { runId } }: any) {
                 <p>Sampling</p>
               )}
               {activity.name === RUN_ACTIVITY_SURVEY && (
-                <RunSurveyQuestions runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                // <RunSurveyQuestions runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                <p>Survey</p>
               )}
             </Box>
           )
