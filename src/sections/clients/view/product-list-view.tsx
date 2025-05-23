@@ -191,7 +191,7 @@ export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
           size="small"
           onClick={() => setProductId(row.id)}
         >
-          <i className="mdi mdi-sack" color='black'/>
+          <i className="mdi mdi-sack" color='black'/> Packaging
         </Button>
         <Button
           variant="contained"
@@ -202,7 +202,7 @@ export function ProductList({ clientTier2Id }: { clientTier2Id: string }) {
             setOpenEditModal(true);
           }}
         >
-          <i className="mdi mdi-pen" color='white'/>
+          <i className="mdi mdi-pen" color='white'/> Edit
         </Button>
       </TableCell>
     </TableRow>

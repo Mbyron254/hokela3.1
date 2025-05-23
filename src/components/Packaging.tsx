@@ -28,10 +28,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  InputLabel,
 } from '@mui/material';
-import { MutationButton } from './MutationButton';
-import { LoadingSpan } from './LoadingSpan';
 
 export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
   const { data: units, loading: loadingUnits } = GQLQuery({
@@ -110,9 +107,6 @@ export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
     setSelectedTab(newValue);
   };
 
-  const loadPackagingsActive = () => {
-    if (productId) getPackagingsActive({ variables: { input: { productId } } });
-  };
   const loadPackagingsRecycled = () => {
     if (productId) getPackagingsRecycled({ variables: { input: { productId } } });
   };
@@ -131,6 +125,10 @@ export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
       restore({ variables: { input: { ids: selectedRecycled } } });
     }
   };
+
+  useEffect(() => {
+    if (productId) getPackagingsActive({ variables: { input: { productId } } })
+  }, [productId, getPackagingsActive]);
 
   const columnsActive = [
     {
@@ -265,7 +263,7 @@ export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
                         })
                       }
                     >
-                      <option/>
+                      <option />
                       {units?.rows.map((unit: any, index: number) => (
                         <option value={unit.id} key={`unit-${index}`}>
                           {unit.name}
@@ -290,16 +288,18 @@ export const Packaging: FC<{ productId?: string }> = ({ productId }) => {
                       })
                     }
                   />
-                  <Button
-                    type="button"
-                    className="btn btn-success float-end"
-                    size="small"
-                    onClick={handleCreate}
-                    disabled={creating}
-                  >
-                    Create
-                  </Button>
                 </div>
+              </div>
+              <div className="col-md-12">
+                <Button
+                  type="button"
+                  className="btn btn-success float-end"
+                  size="small"
+                  onClick={handleCreate}
+                  disabled={creating}
+                >
+                  Create
+                </Button>
               </div>
             </div>
           </div>
