@@ -220,7 +220,11 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
       getPackagings({ variables: { input: { productId: product.id } } });
     }
   }, [getPackagings, product.id]);
-  useEffect(() => getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } }), [getStock, product.id, product.packagingId]);
+  useEffect(() => {
+    if (product.id && product.packagingId) {
+      getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } });
+    }
+  }, [getStock, product.id, product.packagingId]);
   useEffect(() => {
     if (runId && product.packagingId && selectedAgents.length > 0) {
       getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } });
