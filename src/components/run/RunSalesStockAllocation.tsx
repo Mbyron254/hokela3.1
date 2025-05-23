@@ -348,12 +348,14 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
                         </TableCell>
                         <TableCell align="right">
                           <Checkbox
-                            checked={selectedAgents.includes(row.id)}
+                            checked={selectedAgents.includes(row.agent?.id)}
                             onChange={() => {
-                              if (row.id) {
-                                const newSelectedAgents = selectedAgents.includes(row.id)
-                                  ? selectedAgents.filter((id) => id !== row.id)
-                                  : [...selectedAgents, row.id];
+                              const agentId = row.agent?.id;
+                              
+                              if (agentId) {
+                                const newSelectedAgents = selectedAgents.includes(agentId)
+                                  ? selectedAgents.filter((id) => id !== agentId)
+                                  : [...selectedAgents, agentId];
                                 setSelectedAgents(newSelectedAgents);
                               }
                             }}
