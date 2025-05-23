@@ -131,16 +131,8 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
     }
   };
   const loadAllocations = () => {
-    if (runId && product.id && product.packagingId && selectedAgents) {
-      getAllocations({
-        variables: {
-          input: {
-            runId,
-            packagingId: product.packagingId,
-            agents: selectedAgents,
-          },
-        },
-      });
+    if (runId && product.packagingId && selectedAgents.length > 0) {
+      getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } });
     }
   };
   const handleAllocate = () => {
@@ -229,7 +221,11 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
     }
   }, [getPackagings, product.id]);
   useEffect(() => getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } }), [getStock, product.id, product.packagingId]);
-  useEffect(() => getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } }), [getAllocations, runId, product.packagingId, selectedAgents]);
+  useEffect(() => {
+    if (runId && product.packagingId && selectedAgents.length > 0) {
+      getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } });
+    }
+  }, [getAllocations, runId, product.packagingId, selectedAgents]);
   useEffect(() => {
     if (allocation?.entries) {
       const _allocations: IAllocations[] = [];
