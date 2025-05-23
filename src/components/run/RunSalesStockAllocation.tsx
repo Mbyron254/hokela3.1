@@ -132,7 +132,10 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   };
   const loadAllocations = () => {
     if (runId && product.packagingId && selectedAgents.length > 0) {
-      getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } });
+      const validAgents = selectedAgents.filter(agent => agent && agent.trim() !== '');
+      if (validAgents.length > 0) {
+        getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: validAgents } } });
+      }
     }
   };
   const handleAllocate = () => {
@@ -227,7 +230,10 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   }, [getStock, product.id, product.packagingId]);
   useEffect(() => {
     if (runId && product.packagingId && selectedAgents.length > 0) {
-      getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: selectedAgents } } });
+      const validAgents = selectedAgents.filter(agent => agent && agent.trim() !== '');
+      if (validAgents.length > 0) {
+        getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: validAgents } } });
+      }
     }
   }, [getAllocations, runId, product.packagingId, selectedAgents]);
   useEffect(() => {
@@ -344,10 +350,12 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
                           <Checkbox
                             checked={selectedAgents.includes(row.id)}
                             onChange={() => {
-                              const newSelectedAgents = selectedAgents.includes(row.id)
-                                ? selectedAgents.filter((id) => id !== row.id)
-                                : [...selectedAgents, row.id];
-                              setSelectedAgents(newSelectedAgents);
+                              if (row.id) {
+                                const newSelectedAgents = selectedAgents.includes(row.id)
+                                  ? selectedAgents.filter((id) => id !== row.id)
+                                  : [...selectedAgents, row.id];
+                                setSelectedAgents(newSelectedAgents);
+                              }
                             }}
                           />
                         </TableCell>
