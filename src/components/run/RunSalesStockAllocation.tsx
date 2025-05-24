@@ -265,6 +265,13 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
     console.log('Stock data updated:', stock);
   }, [stock]);
 
+  useEffect(() => {
+    // Load agents when the component mounts
+    if (runId) {
+      getAgents({ variables: { input: { search, runId, teamId, page: 0, pageSize: 10 } } });
+    }
+  }, [runId, teamId]);
+
   return (
     <>
       <div className="row">
