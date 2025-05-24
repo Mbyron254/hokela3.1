@@ -123,6 +123,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   };
   const loadStock = () => {
     if (product.id && product.packagingId) {
+      console.log('Loading stock for:', { productId: product.id, packagingId: product.packagingId });
       getStock({
         variables: {
           input: { productId: product.id, packagingId: product.packagingId },
@@ -225,6 +226,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   }, [getPackagings, product.id]);
   useEffect(() => {
     if (product.id && product.packagingId) {
+      console.log('Loading stock for:', { productId: product.id, packagingId: product.packagingId });
       getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } });
     }
   }, [getStock, product.id, product.packagingId]);
@@ -257,6 +259,11 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
       setAllocationTotal(_allocationTotal);
     }
   }, [allocation?.entries]);
+
+  // Add this useEffect to debug stock data
+  useEffect(() => {
+    console.log('Stock data updated:', stock);
+  }, [stock]);
 
   return (
     <>
@@ -436,6 +443,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
 
               <h5 className="mb-0">
                 Allocated {allocationTotal} of {stock?.balPackage ? stock.balPackage : 0} units
+                {loadingStock && <span className="ms-2"><LoadingSpan /></span>}
               </h5>
             </div>
           </div>
