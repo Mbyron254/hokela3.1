@@ -10,7 +10,7 @@ import {
   GRNs_RECYCLED,
   GRNUpdate,
 } from 'src/lib/mutations/grn.mutation';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Iconify } from 'src/components/iconify';
@@ -81,15 +81,23 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   });
 
   const [inputUpdate, setInputUpdate] = useState(init);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
 
   const handleCreate = () => {
     if (clientTier2Id) {
-      create({ variables: { input: { ...inputCreate, clientTier2Id } } });
+      create({ variables: { input: { ...inputCreate, clientTier2Id } } }).then(() => {
+        setOpenCreateModal(false);
+        getGrnsActive({ variables: { input: { clientTier2Id } } });
+      });
     }
   };
 
   const handleUpdate = () => {
-    update({ variables: { input: inputUpdate } });
+    update({ variables: { input: inputUpdate } }).then(() => {
+      setOpenUpdateModal(false);
+      getGrnsActive({ variables: { input: { clientTier2Id } } });
+    });
   };
 
   const handleRecycle = (id: string) => {
@@ -172,6 +180,7 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
           onClick={() => {
             setInputUpdate(init);
             loadGrn(params.row.id);
+            setOpenUpdateModal(true);
           }}
         />,
         <GridActionsCellItem
@@ -192,7 +201,7 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
         links={[{ name: 'List', href: '/dashboard' }]}
         action={
           <Button
-            onClick={handleCreate}
+            onClick={() => setOpenCreateModal(true)}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
@@ -213,7 +222,80 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
           disableRowSelectionOnClick
         />
       )}
-      {/* Modal for Create and Update can be added here */}
+
+      {/* Create GRN Modal */}
+      <Dialog open={openCreateModal} onClose={() => setOpenCreateModal(false)}>
+        <DialogTitle>New GRN</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Supplier Ref"
+            fullWidth
+            margin="normal"
+            value={inputCreate.supplierRefNo || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, supplierRefNo: e.target.value })}
+          />
+          <TextField
+            label="Notes"
+            fullWidth
+            margin="normal"
+            multiline
+            rows={3}
+            value={inputCreate.notes || ''}
+            onChange={(e) => setInputCreate({ ...inputCreate, notes: e.target.value })}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCreateModal(false)}>Cancel</Button>
+          <Button
+            onClick={handleCreate}
+            disabled={creating}
+            variant="contained"
+            color="primary"
+          >
+            {creating ? <CircularProgress size={24} /> : "Create"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Update GRN Modal */}
+      <Dialog open={openUpdateModal} onClose={() => setOpenUpdateModal(false)}>
+        <DialogTitle>Edit GRN</DialogTitle>
+        <DialogContent>
+          {loadingGrn ? (
+            <LoadingDiv />
+          ) : (
+            <>
+              <TextField
+                label="Supplier Ref"
+                fullWidth
+                margin="normal"
+                value={inputUpdate.supplierRefNo || ''}
+                onChange={(e) => setInputUpdate({ ...inputUpdate, supplierRefNo: e.target.value })}
+              />
+              <TextField
+                label="Notes"
+                fullWidth
+                margin="normal"
+                multiline
+                rows={3}
+                value={inputUpdate.notes || ''}
+                onChange={(e) => setInputUpdate({ ...inputUpdate, notes: e.target.value })}
+              />
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenUpdateModal(false)}>Cancel</Button>
+          <Button
+            onClick={handleUpdate}
+            disabled={updating}
+            variant="contained"
+            color="primary"
+          >
+            {updating ? <CircularProgress size={24} /> : "Update"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </DashboardContent>
   );
 }
