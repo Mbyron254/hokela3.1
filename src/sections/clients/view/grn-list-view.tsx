@@ -588,7 +588,6 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
           ) : (
             <Select
               id="packaging"
-              className={`form-select form-select-sm`}
               defaultValue={inputInventoryCreate.packagingId}
               onChange={(e) =>
                 setInputInventoryCreate({
@@ -597,7 +596,7 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
                 })
               }
             >
-              <option></option>
+              <option/>
               {packagings?.rows?.map((packaging: any, index: number) => (
                 <option key={`packaging-${index}`} value={packaging.id}>
                   {`${packaging.unitQuantity} ${packaging.unit?.name}`}
