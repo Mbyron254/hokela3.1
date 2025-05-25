@@ -19,7 +19,7 @@ import {
   INVENTORY_RESTORE,
   INVENTORY_UPDATE,
 } from 'src/lib/mutations/inventory.mutation';
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Tabs, Tab, Box, Typography, Select } from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Tabs, Tab, Box, Typography, Select, MenuItem } from '@mui/material';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Iconify } from 'src/components/iconify';
@@ -580,9 +580,9 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
                 displayEmpty
                 fullWidth
               >
-                <option value="">Select Product</option>
+                <MenuItem value="">Select Product</MenuItem>
                 {products?.rows.map((product: any) => (
-                  <option key={product.id} value={product.id}>{product.name}</option>
+                  <MenuItem key={product.id} value={product.id}>{product.name}</MenuItem>
                 ))}
               </Select>
             )
@@ -593,19 +593,21 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
           ) : (
             <Select
               id="packaging"
-              defaultValue={inputInventoryCreate.packagingId}
+              value={inputInventoryCreate.packagingId}
               onChange={(e) =>
                 setInputInventoryCreate({
                   ...inputInventoryCreate,
-                  packagingId: e.target.value,
+                  packagingId: e.target.value as string,
                 })
               }
+              displayEmpty
+              fullWidth
             >
-              <option/>
+              <MenuItem value="">Select Packaging</MenuItem>
               {packagings?.rows?.map((packaging: any, index: number) => (
-                <option key={`packaging-${index}`} value={packaging.id}>
+                <MenuItem key={`packaging-${index}`} value={packaging.id}>
                   {`${packaging.unitQuantity} ${packaging.unit?.name}`}
-                </option>
+                </MenuItem>
               ))}
             </Select>
           )}
