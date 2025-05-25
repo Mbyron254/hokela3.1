@@ -270,7 +270,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
     if (runId) {
       getAgents({ variables: { input: { search, runId, teamId, page: 0, pageSize: 10 } } });
     }
-  }, [runId, teamId]);
+  }, [runId, teamId, getAgents]);
 
   return (
     <>
