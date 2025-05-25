@@ -19,13 +19,15 @@ import {
   INVENTORY_RESTORE,
   INVENTORY_UPDATE,
 } from 'src/lib/mutations/inventory.mutation';
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Tabs, Tab, Box, Typography } from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Tabs, Tab, Box, Typography, Select } from '@mui/material';
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { MutationButton } from 'src/components/MutationButton';
 import { LoadingDiv } from 'src/components/LoadingDiv';
+import { M_PRODUCTS_MINI } from 'src/lib/mutations/product.mutation';
+import { M_PACKAGINGS_MINI } from 'src/lib/mutations/packaging.mutation';
 
 
 // ----------------------------------------------------------------------
@@ -40,7 +42,24 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
     mutation: GRNs,
     resolver: 'GRNs',
   });
-
+  const {
+    action: getProducts,
+    loading: loadingProducts,
+    data: products,
+  } = GQLMutation({
+    mutation: M_PRODUCTS_MINI,
+    resolver: 'm_products',
+    toastmsg: false,
+  });
+  const {
+    action: getPackagings,
+    loading: loadingPackagings,
+    data: packagings,
+  } = GQLMutation({
+    mutation: M_PACKAGINGS_MINI,
+    resolver: 'm_packagings',
+    toastmsg: false,
+  });
   const {
     action: getGrnsRecycled,
     loading: loadingGrnsRecycled,
@@ -261,6 +280,12 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   };
 
   useEffect(() => {
+    if (clientTier2Id) {
+      getProducts({ variables: { input: { clientTier2Id } } });
+    }
+  }, [clientTier2Id, getProducts]);
+
+  useEffect(() => {
     if (grn) {
       setInputUpdate({
         id: grn.id,
@@ -280,7 +305,7 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   const loadGrn = (id: string) => {
     getGrn({ variables: { input: { id } } });
   };
-  
+
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 120 },
     {
@@ -539,21 +564,48 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
       <Dialog open={openInventoryCreateModal} onClose={() => setOpenInventoryCreateModal(false)}>
         <DialogTitle>New Inventory</DialogTitle>
         <DialogContent>
-          <TextField
-            label="Product ID"
-            fullWidth
-            margin="normal"
-            value={inputInventoryCreate.productId || ''}
-            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, productId: e.target.value })}
-          />
-          <TextField
-            label="Quantity"
-            fullWidth
-            margin="normal"
-            value={inputInventoryCreate.quantity || ''}
-            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, quantity: parseInt(e.target.value, 10) })}
-          />
-          {/* Add more fields as necessary */}
+          {
+            loadingProducts ? (
+              <LoadingDiv />
+            ) : (
+              <Select
+                id="productId"
+                value={inputInventoryCreate.productId}
+                onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, productId: e.target.value as string })}
+                displayEmpty
+                fullWidth
+              >
+                <option value="">Select Product</option>
+                {products?.rows.map((product: any) => (
+                  <option key={product.id} value={product.id}>{product.name}</option>
+                ))}
+              </Select>
+            )
+          }
+
+          {loadingPackagings ? (
+            <LoadingDiv />
+          ) : (
+            <Select
+              id="packaging"
+              className={`form-select form-select-sm`}
+              defaultValue={inputInventoryCreate.packagingId}
+              onChange={(e) =>
+                setInputInventoryCreate({
+                  ...inputInventoryCreate,
+                  packagingId: e.target.value,
+                })
+              }
+            >
+              <option></option>
+              {packagings?.rows?.map((packaging: any, index: number) => (
+                <option key={`packaging-${index}`} value={packaging.id}>
+                  {`${packaging.unitQuantity} ${packaging.unit?.name}`}
+                </option>
+              ))}
+            </Select>
+
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenInventoryCreateModal(false)}>Cancel</Button>
