@@ -26,6 +26,10 @@ import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { MutationButton } from 'src/components/MutationButton';
 import { LoadingDiv } from 'src/components/LoadingDiv';
+import {
+  M_PACKAGINGS_MINI,
+} from 'src/lib/mutations/packaging.mutation';
+import { M_PRODUCTS_MINI } from 'src/lib/mutations/product.mutation';
 
 
 // ----------------------------------------------------------------------
@@ -199,6 +203,10 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   const [openInventoryCreateModal, setOpenInventoryCreateModal] = useState(false);
   const [openInventoryUpdateModal, setOpenInventoryUpdateModal] = useState(false);
   const [currentGrnId, setCurrentGrnId] = useState<string | null>(null);
+  const [products, setProducts] = useState<any[]>([]);
+  const [packagings, setPackagings] = useState<any[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingPackagings, setLoadingPackagings] = useState(false);
 
   const handleCreate = () => {
     if (clientTier2Id) {
@@ -276,6 +284,36 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
       getGrnsRecycled({ variables: { input: { clientTier2Id } } });
     }
   }, [clientTier2Id, getGrnsActive, getGrnsRecycled]);
+
+  useEffect(() => {
+    if (clientTier2Id) {
+      setLoadingProducts(true);
+      GQLMutation({
+        mutation: M_PRODUCTS_MINI,
+        resolver: 'm_products',
+        toastmsg: false,
+      }).action({ variables: { input: { clientTier2Id } } })
+        .then((response: any) => {
+          setProducts(response.data.m_products.rows);
+          setLoadingProducts(false);
+        });
+    }
+  }, [clientTier2Id]);
+
+  useEffect(() => {
+    if (inputInventoryCreate.productId) {
+      setLoadingPackagings(true);
+      GQLMutation({
+        mutation: M_PACKAGINGS_MINI,
+        resolver: 'm_packagings',
+        toastmsg: false,
+      }).action({ variables: { input: { productId: inputInventoryCreate.productId } } })
+        .then((response: any) => {
+          setPackagings(response.data.m_packagings.rows);
+          setLoadingPackagings(false);
+        });
+    }
+  }, [inputInventoryCreate.productId]);
 
   const loadGrn = (id: string) => {
     getGrn({ variables: { input: { id } } });
@@ -539,21 +577,73 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
       <Dialog open={openInventoryCreateModal} onClose={() => setOpenInventoryCreateModal(false)}>
         <DialogTitle>New Inventory</DialogTitle>
         <DialogContent>
-          <TextField
-            label="Product ID"
-            fullWidth
-            margin="normal"
-            value={inputInventoryCreate.productId || ''}
-            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, productId: e.target.value })}
-          />
+          {loadingProducts ? (
+            <CircularProgress />
+          ) : (
+            <TextField
+              select
+              label="Product"
+              fullWidth
+              margin="normal"
+              value={inputInventoryCreate.productId || ''}
+              onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, productId: e.target.value })}
+              SelectProps={{
+                native: true,
+              }}
+            >
+              <option value=""/>
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name}
+                </option>
+              ))}
+            </TextField>
+          )}
+          {loadingPackagings ? (
+            <CircularProgress />
+          ) : (
+            <TextField
+              select
+              label="Packaging"
+              fullWidth
+              margin="normal"
+              value={inputInventoryCreate.packagingId || ''}
+              onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, packagingId: e.target.value })}
+              SelectProps={{
+                native: true,
+              }}
+            >
+              <option value=""/>
+              {packagings.map((packaging) => (
+                <option key={packaging.id} value={packaging.id}>
+                  {`${packaging.unitQuantity} ${packaging.unit?.name}`}
+                </option>
+              ))}
+            </TextField>
+          )}
           <TextField
             label="Quantity"
             fullWidth
             margin="normal"
-            value={inputInventoryCreate.quantity || ''}
+            value={inputInventoryCreate.quantity?.toString() || ''}
             onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, quantity: parseInt(e.target.value, 10) })}
           />
-          {/* Add more fields as necessary */}
+          <TextField
+            label="Unit Price"
+            fullWidth
+            margin="normal"
+            value={inputInventoryCreate.unitPrice?.toString() || ''}
+            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, unitPrice: parseFloat(e.target.value).toString() })}
+          />
+          <TextField
+            label="Notes"
+            fullWidth
+            margin="normal"
+            multiline
+            rows={3}
+            value={inputInventoryCreate.notes || ''}
+            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, notes: e.target.value })}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenInventoryCreateModal(false)}>Cancel</Button>
