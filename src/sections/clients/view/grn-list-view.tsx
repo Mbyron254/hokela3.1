@@ -194,6 +194,11 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [openViewDialog, setOpenViewDialog] = useState(false);
+  const [selectedInventoryActive, setSelectedInventoryActive] = useState<string[]>([]);
+  const [selectedInventoryRecycled, setSelectedInventoryRecycled] = useState<string[]>([]);
+  const [openInventoryCreateModal, setOpenInventoryCreateModal] = useState(false);
+  const [openInventoryUpdateModal, setOpenInventoryUpdateModal] = useState(false);
+  const [currentGrnId, setCurrentGrnId] = useState<string | null>(null);
 
   const handleCreate = () => {
     if (clientTier2Id) {
@@ -325,6 +330,7 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
           label="View"
           onClick={() => {
             loadGrn(params.row.id);
+            setCurrentGrnId(params.row.id);
             setOpenViewDialog(true);
           }}
         />,
@@ -482,12 +488,116 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
             <>
               <Typography variant="body1">Supplier Ref: {grn?.supplierRefNo}</Typography>
               <Typography variant="body1">Notes: {grn?.notes}</Typography>
-              {/* Add more fields as necessary */}
+              {/* Inventory Management */}
+              <Typography variant="h6" sx={{ mt: 2 }}>Inventory Management</Typography>
+              <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)}>
+                <Tab label="Active" />
+                <Tab label="Recycled" />
+              </Tabs>
+              {tabIndex === 0 ? (
+                loadingInventoriesActive ? (
+                  <CircularProgress />
+                ) : (
+                  <DataGrid
+                    columns={columns}
+                    rows={inventoriesActive?.rows || []}
+                    checkboxSelection
+                    disableRowSelectionOnClick
+                    onRowSelectionModelChange={(newSelection) => setSelectedInventoryActive(newSelection as string[])}
+                  />
+                )
+              ) : (
+                loadingInventoriesRecycled ? (
+                  <CircularProgress />
+                ) : (
+                  <DataGrid
+                    columns={columns}
+                    rows={inventoriesRecycled?.rows || []}
+                    checkboxSelection
+                    disableRowSelectionOnClick
+                    onRowSelectionModelChange={(newSelection) => setSelectedInventoryRecycled(newSelection as string[])}
+                  />
+                )
+              )}
+              <Button
+                onClick={() => setOpenInventoryCreateModal(true)}
+                variant="contained"
+                color="primary"
+                disabled={creatingInventory}
+              >
+                {creatingInventory ? <CircularProgress size={24} /> : "Add Inventory"}
+              </Button>
             </>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenViewDialog(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Inventory Create Modal */}
+      <Dialog open={openInventoryCreateModal} onClose={() => setOpenInventoryCreateModal(false)}>
+        <DialogTitle>New Inventory</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Product ID"
+            fullWidth
+            margin="normal"
+            value={inputInventoryCreate.productId || ''}
+            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, productId: e.target.value })}
+          />
+          <TextField
+            label="Quantity"
+            fullWidth
+            margin="normal"
+            value={inputInventoryCreate.quantity || ''}
+            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, quantity: parseInt(e.target.value, 10) })}
+          />
+          {/* Add more fields as necessary */}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenInventoryCreateModal(false)}>Cancel</Button>
+          <Button
+            onClick={() => handleInventoryCreate(currentGrnId!)}
+            disabled={creatingInventory}
+            variant="contained"
+            color="primary"
+          >
+            {creatingInventory ? <CircularProgress size={24} /> : "Create"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Inventory Update Modal */}
+      <Dialog open={openInventoryUpdateModal} onClose={() => setOpenInventoryUpdateModal(false)}>
+        <DialogTitle>Edit Inventory</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Product ID"
+            fullWidth
+            margin="normal"
+            value={inputInventoryUpdate.id || ''}
+            onChange={(e) => setInputInventoryUpdate({ ...inputInventoryUpdate, id: e.target.value })}
+          />
+          <TextField
+            label="Quantity"
+            fullWidth
+            margin="normal"
+            value={inputInventoryUpdate.quantity || ''}
+            onChange={(e) => setInputInventoryUpdate({ ...inputInventoryUpdate, quantity: parseInt(e.target.value, 10) })}
+          />
+          {/* Add more fields as necessary */}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenInventoryUpdateModal(false)}>Cancel</Button>
+          <Button
+            onClick={handleInventoryUpdate}
+            disabled={updatingInventory}
+            variant="contained"
+            color="primary"
+          >
+            {updatingInventory ? <CircularProgress size={24} /> : "Update"}
+          </Button>
         </DialogActions>
       </Dialog>
     </DashboardContent>
