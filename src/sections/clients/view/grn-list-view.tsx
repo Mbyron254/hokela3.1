@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { GQLMutation } from 'src/lib/client';
-import { InputGRNCreate, InputGRNUpdate } from 'src/lib/interface/grns.interface';
+import { InputGRNCreate, InputGRNUpdate, InputInventoryCreate, InputInventoryUpdate } from 'src/lib/interface/grns.interface';
 import {
   GRN,
   GRNCreate,
@@ -10,8 +10,17 @@ import {
   GRNs_RECYCLED,
   GRNUpdate,
 } from 'src/lib/mutations/grn.mutation';
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import {
+  INVENTORIES,
+  INVENTORIES_RECYCLED,
+  INVENTORY,
+  INVENTORY_CREATE,
+  INVENTORY_RECYCLED,
+  INVENTORY_RESTORE,
+  INVENTORY_UPDATE,
+} from 'src/lib/mutations/inventory.mutation';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Tabs, Tab, Box, Typography } from '@mui/material';
+import { DataGrid, GridActionsCellItem, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -33,10 +42,18 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   });
 
   const {
+    action: getGrnsRecycled,
+    loading: loadingGrnsRecycled,
+    data: grnsRecycled,
+  } = GQLMutation({
+    mutation: GRNs_RECYCLED,
+    resolver: 'GRNsRecycled',
+  });
+
+  const {
     action: getGrn,
     loading: loadingGrn,
     data: grn,
-    error: errorGrn,
   } = GQLMutation({
     mutation: GRN,
     resolver: 'GRN',
@@ -69,9 +86,91 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
     toastmsg: true,
   });
 
+  const {
+    action: restore,
+    loading: restoring,
+  } = GQLMutation({
+    mutation: GRNRestore,
+    resolver: 'GRNRestore',
+    toastmsg: true,
+  });
+
+  const {
+    action: getInventoriesActive,
+    loading: loadingInventoriesActive,
+    data: inventoriesActive,
+  } = GQLMutation({
+    mutation: INVENTORIES,
+    resolver: 'inventories',
+    toastmsg: false,
+  });
+
+  const {
+    action: getInventoriesRecycled,
+    loading: loadingInventoriesRecycled,
+    data: inventoriesRecycled,
+  } = GQLMutation({
+    mutation: INVENTORIES_RECYCLED,
+    resolver: 'inventoriesRecycled',
+    toastmsg: false,
+  });
+
+  const {
+    action: getInventory,
+    loading: loadingInventory,
+    data: inventory,
+  } = GQLMutation({
+    mutation: INVENTORY,
+    resolver: 'inventory',
+    toastmsg: false,
+  });
+
+  const {
+    action: createInventory,
+    loading: creatingInventory,
+  } = GQLMutation({
+    mutation: INVENTORY_CREATE,
+    resolver: 'inventoryCreate',
+    toastmsg: false,
+  });
+
+  const {
+    action: updateInventory,
+    loading: updatingInventory,
+  } = GQLMutation({
+    mutation: INVENTORY_UPDATE,
+    resolver: 'inventoryUpdate',
+    toastmsg: false,
+  });
+
+  const {
+    action: recycleInventory,
+    loading: recyclingInventory,
+  } = GQLMutation({
+    mutation: INVENTORY_RECYCLED,
+    resolver: 'inventoryRecycle',
+    toastmsg: false,
+  });
+
+  const {
+    action: restoreInventory,
+    loading: restoringInventory,
+  } = GQLMutation({
+    mutation: INVENTORY_RESTORE,
+    resolver: 'inventoryRestore',
+    toastmsg: false,
+  });
+
   const init: InputGRNUpdate = {
     id: undefined,
     supplierRefNo: undefined,
+    notes: undefined,
+  };
+
+  const initInventory: InputInventoryUpdate = {
+    id: undefined,
+    quantity: undefined,
+    unitPrice: undefined,
     notes: undefined,
   };
 
@@ -81,8 +180,19 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   });
 
   const [inputUpdate, setInputUpdate] = useState(init);
+  const [inputInventoryCreate, setInputInventoryCreate] = useState<InputInventoryCreate>({
+    productId: undefined,
+    packagingId: undefined,
+    quantity: undefined,
+    unitPrice: undefined,
+    notes: undefined,
+  });
+  const [inputInventoryUpdate, setInputInventoryUpdate] = useState(initInventory);
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
+  const [selectedActive, setSelectedActive] = useState<string[]>([]);
+  const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const handleCreate = () => {
     if (clientTier2Id) {
@@ -100,8 +210,48 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
     });
   };
 
-  const handleRecycle = (id: string) => {
-    recycle({ variables: { input: { ids: [id] } } });
+  const handleRecycle = () => {
+    if (selectedActive.length) {
+      recycle({ variables: { input: { ids: selectedActive } } }).then(() => {
+        getGrnsActive({ variables: { input: { clientTier2Id } } });
+      });
+    }
+  };
+
+  const handleRestore = () => {
+    if (selectedRecycled.length) {
+      restore({ variables: { input: { ids: selectedRecycled } } }).then(() => {
+        getGrnsRecycled({ variables: { input: { clientTier2Id } } });
+      });
+    }
+  };
+
+  const handleInventoryCreate = (grnId: string) => {
+    createInventory({ variables: { input: { ...inputInventoryCreate, grnId } } }).then(() => {
+      getInventoriesActive({ variables: { input: { grnId } } });
+    });
+  };
+
+  const handleInventoryUpdate = () => {
+    updateInventory({ variables: { input: inputInventoryUpdate } }).then(() => {
+      getInventoriesActive({ variables: { input: { grnId: inputInventoryUpdate.id } } });
+    });
+  };
+
+  const handleInventoryRecycle = (grnId: string) => {
+    if (selectedActive.length) {
+      recycleInventory({ variables: { input: { ids: selectedActive } } }).then(() => {
+        getInventoriesActive({ variables: { input: { grnId } } });
+      });
+    }
+  };
+
+  const handleInventoryRestore = (grnId: string) => {
+    if (selectedRecycled.length) {
+      restoreInventory({ variables: { input: { ids: selectedRecycled } } }).then(() => {
+        getInventoriesRecycled({ variables: { input: { grnId } } });
+      });
+    }
   };
 
   useEffect(() => {
@@ -117,8 +267,9 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   useEffect(() => {
     if (clientTier2Id) {
       getGrnsActive({ variables: { input: { clientTier2Id } } });
+      getGrnsRecycled({ variables: { input: { clientTier2Id } } });
     }
-  }, [clientTier2Id, getGrnsActive]);
+  }, [clientTier2Id, getGrnsActive, getGrnsRecycled]);
 
   const loadGrn = (id: string) => {
     getGrn({ variables: { input: { id } } });
@@ -187,12 +338,58 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
           showInMenu
           icon={<Iconify icon="solar:trash-bin-trash-bold" />}
           label="Delete"
-          onClick={() => handleRecycle(params.row.id)}
+          onClick={() => handleRecycle()}
           sx={{ color: 'error.main' }}
         />,
       ],
     },
   ];
+
+  const renderExpandedRow = (params: GridRowParams) => {
+    const grnId = params.row.id;
+    return (
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6">Inventory Management</Typography>
+        <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)}>
+          <Tab label="Active" />
+          <Tab label="Recycled" />
+        </Tabs>
+        {tabIndex === 0 ? (
+          loadingInventoriesActive ? (
+            <CircularProgress />
+          ) : (
+            <DataGrid
+              columns={columns}
+              rows={inventoriesActive?.rows || []}
+              checkboxSelection
+              disableRowSelectionOnClick
+              onRowSelectionModelChange={(newSelection) => setSelectedActive(newSelection as string[])}
+            />
+          )
+        ) : (
+          loadingInventoriesRecycled ? (
+            <CircularProgress />
+          ) : (
+            <DataGrid
+              columns={columns}
+              rows={inventoriesRecycled?.rows || []}
+              checkboxSelection
+              disableRowSelectionOnClick
+              onRowSelectionModelChange={(newSelection) => setSelectedRecycled(newSelection as string[])}
+            />
+          )
+        )}
+        <Button
+          onClick={() => handleInventoryCreate(grnId)}
+          variant="contained"
+          color="primary"
+          disabled={creatingInventory}
+        >
+          {creatingInventory ? <CircularProgress size={24} /> : "Add Inventory"}
+        </Button>
+      </Box>
+    );
+  };
 
   return (
     <DashboardContent>
@@ -210,17 +407,38 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
         }
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      {loadingGrnsActive ? (
-        <CircularProgress />
-      ) : errorGrnsActive ? (
-        <div>Error loading GRNs: {errorGrnsActive.message}</div>
+      <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)}>
+        <Tab label="Active" />
+        <Tab label="Recycled" />
+      </Tabs>
+      {tabIndex === 0 ? (
+        loadingGrnsActive ? (
+          <CircularProgress />
+        ) : errorGrnsActive ? (
+          <div>Error loading GRNs: {errorGrnsActive.message}</div>
+        ) : (
+          <DataGrid
+            columns={columns}
+            rows={grnsActive?.rows || []}
+            checkboxSelection
+            disableRowSelectionOnClick
+            onRowSelectionModelChange={(newSelection) => setSelectedActive(newSelection as string[])}
+            getRowHeight={() => 'auto'}
+            getDetailPanelContent={renderExpandedRow}
+          />
+        )
       ) : (
-        <DataGrid
-          columns={columns}
-          rows={grnsActive?.rows || []}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
+        loadingGrnsRecycled ? (
+          <CircularProgress />
+        ) : (
+          <DataGrid
+            columns={columns}
+            rows={grnsRecycled?.rows || []}
+            checkboxSelection
+            disableRowSelectionOnClick
+            onRowSelectionModelChange={(newSelection) => setSelectedRecycled(newSelection as string[])}
+          />
+        )
       )}
 
       {/* Create GRN Modal */}
