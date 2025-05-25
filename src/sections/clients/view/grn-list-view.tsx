@@ -193,6 +193,7 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
   const [selectedActive, setSelectedActive] = useState<string[]>([]);
   const [selectedRecycled, setSelectedRecycled] = useState<string[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
+  const [openViewDialog, setOpenViewDialog] = useState(false);
 
   const handleCreate = () => {
     if (clientTier2Id) {
@@ -322,7 +323,10 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
           label="View"
-          onClick={() => loadGrn(params.row.id)}
+          onClick={() => {
+            loadGrn(params.row.id);
+            setOpenViewDialog(true);
+          }}
         />,
         <GridActionsCellItem
           showInMenu
@@ -344,52 +348,6 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
       ],
     },
   ];
-
-  const renderExpandedRow = (params: GridRowParams) => {
-    const grnId = params.row.id;
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6">Inventory Management</Typography>
-        <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)}>
-          <Tab label="Active" />
-          <Tab label="Recycled" />
-        </Tabs>
-        {tabIndex === 0 ? (
-          loadingInventoriesActive ? (
-            <CircularProgress />
-          ) : (
-            <DataGrid
-              columns={columns}
-              rows={inventoriesActive?.rows || []}
-              checkboxSelection
-              disableRowSelectionOnClick
-              onRowSelectionModelChange={(newSelection) => setSelectedActive(newSelection as string[])}
-            />
-          )
-        ) : (
-          loadingInventoriesRecycled ? (
-            <CircularProgress />
-          ) : (
-            <DataGrid
-              columns={columns}
-              rows={inventoriesRecycled?.rows || []}
-              checkboxSelection
-              disableRowSelectionOnClick
-              onRowSelectionModelChange={(newSelection) => setSelectedRecycled(newSelection as string[])}
-            />
-          )
-        )}
-        <Button
-          onClick={() => handleInventoryCreate(grnId)}
-          variant="contained"
-          color="primary"
-          disabled={creatingInventory}
-        >
-          {creatingInventory ? <CircularProgress size={24} /> : "Add Inventory"}
-        </Button>
-      </Box>
-    );
-  };
 
   return (
     <DashboardContent>
@@ -424,7 +382,6 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
             disableRowSelectionOnClick
             onRowSelectionModelChange={(newSelection) => setSelectedActive(newSelection as string[])}
             getRowHeight={() => 'auto'}
-            getDetailPanelContent={renderExpandedRow}
           />
         )
       ) : (
@@ -512,6 +469,25 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
           >
             {updating ? <CircularProgress size={24} /> : "Update"}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* View GRN Modal */}
+      <Dialog open={openViewDialog} onClose={() => setOpenViewDialog(false)}>
+        <DialogTitle>GRN Details</DialogTitle>
+        <DialogContent>
+          {loadingGrn ? (
+            <LoadingDiv />
+          ) : (
+            <>
+              <Typography variant="body1">Supplier Ref: {grn?.supplierRefNo}</Typography>
+              <Typography variant="body1">Notes: {grn?.notes}</Typography>
+              {/* Add more fields as necessary */}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenViewDialog(false)}>Close</Button>
         </DialogActions>
       </Dialog>
     </DashboardContent>
