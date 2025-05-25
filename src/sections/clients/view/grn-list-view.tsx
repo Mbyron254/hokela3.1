@@ -284,6 +284,11 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
       getProducts({ variables: { input: { clientTier2Id } } });
     }
   }, [clientTier2Id, getProducts]);
+  useEffect(() => {
+    if (inputInventoryCreate.productId) {
+      getPackagings({ variables: { input: { productId: inputInventoryCreate.productId } } });
+    }
+  }, [inputInventoryCreate.productId, getPackagings]);
 
   useEffect(() => {
     if (grn) {
@@ -603,8 +608,32 @@ export function GrnList({ clientTier2Id }: { clientTier2Id: string }) {
                 </option>
               ))}
             </Select>
-
           )}
+
+          {/* New fields for quantity, unit cost, and notes */}
+          <TextField
+            label="Quantity"
+            fullWidth
+            margin="normal"
+            value={inputInventoryCreate.quantity || ''}
+            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, quantity: parseInt(e.target.value, 10) })}
+          />
+          <TextField
+            label="Unit Cost"
+            fullWidth
+            margin="normal"
+            value={inputInventoryCreate.unitPrice?.toString() || ''}
+            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, unitPrice: parseFloat(e.target.value).toString() })}
+          />
+          <TextField
+            label="Notes"
+            fullWidth
+            margin="normal"
+            multiline
+            rows={3}
+            value={inputInventoryCreate.notes || ''}
+            onChange={(e) => setInputInventoryCreate({ ...inputInventoryCreate, notes: e.target.value })}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenInventoryCreateModal(false)}>Cancel</Button>
