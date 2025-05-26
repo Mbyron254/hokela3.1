@@ -14,17 +14,19 @@ import { toast } from 'src/components/snackbar';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { signOut as jwtSignOut } from 'src/auth/context/main/action';
+import { GQLMutation } from 'src/lib/client';
+import { USER_LOGOUT } from 'src/lib/mutations/user.mutation';
 // import { signOut as amplifySignOut } from 'src/auth/context/amplify/action';
 // import { signOut as supabaseSignOut } from 'src/auth/context/supabase/action';
 // import { signOut as firebaseSignOut } from 'src/auth/context/firebase/action';
 
 // ----------------------------------------------------------------------
 
-const signOut =
-  // (CONFIG.auth.method === 'supabase' && supabaseSignOut) ||
-  // (CONFIG.auth.method === 'firebase' && firebaseSignOut) ||
-  // (CONFIG.auth.method === 'amplify' && amplifySignOut) ||
-  jwtSignOut;
+// const signOut =
+//   // (CONFIG.auth.method === 'supabase' && supabaseSignOut) ||
+//   // (CONFIG.auth.method === 'firebase' && firebaseSignOut) ||
+//   // (CONFIG.auth.method === 'amplify' && amplifySignOut) ||
+//   jwtSignOut;
 
 type Props = ButtonProps & {
   sx?: SxProps<Theme>;
@@ -34,34 +36,20 @@ type Props = ButtonProps & {
 export function SignOutButton({ onClose, ...other }: Props) {
   const router = useRouter();
 
-  const { checkUserSession } = useAuthContext();
+  // const { checkUserSession } = useAuthContext();
+  // const { logout: signOutAuth0 } = useAuth0();
 
-  const { logout: signOutAuth0 } = useAuth0();
-
-  const handleLogout = useCallback(async () => {
-    try {
-      await signOut();
-      await checkUserSession?.();
-
+  const { action: signout, loading: signingOut } = GQLMutation({
+    mutation: USER_LOGOUT,
+    resolver: 'logout',
+    toastmsg: true,
+    callback: () => {
       onClose?.();
       router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast.error('Unable to logout!');
-    }
-  }, [checkUserSession, onClose, router]);
+    },
+  });
 
-  const handleLogoutAuth0 = useCallback(async () => {
-    try {
-      await signOutAuth0();
-
-      onClose?.();
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast.error('Unable to logout!');
-    }
-  }, [onClose, router, signOutAuth0]);
+  const handleSignOut = () => signout();
 
   return (
     <Button
@@ -69,7 +57,8 @@ export function SignOutButton({ onClose, ...other }: Props) {
       variant="soft"
       size="large"
       color="error"
-      onClick={CONFIG.auth.method === 'auth0' ? handleLogoutAuth0 : handleLogout}
+      onClick={handleSignOut}
+      disabled={signingOut}
       {...other}
     >
       Logout
