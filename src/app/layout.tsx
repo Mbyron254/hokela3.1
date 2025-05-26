@@ -21,6 +21,7 @@ import { MotionLazy } from 'src/components/animate/motion-lazy';
 import { SettingsDrawer, defaultSettings, SettingsProvider } from 'src/components/settings';
 
 import { AuthProvider } from 'src/auth/context/main';
+import { CartProvider } from 'react-use-cart';
 
 // ----------------------------------------------------------------------
 
@@ -52,18 +53,20 @@ export default function RootLayout({ children }: Props) {
           modeStorageKey={schemeConfig.modeStorageKey}
         />
         <LocalizationProvider>
-          <AuthProvider>
-            <SettingsProvider settings={defaultSettings}>
-              <ThemeProvider>
-                <MotionLazy>
-                  <ProgressBar />
-                  <SettingsDrawer />
-                  <SnackbarProvider />
-                  {children}
-                </MotionLazy>
-              </ThemeProvider>
-            </SettingsProvider>
-          </AuthProvider>
+          <CartProvider>
+            <AuthProvider>
+              <SettingsProvider settings={defaultSettings}>
+                <ThemeProvider>
+                  <MotionLazy>
+                    <ProgressBar />
+                    <SettingsDrawer />
+                    <SnackbarProvider />
+                    {children}
+                  </MotionLazy>
+                </ThemeProvider>
+              </SettingsProvider>
+            </AuthProvider>
+          </CartProvider>
         </LocalizationProvider>
       </body>
     </html>
