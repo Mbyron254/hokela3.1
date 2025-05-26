@@ -1,81 +1,88 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-import { paths } from './routes/paths'
-import { serverGateway } from './lib/server'
-import { Q_SESSION } from './lib/queries/session.query'
 import {
-  ROLE_AGENT,
-  USER_AC_STATE,
   SESSION_COOKIE,
+  USER_AC_STATE,
+  ROLE_AGENT,
+  ROLE_RUN_MANAGER,
   CLIENT_TYPE_PRODUCER,
   CLIENT_TYPE_RETAILER,
   CLIENT_TYPE_DISTRIBUTOR,
   CLIENT_TYPE_MARKETING_AGENCY,
 } from './lib/constant'
 
+import { serverGateway } from './lib/server'
+import { Q_SESSION } from './lib/queries/session.query'
+
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname
-
-  const isRecover = pathname.startsWith('/auth/main/forgot-password')
-  const isReset = pathname.startsWith('/auth/main/reset')
-  const isSignUp = pathname.startsWith('/auth/main/sign-up')
-  const isSignIn = pathname.startsWith('/auth/main/sign-in') // FIXED LINE
-  const isUnlock = pathname.startsWith('/auth/main/unlock')
-
-  const isAuth = isRecover || isReset || isSignUp || isSignIn || isUnlock
-
-  const isAdmin = pathname.startsWith('/v2/admin')
-  const isAgent = pathname.startsWith('/v2/agent')
-  const isDistribution = pathname.startsWith('/v2/distributor')
-  const isMarketing = pathname.startsWith('/v2/marketing')
-  const isProduction = pathname.startsWith('/v2/producer')
-  const isRetail = pathname.startsWith('/v2/retailer')
-
-  const isAccount =
-    isAdmin || isAgent || isDistribution || isMarketing || isProduction || isRetail
-
-  const headers = new Headers(request.headers)
-  headers.set('isAuth', String(isAuth))
-  headers.set('isAccount', String(isAccount))
+  const path = request.nextUrl.pathname
 
   const sessionId = request.cookies.get(SESSION_COOKIE)?.value
+  const isAuthRoute = path === '/' || path.includes('/sign-in') || path.includes('/sign-up') || path.includes('/reset') || path.includes('/recover')
 
-  console.log('Path:', pathname)
-  console.log('isAccount:', isAccount, '| isAuth:', isAuth)
-  console.log('sessionId:', sessionId)
+  const isAdmin = path.includes('/admin')
+  const isAgent = path.includes('/agent')
+  const isRunManager = path.includes('/marketing')
+  const isProducer = path.includes('/production')
+  const isDistributor = path.includes('/distribution')
+  const isRetailer = path.includes('/retail')
+  const isMarketing = path.includes('/marketing')
 
-  //  Allow access to sign-in page if not logged in (prevents redirect loop)
-  // if (isSignIn && !sessionId) {
-  //   return NextResponse.next({ request: { headers } })
-  // }
+  const isProtectedRoute = isAdmin || isAgent || isRunManager || isProducer || isDistributor || isRetailer || isMarketing
 
-  // // Not logged in but trying to access a protected route
-  // if (isAccount && !sessionId) {
-  //   console.log('No session, redirecting to sign-in')
-  //   return NextResponse.redirect(new URL(paths.auth.main.signIn, request.url))
-  // }
+  // Allow access to auth pages if no session
+  if (!sessionId && isAuthRoute) {
+    return NextResponse.next()
+  }
 
-  // //  Validate session
-  // if (sessionId) {
-  //   const data = await serverGateway(Q_SESSION, { input: { id: sessionId } })
-  //   const session = data?.sessionAlien
+  // Block access to protected pages if no session
+  if (!sessionId && isProtectedRoute) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
 
-  //   console.log('Session:', session)
+  if (sessionId) {
+    const data = await serverGateway(Q_SESSION, { input: { id: sessionId } })
+    const session = data?.session || data?.sessionAlien // adjust to your GraphQL
 
-  //   if (!session || session.user?.accountState !== USER_AC_STATE.active) {
-  //     console.log('Invalid or inactive session, redirecting to sign-in')
-  //     return NextResponse.redirect(new URL(paths.auth.main.signIn, request.url))
-  //   }
+    if (!session || session.user?.state !== USER_AC_STATE.active) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
 
-  //   // Already logged in, but trying to access auth routes
-  //   if (isAuth) {
-  //     console.log('Logged-in user accessing auth route, redirecting to dashboard')
-  //     //  Optional: Route to specific dashboard based on role
-  //     return NextResponse.redirect(new URL('/v2/admin', request.url))
-  //   }
-  // }
+    const role = session.user.role
+    const clientType =
+      role?.clientTier1?.clientType?.name || role?.clientTier2?.clientType?.name
 
-  //  Allow request through
-  return NextResponse.next({ request: { headers } })
+    // Authenticated users should be redirected *away* from auth routes
+    if (isAuthRoute) {
+      const redirectPath = getHomePage(role?.name, clientType)
+      return NextResponse.redirect(new URL(redirectPath, request.url))
+    }
+
+    // Allow access only to pages that match the user’s role
+    const targetPath = getHomePage(role?.name, clientType)
+    if (isProtectedRoute && !path.startsWith(targetPath)) {
+      return NextResponse.redirect(new URL(targetPath, request.url))
+    }
+  }
+
+  return NextResponse.next()
+}
+
+function getHomePage(roleName?: string, clientType?: string): string {
+  if (roleName === ROLE_AGENT) return '/agent'
+  if (roleName === ROLE_RUN_MANAGER) return '/marketing'
+
+  switch (clientType) {
+    case CLIENT_TYPE_PRODUCER:
+      return '/production'
+    case CLIENT_TYPE_DISTRIBUTOR:
+      return '/distribution'
+    case CLIENT_TYPE_RETAILER:
+      return '/retail'
+    case CLIENT_TYPE_MARKETING_AGENCY:
+      return '/marketing'
+    default:
+      return '/admin'
+  }
 }
