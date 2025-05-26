@@ -46,7 +46,7 @@ import { AGENT_RUN_SALES } from 'src/lib/mutations/inventory.mutation';
 import { RunSampling } from 'src/components/run/RunSampling';
 import { RunAgentHistoricSales } from 'src/components/run/RunAgentHistoricSales';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Box, Grid, Typography, Button, Card, CardContent, Alert, Tab, Tabs } from '@mui/material';
+import { Box, Grid, Typography, Button, Card, CardContent, Alert, Tab, Tabs, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { styled } from '@mui/material/styles';
 
@@ -106,6 +106,7 @@ export default function Page({ params: { offerId } }: any) {
   const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
   const [tabValue, setTabValue] = useState('0');
+  const [cartOpen, setCartOpen] = useState(false);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -135,6 +136,14 @@ export default function Page({ params: { offerId } }: any) {
         },
       });
     }
+  };
+
+  const handleCartOpen = () => {
+    setCartOpen(true);
+  };
+
+  const handleCartClose = () => {
+    setCartOpen(false);
   };
 
   useEffect(() => {
@@ -353,7 +362,7 @@ export default function Page({ params: { offerId } }: any) {
                                     <CardContent>
                                       <Grid container justifyContent="space-between">
                                         <Typography>Product search...</Typography>
-                                        <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
+                                        <Button variant="contained" color="primary" onClick={handleCartOpen}>
                                           <i className="mdi mdi-cart-outline me-1"/>View Cart
                                         </Button>
                                       </Grid>
@@ -378,14 +387,14 @@ export default function Page({ params: { offerId } }: any) {
                                     ))}
 
                                     <Grid item xs={12} className="text-center">
-                                      <Button variant="contained" color="primary" data-bs-toggle="offcanvas" data-bs-target="#sales-cart" aria-controls="sales-cart">
+                                      <Button variant="contained" color="primary" onClick={handleCartOpen}>
                                         <i className="mdi mdi-cart-outline me-1"/>View Cart
                                       </Button>
                                     </Grid>
                                   </Grid>
 
                                   {offer?.run?.id && geoLocation?.lat && geoLocation?.lng && (
-                                    <RunCartSales runId={offer.run.id} lat={geoLocation.lat} lng={geoLocation.lng} />
+                                    <RunCartSales runId={offer.run.id} lat={geoLocation.lat} lng={geoLocation.lng} open={cartOpen} onClose={handleCartClose} />
                                   )}
                                 </Grid>
                               </Grid>
