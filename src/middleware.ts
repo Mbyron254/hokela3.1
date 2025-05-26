@@ -40,8 +40,15 @@ export async function middleware(request: NextRequest) {
 
   const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
   
+  // Debug logging
+  console.log('Current path:', request.nextUrl.pathname);
+  console.log('isAccount:', isAccount);
+  console.log('sessionId exists:', !!sessionId);
+  console.log('SESSION_COOKIE value:', SESSION_COOKIE);
+
   // Step 1: Basic session check for protected routes
   if (isAccount && !sessionId) {
+    console.log('Redirecting to sign-in: no session for protected route');
     return NextResponse.redirect(new URL(`${paths.auth.main.signIn}`, request.url));
   }
 
