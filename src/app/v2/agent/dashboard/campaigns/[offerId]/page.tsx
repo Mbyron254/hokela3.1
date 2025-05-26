@@ -378,8 +378,27 @@ export default function Page({ params: { offerId } }: any) {
                                             <Typography>Packaging: {commafy(allocation.product.packaging)}</Typography>
                                             <Typography>Price: {commafy(allocation.unitPrice)} ksh</Typography>
                                             <Typography>Sold: {allocation.quantitySold} / {allocation.quantityAllocated} {allocation.product?.package}</Typography>
-                                            <Button variant="outlined" color="info" fullWidth onClick={() => addItem({ sku: allocation.id, id: allocation.id, name: allocation.product?.name, price: parseFloat(allocation.unitPrice), image: allocation.product?.photo }, 1)}>
-                                              <i className="mdi mdi-cart-plus me-1"/>Add to Cart
+                                            <Button
+                                              variant="outlined"
+                                              color="info"
+                                              fullWidth
+                                              onClick={() => {
+                                                const item = {
+                                                  sku: allocation.id,
+                                                  id: allocation.id,
+                                                  name: allocation.product?.name,
+                                                  price: parseFloat(allocation.unitPrice),
+                                                  image: allocation.product?.photo
+                                                }
+                                                console.log(item);
+                                                if (typeof addItem === 'function') {
+                                                  addItem(item, 1);
+                                                } else {
+                                                  console.error('addItem is not a function');
+                                                }
+                                              }}
+                                            >
+                                              <i className="mdi mdi-cart-plus me-1"/>Add
                                             </Button>
                                           </CardContent>
                                         </Card>
