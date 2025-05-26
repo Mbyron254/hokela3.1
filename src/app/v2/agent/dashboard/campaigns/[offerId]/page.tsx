@@ -93,8 +93,6 @@ export default function Page({ params: { offerId } }: any) {
     toastmsg: true,
   });
 
-  const cart = useCart();
-  console.log(cart);
   const { addItem } = useCart();
   console.log(addItem);
 
