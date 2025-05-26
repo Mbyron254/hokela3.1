@@ -46,35 +46,35 @@ export async function middleware(request: NextRequest) {
   console.log('sessionId:', sessionId)
 
   //  Allow access to sign-in page if not logged in (prevents redirect loop)
-  if (isSignIn && !sessionId) {
-    return NextResponse.next({ request: { headers } })
-  }
+  // if (isSignIn && !sessionId) {
+  //   return NextResponse.next({ request: { headers } })
+  // }
 
-  // Not logged in but trying to access a protected route
-  if (isAccount && !sessionId) {
-    console.log('No session, redirecting to sign-in')
-    return NextResponse.redirect(new URL(paths.auth.main.signIn, request.url))
-  }
+  // // Not logged in but trying to access a protected route
+  // if (isAccount && !sessionId) {
+  //   console.log('No session, redirecting to sign-in')
+  //   return NextResponse.redirect(new URL(paths.auth.main.signIn, request.url))
+  // }
 
-  //  Validate session
-  if (sessionId) {
-    const data = await serverGateway(Q_SESSION, { input: { id: sessionId } })
-    const session = data?.sessionAlien
+  // //  Validate session
+  // if (sessionId) {
+  //   const data = await serverGateway(Q_SESSION, { input: { id: sessionId } })
+  //   const session = data?.sessionAlien
 
-    console.log('Session:', session)
+  //   console.log('Session:', session)
 
-    if (!session || session.user?.accountState !== USER_AC_STATE.active) {
-      console.log('Invalid or inactive session, redirecting to sign-in')
-      return NextResponse.redirect(new URL(paths.auth.main.signIn, request.url))
-    }
+  //   if (!session || session.user?.accountState !== USER_AC_STATE.active) {
+  //     console.log('Invalid or inactive session, redirecting to sign-in')
+  //     return NextResponse.redirect(new URL(paths.auth.main.signIn, request.url))
+  //   }
 
-    // Already logged in, but trying to access auth routes
-    if (isAuth) {
-      console.log('Logged-in user accessing auth route, redirecting to dashboard')
-      //  Optional: Route to specific dashboard based on role
-      return NextResponse.redirect(new URL('/v2/admin', request.url))
-    }
-  }
+  //   // Already logged in, but trying to access auth routes
+  //   if (isAuth) {
+  //     console.log('Logged-in user accessing auth route, redirecting to dashboard')
+  //     //  Optional: Route to specific dashboard based on role
+  //     return NextResponse.redirect(new URL('/v2/admin', request.url))
+  //   }
+  // }
 
   //  Allow request through
   return NextResponse.next({ request: { headers } })
