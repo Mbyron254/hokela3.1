@@ -59,12 +59,13 @@ export async function middleware(request: NextRequest) {
     const session = data?.sessionAlien;
     console.log('Session object:', session);
     
-    // For now, just log the session data and continue
-    if (session) {
-      console.log('Valid session found for user:', session.user?.id);
-    } else {
-      console.log('No session data returned');
+    // Check if session is invalid or user account is not active
+    if (!session || session.user?.accountState !== USER_AC_STATE.active) {
+      console.log('Invalid session or inactive user, redirecting to sign-in');
+      return NextResponse.redirect(new URL(`${paths.auth.main.signIn}`, request.url));
     }
+    
+    console.log('Valid session found for user:', session.user?.id);
   }
 
   return NextResponse.next({ request: { headers } });
