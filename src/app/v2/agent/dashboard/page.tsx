@@ -10,11 +10,12 @@ import { AgentsAnalyticsView } from 'src/sections/agents/view';
 
 export const metadata = { title: `Analytics | Dashboard - ${CONFIG.appName}` };
 
-export default async function Page() {
+export default function Page() {
   const cookieStore = cookies();
   const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
-  const data = await serverGateway(Q_SESSION, { input: { id: sessionId } });
-  console.log(data);
+  console.log(sessionId);
+  // const data = await serverGateway(Q_SESSION, { input: { id: sessionId } });
+  // console.log(data);
   
   return <AgentsAnalyticsView />;
 }
