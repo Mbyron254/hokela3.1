@@ -44,26 +44,29 @@ export async function middleware(request: NextRequest) {
   if (sessionId) {
     const data = await serverGateway(Q_SESSION, { input: { id: sessionId } })
     const session = data?.session || data?.sessionAlien // adjust to your GraphQL
+    const headers = new Headers(request.headers);
 
-    if (!session || session.user?.state !== USER_AC_STATE.active) {
-      return NextResponse.redirect(new URL('/', request.url))
-    }
+    headers.set('SessionID:', String(sessionId));
+    headers.set('data:', JSON.stringify(session));
+    // if (!session || session.user?.state !== USER_AC_STATE.active) {
+    //   return NextResponse.redirect(new URL('/', request.url))
+    // }
 
-    const role = session.user.role
-    const clientType =
-      role?.clientTier1?.clientType?.name || role?.clientTier2?.clientType?.name
+    // const role = session.user.role
+    // const clientType =
+    //   role?.clientTier1?.clientType?.name || role?.clientTier2?.clientType?.name
 
-    // Authenticated users should be redirected *away* from auth routes
-    if (isAuthRoute) {
-      const redirectPath = getHomePage(role?.name, clientType)
-      return NextResponse.redirect(new URL(redirectPath, request.url))
-    }
+    // // Authenticated users should be redirected *away* from auth routes
+    // if (isAuthRoute) {
+    //   const redirectPath = getHomePage(role?.name, clientType)
+    //   return NextResponse.redirect(new URL(redirectPath, request.url))
+    // }
 
-    // Allow access only to pages that match the user’s role
-    const targetPath = getHomePage(role?.name, clientType)
-    if (isProtectedRoute && !path.startsWith(targetPath)) {
-      return NextResponse.redirect(new URL(targetPath, request.url))
-    }
+    // // Allow access only to pages that match the user’s role
+    // const targetPath = getHomePage(role?.name, clientType)
+    // if (isProtectedRoute && !path.startsWith(targetPath)) {
+    //   return NextResponse.redirect(new URL(targetPath, request.url))
+    // }
   }
 
   return NextResponse.next()
