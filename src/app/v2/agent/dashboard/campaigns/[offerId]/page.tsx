@@ -93,7 +93,10 @@ export default function Page({ params: { offerId } }: any) {
     toastmsg: true,
   });
 
+  const cart = useCart();
+  console.log(cart);
   const { addItem } = useCart();
+  console.log(addItem);
 
   const [allocations, setAllocations] = useState<IAgentAllocation[]>([]);
   const [inputSalesGiveaway, setInputSalesGiveaway] = useState<InputSalesGiveawaySurveyReportCreate>({
