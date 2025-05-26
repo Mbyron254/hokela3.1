@@ -66,6 +66,13 @@ export async function middleware(request: NextRequest) {
     }
     
     console.log('Valid session found for user:', session.user?.id);
+    
+    // Step 3: If user is logged in but trying to access auth pages, redirect to their dashboard
+    if (isAuth) {
+      console.log('Logged in user trying to access auth page, redirecting to dashboard');
+      // For now, let's redirect to a default dashboard - we'll add role-based routing next
+      return NextResponse.redirect(new URL('/v2/admin', request.url));
+    }
   }
 
   return NextResponse.next({ request: { headers } });
