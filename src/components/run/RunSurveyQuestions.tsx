@@ -296,21 +296,21 @@ export const RunSurveyQuestions: FC<{
             </CardContent>
           </Card>
 
-          {/* <Box sx={{ mt: 3 }}>
+          <Box sx={{ mt: 3 }}>
             <QuestionnaireSetup
               questionnaireFields={questionnaireFields}
               setQuestionnaireFields={setQuestionnaireFields}
               mutating={upserting}
               mutation={handleUpsert}
             />
-          </Box> */}
+          </Box>
         </Box>
       )}
 
       {tabIndex === 1 && (
         <Box sx={{ p: 3 }}>
-          <p>Survey Targets</p>
-          {/* {survey?.id ? <RunSurveyTargetReports surveyId={survey.id} /> : undefined} */}
+          {/* <p>Survey Targets</p> */}
+          {survey?.id ? <RunSurveyTargetReports surveyId={survey.id} /> : undefined}
         </Box>
       )}
     </Box>
