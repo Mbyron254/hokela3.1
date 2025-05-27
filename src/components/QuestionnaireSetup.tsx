@@ -127,7 +127,7 @@ export const QuestionnaireSetup = ({
     <>
       <div>
         {questionnaireFields.map((element, i: number) => (
-          <Accordion key={`element-${i}`} defaultExpanded={i === 0}>
+          <Accordion key={element.id} defaultExpanded={i === 0}>
             <AccordionSummary
               expandIcon={<Iconify icon="mdi:chevron-down" />}
               aria-controls={`panel${i}-content`}
