@@ -100,52 +100,34 @@ export const RunSurveyQuestions: FC<{
   useEffect(() => {
     if (surveyError) {
       console.error('Error fetching survey:', surveyError);
+      return;
     }
-
+  
     if (survey && isMounted) {
-      const _fields = [];
-
-      for (let i = 0; i < survey.questionnaireFields.length; i += 1) {
-        const _dropdown: IAnswerDropdownOption[] = [];
-        const _singlechoice: IChoice[] = [];
-        const _multichoice: IChoice[] = [];
-
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k += 1) {
-          _singlechoice.push({
-            text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
-            documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
-          });
-        }
-
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k += 1) {
-          _multichoice.push({
-            text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
-            documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
-          });
-        }
-
-        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k += 1) {
-          _dropdown.push({
-            value: survey.questionnaireFields[i].optionsDropdown[k].value,
-            label: survey.questionnaireFields[i].optionsDropdown[k].label,
-          });
-        }
-
-        _fields.push({
-          id: survey.questionnaireFields[i].id,
-          isRequired: survey.questionnaireFields[i].isRequired,
-          noDuplicateResponse: survey.questionnaireFields[i].noDuplicateResponse,
-          question: survey.questionnaireFields[i].question,
-          feedbackType: survey.questionnaireFields[i].feedbackType,
-          allowMultipleFileUploads: survey.questionnaireFields[i].allowMultipleFileUploads,
-          optionsChoiceSingle: _singlechoice,
-          optionsChoiceMultiple: _multichoice,
-          optionsDropdown: _dropdown,
-        });
-      }
-
+      // Clone questionnaire fields deeply to force re-render
+      const clonedFields: IQuestionnairField[] = survey.questionnaireFields.map((field: IQuestionnairField) => ({
+        id: field.id,
+        isRequired: field.isRequired,
+        noDuplicateResponse: field.noDuplicateResponse,
+        question: field.question,
+        feedbackType: field.feedbackType,
+        allowMultipleFileUploads: field.allowMultipleFileUploads,
+        optionsChoiceSingle: field.optionsChoiceSingle?.map((opt: IChoice) => ({
+          text: opt.text,
+          documentId: opt.documentId,
+        })) || [],
+        optionsChoiceMultiple: field.optionsChoiceMultiple?.map((opt: IChoice) => ({
+          text: opt.text,
+          documentId: opt.documentId,
+        })) || [],
+        optionsDropdown: field.optionsDropdown?.map((opt: IAnswerDropdownOption) => ({
+          label: opt.label,
+          value: opt.value,
+        })) || [],
+      }));
+  
+      // Set fresh input state without spreading stale input
       setInput({
-        ...input,
         name: survey.name,
         description: survey.description,
         hideRespondentFields: survey.hideRespondentFields,
@@ -154,10 +136,13 @@ export const RunSurveyQuestions: FC<{
         requireRespondentEmail: survey.requireRespondentEmail,
         blockSameLocationReportsGlobally: survey.blockSameLocationReportsGlobally,
         blockSameLocationReportsPerAgent: survey.blockSameLocationReportsPerAgent,
+        questionnaireFields: [], // keep empty; fields are handled separately
       });
-      setQuestionnaireFields(_fields);
+  
+      setQuestionnaireFields(clonedFields);
     }
-  }, [survey, input, surveyError, isMounted]);
+  }, [survey, surveyError, isMounted]);
+  
 
   return (
     <Box sx={{ width: '100%' }}>
