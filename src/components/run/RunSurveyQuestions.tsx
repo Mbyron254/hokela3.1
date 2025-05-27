@@ -88,10 +88,6 @@ export const RunSurveyQuestions: FC<{
     }
   };
 
-  useEffect(() => {
-    console.log('questionnaireFields: ', questionnaireFields);
-  }, [questionnaireFields]);
-
   useEffect(() => getSurvey({ variables: { input: { runId } } }), [getSurvey, runId]);
   useEffect(() => {
     if (survey) {
