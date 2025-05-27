@@ -28,7 +28,7 @@ export const RunSurveyQuestions: FC<{
   clientTier2Id: string;
   runId: string;
 }> = ({ clientTier2Id, runId }) => {
-  const { action: getSurvey, data: survey } = GQLMutation({
+  const { action: getSurvey, data: survey, error: surveyError } = GQLMutation({
     mutation: M_SURVEY,
     resolver: 'survey',
     toastmsg: true,
@@ -56,6 +56,7 @@ export const RunSurveyQuestions: FC<{
     questionnaireFields: [],
   });
   const [tabIndex, setTabIndex] = useState(0);
+  const [isMounted, setIsMounted] = useState(true);
 
   const handleUpsert = () => {
     if (clientTier2Id && runId && questionnaireFields) {
@@ -88,9 +89,20 @@ export const RunSurveyQuestions: FC<{
     }
   };
 
-  // useEffect(() => getSurvey({ variables: { input: { runId } } }), [getSurvey, runId]);
   useEffect(() => {
-    if (survey) {
+    setIsMounted(true);
+
+    getSurvey({ variables: { input: { runId } } });
+
+    return () => setIsMounted(false);
+  }, [getSurvey, runId]);
+
+  useEffect(() => {
+    if (surveyError) {
+      console.error('Error fetching survey:', surveyError);
+    }
+
+    if (survey && isMounted) {
       const _fields = [];
 
       for (let i = 0; i < survey.questionnaireFields.length; i += 1) {
@@ -145,7 +157,7 @@ export const RunSurveyQuestions: FC<{
       });
       setQuestionnaireFields(_fields);
     }
-  }, [survey, input]);
+  }, [survey, input, surveyError, isMounted]);
 
   return (
     <Box sx={{ width: '100%' }}>
