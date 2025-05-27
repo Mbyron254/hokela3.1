@@ -29,6 +29,22 @@ export default function PhoneNumberInputLegacy({
           // innerWidth: '100%',
         },
       }}
+      inputStyle={{
+        width: '100%',
+        border: 'none',
+        borderBottom: '2px solid #3f51b5',
+        borderRadius: '0',
+        padding: '10px 0',
+        boxShadow: 'none',
+        transition: 'border-color 0.3s',
+      }}
+      buttonStyle={{
+        border: 'none',
+        backgroundColor: 'transparent',
+        padding: '0',
+        margin: '0',
+      }}
+      containerClass='custom-phone-input-container'
     />
   );
 }
