@@ -38,8 +38,8 @@ import {
   TEXT_SHORT,
   URL,
 } from 'src/lib/constant';
-import { slugify } from 'src/lib/helpers';
-import { IChoice, IQuestionnaireSetup } from 'src/lib/interface/general.interface';
+import { generateShortUUIDV4, slugify } from 'src/lib/helpers';
+import { IChoice, IQuestionnaireSetup, IQuestionnairField } from 'src/lib/interface/general.interface';
 import {
   answerTypeEdit,
   editFormElementAllowMultipleFileUploads,
@@ -81,7 +81,7 @@ export const QuestionnaireSetup = ({
 
   useEffect(() => {
     if (documentsSingleChoice.length) {
-      for (let i = 0; i < documentsSingleChoice.length; i+=1) {
+      for (let i = 0; i < documentsSingleChoice.length; i += 1) {
         if (documentsSingleChoice[i].meta?.id) {
           setSingleChoice({
             ...singleChoice,
@@ -94,7 +94,7 @@ export const QuestionnaireSetup = ({
 
   useEffect(() => {
     if (documentsMultiChoice.length) {
-      for (let i = 0; i < documentsMultiChoice.length; i+=1) {
+      for (let i = 0; i < documentsMultiChoice.length; i += 1) {
         if (documentsMultiChoice[i].meta?.id) {
           setMultichoice({
             ...multichoice,
@@ -106,8 +106,21 @@ export const QuestionnaireSetup = ({
   }, [documentsMultiChoice, setMultichoice, multichoice]);
 
   const addElement = () => {
-    formElementAdd(questionnaireFields, setQuestionnaireFields);
-    console.log('Updated questionnaireFields:', questionnaireFields);
+    const formElement: IQuestionnairField = {
+      id: generateShortUUIDV4(),
+      question: '',
+      isRequired: false,
+      noDuplicateResponse: false,
+      feedbackType: TEXT_SHORT,
+      optionsChoiceSingle: [],
+      optionsChoiceMultiple: [],
+      optionsDropdown: [],
+      allowMultipleFileUploads: false,
+    };
+
+    const updatedFields = [...questionnaireFields, formElement];
+    console.log('UpdatedFields: ', updatedFields);
+    setQuestionnaireFields(updatedFields);
   }
 
   return (
@@ -483,13 +496,13 @@ export const QuestionnaireSetup = ({
                 />
 
                 {element.feedbackType === TEXT_SHORT ||
-                element.feedbackType === NUMBER ||
-                element.feedbackType === PHONE_NUMBER ||
-                element.feedbackType === DATE ||
-                element.feedbackType === EMAIL ||
-                element.feedbackType === URL ||
-                element.feedbackType === RATING ||
-                element.feedbackType === GEOLOCATION ? (
+                  element.feedbackType === NUMBER ||
+                  element.feedbackType === PHONE_NUMBER ||
+                  element.feedbackType === DATE ||
+                  element.feedbackType === EMAIL ||
+                  element.feedbackType === URL ||
+                  element.feedbackType === RATING ||
+                  element.feedbackType === GEOLOCATION ? (
                   <FormControlLabel
                     control={
                       <Checkbox
