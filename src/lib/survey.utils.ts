@@ -20,7 +20,7 @@ export const formElementAdd = (
   };
 
   const updatedFields = [...questionnaireFields, formElement];
-  console.log('updatedFields: ',updatedFields);
+  console.log('UpdatedFields: ',updatedFields);
   setQuestionnaireFields(updatedFields);
 };
 
