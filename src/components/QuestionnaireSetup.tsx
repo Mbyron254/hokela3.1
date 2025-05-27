@@ -79,6 +79,9 @@ export const QuestionnaireSetup = ({
   const [documentsSingleChoice, setDocumentsSingleChoice] = useState<IDocumentWrapper[]>([]);
   const [documentsMultiChoice, setDocumentsMultiChoice] = useState<IDocumentWrapper[]>([]);
 
+  // Dummy state to force re-render
+  const [, forceUpdate] = useState(0);
+
   useEffect(() => {
     if (documentsSingleChoice.length) {
       for (let i = 0; i < documentsSingleChoice.length; i += 1) {
@@ -121,6 +124,9 @@ export const QuestionnaireSetup = ({
     const updatedFields = [...questionnaireFields, formElement];
     console.log('UpdatedFields: ', updatedFields);
     setQuestionnaireFields(updatedFields);
+
+    // Force a re-render
+    forceUpdate((n) => n + 1);
   }
 
   return (
