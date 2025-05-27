@@ -18,8 +18,11 @@ export const formElementAdd = (
     optionsDropdown: [],
     allowMultipleFileUploads: false,
   };
-  setQuestionnaireFields((questionnaireFields) => [...questionnaireFields, formElement]);
+
+  const updatedFields = [...questionnaireFields, formElement];
+  setQuestionnaireFields(updatedFields);
 };
+
 
 export const formElementRemove = (
   id: string,
