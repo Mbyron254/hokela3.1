@@ -16,6 +16,7 @@ import { RunProfile } from 'src/components/RunProfile';
 // import { RunDashboardSurvey } from 'src/components/run/RunDashboardSurvey';
 import { RunDashboardSales } from 'src/components/run/RunDashboardSales';
 import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocation';
+import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
 // import { RunKPIs } from 'src/components/run/RunKPIs';
 // import { RunPayroll } from 'src/components/run/RunPayroll';
 // import { RunPayRate } from 'src/components/run/RunPayRate';
@@ -272,8 +273,8 @@ export default function Page({ params: { runId } }: any) {
                 <p>Sampling</p>
               )}
               {activity.name === RUN_ACTIVITY_SURVEY && (
-                // <RunSurveyQuestions runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
-                <p>Survey</p>
+                <RunSurveyQuestions runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                // <p>Survey</p>
               )}
             </Box>
           )
