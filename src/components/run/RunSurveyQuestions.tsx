@@ -88,7 +88,7 @@ export const RunSurveyQuestions: FC<{
     }
   };
 
-  useEffect(() => getSurvey({ variables: { input: { runId } } }), [getSurvey, runId]);
+  // useEffect(() => getSurvey({ variables: { input: { runId } } }), [getSurvey, runId]);
   useEffect(() => {
     if (survey) {
       const _fields = [];
