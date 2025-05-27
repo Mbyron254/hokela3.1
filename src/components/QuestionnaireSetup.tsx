@@ -79,9 +79,6 @@ export const QuestionnaireSetup = ({
   const [documentsSingleChoice, setDocumentsSingleChoice] = useState<IDocumentWrapper[]>([]);
   const [documentsMultiChoice, setDocumentsMultiChoice] = useState<IDocumentWrapper[]>([]);
 
-  // Dummy state to force re-render
-  const [, forceUpdate] = useState(0);
-
   useEffect(() => {
     if (documentsSingleChoice.length) {
       for (let i = 0; i < documentsSingleChoice.length; i += 1) {
@@ -109,25 +106,39 @@ export const QuestionnaireSetup = ({
   }, [documentsMultiChoice, setMultichoice, multichoice]);
 
   const addElement = () => {
-    const formElement: IQuestionnairField = {
-      id: generateShortUUIDV4(),
-      question: '',
-      isRequired: false,
-      noDuplicateResponse: false,
-      feedbackType: TEXT_SHORT,
-      optionsChoiceSingle: [],
-      optionsChoiceMultiple: [],
-      optionsDropdown: [],
-      allowMultipleFileUploads: false,
-    };
+    setQuestionnaireFields(prev => [
+      ...prev,
+      {
+        id: generateShortUUIDV4(),
+        question: '',
+        isRequired: false,
+        noDuplicateResponse: false,
+        feedbackType: TEXT_SHORT,
+        optionsChoiceSingle: [],
+        optionsChoiceMultiple: [],
+        optionsDropdown: [],
+        allowMultipleFileUploads: false,
+      },
+    ]);
+  };
 
-    const updatedFields = [...questionnaireFields, formElement];
-    console.log('UpdatedFields: ', updatedFields);
-    setQuestionnaireFields(updatedFields);
+  // const addElement = () => {
+  //   const formElement: IQuestionnairField = {
+  //     id: generateShortUUIDV4(),
+  //     question: '',
+  //     isRequired: false,
+  //     noDuplicateResponse: false,
+  //     feedbackType: TEXT_SHORT,
+  //     optionsChoiceSingle: [],
+  //     optionsChoiceMultiple: [],
+  //     optionsDropdown: [],
+  //     allowMultipleFileUploads: false,
+  //   };
 
-    // Force a re-render
-    forceUpdate((n) => n + 1);
-  }
+  //   const updatedFields = [...questionnaireFields, formElement];
+  //   console.log('UpdatedFields: ', updatedFields);
+  //   setQuestionnaireFields(updatedFields);
+  // }
 
   return (
     <>
