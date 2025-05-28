@@ -272,7 +272,7 @@ export const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
                   onChange={(e) =>
                     editFeedbackSingleChoice(
                       element.id,
-                      e.target.value,
+                      { _choice: e.target.value },
                       questionnaireFields,
                       setQuestionnaireFields,
                     )
@@ -304,7 +304,7 @@ export const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
                         onChange={() =>
                           editFeedbackMultiChoice(
                             element.id,
-                            option,
+                            { text: option.text },
                             questionnaireFields,
                             setQuestionnaireFields,
                           )

@@ -317,14 +317,14 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
                 handleSubmit={(e: FormEvent<Element>) => handleCreate(e)}
               />
             </DialogContent>
-            <DialogActions>
+            {/* <DialogActions>
               <Button onClick={() => setOpenDialog(false)} color="secondary">
                 Cancel
               </Button>
               <Button onClick={handleCreateButton} color="primary" disabled={creating}>
                 {creating ? <CircularProgress size={24} /> : 'Submit'}
               </Button>
-            </DialogActions>
+            </DialogActions> */}
           </Dialog>
         </>
       )}
