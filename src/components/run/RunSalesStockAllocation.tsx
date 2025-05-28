@@ -1,7 +1,7 @@
 'use client';
 
 
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import {
   ALLOCATE_INVENTORY,
@@ -25,17 +25,17 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
-import { 
-  Box, 
-  Card, 
-  CardContent, 
-  FormControl, 
-  InputLabel, 
-  MenuItem, 
-  Select, 
-  TextField, 
-  Typography, 
-  CircularProgress, 
+import {
+  Box,
+  Card,
+  CardContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  CircularProgress,
   Button,
   FormControlLabel
 } from '@mui/material';
@@ -113,6 +113,15 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   const [search, setSearch] = useState<string>();
   const [teamId, setTeamId] = useState<string>();
 
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+
   const loadTeams = () => {
     if (runId) {
       getTeams({ variables: { input: { runId } } });
@@ -123,26 +132,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
       getAgents({ variables: { input: { search, runId, teamId, page, pageSize } } });
     }
   };
-  const loadProducts = () => {
-    getProducts({ variables: { input: { clientTier2Id } } });
-  };
-  const loadPackagings = () => {
-    if (product.id) {
-      getPackagings({
-        variables: { input: { productId: product.id } },
-      });
-    }
-  };
-  const loadStock = () => {
-    if (product.id && product.packagingId) {
-      console.log('Loading stock for:', { productId: product.id, packagingId: product.packagingId });
-      getStock({
-        variables: {
-          input: { productId: product.id, packagingId: product.packagingId },
-        },
-      });
-    }
-  };
+  
   const loadAllocations = () => {
     if (runId && product.packagingId && selectedAgents.length > 0) {
       const validAgents = selectedAgents.filter(agent => agent && agent.trim() !== '');
@@ -155,7 +145,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
     if (allocations.length) {
       const _allocations: { agentId: string; quantity: number }[] = [];
 
-      for (let x = 0; x < allocations.length; x+=1) {
+      for (let x = 0; x < allocations.length; x += 1) {
         _allocations.push({
           agentId: allocations[x].id,
           quantity: allocations[x].allocated,
@@ -182,14 +172,14 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
 
     let _allocationTotal = 0;
 
-    for (let i = 0; i < _curr.length; i+=1) {
+    for (let i = 0; i < _curr.length; i += 1) {
       if (bulkFill) {
         _curr[i].allocated = parseInt(event.target.value, 10) || 0;
       } else if (_curr[i].id === id) {
-          const newAllocation = parseInt(event.target.value, 10) || 0;
+        const newAllocation = parseInt(event.target.value, 10) || 0;
 
-          _curr[i].allocated = newAllocation < _curr[i].sold ? _curr[i].sold : newAllocation;
-        
+        _curr[i].allocated = newAllocation < _curr[i].sold ? _curr[i].sold : newAllocation;
+
       }
       _allocationTotal += _curr[i].allocated;
     }
@@ -229,34 +219,64 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
     },
   ];
 
-  useEffect(() => getProducts({ variables: { input: { clientTier2Id } } }), [getProducts, clientTier2Id]);
-  useEffect(() => getTeams({ variables: { input: { runId } } }), [getTeams, runId]);
+  useEffect(() => {
+    getProducts({ variables: { input: { clientTier2Id } } }).then(() => {
+      if (!isMounted.current) return;
+    });
+  }, [getProducts, clientTier2Id]);
+  useEffect(() => {
+    if (runId) {
+      getTeams({ variables: { input: { runId } } }).then(() => {
+        if (!isMounted.current) return;
+      });
+    }
+  }, [getTeams, runId]);
+
   useEffect(() => {
     if (product.id) {
-      getPackagings({ variables: { input: { productId: product.id } } });
+      getPackagings({ variables: { input: { productId: product.id } } }).then(() => {
+        if (!isMounted.current) return;
+      });
     }
   }, [getPackagings, product.id]);
+
   useEffect(() => {
     if (product.id && product.packagingId) {
       console.log('Loading stock for:', { productId: product.id, packagingId: product.packagingId });
-      getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } });
+      
+      getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } })
+        .then((res: any) => {
+          if (!isMounted.current) return;
+          // If needed, you can set some local state here
+          console.log('Stock data safely updated');
+        })
+        .catch((err: any  ) => {
+          if (!isMounted.current) return;
+          console.error('Error fetching stock', err);
+        });
     }
   }, [getStock, product.id, product.packagingId]);
+  
   useEffect(() => {
     if (runId && product.packagingId && selectedAgents.length > 0) {
-      const validAgents = selectedAgents.filter(agent => agent && agent.trim() !== '');
+      const validAgents = selectedAgents.filter((a) => a && a.trim() !== '');
       if (validAgents.length > 0) {
-        getAllocations({ variables: { input: { runId, packagingId: product.packagingId, agents: validAgents } } });
+        getAllocations({
+          variables: { input: { runId, packagingId: product.packagingId, agents: validAgents } }
+        }).then(() => {
+          if (!isMounted.current) return;
+        });
       }
     }
   }, [getAllocations, runId, product.packagingId, selectedAgents]);
+
   useEffect(() => {
     if (allocation?.entries) {
       const _allocations: IAllocations[] = [];
 
       let _allocationTotal = 0;
 
-      for (let i = 0; i < allocation.entries.length; i+=1) {
+      for (let i = 0; i < allocation.entries.length; i += 1) {
         _allocations.push({
           index: allocation.entries[i].index,
           id: allocation.entries[i].agent?.id,
@@ -278,11 +298,14 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   }, [stock]);
 
   useEffect(() => {
-    // Load agents when the component mounts
     if (runId) {
-      getAgents({ variables: { input: { search, runId, teamId, page: 0, pageSize: 10 } } });
+      getAgents({
+        variables: { input: { search, runId, teamId, page: 0, pageSize: 10 } }
+      }).then(() => {
+        if (!isMounted.current) return;
+      });
     }
-  }, [runId, teamId, getAgents, search ]);
+  }, [getAgents, runId, teamId, search]);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
