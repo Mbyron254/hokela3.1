@@ -14,7 +14,7 @@ import {
 import { IInputConfigCreate, IInputConfigUpdate } from 'src/lib/interface/general.interface';
 import { M_PRODUCTS_MINI } from 'src/lib/mutations/product.mutation';
 import { M_PACKAGINGS_MINI } from 'src/lib/mutations/packaging.mutation';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tabs, Tab } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tabs, Tab, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { MutationButton } from '../MutationButton';
 import { LoadingDiv } from '../LoadingDiv';
 
@@ -130,6 +130,14 @@ export const RunSalesGiveawayConfig: FC<{
     id?: string;
     packagingId?: string;
   }>({ id: undefined, packagingId: undefined });
+
+  const [tabIndex, setTabIndex] = useState(0);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
 
   const handleConfigCreate = () => {
     if (runId) {
@@ -344,15 +352,15 @@ export const RunSalesGiveawayConfig: FC<{
   return (
     <div className="row">
       <div className="col-md-12">
-        <Tabs value={0} aria-label="basic tabs example">
+        <Tabs value={tabIndex} onChange={handleTabChange} aria-label="basic tabs example">
           <Tab label="Active" />
           <Tab label="Recycled" />
         </Tabs>
 
         <div className="tab-content">
-          <div className="tab-pane show active" id="records-active">
+          <div className={`tab-pane ${tabIndex === 0 ? 'show active' : ''}`} id="records-active">
             <div className="btn-group btn-group-sm mb-2">
-              <Button variant="outlined" color="success" onClick={() => { /* handle new config */ }}>
+              <Button variant="outlined" color="success" onClick={() => { setOpenCreateDialog(true); }}>
                 <i className="mdi mdi-plus me-1"/>New
               </Button>
               <Button variant="outlined" color="error" onClick={handleConfigRecycle} disabled={recyclingConfig}>
@@ -389,7 +397,7 @@ export const RunSalesGiveawayConfig: FC<{
             </TableContainer>
           </div>
 
-          <div className="tab-pane" id="records-recycled">
+          <div className={`tab-pane ${tabIndex === 1 ? 'show active' : ''}`} id="records-recycled">
             <div className="btn-group btn-group-sm mb-2">
               <Button variant="outlined" color="warning" onClick={handleConfigRestore} disabled={restoringConfig}>
                 <i className="mdi mdi-restore me-1"/>Restore
@@ -423,399 +431,367 @@ export const RunSalesGiveawayConfig: FC<{
         </div>
       </div>
 
-      <div
-        id="create-modal"
-        className="modal fade"
-        role="dialog"
-        aria-labelledby="create-modal"
-        aria-hidden="true"
-        tabIndex={-1}
-      >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h4 className="modal-title" id="create-role">
-                New Configuration
-              </h4>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
-            </div>
-            <div className="modal-body">
-              <h5 className="mt-0 mb-2 text-primary">
-                <i className="mdi mdi-bullseye-arrow me-1"/>Target Sale
-              </h5>
+      <Dialog open={openCreateDialog} onClose={() => setOpenCreateDialog(false)} fullWidth maxWidth="lg">
+        <DialogTitle>New Configuration</DialogTitle>
+        <DialogContent>
+          <h5 className="mt-0 mb-2 text-primary">
+            <i className="mdi mdi-bullseye-arrow me-1"/>Target Sale
+          </h5>
 
-              <div className="card card-border border border-primary">
-                <div className="card-body pb-0">
-                  <div className="row">
-                    <div className="col-md-4">
-                      <div className="form-floating mb-3">
-                        <select
-                          id="targetProduct"
-                          className="form-select"
-                          aria-label="Product"
-                          defaultValue={productTarget.id}
-                          onChange={(e) =>
-                            setProductTarget({
-                              ...productTarget,
-                              id: e.target.value === '' ? undefined : e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Product</option>
-                          {productsTarget?.rows.map((product: any, index: number) => (
-                            <option value={product.id} key={`product-${index}`}>
-                              {product.name}
-                            </option>
-                          ))}
-                        </select>
-                        <p>Target Product</p>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="form-floating mb-3">
-                        <select
-                          id="targetPackaging"
-                          className="form-select"
-                          aria-label="Packaging"
-                          defaultValue={inputConfigCreate.salePackagingId}
-                          onChange={(e) =>
-                            setInputConfigCreate({
-                              ...inputConfigCreate,
-                              salePackagingId: e.target.value === '' ? undefined : e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Packaging</option>
-                          {packagingsTarget?.rows.map((packaging: any, index: number) => (
-                            <option key={`packaging-${index}`} value={packaging.id}>
-                              {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
-                            </option>
-                          ))}
-                        </select>
-                        <p>Target Packaging</p>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="form-floating mb-3">
-                        <input
-                          type="number"
-                          className="form-control"
-                          id="saleUnits"
-                          defaultValue={inputConfigCreate.saleUnits}
-                          onChange={(e) =>
-                            setInputConfigCreate({
-                              ...inputConfigCreate,
-                              saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
-                            })
-                          }
-                        />
-                        <p>Target Sale Units</p>
-                      </div>
-                    </div>
+          <div className="card card-border border border-primary">
+            <div className="card-body pb-0">
+              <div className="row">
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <select
+                      id="targetProduct"
+                      className="form-select"
+                      aria-label="Product"
+                      defaultValue={productTarget.id}
+                      onChange={(e) =>
+                        setProductTarget({
+                          ...productTarget,
+                          id: e.target.value === '' ? undefined : e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Product</option>
+                      {productsTarget?.rows.map((product: any, index: number) => (
+                        <option value={product.id} key={`product-${index}`}>
+                          {product.name}
+                        </option>
+                      ))}
+                    </select>
+                    <p>Target Product</p>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <select
+                      id="targetPackaging"
+                      className="form-select"
+                      aria-label="Packaging"
+                      defaultValue={inputConfigCreate.salePackagingId}
+                      onChange={(e) =>
+                        setInputConfigCreate({
+                          ...inputConfigCreate,
+                          salePackagingId: e.target.value === '' ? undefined : e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Packaging</option>
+                      {packagingsTarget?.rows.map((packaging: any, index: number) => (
+                        <option key={`packaging-${index}`} value={packaging.id}>
+                          {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                        </option>
+                      ))}
+                    </select>
+                    <p>Target Packaging</p>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="saleUnits"
+                      defaultValue={inputConfigCreate.saleUnits}
+                      onChange={(e) =>
+                        setInputConfigCreate({
+                          ...inputConfigCreate,
+                          saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
+                        })
+                      }
+                    />
+                    <p>Target Sale Units</p>
                   </div>
                 </div>
               </div>
-
-              <h5 className="mt-0 mb-2 text-primary">
-                <i className="mdi mdi-gift-outline me-1"/> Giveaway
-              </h5>
-
-              <div className="card card-border border border-primary mb-0">
-                <div className="card-body pb-0">
-                  <div className="row">
-                    <div className="col-md-4">
-                      <div className="form-floating mb-3">
-                        <select
-                          id="giveawayProduct"
-                          className="form-select"
-                          aria-label="Product"
-                          defaultValue={productGiveaway.id}
-                          onChange={(e) =>
-                            setProductGiveaway({
-                              ...productGiveaway,
-                              id: e.target.value === '' ? undefined : e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Product</option>
-                          {productsGiveaway?.rows.map((product: any, index: number) => (
-                            <option value={product.id} key={`product-${index}`}>
-                              {product.name}
-                            </option>
-                          ))}
-                        </select>
-                        <p>Target Product</p>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="form-floating mb-3">
-                        <select
-                          id="giveawayPackaging"
-                          className="form-select"
-                          aria-label="Packaging"
-                          defaultValue={inputConfigCreate.giveawayPackagingId}
-                          onChange={(e) =>
-                            setInputConfigCreate({
-                              ...inputConfigCreate,
-                              giveawayPackagingId: e.target.value === '' ? undefined : e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Packaging</option>
-                          {packagingsGiveaway?.rows.map((packaging: any, index: number) => (
-                            <option key={`packaging-${index}`} value={packaging.id}>
-                              {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
-                            </option>
-                          ))}
-                        </select>
-                        <p>Target Packaging</p>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="form-floating mb-3">
-                        <input
-                          type="number"
-                          className="form-control"
-                          id="giveawayUnits"
-                          defaultValue={inputConfigCreate.giveawayUnits}
-                          onChange={(e) =>
-                            setInputConfigCreate({
-                              ...inputConfigCreate,
-                              giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
-                            })
-                          }
-                        />
-                        <p>Giveaway Units</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-                Close
-              </button>
-              <MutationButton
-                type="button"
-                className="btn btn-primary"
-                size="sm"
-                label="Save"
-                icon="mdi mdi-plus"
-                loading={creatingConfig}
-                onClick={handleConfigCreate}
-              />
             </div>
           </div>
-        </div>
-      </div>
 
-      <div
-        id="update-modal"
-        className="modal fade"
-        role="dialog"
-        aria-labelledby="update-modal"
-        aria-hidden="true"
-        tabIndex={-1}
-      >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <h5 className="mt-0 mb-2 text-primary">
+            <i className="mdi mdi-gift-outline me-1"/> Giveaway
+          </h5>
+
+          <div className="card card-border border border-primary mb-0">
+            <div className="card-body pb-0">
+              <div className="row">
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <select
+                      id="giveawayProduct"
+                      className="form-select"
+                      aria-label="Product"
+                      defaultValue={productGiveaway.id}
+                      onChange={(e) =>
+                        setProductGiveaway({
+                          ...productGiveaway,
+                          id: e.target.value === '' ? undefined : e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Product</option>
+                      {productsGiveaway?.rows.map((product: any, index: number) => (
+                        <option value={product.id} key={`product-${index}`}>
+                          {product.name}
+                        </option>
+                      ))}
+                    </select>
+                    <p>Target Product</p>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <select
+                      id="giveawayPackaging"
+                      className="form-select"
+                      aria-label="Packaging"
+                      defaultValue={inputConfigCreate.giveawayPackagingId}
+                      onChange={(e) =>
+                        setInputConfigCreate({
+                          ...inputConfigCreate,
+                          giveawayPackagingId: e.target.value === '' ? undefined : e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Packaging</option>
+                      {packagingsGiveaway?.rows.map((packaging: any, index: number) => (
+                        <option key={`packaging-${index}`} value={packaging.id}>
+                          {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                        </option>
+                      ))}
+                    </select>
+                    <p>Target Packaging</p>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="giveawayUnits"
+                      defaultValue={inputConfigCreate.giveawayUnits}
+                      onChange={(e) =>
+                        setInputConfigCreate({
+                          ...inputConfigCreate,
+                          giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
+                        })
+                      }
+                    />
+                    <p>Giveaway Units</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCreateDialog(false)} color="secondary">
+            Close
+          </Button>
+          <MutationButton
+            type="button"
+            className="btn btn-primary"
+            size="sm"
+            label="Save"
+            icon="mdi mdi-plus"
+            loading={creatingConfig}
+            onClick={handleConfigCreate}
+          />
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="lg">
+        <DialogTitle>Edit Configuration</DialogTitle>
+        <DialogContent>
           {loadingConfig ? (
             <LoadingDiv />
           ) : (
-            <div className="modal-content">
-              <div className="modal-header">
-                <h4 className="modal-title" id="update-modal">
-                  Edit Configuration
-                </h4>
-                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
-              </div>
-              <div className="modal-body">
-                <h5 className="mt-0 mb-2 text-primary">
-                  <i className="mdi mdi-bullseye-arrow me-1"/> Target Sale
-                </h5>
+            <h5 className="mt-0 mb-2 text-primary">
+              <i className="mdi mdi-bullseye-arrow me-1"/> Target Sale
+            </h5>
+          )}
 
-                <div className="card card-border border border-primary">
-                  <div className="card-body pb-0">
-                    <div className="row">
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <select
-                            id="targetProduct"
-                            className="form-select"
-                            aria-label="Product"
-                            defaultValue={productTarget.id}
-                            onChange={(e) =>
-                              setProductTarget({
-                                ...productTarget,
-                                id: e.target.value === '' ? undefined : e.target.value,
-                              })
-                            }
-                          >
-                            <option value="">Select Product</option>
-                            {productsTarget?.rows.map((product: any, index: number) => (
-                              <option
-                                key={`product-${index}`}
-                                value={product.id}
-                                selected={product.id === config?.salePackaging?.product?.id}
-                              >
-                                {product.name}
-                              </option>
-                            ))}
-                          </select>
-                          <p>Target Product</p>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <select
-                            id="targetPackaging"
-                            className="form-select"
-                            aria-label="Packaging"
-                            defaultValue={inputConfigUpdate.salePackagingId}
-                            onChange={(e) =>
-                              setInputConfigCreate({
-                                ...inputConfigUpdate,
-                                salePackagingId: e.target.value === '' ? undefined : e.target.value,
-                              })
-                            }
-                          >
-                            <option value="">Select Packaging</option>
-                            {packagingsTarget?.rows.map((packaging: any, index: number) => (
-                              <option
-                                key={`packaging-${index}`}
-                                value={packaging.id}
-                                selected={packaging.id === config?.salePackaging?.id}
-                              >
-                                {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
-                              </option>
-                            ))}
-                          </select>
-                          <p>Target Packaging</p>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <input
-                            type="number"
-                            className="form-control"
-                            id="saleUnits"
-                            defaultValue={inputConfigUpdate.saleUnits}
-                            onChange={(e) =>
-                              setInputConfigCreate({
-                                ...inputConfigUpdate,
-                                saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
-                              })
-                            }
-                          />
-                          <p>Target Sale Units</p>
-                        </div>
-                      </div>
-                    </div>
+          <div className="card card-border border border-primary">
+            <div className="card-body pb-0">
+              <div className="row">
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <select
+                      id="targetProduct"
+                      className="form-select"
+                      aria-label="Product"
+                      defaultValue={productTarget.id}
+                      onChange={(e) =>
+                        setProductTarget({
+                          ...productTarget,
+                          id: e.target.value === '' ? undefined : e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Product</option>
+                      {productsTarget?.rows.map((product: any, index: number) => (
+                        <option
+                          key={`product-${index}`}
+                          value={product.id}
+                          selected={product.id === config?.salePackaging?.product?.id}
+                        >
+                          {product.name}
+                        </option>
+                      ))}
+                    </select>
+                    <p>Target Product</p>
                   </div>
                 </div>
-
-                <h5 className="mt-0 mb-2 text-primary">
-                  <i className="mdi mdi-gift-outline me-1"/> Giveaway
-                </h5>
-
-                <div className="card card-border border border-primary mb-0">
-                  <div className="card-body pb-0">
-                    <div className="row">
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <select
-                            id="giveawayProduct"
-                            className="form-select"
-                            aria-label="Product"
-                            defaultValue={productGiveaway.id}
-                            onChange={(e) =>
-                              setProductGiveaway({
-                                ...productGiveaway,
-                                id: e.target.value === '' ? undefined : e.target.value,
-                              })
-                            }
-                          >
-                            <option value="">Select Product</option>
-                            {productsGiveaway?.rows.map((product: any, index: number) => (
-                              <option
-                                key={`product-${index}`}
-                                value={product.id}
-                                selected={product.id === config?.giveawayPackaging?.product?.id}
-                              >
-                                {product.name}
-                              </option>
-                            ))}
-                          </select>
-                          <p>Target Product</p>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <select
-                            id="giveawayPackaging"
-                            className="form-select"
-                            aria-label="Packaging"
-                            defaultValue={inputConfigUpdate.giveawayPackagingId}
-                            onChange={(e) =>
-                              setInputConfigCreate({
-                                ...inputConfigUpdate,
-                                giveawayPackagingId: e.target.value === '' ? undefined : e.target.value,
-                              })
-                            }
-                          >
-                            <option value="">Select Packaging</option>
-                            {packagingsGiveaway?.rows.map((packaging: any, index: number) => (
-                              <option
-                                key={`packaging-${index}`}
-                                value={packaging.id}
-                                selected={packaging.id === config?.giveawayPackaging?.id}
-                              >
-                                {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
-                              </option>
-                            ))}
-                          </select>
-                          <p>Target Packaging</p>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="form-floating mb-3">
-                          <input
-                            type="number"
-                            className="form-control"
-                            id="giveawayUnits"
-                            defaultValue={inputConfigUpdate.giveawayUnits}
-                            onChange={(e) =>
-                              setInputConfigCreate({
-                                ...inputConfigUpdate,
-                                giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
-                              })
-                            }
-                          />
-                          <p>Giveaway Units</p>
-                        </div>
-                      </div>
-                    </div>
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <select
+                      id="targetPackaging"
+                      className="form-select"
+                      aria-label="Packaging"
+                      defaultValue={inputConfigUpdate.salePackagingId}
+                      onChange={(e) =>
+                        setInputConfigCreate({
+                          ...inputConfigUpdate,
+                          salePackagingId: e.target.value === '' ? undefined : e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Packaging</option>
+                      {packagingsTarget?.rows.map((packaging: any, index: number) => (
+                        <option
+                          key={`packaging-${index}`}
+                          value={packaging.id}
+                          selected={packaging.id === config?.salePackaging?.id}
+                        >
+                          {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                        </option>
+                      ))}
+                    </select>
+                    <p>Target Packaging</p>
                   </div>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-                  Close
-                </button>
-                <MutationButton
-                  type="button"
-                  className="btn btn-primary"
-                  size="sm"
-                  label="Update"
-                  icon="mdi mdi-refresh"
-                  loading={updatingConfig}
-                  onClick={handleConfigUpdate}
-                />
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="saleUnits"
+                      defaultValue={inputConfigUpdate.saleUnits}
+                      onChange={(e) =>
+                        setInputConfigCreate({
+                          ...inputConfigUpdate,
+                          saleUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
+                        })
+                      }
+                    />
+                    <p>Target Sale Units</p>
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+
+          <h5 className="mt-0 mb-2 text-primary">
+            <i className="mdi mdi-gift-outline me-1"/> Giveaway
+          </h5>
+
+          <div className="card card-border border border-primary mb-0">
+            <div className="card-body pb-0">
+              <div className="row">
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <select
+                      id="giveawayProduct"
+                      className="form-select"
+                      aria-label="Product"
+                      defaultValue={productGiveaway.id}
+                      onChange={(e) =>
+                        setProductGiveaway({
+                          ...productGiveaway,
+                          id: e.target.value === '' ? undefined : e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Product</option>
+                      {productsGiveaway?.rows.map((product: any, index: number) => (
+                        <option
+                          key={`product-${index}`}
+                          value={product.id}
+                          selected={product.id === config?.giveawayPackaging?.product?.id}
+                        >
+                          {product.name}
+                        </option>
+                      ))}
+                    </select>
+                    <p>Target Product</p>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <select
+                      id="giveawayPackaging"
+                      className="form-select"
+                      aria-label="Packaging"
+                      defaultValue={inputConfigUpdate.giveawayPackagingId}
+                      onChange={(e) =>
+                        setInputConfigCreate({
+                          ...inputConfigUpdate,
+                          giveawayPackagingId: e.target.value === '' ? undefined : e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Packaging</option>
+                      {packagingsGiveaway?.rows.map((packaging: any, index: number) => (
+                        <option
+                          key={`packaging-${index}`}
+                          value={packaging.id}
+                          selected={packaging.id === config?.giveawayPackaging?.id}
+                        >
+                          {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                        </option>
+                      ))}
+                    </select>
+                    <p>Target Packaging</p>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="form-floating mb-3">
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="giveawayUnits"
+                      defaultValue={inputConfigUpdate.giveawayUnits}
+                      onChange={(e) =>
+                        setInputConfigCreate({
+                          ...inputConfigUpdate,
+                          giveawayUnits: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
+                        })
+                      }
+                    />
+                    <p>Giveaway Units</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenUpdateDialog(false)} color="secondary">
+            Close
+          </Button>
+          <MutationButton
+            type="button"
+            className="btn btn-primary"
+            size="sm"
+            label="Update"
+            icon="mdi mdi-refresh"
+            loading={updatingConfig}
+            onClick={handleConfigUpdate}
+          />
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

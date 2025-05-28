@@ -25,8 +25,20 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
-import { MutationButton } from '../MutationButton';
-import { LoadingSpan } from '../LoadingSpan';
+import { 
+  Box, 
+  Card, 
+  CardContent, 
+  FormControl, 
+  InputLabel, 
+  MenuItem, 
+  Select, 
+  TextField, 
+  Typography, 
+  CircularProgress, 
+  Button,
+  FormControlLabel
+} from '@mui/material';
 
 
 export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) => {
@@ -273,266 +285,237 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   }, [runId, teamId, getAgents, search ]);
 
   return (
-    <>
-      <div className="row">
-        <div className="col-md-5">
-          <div className="card border border-primary">
-            <div className="card-body">
-              {loadingTeams ? (
-                <LoadingSpan />
-              ) : (
-                <div className="mb-3">
-                  <p>Filter by team</p>
-                  <select
-                    id="team"
-                    className="form-select mt-2"
-                    aria-label="Filter By Team"
-                    value={teamId}
-                    onChange={(e) => setTeamId(e.target.value)}
-                  >
-                    <option/>
-                    {teams?.rows.map((team: any, index: number) => (
-                      <option value={team.id} key={`team-${index}`}>
-                        {team.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+      <Box sx={{ flex: 1 }}>
+        <Card variant="outlined">
+          <CardContent>
+            {loadingTeams ? (
+              <CircularProgress />
+            ) : (
+              <FormControl fullWidth variant="outlined" margin="normal">
+                <InputLabel id="team-label">Filter by team</InputLabel>
+                <Select
+                  labelId="team-label"
+                  id="team"
+                  value={teamId}
+                  onChange={(e) => setTeamId(e.target.value)}
+                  label="Filter by team"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {teams?.rows.map((team: any, index: number) => (
+                    <MenuItem value={team.id} key={`team-${index}`}>
+                      {team.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
 
-              <div className="app-search mb-3">
-                <div className="input-group">
-                  <input
-                    type="text"
-                    id="top-search"
-                    className="form-control dropdown-toggle"
-                    placeholder="Search agent..."
-                    defaultValue={search}
-                    onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
-                  />
-                  <span className="mdi mdi-magnify search-icon"/>
-                  <button
-                    className="input-group-text btn-primary"
-                    type="button"
+            <TextField
+              fullWidth
+              id="top-search"
+              label="Search agent..."
+              variant="outlined"
+              margin="normal"
+              defaultValue={search}
+              onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <Button
+                    variant="contained"
+                    color="primary"
                     disabled={loadingAgents}
                     onClick={() => loadAgents(0, 10)}
                   >
-                    {loadingAgents && (
-                      <>
-                        <i className="spinner-border spinner-border-sm me-1" role="status" />
-                        Loading
-                      </>
-                    )}
+                    {loadingAgents ? <CircularProgress size={24} /> : 'Search'}
+                  </Button>
+                ),
+              }}
+            />
 
-                    {!loadingAgents && <>Search</>}
-                  </button>
-                </div>
-              </div>
-
-              <hr className="mb-2" />
-
-              <TableContainer component={Paper}>
-                <Table size="small" aria-label="agents table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>#</TableCell>
-                      <TableCell>Agent</TableCell>
-                      <TableCell align="right">Select</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {agents?.rows.map((row: any, index: number) => (
-                      <TableRow key={row.id}>
-                        <TableCell component="th" scope="row">
-                          {index + 1}
-                        </TableCell>
-                        <TableCell>
-                          <Image
-                            className="me-1 mt-1 mb-1 rounded-circle"
-                            src={sourceImage(row.agent?.user?.photo?.fileName)}
-                            loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
-                            alt=""
-                            width={TABLE_IMAGE_WIDTH}
-                            height={TABLE_IMAGE_HEIGHT}
-                          />
-                          <div className="w-100 overflow-hidden">
-                            <h6 className="mt-1 mb-1">{row.agent?.user?.name}</h6>
-                            <p className="mt-0 mb-1 text-muted">{row.agent?.user?.email}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell align="right">
-                          <Checkbox
-                            checked={selectedAgents.includes(row.agent?.id)}
-                            onChange={() => {
-                              const agentId = row.agent?.id;
-                              
-                              if (agentId) {
-                                const newSelectedAgents = selectedAgents.includes(agentId)
-                                  ? selectedAgents.filter((id) => id !== agentId)
-                                  : [...selectedAgents, agentId];
-                                setSelectedAgents(newSelectedAgents);
-                              }
-                            }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-7">
-          <div className="card border-primary border">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-6">
-                  {loadingProducts ? (
-                    <LoadingSpan />
-                  ) : (
-                    <div className="form-floating mb-3">
-                      <select
-                        id="product"
-                        className="form-select"
-                        aria-label="Product"
-                        defaultValue={product.id}
-                        onChange={(e) =>
-                          setProduct({
-                            ...product,
-                            id: e.target.value === '' ? undefined : e.target.value,
-                          })
-                        }
-                      >
-                        <option/>
-                        {products?.rows.map((_product: any, index: number) => (
-                          <option value={_product.id} key={`product-${index}`}>
-                            {_product.name}
-                          </option>
-                        ))}
-                      </select>
-                      <p>Product</p>
-                    </div>
-                  )}
-                </div>
-                <div className="col-md-6">
-                  {loadingPackagings ? (
-                    <LoadingSpan />
-                  ) : (
-                    <div className="form-floating mb-3">
-                      <select
-                        id="packaging"
-                        className="form-select"
-                        aria-label="Packaging"
-                        defaultValue={product.packagingId}
-                        onChange={(e) =>
-                          setProduct({
-                            ...product,
-                            packagingId: e.target.value === '' ? undefined : e.target.value,
-                          })
-                        }
-                      >
-                        <option/>
-                        {packagings?.rows.map((packaging: any, index: number) => (
-                          <option key={`packaging-${index}`} value={packaging.id}>
-                            {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
-                          </option>
-                        ))}
-                      </select>
-                      <p>Packaging</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <hr className="mt-0 mb-0" />
-
-              <h5 className="mb-0">
-                Allocated {allocationTotal} of {stock?.balPackage ? stock.balPackage : 0} units
-                {loadingStock && <span className="ms-2"><LoadingSpan /></span>}
-              </h5>
-            </div>
-          </div>
-
-          <div className="card border-primary border">
-            <div className="card-body">
-              <h5 className="card-title">
-                <span className="text-uppercase">Allocations</span>
-                {loadingAllocations ? <LoadingSpan /> : undefined}
-
-                <span className="float-end">
-                  <div className="form-check form-check-inline">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="bulkFill"
-                      disabled={allocation?.canBulkFill}
-                      onClick={() => setBulkFill(!bulkFill)}
-                    />
-                    <p className="form-check-label" style={{ marginTop: '3px' }}>
-                      Bulk Fill
-                    </p>
-                  </div>
-                </span>
-              </h5>
-
-              <hr className="mt-0 mb-1" />
-
-              <div className="mb-2">
-                {allocations?.map((_allocation: IAllocations, index: number) => (
-                  <div key={`allocation-${index}`}>
-                    <dl className="row mb-0">
-                      <dt className="col-sm-8">
-                        <span className="me-2">{_allocation.index}.</span>
+            <TableContainer component={Paper}>
+              <Table size="small" aria-label="agents table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>#</TableCell>
+                    <TableCell>Agent</TableCell>
+                    <TableCell align="right">Select</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {agents?.rows.map((row: any, index: number) => (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell>
                         <Image
-                          className="me-2 mt-1 mb-1"
-                          src={sourceImage(_allocation.photo)}
-                          loader={() => sourceImage(_allocation.photo)}
+                          className="me-1 mt-1 mb-1 rounded-circle"
+                          src={sourceImage(row.agent?.user?.photo?.fileName)}
+                          loader={() => sourceImage(row.agent?.user?.photo?.fileName)}
                           alt=""
                           width={TABLE_IMAGE_WIDTH}
                           height={TABLE_IMAGE_HEIGHT}
                         />
-                        {_allocation.name}
-                      </dt>
-                      <dd className="col-sm-4">
-                        <div className="input-group input-group-sm">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm font-14"
-                            disabled
-                            placeholder={`Sold: ${_allocation.sold}`}
-                          />
-                          <input
-                            type="number"
-                            id="quantity-1"
-                            className="form-control form-control-sm font-14"
-                            min={_allocation.sold}
-                            value={_allocation.allocated}
-                            onChange={(e) => handleChange(_allocation.id, e)}
-                          />
+                        <div className="w-100 overflow-hidden">
+                          <Typography variant="subtitle1">{row.agent?.user?.name}</Typography>
+                          <Typography variant="body2" color="textSecondary">{row.agent?.user?.email}</Typography>
                         </div>
-                      </dd>
-                    </dl>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Checkbox
+                          checked={selectedAgents.includes(row.agent?.id)}
+                          onChange={() => {
+                            const agentId = row.agent?.id;
+                            if (agentId) {
+                              const newSelectedAgents = selectedAgents.includes(agentId)
+                                ? selectedAgents.filter((id) => id !== agentId)
+                                : [...selectedAgents, agentId];
+                              setSelectedAgents(newSelectedAgents);
+                            }
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      </Box>
 
-                    <hr className="mt-0 mb-1" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      <Box sx={{ flex: 2 }}>
+        <Card variant="outlined">
+          <CardContent>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <FormControl fullWidth variant="outlined" margin="normal">
+                <InputLabel id="product-label">Product</InputLabel>
+                <Select
+                  labelId="product-label"
+                  id="product"
+                  value={product.id}
+                  onChange={(e) =>
+                    setProduct({
+                      ...product,
+                      id: e.target.value === '' ? undefined : e.target.value,
+                    })
+                  }
+                  label="Product"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {products?.rows.map((_product: any, index: number) => (
+                    <MenuItem value={_product.id} key={`product-${index}`}>
+                      {_product.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-          <MutationButton
-            type="button"
-            size="sm"
-            label="Save"
-            icon="mdi mdi-refresh"
-            className="float-end"
-            loading={allocating}
-            onClick={handleAllocate}
-          />
-        </div>
-      </div>
-    </>
+              <FormControl fullWidth variant="outlined" margin="normal">
+                <InputLabel id="packaging-label">Packaging</InputLabel>
+                <Select
+                  labelId="packaging-label"
+                  id="packaging"
+                  value={product.packagingId}
+                  onChange={(e) =>
+                    setProduct({
+                      ...product,
+                      packagingId: e.target.value === '' ? undefined : e.target.value,
+                    })
+                  }
+                  label="Packaging"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {packagings?.rows.map((packaging: any, index: number) => (
+                    <MenuItem key={`packaging-${index}`} value={packaging.id}>
+                      {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+
+            <Typography variant="h6" gutterBottom>
+              Allocated {allocationTotal} of {stock?.balPackage ? stock.balPackage : 0} units
+              {loadingStock && <CircularProgress size={24} />}
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <Card variant="outlined" sx={{ mt: 2 }}>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Allocations
+              {loadingAllocations && <CircularProgress size={24} />}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={bulkFill}
+                    onChange={() => setBulkFill(!bulkFill)}
+                    disabled={!allocation?.canBulkFill}
+                  />
+                }
+                label="Bulk Fill"
+                sx={{ float: 'right' }}
+              />
+            </Typography>
+
+            {allocations?.map((_allocation: IAllocations, index: number) => (
+              <Box key={`allocation-${index}`} sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Typography variant="body1">{_allocation.index}.</Typography>
+                  <Image
+                    className="me-2 mt-1 mb-1"
+                    src={sourceImage(_allocation.photo)}
+                    loader={() => sourceImage(_allocation.photo)}
+                    alt=""
+                    width={TABLE_IMAGE_WIDTH}
+                    height={TABLE_IMAGE_HEIGHT}
+                  />
+                  <Typography variant="body1">{_allocation.name}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    label={`Sold: ${_allocation.sold}`}
+                    disabled
+                  />
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    type="number"
+                    value={_allocation.allocated}
+                    onChange={(e) => handleChange(_allocation.id, e)}
+                    inputProps={{ min: _allocation.sold }}
+                  />
+                </Box>
+              </Box>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          startIcon={<i className="mdi mdi-refresh" />}
+          onClick={handleAllocate}
+          disabled={allocating}
+          sx={{ mt: 2, float: 'right' }}
+        >
+          {allocating ? <CircularProgress size={24} /> : 'Save'}
+        </Button>
+      </Box>
+    </Box>
   );
 };
