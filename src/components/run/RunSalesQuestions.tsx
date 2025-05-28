@@ -7,6 +7,7 @@ import { SALES_SURVEY, SALES_SURVEY_UPSERT } from 'src/lib/mutations/sales-surve
 import { InputSalesSurveyUpdate } from 'src/lib/interface/survey-sales.interface';
 import { CHOICE_MULTIPLE, CHOICE_SINGLE, DROPDOWN } from 'src/lib/constant';
 import { QuestionnaireSetup } from '../QuestionnaireSetup';
+import { Switch, FormControlLabel, Grid, Card, CardContent } from '@mui/material';
 
 export const RunSalesQuestions: FC<{ runId: string }> = ({ runId }) => {
   const {
@@ -127,126 +128,114 @@ export const RunSalesQuestions: FC<{ runId: string }> = ({ runId }) => {
 
   return (
     <>
-      <div className="card border-primary border">
-        <div className="card-body pb-0">
-          <div className="row">
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="hideRespondentFields"
-                  checked={input.hideRespondentFields}
-                  onClick={() =>
-                    setInput({
-                      ...input,
-                      hideRespondentFields: !input.hideRespondentFields,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Hide Respondent Fields
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="requireRespondentName"
-                  checked={input.requireRespondentName}
-                  onClick={() =>
-                    setInput({
-                      ...input,
-                      requireRespondentName: !input.requireRespondentName,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Require Respondent Name
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="requireRespondentPhone"
-                  checked={input.requireRespondentPhone}
-                  onClick={() =>
-                    setInput({
-                      ...input,
-                      requireRespondentPhone: !input.requireRespondentPhone,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Require Respondent Phone
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="requireRespondentEmail"
-                  checked={input.requireRespondentEmail}
-                  onClick={() =>
-                    setInput({
-                      ...input,
-                      requireRespondentEmail: !input.requireRespondentEmail,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Require Respondent Email
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="blockSameLocationReportsGlobally"
-                  checked={input.blockSameLocationReportsGlobally}
-                  onClick={() =>
-                    setInput({
-                      ...input,
-                      blockSameLocationReportsGlobally: !input.blockSameLocationReportsGlobally,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Block Same Location Reports Globally
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="blockSameLocationReportsPerAgent"
-                  checked={input.blockSameLocationReportsPerAgent}
-                  onClick={() =>
-                    setInput({
-                      ...input,
-                      blockSameLocationReportsPerAgent: !input.blockSameLocationReportsPerAgent,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Block Same Location Reports Per Agent
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Card variant="outlined">
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.hideRespondentFields}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        hideRespondentFields: !input.hideRespondentFields,
+                      })
+                    }
+                    name="hideRespondentFields"
+                  />
+                }
+                label="Hide Respondent Fields"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.requireRespondentName}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        requireRespondentName: !input.requireRespondentName,
+                      })
+                    }
+                    name="requireRespondentName"
+                  />
+                }
+                label="Require Respondent Name"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.requireRespondentPhone}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        requireRespondentPhone: !input.requireRespondentPhone,
+                      })
+                    }
+                    name="requireRespondentPhone"
+                  />
+                }
+                label="Require Respondent Phone"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.requireRespondentEmail}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        requireRespondentEmail: !input.requireRespondentEmail,
+                      })
+                    }
+                    name="requireRespondentEmail"
+                  />
+                }
+                label="Require Respondent Email"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.blockSameLocationReportsGlobally}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        blockSameLocationReportsGlobally: !input.blockSameLocationReportsGlobally,
+                      })
+                    }
+                    name="blockSameLocationReportsGlobally"
+                  />
+                }
+                label="Block Same Location Reports Globally"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={input.blockSameLocationReportsPerAgent}
+                    onChange={() =>
+                      setInput({
+                        ...input,
+                        blockSameLocationReportsPerAgent: !input.blockSameLocationReportsPerAgent,
+                      })
+                    }
+                    name="blockSameLocationReportsPerAgent"
+                  />
+                }
+                label="Block Same Location Reports Per Agent"
+              />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       <QuestionnaireSetup
         questionnaireFields={questionnaireFields}
