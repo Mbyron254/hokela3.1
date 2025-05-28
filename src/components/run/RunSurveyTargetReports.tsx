@@ -14,6 +14,7 @@ import { sourceImage } from 'src/lib/server';
 import { commafy } from 'src/lib/helpers';
 import { MutationButton } from '../MutationButton';
 import { LoadingSpan } from '../LoadingSpan';
+import { Card, CardContent, Typography, Checkbox, FormControlLabel, TextField, Button, Divider, Grid } from '@mui/material';
 
 export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) => {
   const {
@@ -104,105 +105,85 @@ export const RunSurveyTargetReports: FC<ISurveyReportTarget> = ({ surveyId }) =>
 
   return (
     <>
-      <div className="card border">
-        <div className="card-body pb-0">
-          <div className="row mb-2">
-            <div className="col-md-6">
-              <dl className="row mb-0">
-                <dt className="col-sm-6">Target Reports</dt>
-                <dd className="col-sm-6">
-                  <span className="font-16 text-warning">{commafy(totalTarget)}</span>
-                </dd>
-              </dl>
-            </div>
-            <div className="col-md-6">
-              <dl className="row mb-0">
-                <dt className="col-sm-6">Submitted Reports</dt>
-                <dd className="col-sm-6">
-                  <span className="font-16 text-success">{commafy(totalFilled)}</span>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Card variant="outlined">
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Typography variant="h6" component="div">Target Reports</Typography>
+              <Typography variant="body1" color="textSecondary">{commafy(totalTarget)}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6" component="div">Submitted Reports</Typography>
+              <Typography variant="body1" color="textSecondary">{commafy(totalFilled)}</Typography>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">
-            <span className="text-muted">Targets</span>
-
+      <Card variant="outlined" style={{ marginTop: '16px' }}>
+        <CardContent>
+          <Typography variant="h5" component="div" gutterBottom>
+            Targets
             {loadingAgentsTarget ? <LoadingSpan /> : undefined}
+            <FormControlLabel
+              control={<Checkbox checked={bulkFill} onChange={() => setBulkFill(!bulkFill)} />}
+              label="Bulk Fill"
+              style={{ float: 'right' }}
+            />
+          </Typography>
 
-            <span className="float-end">
-              <div className="form-check form-check-inline">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="bulkFill"
-                  onClick={() => setBulkFill(!bulkFill)}
-                />
-                <p className="form-check-label" style={{ marginTop: '3px' }}>
-                  Bulk Fill
-                </p>
-              </div>
-            </span>
-          </h5>
+          <Divider />
 
-          <hr className="mt-0 mb-1" />
-
-          <div className="mb-2">
+          <div style={{ marginTop: '16px' }}>
             {targets?.map((target: IAgentTarget, index: number) => (
               <div key={`allocation-${index}`}>
-                <dl className="row mb-0">
-                  <dt className="col-sm-8">
-                    <span className="me-2">{index + 1}.</span>
-                    <Image
-                      className="me-2 mt-1 mb-1"
-                      src={sourceImage(target._agent?.user?.profile?.photo)}
-                      loader={() => sourceImage(target._agent?.user?.profile?.photo)}
-                      alt=""
-                      width={TABLE_IMAGE_WIDTH}
-                      height={TABLE_IMAGE_HEIGHT}
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={8}>
+                    <Typography variant="body1" component="div">
+                      <span className="me-2">{index + 1}.</span>
+                      <Image
+                        className="me-2 mt-1 mb-1"
+                        src={sourceImage(target._agent?.user?.profile?.photo)}
+                        loader={() => sourceImage(target._agent?.user?.profile?.photo)}
+                        alt=""
+                        width={TABLE_IMAGE_WIDTH}
+                        height={TABLE_IMAGE_HEIGHT}
+                      />
+                      {target._agent?.user?.name}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField
+                      type="number"
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      inputProps={{ min: target._filled }}
+                      value={target.target}
+                      onChange={(e) => handleChange(target._agent?.id, e)}
+                      label={`Submitted: ${target._filled}`}
                     />
-                    {target._agent?.user?.name}
-                  </dt>
+                  </Grid>
+                </Grid>
 
-                  <dd className="col-sm-4">
-                    <div className="input-group input-group-sm">
-                      <input
-                        type="text"
-                        className="form-control form-control-sm font-14"
-                        disabled
-                        placeholder={`Submitted: ${target._filled}`}
-                      />
-                      <input
-                        type="number"
-                        className="form-control form-control-sm font-14"
-                        min={target._filled}
-                        value={target.target}
-                        onChange={(e) => handleChange(target._agent?.id, e)}
-                      />
-                    </div>
-                  </dd>
-                </dl>
-
-                <hr className="mt-0 mb-1" />
+                <Divider style={{ margin: '16px 0' }} />
               </div>
             ))}
           </div>
 
-          <MutationButton
-            type="button"
-            size="sm"
-            label="Save"
-            icon="mdi mdi-refresh"
-            className="float-end"
-            loading={upserting}
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            startIcon={<i className="mdi mdi-refresh" />}
+            style={{ float: 'right' }}
+            disabled={upserting}
             onClick={handleUpsert}
-          />
-        </div>
-      </div>
+          >
+            Save
+          </Button>
+        </CardContent>
+      </Card>
     </>
   );
 };
