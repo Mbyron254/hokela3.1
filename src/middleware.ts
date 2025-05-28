@@ -19,6 +19,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
 
   const sessionId = request.cookies.get(SESSION_COOKIE)?.value
+  console.log('sessionId: ', sessionId)
   const isAuthRoute = path === '/' || path.includes('/sign-in') || path.includes('/sign-up') || path.includes('/reset') || path.includes('/recover')
 
   const isAdmin = path.includes('/admin')
@@ -31,6 +32,8 @@ export async function middleware(request: NextRequest) {
 
   const isProtectedRoute = isAdmin || isAgent || isRunManager || isProducer || isDistributor || isRetailer || isMarketing
 
+  console.log('isAuthRoute: ', isAuthRoute)
+  console.log('isProtectedRoute: ', isProtectedRoute)
   // Allow access to auth pages if no session
   if (!sessionId && isAuthRoute) {
     return NextResponse.next()
@@ -43,6 +46,7 @@ export async function middleware(request: NextRequest) {
 
   if (sessionId) {
     const data = await serverGateway(Q_SESSION, { input: { id: sessionId } })
+    console.log('data: ', data)
     const session = data?.session || data?.sessionAlien // adjust to your GraphQL
     const headers = new Headers(request.headers);
 
