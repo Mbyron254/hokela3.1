@@ -10,6 +10,7 @@ import {
 } from 'src/lib/mutations/sales-giveaway.mutation';
 import { CHOICE_MULTIPLE, CHOICE_SINGLE, DROPDOWN } from 'src/lib/constant';
 import { QuestionnaireSetup } from '../QuestionnaireSetup';
+import { Checkbox, FormControlLabel, Card, CardContent, Grid, Alert } from '@mui/material';
 
 export const RunSalesGiveawayQuestions: FC<{
   runId: string;
@@ -132,136 +133,118 @@ export const RunSalesGiveawayQuestions: FC<{
   return (
     <>
       {!survey && (
-        <div className="alert alert-warning text-warning bg-transparent text-center" role="alert">
+        <Alert severity="warning" className="text-center">
           Questionnaire not set. Agents will not be able to submit sales giveaway reports!
-        </div>
+        </Alert>
       )}
-      <div className="card border-primary border">
-        <div className="card-body pb-0">
-          <div className="row">
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="hideRespondentFieldsFreeGiveaway"
-                  checked={inputSurvey.hideRespondentFields}
-                  onClick={() =>
-                    setInputSurvey({
-                      ...inputSurvey,
-                      hideRespondentFields: !inputSurvey.hideRespondentFields,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Hide Respondent Fields
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="requireRespondentNameSalesGiveaway"
-                  checked={inputSurvey.requireRespondentName}
-                  onClick={() =>
-                    setInputSurvey({
-                      ...inputSurvey,
-                      requireRespondentName: !inputSurvey.requireRespondentName,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Require Respondent Name
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="requireRespondentPhoneSalesGiveaway"
-                  checked={inputSurvey.requireRespondentPhone}
-                  onClick={() =>
-                    setInputSurvey({
-                      ...inputSurvey,
-                      requireRespondentPhone: !inputSurvey.requireRespondentPhone,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Require Respondent Phone
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="requireRespondentEmailSalesGiveaway"
-                  checked={inputSurvey.requireRespondentEmail}
-                  onClick={() =>
-                    setInputSurvey({
-                      ...inputSurvey,
-                      requireRespondentEmail: !inputSurvey.requireRespondentEmail,
-                    })
-                  }
-                />
-                <p className="form-check-label">
-                  Require Respondent Email
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="blockSameLocationReportsGloballySalesGiveaway"
-                  checked={inputSurvey.blockSameLocationReportsGlobally}
-                  onClick={() =>
-                    setInputSurvey({
-                      ...inputSurvey,
-                      blockSameLocationReportsGlobally: !inputSurvey.blockSameLocationReportsGlobally,
-                    })
-                  }
-                />
-                <p
-                  className="form-check-label"
-                
-                >
-                  Block Same Location Reports Globally
-                </p>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-check form-switch mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="blockSameLocationReportsPerAgentSalesGiveaway"
-                  checked={inputSurvey.blockSameLocationReportsPerAgent}
-                  onClick={() =>
-                    setInputSurvey({
-                      ...inputSurvey,
-                      blockSameLocationReportsPerAgent: !inputSurvey.blockSameLocationReportsPerAgent,
-                    })
-                  }
-                />
-                <p
-                  className="form-check-label"
-                
-                >
-                  Block Same Location Reports Per Agent
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Card variant="outlined" className="border-primary">
+        <CardContent>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={inputSurvey.hideRespondentFields}
+                    onChange={() =>
+                      setInputSurvey({
+                        ...inputSurvey,
+                        hideRespondentFields: !inputSurvey.hideRespondentFields,
+                      })
+                    }
+                    name="hideRespondentFieldsFreeGiveaway"
+                  />
+                }
+                label="Hide Respondent Fields"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={inputSurvey.requireRespondentName}
+                    onChange={() =>
+                      setInputSurvey({
+                        ...inputSurvey,
+                        requireRespondentName: !inputSurvey.requireRespondentName,
+                      })
+                    }
+                    name="requireRespondentNameSalesGiveaway"
+                  />
+                }
+                label="Require Respondent Name"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={inputSurvey.requireRespondentPhone}
+                    onChange={() =>
+                      setInputSurvey({
+                        ...inputSurvey,
+                        requireRespondentPhone: !inputSurvey.requireRespondentPhone,
+                      })
+                    }
+                    name="requireRespondentPhoneSalesGiveaway"
+                  />
+                }
+                label="Require Respondent Phone"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={inputSurvey.requireRespondentEmail}
+                    onChange={() =>
+                      setInputSurvey({
+                        ...inputSurvey,
+                        requireRespondentEmail: !inputSurvey.requireRespondentEmail,
+                      })
+                    }
+                    name="requireRespondentEmailSalesGiveaway"
+                  />
+                }
+                label="Require Respondent Email"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={inputSurvey.blockSameLocationReportsGlobally}
+                    onChange={() =>
+                      setInputSurvey({
+                        ...inputSurvey,
+                        blockSameLocationReportsGlobally: !inputSurvey.blockSameLocationReportsGlobally,
+                      })
+                    }
+                    name="blockSameLocationReportsGloballySalesGiveaway"
+                  />
+                }
+                label="Block Same Location Reports Globally"
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={inputSurvey.blockSameLocationReportsPerAgent}
+                    onChange={() =>
+                      setInputSurvey({
+                        ...inputSurvey,
+                        blockSameLocationReportsPerAgent: !inputSurvey.blockSameLocationReportsPerAgent,
+                      })
+                    }
+                    name="blockSameLocationReportsPerAgentSalesGiveaway"
+                  />
+                }
+                label="Block Same Location Reports Per Agent"
+              />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       <QuestionnaireSetup
         questionnaireFields={questionnaireFields}
