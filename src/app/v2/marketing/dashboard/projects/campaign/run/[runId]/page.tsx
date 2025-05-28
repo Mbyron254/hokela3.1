@@ -17,6 +17,7 @@ import { RunProfile } from 'src/components/RunProfile';
 import { RunDashboardSales } from 'src/components/run/RunDashboardSales';
 import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocation';
 import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
+import { RunSalesQuestions } from 'src/components/run/RunSalesQuestions';
 // import { RunKPIs } from 'src/components/run/RunKPIs';
 // import { RunPayroll } from 'src/components/run/RunPayroll';
 // import { RunPayRate } from 'src/components/run/RunPayRate';
@@ -246,8 +247,8 @@ export default function Page({ params: { runId } }: any) {
 
                   <div>
                     {activeSalesSubTab === 0 && 
-                    // <RunSalesQuestions runId={run.id} />
-                    <p>Questions</p>
+                    <RunSalesQuestions runId={run.id} />
+                    // <p>Questions</p>
                     }
                     {activeSalesSubTab === 1 && (
                     <RunSalesStockAllocation runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
