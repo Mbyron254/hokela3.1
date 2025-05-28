@@ -15,6 +15,10 @@ import {
   Select,
   TextField,
   Typography,
+  Card,
+  CardContent,
+  CardActions,
+  IconButton,
 } from '@mui/material';
 // import { Icon } from '@iconify/react';
 // import expandMore from '@iconify/icons-mdi/chevron-down';
@@ -235,74 +239,41 @@ export const QuestionnaireSetup = ({
                     </Button>
                     <div className="row mx-n1 g-0 mt-2 mb-0">
                       {element.optionsChoiceSingle?.map((option) => (
-                        <div
-                          className="col-xxl-12 col-lg-12"
+                        <Card
+                          className="col-xxl-12 col-lg-12 m-1"
                           key={`option-${slugify(option.text as string)}`}
+                          variant="outlined"
                         >
-                          <div className="card m-1 shadow-none border">
-                            <div className="p-2">
-                              <div className="row align-items-center">
-                                <div className="col-auto">
-                                  <div className="avatar-sm me-3">
-                                    <Image
-                                      className="me-2 mt-1 mb-1"
-                                      src={sourceImage(option.documentId)}
-                                      loader={() => sourceImage(option.documentId)}
-                                      alt=""
-                                      width={60}
-                                      height={40}
-                                    />
-                                  </div>
-                                </div>
-                                <div className="col ps-0">
-                                  <a
-                                    href="#"
-                                    className="text-muted fw-bold"
-                                    role="button"
-                                    tabIndex={0}
-                                    onClick={() =>
-                                      singleChoiceRemove(
-                                        element.id,
-                                        option,
-                                        setSingleChoice,
-                                        questionnaireFields,
-                                        setQuestionnaireFields,
-                                      )
-                                    }
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter' || e.key === ' ') {
-                                        singleChoiceRemove(
-                                          element.id,
-                                          option,
-                                          setSingleChoice,
-                                          questionnaireFields,
-                                          setQuestionnaireFields,
-                                        );
-                                      }
-                                    }}
-                                  >
-                                    {option.text}
-                                  </a>
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline-warning btn-sm text-warning p-0 px-1 float-end"
-                                    onClick={() =>
-                                      singleChoiceRemove(
-                                        element.id,
-                                        option,
-                                        setSingleChoice,
-                                        questionnaireFields,
-                                        setQuestionnaireFields,
-                                      )
-                                    }
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          <CardContent className="d-flex align-items-center">
+                            <Image
+                              className="me-2 mt-1 mb-1"
+                              src={sourceImage(option.documentId)}
+                              loader={() => sourceImage(option.documentId)}
+                              alt=""
+                              width={60}
+                              height={40}
+                            />
+                            <Typography variant="body2" className="flex-grow-1">
+                              {option.text}
+                            </Typography>
+                            <CardActions>
+                              <IconButton
+                                color="secondary"
+                                onClick={() =>
+                                  singleChoiceRemove(
+                                    element.id,
+                                    option,
+                                    setSingleChoice,
+                                    questionnaireFields,
+                                    setQuestionnaireFields,
+                                  )
+                                }
+                              >
+                                <Iconify icon="mdi:delete" />
+                              </IconButton>
+                            </CardActions>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
                   </>
@@ -351,76 +322,43 @@ export const QuestionnaireSetup = ({
                     </Button>
                     <div className="row mx-n1 g-0 mt-2 mb-2">
                       {element.optionsChoiceMultiple?.map((option) => (
-                        <div
-                          className="col-xxl-12 col-lg-12"
+                        <Card
+                          className="col-xxl-12 col-lg-12 m-1"
                           key={`option-${slugify(option.text as string)}`}
+                          variant="outlined"
                         >
-                          <div className="card m-1 shadow-none border">
-                            <div className="p-2">
-                              <div className="row align-items-center">
-                                {option.documentId ? (
-                                  <div className="col-auto">
-                                    <div className="avatar-sm">
-                                      <Image
-                                        className="me-2 mt-1 mb-1"
-                                        src={sourceImage(option.documentId)}
-                                        loader={() => sourceImage(option.documentId)}
-                                        alt=""
-                                        width={60}
-                                        height={40}
-                                      />
-                                    </div>
-                                  </div>
-                                ) : undefined}
-                                <div className="col ps-0 ms-3">
-                                  <a
-                                    href="#"
-                                    className="text-muted fw-bold"
-                                    role="button"
-                                    tabIndex={0}
-                                    onClick={() =>
-                                      singleChoiceRemove(
-                                        element.id,
-                                        option,
-                                        setSingleChoice,
-                                        questionnaireFields,
-                                        setQuestionnaireFields,
-                                      )
-                                    }
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter' || e.key === ' ') {
-                                        singleChoiceRemove(
-                                          element.id,
-                                          option,
-                                          setSingleChoice,
-                                          questionnaireFields,
-                                          setQuestionnaireFields,
-                                        );
-                                      }
-                                    }}
-                                  >
-                                    {option.text}
-                                  </a>
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline-warning btn-sm text-warning p-0 px-1 float-end"
-                                    onClick={() =>
-                                      singleChoiceRemove(
-                                        element.id,
-                                        option,
-                                        setSingleChoice,
-                                        questionnaireFields,
-                                        setQuestionnaireFields,
-                                      )
-                                    }
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          <CardContent className="d-flex align-items-center">
+                            {option.documentId && (
+                              <Image
+                                className="me-2 mt-1 mb-1"
+                                src={sourceImage(option.documentId)}
+                                loader={() => sourceImage(option.documentId)}
+                                alt=""
+                                width={60}
+                                height={40}
+                              />
+                            )}
+                            <Typography variant="body2" className="flex-grow-1">
+                              {option.text}
+                            </Typography>
+                            <CardActions>
+                              <IconButton
+                                color="secondary"
+                                onClick={() =>
+                                  singleChoiceRemove(
+                                    element.id,
+                                    option,
+                                    setSingleChoice,
+                                    questionnaireFields,
+                                    setQuestionnaireFields,
+                                  )
+                                }
+                              >
+                                <Iconify icon="mdi:delete" />
+                              </IconButton>
+                            </CardActions>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
                   </>
