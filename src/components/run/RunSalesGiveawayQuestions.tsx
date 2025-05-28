@@ -9,8 +9,8 @@ import {
   SALES_GIVEAWAY_SURVEY_UPSERT,
 } from 'src/lib/mutations/sales-giveaway.mutation';
 import { CHOICE_MULTIPLE, CHOICE_SINGLE, DROPDOWN } from 'src/lib/constant';
-import { QuestionnaireSetup } from '../QuestionnaireSetup';
 import { Checkbox, FormControlLabel, Card, CardContent, Grid, Alert } from '@mui/material';
+import { QuestionnaireSetup } from '../QuestionnaireSetup';
 
 export const RunSalesGiveawayQuestions: FC<{
   runId: string;
