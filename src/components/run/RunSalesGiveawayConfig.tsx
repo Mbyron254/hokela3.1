@@ -170,17 +170,43 @@ export const RunSalesGiveawayConfig: FC<{
   const loadConfig = (id: string) => {
     getConfig({ variables: { input: { id } } });
   };
-  const loadProductsGiveaway = () => {
-    getProductsGiveaway({ variables: { input: { clientTier2Id } } });
-  };
 
-  const loadGiveawayPackagings = () => {
+  useEffect(() => {
+    getProductsTarget({ variables: { input: { clientTier2Id } } });
+  }, [getProductsTarget, clientTier2Id]);
+
+  useEffect(() => {
+    getProductsGiveaway({ variables: { input: { clientTier2Id } } });
+  }, [getProductsGiveaway, clientTier2Id]);
+
+  useEffect(() => {
+    if (productTarget.id) {
+      getPackagingsTarget({
+        variables: { input: { productId: productTarget.id } },
+      });
+    }
+  },[getPackagingsTarget, productTarget.id])
+  useEffect(() => {
     if (productGiveaway.id) {
       getPackagingsGiveaway({
         variables: { input: { productId: productGiveaway.id } },
       });
     }
-  };
+  },[getPackagingsGiveaway, productGiveaway.id])
+
+  useEffect(() => {
+    if (config) {
+      setInputConfigUpdate({
+        id: config.id,
+        salePackagingId: config.salePackaging.id,
+        saleUnits: config.saleUnits,
+        giveawayPackagingId: config.giveawayPackaging.id,
+        giveawayUnits: config.giveawayUnits,
+      });
+      setProductTarget(config.salePackaging.product.id);
+      setProductGiveaway(config.giveawayPackaging.product.id);
+    }
+  }, [config]);
 
   const columnsActive = [
     {
@@ -358,76 +384,82 @@ export const RunSalesGiveawayConfig: FC<{
         </Tabs>
 
         <div className="tab-content">
-          <div className={`tab-pane ${tabIndex === 0 ? 'show active' : ''}`} id="records-active">
-            <div className="btn-group btn-group-sm mb-2">
-              <Button variant="outlined" color="success" onClick={() => { setOpenCreateDialog(true); }}>
-                <i className="mdi mdi-plus me-1"/>New
-              </Button>
-              <Button variant="outlined" color="error" onClick={handleConfigRecycle} disabled={recyclingConfig}>
-                <i className="mdi mdi-trash-can-outline me-1"/>Recycle
-              </Button>
-            </div>
+          {/* Active Tab Content */}
+          {tabIndex === 0 && (
+            <div className="tab-pane show active" id="records-active">
+              <div className="btn-group btn-group-sm mb-2">
+                <Button variant="outlined" color="success" onClick={() => { setOpenCreateDialog(true); }}>
+                  <i className="mdi mdi-plus me-1"/>New
+                </Button>
+                <Button variant="outlined" color="error" onClick={handleConfigRecycle} disabled={recyclingConfig}>
+                  <i className="mdi mdi-trash-can-outline me-1"/>Recycle
+                </Button>
+              </div>
 
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {columnsActive.map((column) => (
-                      <TableCell key={column.name}>{column.name}</TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {configsActive?.rows.map((row: any, index: number) => (
-                    <TableRow key={index}>
-                      <TableCell>{row.index}</TableCell>
-                      <TableCell>{row.salePackaging?.product?.name}</TableCell>
-                      <TableCell>{row.saleUnits}</TableCell>
-                      <TableCell>{row.giveawayPackaging?.product?.name}</TableCell>
-                      <TableCell>{row.giveawayUnits}</TableCell>
-                      <TableCell>
-                        <Button variant="contained" color="primary" onClick={() => { loadConfig(row.id); setInputConfigUpdate(init); }}>
-                          <i className="mdi mdi-pen"/>
-                        </Button>
-                      </TableCell>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {columnsActive.map((column) => (
+                        <TableCell key={column.name}>{column.name}</TableCell>
+                      ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-
-          <div className={`tab-pane ${tabIndex === 1 ? 'show active' : ''}`} id="records-recycled">
-            <div className="btn-group btn-group-sm mb-2">
-              <Button variant="outlined" color="warning" onClick={handleConfigRestore} disabled={restoringConfig}>
-                <i className="mdi mdi-restore me-1"/>Restore
-              </Button>
-            </div>
-
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {columnsRecycled.map((column) => (
-                      <TableCell key={column.name}>{column.name}</TableCell>
+                  </TableHead>
+                  <TableBody>
+                    {configsActive?.rows.map((row: any, index: number) => (
+                      <TableRow key={index}>
+                        <TableCell>{row.index}</TableCell>
+                        <TableCell>{row.salePackaging?.product?.name}</TableCell>
+                        <TableCell>{row.saleUnits}</TableCell>
+                        <TableCell>{row.giveawayPackaging?.product?.name}</TableCell>
+                        <TableCell>{row.giveawayUnits}</TableCell>
+                        <TableCell>
+                          <Button variant="contained" color="primary" onClick={() => { loadConfig(row.id); setInputConfigUpdate(init); }}>
+                            <i className="mdi mdi-pen"/>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {configsRecycled?.rows.map((row: any, index: number) => (
-                    <TableRow key={index}>
-                      <TableCell>{row.index}</TableCell>
-                      <TableCell>{row.salePackaging?.product?.name}</TableCell>
-                      <TableCell>{row.saleUnits}</TableCell>
-                      <TableCell>{row.giveawayPackaging?.product?.name}</TableCell>
-                      <TableCell>{row.giveawayUnits}</TableCell>
-                      <TableCell>{row.recycled}</TableCell>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
+
+          {/* Recycled Tab Content */}
+          {tabIndex === 1 && (
+            <div className="tab-pane show active" id="records-recycled">
+              <div className="btn-group btn-group-sm mb-2">
+                <Button variant="outlined" color="warning" onClick={handleConfigRestore} disabled={restoringConfig}>
+                  <i className="mdi mdi-restore me-1"/>Restore
+                </Button>
+              </div>
+
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {columnsRecycled.map((column) => (
+                        <TableCell key={column.name}>{column.name}</TableCell>
+                      ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
+                  </TableHead>
+                  <TableBody>
+                    {configsRecycled?.rows.map((row: any, index: number) => (
+                      <TableRow key={index}>
+                        <TableCell>{row.index}</TableCell>
+                        <TableCell>{row.salePackaging?.product?.name}</TableCell>
+                        <TableCell>{row.saleUnits}</TableCell>
+                        <TableCell>{row.giveawayPackaging?.product?.name}</TableCell>
+                        <TableCell>{row.giveawayUnits}</TableCell>
+                        <TableCell>{row.recycled}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
         </div>
       </div>
 
