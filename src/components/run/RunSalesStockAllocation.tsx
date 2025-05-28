@@ -116,9 +116,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
   const isMounted = useRef(true);
 
   useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
+    isMounted.current = false;
   }, []);
 
 
@@ -219,24 +217,20 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
     },
   ];
 
+
+
   useEffect(() => {
-    getProducts({ variables: { input: { clientTier2Id } } }).then(() => {
-      if (!isMounted.current) return;
-    });
+    getProducts({ variables: { input: { clientTier2Id } } })
   }, [getProducts, clientTier2Id]);
   useEffect(() => {
     if (runId) {
-      getTeams({ variables: { input: { runId } } }).then(() => {
-        if (!isMounted.current) return;
-      });
+      getTeams({ variables: { input: { runId } } })
     }
   }, [getTeams, runId]);
 
   useEffect(() => {
     if (product.id) {
-      getPackagings({ variables: { input: { productId: product.id } } }).then(() => {
-        if (!isMounted.current) return;
-      });
+      getPackagings({ variables: { input: { productId: product.id } } })
     }
   }, [getPackagings, product.id]);
 
@@ -263,9 +257,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
       if (validAgents.length > 0) {
         getAllocations({
           variables: { input: { runId, packagingId: product.packagingId, agents: validAgents } }
-        }).then(() => {
-          if (!isMounted.current) return;
-        });
+        })
       }
     }
   }, [getAllocations, runId, product.packagingId, selectedAgents]);
@@ -301,9 +293,7 @@ export const RunSalesStockAllocation: FC<IInventoryAllocation> = ({ runId, clien
     if (runId) {
       getAgents({
         variables: { input: { search, runId, teamId, page: 0, pageSize: 10 } }
-      }).then(() => {
-        if (!isMounted.current) return;
-      });
+      })
     }
   }, [getAgents, runId, teamId, search]);
 
