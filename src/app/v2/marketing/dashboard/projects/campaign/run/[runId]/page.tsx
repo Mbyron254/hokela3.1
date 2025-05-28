@@ -19,6 +19,7 @@ import { RunSalesStockAllocation } from 'src/components/run/RunSalesStockAllocat
 import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
 import { RunSalesQuestions } from 'src/components/run/RunSalesQuestions';
 import { RunSalesGiveawayQuestions } from 'src/components/run/RunSalesGiveawayQuestions';
+import { RunSalesGiveawayConfig } from 'src/components/run/RunSalesGiveawayConfig';
 // import { RunKPIs } from 'src/components/run/RunKPIs';
 // import { RunPayroll } from 'src/components/run/RunPayroll';
 // import { RunPayRate } from 'src/components/run/RunPayRate';
@@ -260,8 +261,8 @@ export default function Page({ params: { runId } }: any) {
                     // <p>Giveaway Questions</p>
                     }
                     {activeSalesSubTab === 3 && (
-                    // <RunSalesGiveawayConfig runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
-                    <p>Giveaway Config</p>
+                    <RunSalesGiveawayConfig runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                    // <p>Giveaway Config</p>
                     )}
                     {activeSalesSubTab === 4 && (
                       // <RunStockCounterEntry runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
