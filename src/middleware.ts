@@ -48,9 +48,13 @@ export async function middleware(request: NextRequest) {
 
     headers.set('SessionID:', String(sessionId));
     const res = NextResponse.next()
-    res.headers.set('x-session-id', String(sessionId || 'none'))
-    res.headers.set('x-session-user', session?.user?.id || 'no-user')
-    res.headers.set('x-session-role', session?.user?.role?.name || 'none')
+    // res.headers.set('x-session-id', String(sessionId || 'none'))
+    // res.headers.set('x-session-user', session?.user?.id || 'no-user')
+    // res.headers.set('x-session-role', session?.user?.role?.name || 'none')
+
+    console.log('session: ', session)
+    console.log('session.user: ', session?.user)
+    console.log('session.user.role: ', session?.user?.role)
     // if (!session || session.user?.state !== USER_AC_STATE.active) {
     //   return NextResponse.redirect(new URL('/', request.url))
     // }
