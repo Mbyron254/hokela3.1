@@ -40,6 +40,8 @@ import { DropZone } from 'src/components/dropzone/DropZone';
 import { sourceImage, uploadPhoto } from 'src/lib/server';
 import PhoneNumberInputLegacy from './PhoneNumberInputLegacy';
 
+/* eslint-disable react/prop-types */
+
 interface QuestionnaireFormProps {
   questionnaireFields: IQuestionnairField[];
   setQuestionnaireFields: React.Dispatch<React.SetStateAction<IQuestionnairField[]>>;

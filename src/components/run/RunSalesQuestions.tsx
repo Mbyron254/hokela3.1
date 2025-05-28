@@ -6,8 +6,8 @@ import { GQLMutation } from 'src/lib/client';
 import { SALES_SURVEY, SALES_SURVEY_UPSERT } from 'src/lib/mutations/sales-survey.mutation';
 import { InputSalesSurveyUpdate } from 'src/lib/interface/survey-sales.interface';
 import { CHOICE_MULTIPLE, CHOICE_SINGLE, DROPDOWN } from 'src/lib/constant';
-import { QuestionnaireSetup } from '../QuestionnaireSetup';
 import { Switch, FormControlLabel, Grid, Card, CardContent } from '@mui/material';
+import { QuestionnaireSetup } from '../QuestionnaireSetup';
 
 export const RunSalesQuestions: FC<{ runId: string }> = ({ runId }) => {
   const {

@@ -80,7 +80,7 @@ export const RunCartSales: FC<{
 
     const _responses: InputSurveyResponse[] = [];
 
-    for (let i = 0; i < questionnaireFieldsSales.length; i++) {
+    for (let i = 0; i < questionnaireFieldsSales.length; i+=1) {
       _responses.push({
         questionnaireFieldId: questionnaireFieldsSales[i].id,
         feedback: questionnaireFieldsSales[i].feedback || {},
@@ -89,7 +89,7 @@ export const RunCartSales: FC<{
 
     const _items: IInputSaleItem[] = [];
 
-    for (let i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.length; i+=1) {
       _items.push({
         allocationId: items[i].id,
         quantitySold: items[i].quantity,
