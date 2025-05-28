@@ -272,7 +272,7 @@ export const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
                   onChange={(e) =>
                     editFeedbackSingleChoice(
                       element.id,
-                      { _choice: e.target.value },
+                      { text: e.target.value },
                       questionnaireFields,
                       setQuestionnaireFields,
                     )
