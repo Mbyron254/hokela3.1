@@ -40,13 +40,19 @@ import { DropZone } from 'src/components/dropzone/DropZone';
 import { sourceImage, uploadPhoto } from 'src/lib/server';
 import PhoneNumberInputLegacy from './PhoneNumberInputLegacy';
 
+interface QuestionnaireFormProps {
+  questionnaireFields: IQuestionnairField[];
+  setQuestionnaireFields: React.Dispatch<React.SetStateAction<IQuestionnairField[]>>;
+  submitting: boolean;
+  handleSubmit: (e: React.FormEvent) => void;
+}
 
-export const QuestionnaireForm = ({
+export const QuestionnaireForm: React.FC<QuestionnaireFormProps> = ({
   questionnaireFields,
   setQuestionnaireFields,
   submitting,
   handleSubmit,
-}: IQuestionnaireForm) => {
+}) => {
   const webcamRef = useRef<Webcam>(null);
 
   const [documents, setDocuments] = useState<IDocumentWrapper[]>([]);
@@ -94,7 +100,7 @@ export const QuestionnaireForm = ({
 
   return (
     <div className="row">
-      <form className="col-md-12" onSubmit={handleSubmit as any}>
+      <form className="col-md-12" onSubmit={handleSubmit}>
         {questionnaireFields?.map((element: IQuestionnairField, i: number) => (
           <div className="row" key={`element-${i}`}>
             {element.feedbackType === TEXT_SHORT && (

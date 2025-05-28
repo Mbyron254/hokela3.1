@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import { GQLMutation, GQLQuery } from 'src/lib/client';
 import {
   IChoice,
@@ -80,7 +80,7 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
   const [openDialog, setOpenDialog] = useState(false);
 
-  const handleCreate = (e: Event) => {
+  const handleCreate = (e: FormEvent<Element>) => {
     e.preventDefault();
 
     console.log('survey id:', survey.id);
@@ -314,7 +314,7 @@ export const SurveyReport: FC<{ runId: string }> = ({ runId }) => {
                 questionnaireFields={questionnaireFields}
                 setQuestionnaireFields={setQuestionnaireFields}
                 submitting={creating}
-                handleSubmit={handleCreate}
+                handleSubmit={(e: FormEvent<Element>) => handleCreate(e)}
               />
             </DialogContent>
             <DialogActions>

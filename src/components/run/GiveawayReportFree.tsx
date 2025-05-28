@@ -10,7 +10,7 @@ import {
   FREE_GIVEAWAY_SURVEY_4_AGENT,
   M_FREE_GIVEAWAY_AGENT_ALLOCATIONS,
 } from 'src/lib/mutations/free-giveaway.mutation';
-import { FC, useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import { sourceImage } from 'src/lib/server';
 import { LOCATION_PING_INTERVAL_MS, TABLE_IMAGE_HEIGHT, TABLE_IMAGE_WIDTH } from 'src/lib/constant';
 import { LoadingSpan } from 'src/components/LoadingSpan';
@@ -67,7 +67,7 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
   const [questionnaireFields, setQuestionnaireFields] = useState<IQuestionnairField[]>([]);
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
   
-  const handleCreate = (e: Event) => {
+  const handleCreate = (e: FormEvent<Element>) => {
     e.preventDefault();
 
     if (survey?.id && geoLocation?.lat && geoLocation?.lng) {
@@ -357,7 +357,7 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
                 questionnaireFields={questionnaireFields}
                 setQuestionnaireFields={setQuestionnaireFields}
                 submitting={creating}
-                handleSubmit={handleCreate}
+                handleSubmit={(e: FormEvent<Element>) => handleCreate(e)}
               />
             </div>
           </div>
