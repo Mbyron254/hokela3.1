@@ -125,25 +125,24 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
   const isMounted = useRef(true);
 
   useEffect(() => {
-    isMounted.current = false;
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
-  const loadTeams = () => {
-    if (runId) {
-      getTeams({ variables: { input: { runId } } });
-    }
-  };
+
   const loadAgents = (page?: number, pageSize?: number) => {
     if (runId) {
       getAgents({ variables: { input: { search, runId, teamId, page, pageSize } } });
     }
   };
-  
+
   const handleAllocate = () => {
     if (allocations.length) {
       const _allocations: { agentId: string; quantity: number }[] = [];
 
-      for (let x = 0; x < allocations.length; x+=1) {
+      for (let x = 0; x < allocations.length; x += 1) {
         _allocations.push({
           agentId: allocations[x].id,
           quantity: allocations[x].allocated,
@@ -173,7 +172,7 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
 
     let _allocationTotal = 0;
 
-    for (let i = 0; i < _curr.length; i+=1) {
+    for (let i = 0; i < _curr.length; i += 1) {
       if (bulkFill) {
         _curr[i].allocated = parseInt(event.target.value, 10) || 0;
       } else if (_curr[i].id === id) {
@@ -187,10 +186,10 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
     setAllocations(_curr);
     setAllocationTotal(_allocationTotal);
   };
-  
+
   const handleSurveyUpsert = () => {
     if (runId && questionnaireFields.length) {
-      for (let i = 0; i < questionnaireFields.length; i+=1) {
+      for (let i = 0; i < questionnaireFields.length; i += 1) {
         switch (questionnaireFields[i].feedbackType) {
           case DROPDOWN:
             delete questionnaireFields[i].optionsChoiceSingle;
@@ -242,27 +241,41 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
     </>
   );
 
-  useEffect(() => getProducts({ variables: { input: { clientTier2Id } } }), [getProducts, clientTier2Id]);
-  useEffect(() => getTeams({ variables: { input: { runId } } }), [getTeams, runId]);
-  useEffect(() => getPackagings({ variables: { input: { productId: product.id } } }), [getPackagings, product.id]);
+  useEffect(() => {
+    getProducts({ variables: { input: { clientTier2Id } } }).then(() => {
+      if (!isMounted.current) return;
+    });
+  }, [getProducts, clientTier2Id]);
+
+  useEffect(() => {
+    getTeams({ variables: { input: { runId } } }).then(() => {
+      if (!isMounted.current) return;
+    });
+  }, [getTeams, runId]);
+
+  useEffect(() => {
+    if (product.id) {
+      getPackagings({ variables: { input: { productId: product.id } } }).then(() => {
+        if (!isMounted.current) return;
+      });
+    }
+  }, [getPackagings, product.id]);
+
   useEffect(() => {
     if (product.id && product.packagingId) {
-      console.log('Loading stock for:', { productId: product.id, packagingId: product.packagingId });
-      
       getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } })
-        .then((res: any) => {
+        .then(() => {
           if (!isMounted.current) return;
-          // If needed, you can set some local state here
-          console.log('Stock data safely updated');
         })
-        .catch((err: any  ) => {
+        .catch((err: any) => {
           if (!isMounted.current) return;
-          console.error('Error fetching stock', err);
+          console.error('Stock fetch error:', err);
         });
     }
   }, [getStock, product.id, product.packagingId]);
+
   useEffect(() => {
-    if (runId && product.id && product.packagingId && selectedAgents) {
+    if (runId && product.id && product.packagingId && selectedAgents.length > 0) {
       getAllocations({
         variables: {
           input: {
@@ -272,59 +285,68 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
             agents: selectedAgents,
           },
         },
+      }).then(() => {
+        if (!isMounted.current) return;
       });
     }
-  }, [product.id, product.packagingId, selectedAgents, getAllocations, runId]);
+  }, [getAllocations, runId, product.id, product.packagingId, selectedAgents]);
+
   useEffect(() => {
     if (runId) {
-      getSurvey({ variables: { input: { runId } } });
+      getSurvey({ variables: { input: { runId } } }).then(() => {
+        if (!isMounted.current) return;
+      });
     }
   }, [getSurvey, runId]);
+
   useEffect(() => {
+    if (!isMounted.current) return;
     if (allocation?.entries) {
       const _allocations: IFreeGiveawayAllocations[] = [];
-
       let _allocationTotal = 0;
 
-      for (let i = 0; i < allocation.entries.length; i+=1) {
+      for (const entry of allocation.entries) {
         _allocations.push({
-          index: allocation.entries[i].index,
-          id: allocation.entries[i].agent?.id,
-          name: allocation.entries[i].agent?.user?.name,
-          photo: allocation.entries[i].agent?.user?.profile?.photo?.fileName,
-          allocated: allocation.entries[i].quantityAllocated,
-          givenAway: allocation.entries[i].quantityGivenAway,
+          index: entry.index,
+          id: entry.agent?.id,
+          name: entry.agent?.user?.name,
+          photo: entry.agent?.user?.profile?.photo?.fileName,
+          allocated: entry.quantityAllocated,
+          givenAway: entry.quantityGivenAway,
         });
-        _allocationTotal += allocation.entries[i].quantityAllocated;
+        _allocationTotal += entry.quantityAllocated;
       }
+
       setAllocations(_allocations);
       setAllocationTotal(_allocationTotal);
     }
   }, [allocation?.entries]);
+
   useEffect(() => {
+    if (!isMounted.current) return;
     if (survey) {
       const _fields = [];
 
-      for (let i = 0; i < survey.questionnaireFields.length; i+=1) {
+      for (let i = 0; i < survey.questionnaireFields.length; i += 1) {
         const _dropdown: IAnswerDropdownOption[] = [];
         const _singlechoice: IChoice[] = [];
         const _multichoice: IChoice[] = [];
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceSingle.length; k += 1) {
           _singlechoice.push({
             text: survey.questionnaireFields[i].optionsChoiceSingle[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceSingle[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsChoiceMultiple.length; k += 1) {
           _multichoice.push({
             text: survey.questionnaireFields[i].optionsChoiceMultiple[k].text,
             documentId: survey.questionnaireFields[i].optionsChoiceMultiple[k].documentId,
           });
         }
 
-        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k+=1) {
+        for (let k = 0; k < survey.questionnaireFields[i].optionsDropdown.length; k += 1) {
           _dropdown.push({
             value: survey.questionnaireFields[i].optionsDropdown[k].value,
             label: survey.questionnaireFields[i].optionsDropdown[k].label,
