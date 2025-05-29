@@ -326,9 +326,6 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
           <Button onClick={() => setInput({ ...input, freeGiveawayAllocationId: undefined })} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleCreate} color="primary" disabled={creating}>
-            Submit
-          </Button>
         </DialogActions>
       </Dialog>
     </Card>
