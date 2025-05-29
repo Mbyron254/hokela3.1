@@ -20,6 +20,7 @@ import { RunSurveyQuestions } from 'src/components/run/RunSurveyQuestions';
 import { RunSalesQuestions } from 'src/components/run/RunSalesQuestions';
 import { RunSalesGiveawayQuestions } from 'src/components/run/RunSalesGiveawayQuestions';
 import { RunSalesGiveawayConfig } from 'src/components/run/RunSalesGiveawayConfig';
+import { RunSampling } from 'src/components/run/RunSampling';
 // import { RunKPIs } from 'src/components/run/RunKPIs';
 // import { RunPayroll } from 'src/components/run/RunPayroll';
 // import { RunPayRate } from 'src/components/run/RunPayRate';
@@ -272,8 +273,8 @@ export default function Page({ params: { runId } }: any) {
                 </div>
               )}
               {activity.name === RUN_ACTIVITY_SAMPLING && (
-                // <RunSampling runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
-                <p>Sampling</p>
+                <RunSampling runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />
+                // <p>Sampling</p>
               )}
               {activity.name === RUN_ACTIVITY_SURVEY && (
                 <RunSurveyQuestions runId={run.id} clientTier2Id={run.campaign.project.clientTier2.id} />

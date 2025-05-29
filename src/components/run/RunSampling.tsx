@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { Icon } from '@iconify/react';
 
 import { FC, useEffect, useState } from 'react';
 import { M_CAMPAIGN_AGENTS } from 'src/lib/mutations/run-offer.mutation';
@@ -34,10 +35,10 @@ import { M_RUN_TEAMS_MINI } from 'src/lib/mutations/run-team.mutation';
 import { InputFreeGiveawaySurveyUpdate } from 'src/lib/interface/survey-free-giveaway.interface';
 
 import { sourceImage } from 'src/lib/server';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Box, Typography, FormControlLabel, Switch, Select, MenuItem, InputLabel, FormControl, Button, CircularProgress } from '@mui/material';
+import { Tabs, Tab } from '@mui/material';
+import { TextField } from '@mui/material';
 import { QuestionnaireSetup } from '../QuestionnaireSetup';
-import { MutationButton } from '../MutationButton';
-import { LoadingSpan } from '../LoadingSpan';
 
 export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) => {
   const {
@@ -344,400 +345,243 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
   }, [survey]);
 
   return (
-    <>
+    <Box sx={{ padding: 2 }}>
       {!survey && (
-        <div className="col-12">
-          <div className="alert alert-warning text-warning bg-transparent text-center" role="alert">
+        <Box sx={{ marginBottom: 2 }}>
+          <Typography variant="body2" color="warning.main" align="center">
             Questionnaire not set. Agents will not be able to submit sampling reports!
-          </div>
-        </div>
+          </Typography>
+        </Box>
       )}
 
-      <ul className="nav nav-tabs nav-bordered mb-3">
-        <li className="nav-item">
-          <a
-            href="#sampling-questions"
-            data-bs-toggle="tab"
-            aria-expanded="true"
-            className="nav-link active"
-          >
-            <i className="mdi mdi-account-circle d-md-none d-block"/>
-            <span className="d-none d-md-block">Questions</span>
-          </a>
-        </li>
-        <li className="nav-item">
-          <a
-            href="#sampling-stock-allocation"
-            data-bs-toggle="tab"
-            aria-expanded="false"
-            className="nav-link"
-          >
-            <i className="mdi mdi-settings-outline d-md-none d-block"/>
-            <span className="d-none d-md-block">Stock Allocation</span>
-          </a>
-        </li>
-      </ul>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', marginBottom: 3 }}>
+        <Tabs value={0} aria-label="basic tabs example">
+          <Tab label="Questions" />
+          <Tab label="Stock Allocation" />
+        </Tabs>
+      </Box>
 
-      <div className="tab-content">
-        <div className="tab-pane show active" id="sampling-questions">
-          <div className="card border-primary border">
-            <div className="card-body pb-0">
-              <div className="row">
-                <div className="col-md-4">
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="hideRespondentFieldsFreeGiveaway"
-                      checked={inputSurvey.hideRespondentFields}
-                      onClick={() =>
-                        setInputSurvey({
-                          ...inputSurvey,
-                          hideRespondentFields: !inputSurvey.hideRespondentFields,
-                        })
-                      }
-                    />
-                    <p>Hide Respondent Fields</p>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="requireRespondentNameFreeGiveaway"
-                      checked={inputSurvey.requireRespondentName}
-                      onClick={() =>
-                        setInputSurvey({
-                          ...inputSurvey,
-                          requireRespondentName: !inputSurvey.requireRespondentName,
-                        })
-                      }
-                    />
-                    <p>Require Respondent Name</p>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="requireRespondentPhoneFreeGiveaway"
-                      checked={inputSurvey.requireRespondentPhone}
-                      onClick={() =>
-                        setInputSurvey({
-                          ...inputSurvey,
-                          requireRespondentPhone: !inputSurvey.requireRespondentPhone,
-                        })
-                      }
-                    />
-                    <p>Require Respondent Phone</p>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="requireRespondentEmailFreeGiveaway"
-                      checked={inputSurvey.requireRespondentEmail}
-                      onClick={() =>
-                        setInputSurvey({
-                          ...inputSurvey,
-                          requireRespondentEmail: !inputSurvey.requireRespondentEmail,
-                        })
-                      }
-                    />
-                    <p>Require Respondent Email</p>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="blockSameLocationReportsGloballyFreeGiveaway"
-                      checked={inputSurvey.blockSameLocationReportsGlobally}
-                      onClick={() =>
-                        setInputSurvey({
-                          ...inputSurvey,
-                          blockSameLocationReportsGlobally:
-                            !inputSurvey.blockSameLocationReportsGlobally,
-                        })
-                      }
-                    />
-                    <p>Block Same Location Reports Globally</p>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="blockSameLocationReportsPerAgentFreeGiveaway"
-                      checked={inputSurvey.blockSameLocationReportsPerAgent}
-                      onClick={() =>
-                        setInputSurvey({
-                          ...inputSurvey,
-                          blockSameLocationReportsPerAgent:
-                            !inputSurvey.blockSameLocationReportsPerAgent,
-                        })
-                      }
-                    />
-                    <p>Block Same Location Reports Per Agent</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <QuestionnaireSetup
-              questionnaireFields={questionnaireFields}
-              setQuestionnaireFields={setQuestionnaireFields}
-              mutation={handleSurveyUpsert}
-              mutating={upsertingSurvey}
+      <Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <FormControlLabel
+              control={<Switch checked={inputSurvey.hideRespondentFields} onChange={() => setInputSurvey({ ...inputSurvey, hideRespondentFields: !inputSurvey.hideRespondentFields })} />}
+              label="Hide Respondent Fields"
             />
-          </div>
-        </div>
+            <FormControlLabel
+              control={<Switch checked={inputSurvey.requireRespondentName} onChange={() => setInputSurvey({ ...inputSurvey, requireRespondentName: !inputSurvey.requireRespondentName })} />}
+              label="Require Respondent Name"
+            />
+            <FormControlLabel
+              control={<Switch checked={inputSurvey.requireRespondentPhone} onChange={() => setInputSurvey({ ...inputSurvey, requireRespondentPhone: !inputSurvey.requireRespondentPhone })} />}
+              label="Require Respondent Phone"
+            />
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <FormControlLabel
+              control={<Switch checked={inputSurvey.requireRespondentEmail} onChange={() => setInputSurvey({ ...inputSurvey, requireRespondentEmail: !inputSurvey.requireRespondentEmail })} />}
+              label="Require Respondent Email"
+            />
+            <FormControlLabel
+              control={<Switch checked={inputSurvey.blockSameLocationReportsGlobally} onChange={() => setInputSurvey({ ...inputSurvey, blockSameLocationReportsGlobally: !inputSurvey.blockSameLocationReportsGlobally })} />}
+              label="Block Same Location Reports Globally"
+            />
+            <FormControlLabel
+              control={<Switch checked={inputSurvey.blockSameLocationReportsPerAgent} onChange={() => setInputSurvey({ ...inputSurvey, blockSameLocationReportsPerAgent: !inputSurvey.blockSameLocationReportsPerAgent })} />}
+              label="Block Same Location Reports Per Agent"
+            />
+          </Box>
+        </Box>
 
-        <div className="tab-pane" id="sampling-stock-allocation">
-          <div className="row">
-            <div className="col-md-5">
-              <div className="card border border-primary">
-                <div className="card-body">
-                  {loadingTeams ? (
-                    <LoadingSpan />
-                  ) : (
-                    <div className="mb-3">
-                      <p>Filter by team</p>
-                      <select
-                        id="team"
-                        className="form-select mt-2"
-                        aria-label="Filter By Team"
-                        value={teamId}
-                        onChange={(e) => setTeamId(e.target.value)}
-                      >
-                        <option value="">Select Team</option>
-                        {teams?.rows.map((team: any, index: number) => (
-                          <option value={team.id} key={`team-${index}`}>
-                            {team.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
+        <QuestionnaireSetup
+          questionnaireFields={questionnaireFields}
+          setQuestionnaireFields={setQuestionnaireFields}
+          mutation={handleSurveyUpsert}
+          mutating={upsertingSurvey}
+        />
+      </Box>
 
-                  <div className="app-search mb-3">
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        id="top-search"
-                        className="form-control dropdown-toggle"
-                        placeholder="Search agent..."
-                        defaultValue={search}
-                        onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
-                      />
-                      <span className="mdi mdi-magnify search-icon"/>
-                      <button
-                        className="input-group-text btn-primary"
-                        type="button"
-                        disabled={loadingAgents}
-                        onClick={() => loadAgents(0, 10)}
-                      >
-                        {loadingAgents && (
-                          <>
-                            <i className="spinner-border spinner-border-sm me-1" role="status" />
-                            Loading
-                          </>
-                        )}
+      <Box sx={{ marginTop: 3 }}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <FormControl fullWidth>
+            <InputLabel id="team-select-label">Filter by team</InputLabel>
+            <Select
+              labelId="team-select-label"
+              id="team-select"
+              value={teamId}
+              label="Filter by team"
+              onChange={(e) => setTeamId(e.target.value)}
+            >
+              <MenuItem value="">
+                <em>Select Team</em>
+              </MenuItem>
+              {teams?.rows.map((team: any, index: number) => (
+                <MenuItem value={team.id} key={`team-${index}`}>
+                  {team.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-                        {!loadingAgents && <>Search</>}
-                      </button>
-                    </div>
-                  </div>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <TextField
+              id="top-search"
+              label="Search agent..."
+              variant="outlined"
+              value={search}
+              onChange={(e) => setSearch(e.target.value === '' ? undefined : e.target.value)}
+              sx={{ marginRight: 1 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => loadAgents(0, 10)}
+              disabled={loadingAgents}
+              startIcon={loadingAgents ? <CircularProgress size={20} /> : <Icon icon="mdi:magnify" />}
+            >
+              {loadingAgents ? 'Loading' : 'Search'}
+            </Button>
+          </Box>
+        </Box>
 
-                  <hr className="mb-2" />
+        <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell key={column.id} style={{ minWidth: column.minWidth }}>
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {agents?.rows.map((row: any, index: number) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedAgents.includes(row.agent?.id)}
+                      onChange={() => {
+                        const newSelected = [...selectedAgents];
+                        if (newSelected.includes(row.agent?.id)) {
+                          newSelected.splice(newSelected.indexOf(row.agent?.id), 1);
+                        } else {
+                          newSelected.push(row.agent?.id);
+                        }
+                        setSelectedAgents(newSelected);
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>{renderAgentCell(row)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
 
-                  <TableContainer component={Paper}>
-                    <Table stickyHeader aria-label="sticky table">
-                      <TableHead>
-                        <TableRow>
-                          {columns.map((column) => (
-                            <TableCell
-                              key={column.id}
-                              style={{ minWidth: column.minWidth }}
-                            >
-                              {column.label}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {agents?.rows.map((row: any, index: number) => (
-                          <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                            <TableCell>
-                              <Checkbox
-                                checked={selectedAgents.includes(row.agent?.id)}
-                                onChange={() => {
-                                  const newSelected = [...selectedAgents];
-                                  if (newSelected.includes(row.agent?.id)) {
-                                    newSelected.splice(newSelected.indexOf(row.agent?.id), 1);
-                                  } else {
-                                    newSelected.push(row.agent?.id);
-                                  }
-                                  setSelectedAgents(newSelected);
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>{renderAgentCell(row)}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </div>
-              </div>
-            </div>
+      <Box sx={{ marginTop: 3 }}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <FormControl fullWidth>
+            <InputLabel id="product-select-label">Product</InputLabel>
+            <Select
+              labelId="product-select-label"
+              id="product-select"
+              value={product.id}
+              label="Product"
+              onChange={(e) => setProduct({ ...product, id: e.target.value === '' ? undefined : e.target.value })}
+            >
+              <MenuItem value="">
+                <em>Select Product</em>
+              </MenuItem>
+              {products?.rows.map((prod: any, index: number) => (
+                <MenuItem value={prod.id} key={`product-${index}`}>
+                  {prod.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-            <div className="col-md-7">
-              <div className="card border-primary border">
-                <div className="card-body p-3">
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="form-floating mb-3">
-                        <select
-                          id="product"
-                          className="form-select"
-                          aria-label="Product"
-                          defaultValue={product.id}
-                          onChange={(e) =>
-                            setProduct({
-                              ...product,
-                              id: e.target.value === '' ? undefined : e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Product</option>
-                          {products?.rows.map((prod: any, index: number) => (
-                            <option value={prod.id} key={`product-${index}`}>
-                              {prod.name}
-                            </option>
-                          ))}
-                        </select>
-                        <p>Product</p>
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="form-floating mb-3">
-                        <select
-                          id="packaging"
-                          className="form-select"
-                          aria-label="Packaging"
-                          defaultValue={product.packagingId}
-                          onChange={(e) =>
-                            setProduct({
-                              ...product,
-                              packagingId: e.target.value === '' ? undefined : e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Packaging</option>
-                          {packagings?.rows.map((packaging: any, index: number) => (
-                            <option key={`packaging-${index}`} value={packaging.id}>
-                              {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
-                            </option>
-                          ))}
-                        </select>
-                        <p>Packaging</p>
-                      </div>
-                    </div>
-                  </div>
+          <FormControl fullWidth>
+            <InputLabel id="packaging-select-label">Packaging</InputLabel>
+            <Select
+              labelId="packaging-select-label"
+              id="packaging-select"
+              value={product.packagingId}
+              label="Packaging"
+              onChange={(e) => setProduct({ ...product, packagingId: e.target.value === '' ? undefined : e.target.value })}
+            >
+              <MenuItem value="">
+                <em>Select Packaging</em>
+              </MenuItem>
+              {packagings?.rows.map((packaging: any, index: number) => (
+                <MenuItem key={`packaging-${index}`} value={packaging.id}>
+                  {`${packaging.unitQuantity} ${packaging.unit?.name} (${packaging.unit?.abbreviation})`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
-                  <hr className="mt-0 mb-0" />
+        <Typography variant="h6" sx={{ marginTop: 2 }}>
+          Allocated {allocationTotal} of {stock?.balPackage ? stock.balPackage : 0} units
+        </Typography>
+      </Box>
 
-                  <h5 className="mb-0">
-                    Allocated {allocationTotal} of {stock?.balPackage ? stock.balPackage : 0} units
-                  </h5>
-                </div>
-              </div>
+      <Box sx={{ marginTop: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Allocations
+          {loadingAllocations && <CircularProgress size={20} sx={{ marginLeft: 1 }} />}
+        </Typography>
 
-              <div className="card border-primary border">
-                <div className="card-body p-3">
-                  <h5 className="card-title">
-                    <span className="text-uppercase">Allocations</span>
-                    {loadingAllocations ? <LoadingSpan /> : undefined}
-                    <span className="float-end">
-                      <div className="form-check form-check-inline">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="bulkFill"
-                          disabled={allocation?.canBulkFill}
-                          onClick={() => setBulkFill(!bulkFill)}
-                        />
-                        <p style={{ marginTop: '3px' }}>Bulk Fill</p>
-                      </div>
-                    </span>
-                  </h5>
+        <FormControlLabel
+          control={<Switch checked={bulkFill} onChange={() => setBulkFill(!bulkFill)} />}
+          label="Bulk Fill"
+          disabled={allocation?.canBulkFill}
+        />
 
-                  <hr className="mt-0 mb-1" />
+        <Box sx={{ marginTop: 2 }}>
+          {allocations?.map((alloc: any, index: number) => (
+            <Box key={`allocation-${index}`} sx={{ marginBottom: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Typography variant="body1">
+                  <span>{alloc.index}.</span>
+                  <Image
+                    className="me-2 mt-1 mb-1"
+                    src={sourceImage(alloc.photo)}
+                    loader={() => sourceImage(alloc.photo)}
+                    alt=""
+                    width={TABLE_IMAGE_WIDTH}
+                    height={TABLE_IMAGE_HEIGHT}
+                  />
+                  {alloc.name}
+                </Typography>
+                <TextField
+                  type="number"
+                  label={`Given away: ${alloc.givenAway}`}
+                  variant="outlined"
+                  size="small"
+                  value={alloc.allocated}
+                  onChange={(e) => handleChange(alloc.id, e)}
+                  sx={{ width: 100 }}
+                />
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Box>
 
-                  <div className="mb-2">
-                    {allocations?.map((alloc: any, index: number) => (
-                      <div key={`allocation-${index}`}>
-                        <dl className="row mb-0">
-                          <dt className="col-sm-7">
-                            <span className="me-2">{alloc.index}.</span>
-                            <Image
-                              className="me-2 mt-1 mb-1"
-                              src={sourceImage(alloc.photo)}
-                              loader={() => sourceImage(alloc.photo)}
-                              alt=""
-                              width={TABLE_IMAGE_WIDTH}
-                              height={TABLE_IMAGE_HEIGHT}
-                            />
-                            {alloc.name}
-                          </dt>
-                          <dd className="col-sm-5">
-                            <div className="input-group input-group-sm">
-                              <input
-                                type="text"
-                                className="form-control form-control-sm font-14"
-                                disabled
-                                placeholder={`Given away: ${alloc.givenAway}`}
-                              />
-                              <input
-                                type="number"
-                                id="quantity-1"
-                                className="form-control form-control-sm font-14"
-                                min={alloc.givenAway}
-                                value={alloc.allocated}
-                                onChange={(e) => handleChange(alloc.id, e)}
-                              />
-                            </div>
-                          </dd>
-                        </dl>
-
-                        <hr className="mt-0 mb-1" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <MutationButton
-                type="button"
-                size="sm"
-                label="Save"
-                icon="mdi mdi-refresh"
-                className="float-end mb-3"
-                loading={allocating}
-                onClick={handleAllocate}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        onClick={handleAllocate}
+        disabled={allocating}
+        startIcon={allocating ? <CircularProgress size={20} /> : <Icon icon="mdi:content-save" />}
+        sx={{ marginTop: 3 }}
+      >
+        Save
+      </Button>
+    </Box>
   );
 };
