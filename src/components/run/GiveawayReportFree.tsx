@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { Card, CardContent, Typography, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Grid, InputAdornment } from '@mui/material';
 
 import { GQLMutation } from 'src/lib/client';
 import { IAgentFreeGiveawayAllocations } from 'src/lib/interface/campaign.interface';
@@ -177,24 +178,26 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
   }, [created]);
 
   return (
-    <div className="card">
+    <Card>
       {geoLocation?.lat && geoLocation?.lng && (
-        <div className="card-body">
+        <CardContent>
           {!allocations?.length ? (
-            <p className="text-center">You have not been allocated any giveaway products!</p>
+            <Typography variant="body1" align="center">
+              You have not been allocated any giveaway products!
+            </Typography>
           ) : (
             <>
-              <h5 className="card-title">
+              <Typography variant="h5" component="div" gutterBottom>
                 <span className="text-uppercase">Products Allocations</span>
                 {loadingAllocations ? <LoadingSpan /> : undefined}
-              </h5>
+              </Typography>
 
               <hr className="mt-0 mb-1" />
 
               {allocations?.map((allocation: any, index: number) => (
                 <div key={`allocation-${index}`}>
-                  <dl className="row mb-0">
-                    <dt className="col-md-7">
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item md={7}>
                       <div className="d-flex align-items-start">
                         <Image
                           className="me-2 mt-1 mb-1"
@@ -205,164 +208,129 @@ export const GiveawayReportFree: FC<{ runId: string }> = ({ runId }) => {
                           height={TABLE_IMAGE_HEIGHT}
                         />
                         <div>
-                          <h5 className="mt-0 mb-0">{allocation.product.name}</h5>
-                          <span className="font-11">{allocation.product.package}</span>
+                          <Typography variant="h6" component="div">{allocation.product.name}</Typography>
+                          <Typography variant="body2" color="textSecondary">{allocation.product.package}</Typography>
                         </div>
                       </div>
-                    </dt>
-                    <dd className="col-md-5">
-                      <div className="input-group input-group-sm">
-                        <input
-                          type="text"
-                          className="form-control font-14"
-                          disabled
-                          placeholder={`Given away: ${allocation.quantityGiven} / ${allocation.quantityAllocated}`}
-                        />
-                        <button
-                          className="btn btn-outline-secondary btn-sm"
-                          type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#free-giveaway-report-modal"
-                          style={{ padding: '0 8px 0px 8px' }}
-                          onClick={() =>
-                            setInput({
-                              ...input,
-                              freeGiveawayAllocationId: allocation.id,
-                            })
-                          }
-                        >
-                          Give
-                        </button>
-                      </div>
-                    </dd>
-                  </dl>
+                    </Grid>
+                    <Grid item md={5}>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        disabled
+                        placeholder={`Given away: ${allocation.quantityGiven} / ${allocation.quantityAllocated}`}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() =>
+                                  setInput({
+                                    ...input,
+                                    freeGiveawayAllocationId: allocation.id,
+                                  })
+                                }
+                              >
+                                Give
+                              </Button>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
 
                   <hr className="mt-0 mb-1" />
                 </div>
               ))}
             </>
           )}
-        </div>
+        </CardContent>
       )}
 
-      <div
-        id="free-giveaway-report-modal"
-        className="modal fade"
-        role="dialog"
+      <Dialog
+        open={Boolean(input.freeGiveawayAllocationId)}
+        onClose={() => setInput({ ...input, freeGiveawayAllocationId: undefined })}
         aria-labelledby="new-report-modal"
-        aria-hidden="true"
-        tabIndex={-1}
       >
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h4 className="modal-title" id="new-report-modal">
-                New Free Giveaway Report
-              </h4>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
-            </div>
-            <div className="modal-body">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="mb-3">
-                    <p className="form-label">
-                      Customer Name
-                      {survey?.requireRespondentName ? (
-                        <span className="text-warning ms-1">*</span>
-                      ) : undefined}
-                    </p>
-                    <input
-                      type="text"
-                      id="respondentName"
-                      className="form-control"
-                      placeholder=""
-                      required={survey?.requireRespondentName}
-                      defaultValue={input.respondentName}
-                      onChange={(e) =>
-                        setInput({
-                          ...input,
-                          respondentName: e.target.value === '' ? undefined : e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="mb-3">
-                    <p className="form-label">
-                      Customer Phone
-                      {survey?.requireRespondentPhone ? (
-                        <span className="text-warning ms-1">*</span>
-                      ) : undefined}
-                    </p>
-                    <PhoneNumberInput
-                      phonekey="respondentPhone"
-                      required={survey?.requireRespondentPhone}
-                      input={input}
-                      onChange={setInput}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="mb-3">
-                    <p className="form-label">
-                      Customer Email
-                      {survey?.requireRespondentEmail ? (
-                        <span className="text-warning ms-1">*</span>
-                      ) : undefined}
-                    </p>
-                    <input
-                      type="text"
-                      id="respondentEmail"
-                      className="form-control"
-                      placeholder=""
-                      required={survey?.requireRespondentEmail}
-                      defaultValue={input.respondentEmail}
-                      onChange={(e) =>
-                        setInput({
-                          ...input,
-                          respondentEmail: e.target.value === '' ? undefined : e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="mb-3">
-                    <p className="form-label">
-                      Giveaway Quantity<span className="text-warning ms-1">*</span>
-                    </p>
-                    <input
-                      type="number"
-                      id="giveawayUnits"
-                      className="form-control"
-                      placeholder=""
-                      defaultValue={input.quantityGiven}
-                      onChange={(e) =>
-                        setInput({
-                          ...input,
-                          quantityGiven: parseInt(e.target.value,10),
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <hr className="mt-1 mb-1" />
-
-              {loadingSurvey && <LoadingDiv label="Please wait..." />}
-
-              <QuestionnaireForm
-                questionnaireFields={questionnaireFields}
-                setQuestionnaireFields={setQuestionnaireFields}
-                submitting={creating}
-                handleSubmit={(e: FormEvent<Element>) => handleCreate(e)}
+        <DialogTitle id="new-report-modal">New Free Giveaway Report</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Customer Name"
+                required={survey?.requireRespondentName}
+                defaultValue={input.respondentName}
+                onChange={(e) =>
+                  setInput({
+                    ...input,
+                    respondentName: e.target.value === '' ? undefined : e.target.value,
+                  })
+                }
               />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <PhoneNumberInput
+                phonekey="respondentPhone"
+                required={survey?.requireRespondentPhone}
+                input={input}
+                onChange={setInput}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="Customer Email"
+                required={survey?.requireRespondentEmail}
+                defaultValue={input.respondentEmail}
+                onChange={(e) =>
+                  setInput({
+                    ...input,
+                    respondentEmail: e.target.value === '' ? undefined : e.target.value,
+                  })
+                }
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="Giveaway Quantity"
+                type="number"
+                required
+                defaultValue={input.quantityGiven}
+                onChange={(e) =>
+                  setInput({
+                    ...input,
+                    quantityGiven: parseInt(e.target.value, 10),
+                  })
+                }
+              />
+            </Grid>
+          </Grid>
+
+          <hr className="mt-1 mb-1" />
+
+          {loadingSurvey && <LoadingDiv label="Please wait..." />}
+
+          <QuestionnaireForm
+            questionnaireFields={questionnaireFields}
+            setQuestionnaireFields={setQuestionnaireFields}
+            submitting={creating}
+            handleSubmit={(e: FormEvent<Element>) => handleCreate(e)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setInput({ ...input, freeGiveawayAllocationId: undefined })} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleCreate} color="primary" disabled={creating}>
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Card>
   );
 };
