@@ -270,18 +270,17 @@ export const RunSalesGiveawayConfig: FC<{
       wrap: true,
       selector: (row: any) => row.id,
       cell: (row: any) => (
-        <button
-          type="button"
-          className="btn btn-primary btn-sm"
-          data-bs-toggle="modal"
-          data-bs-target="#update-modal"
+        <Button
+          variant="contained"
+          color="primary"
           onClick={() => {
             loadConfig(row.id);
             setInputConfigUpdate(init);
+            setOpenUpdateDialog(true);
           }}
         >
           <i className="mdi mdi-pen"/>
-        </button>
+        </Button>
       ),
     },
   ];
