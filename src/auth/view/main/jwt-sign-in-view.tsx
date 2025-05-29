@@ -88,7 +88,7 @@ export function JwtSignInView() {
   });
 
   useEffect(() => {
-    if (session) {
+    if (session.user?.role) {
       console.log('session', session);
       if(session.user?.role?.name === 'Root') {
         router.push(paths.v2.admin.root);
