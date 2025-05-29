@@ -35,9 +35,7 @@ import { M_RUN_TEAMS_MINI } from 'src/lib/mutations/run-team.mutation';
 import { InputFreeGiveawaySurveyUpdate } from 'src/lib/interface/survey-free-giveaway.interface';
 
 import { sourceImage } from 'src/lib/server';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Box, Typography, FormControlLabel, Switch, Select, MenuItem, InputLabel, FormControl, Button, CircularProgress } from '@mui/material';
-import { Tabs, Tab } from '@mui/material';
-import { TextField } from '@mui/material';
+import { TextField, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Box, Typography, FormControlLabel, Switch, Select, MenuItem, InputLabel, FormControl, Button, CircularProgress } from '@mui/material';
 import { QuestionnaireSetup } from '../QuestionnaireSetup';
 
 export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) => {
