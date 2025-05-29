@@ -242,22 +242,16 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
   );
 
   useEffect(() => {
-    getProducts({ variables: { input: { clientTier2Id } } }).then(() => {
-      if (!isMounted.current) return;
-    });
+    getProducts({ variables: { input: { clientTier2Id } } })
   }, [getProducts, clientTier2Id]);
 
   useEffect(() => {
-    getTeams({ variables: { input: { runId } } }).then(() => {
-      if (!isMounted.current) return;
-    });
+    getTeams({ variables: { input: { runId } } })
   }, [getTeams, runId]);
 
   useEffect(() => {
     if (product.id) {
-      getPackagings({ variables: { input: { productId: product.id } } }).then(() => {
-        if (!isMounted.current) return;
-      });
+      getPackagings({ variables: { input: { productId: product.id } } })
     }
   }, [getPackagings, product.id]);
 
@@ -285,42 +279,40 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
             agents: selectedAgents,
           },
         },
-      }).then(() => {
-        if (!isMounted.current) return;
-      });
+      })
     }
   }, [getAllocations, runId, product.id, product.packagingId, selectedAgents]);
 
   useEffect(() => {
     if (runId) {
-      getSurvey({ variables: { input: { runId } } }).then(() => {
-        if (!isMounted.current) return;
-      });
+      getSurvey({ variables: { input: { runId } } })
     }
   }, [getSurvey, runId]);
 
-  useEffect(() => {
-    if (!isMounted.current) return;
-    if (allocation?.entries) {
-      const _allocations: IFreeGiveawayAllocations[] = [];
-      let _allocationTotal = 0;
+  // ... existing code ...
+useEffect(() => {
+  if (!isMounted.current) return;
+  if (allocation?.entries) {
+    const _allocations: IFreeGiveawayAllocations[] = [];
+    let _allocationTotal = 0;
 
-      for (const entry of allocation.entries) {
-        _allocations.push({
-          index: entry.index,
-          id: entry.agent?.id,
-          name: entry.agent?.user?.name,
-          photo: entry.agent?.user?.profile?.photo?.fileName,
-          allocated: entry.quantityAllocated,
-          givenAway: entry.quantityGivenAway,
-        });
-        _allocationTotal += entry.quantityAllocated;
-      }
+    allocation.entries.forEach((entry: any) => {
+      _allocations.push({
+        index: entry.index,
+        id: entry.agent?.id,
+        name: entry.agent?.user?.name,
+        photo: entry.agent?.user?.profile?.photo?.fileName,
+        allocated: entry.quantityAllocated,
+        givenAway: entry.quantityGivenAway,
+      });
+      _allocationTotal += entry.quantityAllocated;
+    });
 
-      setAllocations(_allocations);
-      setAllocationTotal(_allocationTotal);
-    }
-  }, [allocation?.entries]);
+    setAllocations(_allocations);
+    setAllocationTotal(_allocationTotal);
+  }
+}, [allocation?.entries]);
+// ... existing code ...
 
   useEffect(() => {
     if (!isMounted.current) return;
