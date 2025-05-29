@@ -46,7 +46,7 @@ import { AGENT_RUN_SALES } from 'src/lib/mutations/inventory.mutation';
 import { RunSampling } from 'src/components/run/RunSampling';
 import { RunAgentHistoricSales } from 'src/components/run/RunAgentHistoricSales';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { Box, Grid, Typography, Button, Card, CardContent, Alert, Tab, Tabs, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Grid, Typography, Button, Card, CardContent, Alert, Tab, Tabs, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { styled } from '@mui/material/styles';
 
@@ -108,6 +108,11 @@ export default function Page({ params: { offerId } }: any) {
   const [geoLocation, setGeoLocation] = useState<IGeoLocation>();
   const [tabValue, setTabValue] = useState('0');
   const [cartOpen, setCartOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [giveawayQuantity, setGiveawayQuantity] = useState<number | undefined>(undefined);
+  const [respondentName, setRespondentName] = useState<string | undefined>(undefined);
+  const [respondentPhone, setRespondentPhone] = useState<string | undefined>(undefined);
+  const [respondentEmail, setRespondentEmail] = useState<string | undefined>(undefined);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -145,6 +150,14 @@ export default function Page({ params: { offerId } }: any) {
 
   const handleCartClose = () => {
     setCartOpen(false);
+  };
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
   };
 
   useEffect(() => {
@@ -379,28 +392,25 @@ export default function Page({ params: { offerId } }: any) {
                                             <Typography>Packaging: {commafy(allocation.product.packaging)}</Typography>
                                             <Typography>Price: {commafy(allocation.unitPrice)} ksh</Typography>
                                             <Typography>Sold: {allocation.quantitySold} / {allocation.quantityAllocated} {allocation.product?.package}</Typography>
-                                            <Button
-                                              variant="outlined"
-                                              color="info"
-                                              fullWidth
-                                              onClick={() => {
-                                                const item = {
-                                                  sku: allocation.id,
-                                                  id: allocation.id,
-                                                  name: allocation.product?.name,
-                                                  price: parseFloat(allocation.unitPrice),
-                                                  image: allocation.product?.photo
-                                                }
-                                                console.log(item);
-                                                if (typeof addItem === 'function') {
-                                                  addItem(item, 1);
-                                                } else {
-                                                  console.error('addItem is not a function');
-                                                }
-                                              }}
-                                            >
-                                              <i className="mdi mdi-cart-plus me-1"/>Add
-                                            </Button>
+                                            
+                                            {allocation.giveaway.totalUnlocked - allocation.giveaway.totalIssued > 0 && (
+                                              <Button
+                                                variant="outlined"
+                                                color="success"
+                                                fullWidth
+                                                onClick={() => {
+                                                  setInputSalesGiveaway({
+                                                    ...inputSalesGiveaway,
+                                                    salesGiveawayConfigId: allocation.giveawayConfigId,
+                                                  });
+                                                  handleDialogOpen();
+                                                }}
+                                              >
+                                                <span>
+                                                  {allocation.giveaway.totalUnlocked - allocation.giveaway.totalIssued} Available Giveaways
+                                                </span>
+                                              </Button>
+                                            )}
                                           </CardContent>
                                         </Card>
                                       </Grid>
@@ -457,124 +467,65 @@ export default function Page({ params: { offerId } }: any) {
         </Grid>
       </Grid>
 
-      {/* <div
-        id="giveaway-report-modal"
-        className="modal fade"
-        role="dialog"
-        aria-labelledby="new-report-modal"
-        aria-hidden="true"
-        tabIndex={-1}
-      >
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h4 className="modal-title" id="new-report-modal">
-                Sales Giveaway Report
-              </h4>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true" />
-            </div>
-            <div className="modal-body">
-              <div className="row">
-                {!surveySalesGiveaway?.hideRespondentFields && (
-                  <>
-                    <div className="col-md-4">
-                      <div className="mb-3">
-                        <p className="form-label">
-                          Customer Name
-                          {surveySalesGiveaway?.requireRespondentName ? (
-                            <span className="text-warning ms-1">*</span>
-                          ) : undefined}
-                        </p>
-                        <input
-                          type="text"
-                          id="respondentName"
-                          className="form-control"
-                          placeholder=""
-                          required={surveySalesGiveaway?.requireRespondentName}
-                          defaultValue={inputSalesGiveaway.respondentName}
-                          onChange={(e) =>
-                            setInputSalesGiveaway({
-                              ...inputSalesGiveaway,
-                              respondentName: e.target.value === '' ? undefined : e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="mb-3">
-                        <p className="form-label">
-                          Customer Phone
-                          {surveySalesGiveaway?.requireRespondentPhone ? (
-                            <span className="text-warning ms-1">*</span>
-                          ) : undefined}
-                        </p>
-                        <PhoneNumberInput
-                          phonekey="respondentPhone"
-                          required={surveySalesGiveaway?.requireRespondentPhone}
-                          input={inputSalesGiveaway}
-                          onChange={setInputSalesGiveaway}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="mb-3">
-                        <p className="form-label">
-                          Customer Email
-                          {surveySalesGiveaway?.requireRespondentEmail ? (
-                            <span className="text-warning ms-1">*</span>
-                          ) : undefined}
-                        </p>
-                        <input
-                          type="text"
-                          id="respondentEmail"
-                          className="form-control"
-                          placeholder=""
-                          required={surveySalesGiveaway?.requireRespondentEmail}
-                          defaultValue={inputSalesGiveaway.respondentEmail}
-                          onChange={(e) =>
-                            setInputSalesGiveaway({
-                              ...inputSalesGiveaway,
-                              respondentEmail: e.target.value === '' ? undefined : e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-                <div className="col-md-4">
-                  <div className="mb-3">
-                    <p className="form-label">
-                      Giveaway Quantity<span className="text-warning ms-1">*</span>
-                    </p>
-                    <input
-                      type="number"
-                      id="giveawayUnits"
-                      className="form-control"
-                      placeholder=""
-                      defaultValue={inputSalesGiveaway.quantityGiven}
-                      onChange={(e) =>
-                        setInputSalesGiveaway({
-                          ...inputSalesGiveaway,
-                          quantityGiven: parseInt(e.target.value,10),
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <QuestionnaireForm
-                questionnaireFields={questionnaireFields}
-                setQuestionnaireFields={setQuestionnaireFields}
-                submitting={creatingGiveawayReport}
-                handleSubmit={handleCreateGiveawayReport}
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Complete Giveaway Process</DialogTitle>
+        <DialogContent>
+          {!surveySalesGiveaway?.hideRespondentFields && (
+            <>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="respondentName"
+                label="Customer Name"
+                type="text"
+                fullWidth
+                variant="outlined"
+                required={surveySalesGiveaway?.requireRespondentName}
+                value={respondentName}
+                onChange={(e) => setRespondentName(e.target.value === '' ? undefined : e.target.value)}
               />
-            </div>
-          </div>
-        </div>
-      </div> */}
+              <PhoneNumberInput
+                phonekey="respondentPhone"
+                required={surveySalesGiveaway?.requireRespondentPhone}
+                input={{ respondentPhone }}
+                onChange={(value) => setRespondentPhone(value)}
+              />
+              <TextField
+                margin="dense"
+                id="respondentEmail"
+                label="Customer Email"
+                type="email"
+                fullWidth
+                variant="outlined"
+                required={surveySalesGiveaway?.requireRespondentEmail}
+                value={respondentEmail}
+                onChange={(e) => setRespondentEmail(e.target.value === '' ? undefined : e.target.value)}
+              />
+            </>
+          )}
+          <TextField
+            margin="dense"
+            id="giveawayQuantity"
+            label="Giveaway Quantity"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={giveawayQuantity}
+            onChange={(e) => setGiveawayQuantity(parseInt(e.target.value, 10))}
+          />
+          <QuestionnaireForm
+            questionnaireFields={questionnaireFields}
+            setQuestionnaireFields={setQuestionnaireFields}
+            submitting={creatingGiveawayReport}
+            handleSubmit={() => handleCreateGiveawayReport(new Event('submit'))}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
