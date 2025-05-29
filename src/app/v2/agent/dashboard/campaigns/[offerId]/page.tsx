@@ -121,7 +121,7 @@ export default function Page({ params: { offerId } }: any) {
     if (geoLocation?.lat && geoLocation?.lng) {
       const _responses: InputSurveyResponse[] = [];
 
-      for (let i = 0; i < questionnaireFields.length; i++) {
+      for (let i = 0; i < questionnaireFields.length; i+=1) {
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: questionnaireFields[i].feedback || {},
