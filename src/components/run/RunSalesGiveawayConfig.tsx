@@ -168,6 +168,9 @@ export const RunSalesGiveawayConfig: FC<{
     }
   },[getConfigsActive, runId])
   useEffect(() => {
+    console.log('configsActive:',configsActive);
+  },[configsActive])
+  useEffect(() => {
     if (runId) {
       getConfigsRecycled({ variables: { input: { runId } } });
     }
