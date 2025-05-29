@@ -257,14 +257,10 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
 
   useEffect(() => {
     if (product.id && product.packagingId) {
-      getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } })
-        .then(() => {
-          if (!isMounted.current) return;
-        })
-        .catch((err: any) => {
-          if (!isMounted.current) return;
-          console.error('Stock fetch error:', err);
-        });
+      getStock({ variables: { input: { productId: product.id, packagingId: product.packagingId } } }).catch((err: any) => {
+        if (!isMounted.current) return;
+        console.error('Stock fetch error:', err);
+      });
     }
   }, [getStock, product.id, product.packagingId]);
 
@@ -290,29 +286,29 @@ export const RunSampling: FC<IInventoryAllocation> = ({ runId, clientTier2Id }) 
   }, [getSurvey, runId]);
 
   // ... existing code ...
-useEffect(() => {
-  if (!isMounted.current) return;
-  if (allocation?.entries) {
-    const _allocations: IFreeGiveawayAllocations[] = [];
-    let _allocationTotal = 0;
+  useEffect(() => {
+    if (!isMounted.current) return;
+    if (allocation?.entries) {
+      const _allocations: IFreeGiveawayAllocations[] = [];
+      let _allocationTotal = 0;
 
-    allocation.entries.forEach((entry: any) => {
-      _allocations.push({
-        index: entry.index,
-        id: entry.agent?.id,
-        name: entry.agent?.user?.name,
-        photo: entry.agent?.user?.profile?.photo?.fileName,
-        allocated: entry.quantityAllocated,
-        givenAway: entry.quantityGivenAway,
+      allocation.entries.forEach((entry: any) => {
+        _allocations.push({
+          index: entry.index,
+          id: entry.agent?.id,
+          name: entry.agent?.user?.name,
+          photo: entry.agent?.user?.profile?.photo?.fileName,
+          allocated: entry.quantityAllocated,
+          givenAway: entry.quantityGivenAway,
+        });
+        _allocationTotal += entry.quantityAllocated;
       });
-      _allocationTotal += entry.quantityAllocated;
-    });
 
-    setAllocations(_allocations);
-    setAllocationTotal(_allocationTotal);
-  }
-}, [allocation?.entries]);
-// ... existing code ...
+      setAllocations(_allocations);
+      setAllocationTotal(_allocationTotal);
+    }
+  }, [allocation?.entries]);
+  // ... existing code ...
 
   useEffect(() => {
     if (!isMounted.current) return;
