@@ -90,11 +90,11 @@ export function JwtSignInView() {
   useEffect(() => {
     if (session) {
       console.log('session', session);
-      if(session.user?.role?.name === 'ADMIN') {
+      if(session.user?.role?.name === 'Root') {
         router.push(paths.v2.admin.root);
-      } else if(session.user?.role?.name === 'AGENT') {
+      } else if(session.user?.role?.name === 'Agent') {
         router.push(paths.v2.agent.root);
-      } else if(session.user?.role?.name === 'CLIENT') {
+      } else if(session.user?.role?.name === 'Account Manager') {
         router.push(paths.v2.marketing.root);
       } 
     }
