@@ -110,9 +110,6 @@ export default function Page({ params: { offerId } }: any) {
   const [cartOpen, setCartOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [giveawayQuantity, setGiveawayQuantity] = useState<number | undefined>(undefined);
-  const [respondentName, setRespondentName] = useState<string | undefined>(undefined);
-  const [respondentPhone, setRespondentPhone] = useState<string | undefined>(undefined);
-  const [respondentEmail, setRespondentEmail] = useState<string | undefined>(undefined);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -124,7 +121,7 @@ export default function Page({ params: { offerId } }: any) {
     if (geoLocation?.lat && geoLocation?.lng) {
       const _responses: InputSurveyResponse[] = [];
 
-      for (let i = 0; i < questionnaireFields.length; i+=1) {
+      for (let i = 0; i < questionnaireFields.length; i++) {
         _responses.push({
           questionnaireFieldId: questionnaireFields[i].id,
           feedback: questionnaireFields[i].feedback || {},
@@ -407,7 +404,7 @@ export default function Page({ params: { offerId } }: any) {
                                                 }}
                                               >
                                                 <span>
-                                                  {allocation.giveaway.totalUnlocked - allocation.giveaway.totalIssued} Available Giveaways
+                                                Available Giveaways - {allocation.giveaway.totalUnlocked - allocation.giveaway.totalIssued}
                                                 </span>
                                               </Button>
                                             )}
@@ -467,52 +464,87 @@ export default function Page({ params: { offerId } }: any) {
         </Grid>
       </Grid>
 
-      <Dialog open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Complete Giveaway Process</DialogTitle>
+      <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth maxWidth="md">
+        <DialogTitle>Sales Giveaway Report</DialogTitle>
         <DialogContent>
-          {!surveySalesGiveaway?.hideRespondentFields && (
-            <>
+          <Grid container spacing={2}>
+            {!surveySalesGiveaway?.hideRespondentFields && (
+              <>
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="respondentName"
+                    label="Customer Name"
+                    type="text"
+                    fullWidth
+                    variant="outlined"
+                    required={surveySalesGiveaway?.requireRespondentName}
+                    value={inputSalesGiveaway.respondentName || ''}
+                    onChange={(e) =>
+                      setInputSalesGiveaway({
+                        ...inputSalesGiveaway,
+                        respondentName: e.target.value === '' ? undefined : e.target.value,
+                      })
+                    }
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <PhoneNumberInput
+                    phonekey="respondentPhone"
+                    required={surveySalesGiveaway?.requireRespondentPhone}
+                    input={inputSalesGiveaway}
+                    onChange={setInputSalesGiveaway}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    margin="dense"
+                    id="respondentEmail"
+                    label="Customer Email"
+                    type="email"
+                    fullWidth
+                    variant="outlined"
+                    required={surveySalesGiveaway?.requireRespondentEmail}
+                    value={inputSalesGiveaway.respondentEmail || ''}
+                    onChange={(e) =>
+                      setInputSalesGiveaway({
+                        ...inputSalesGiveaway,
+                        respondentEmail: e.target.value === '' ? undefined : e.target.value,
+                      })
+                    }
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+              </>
+            )}
+            <Grid item xs={12} md={4}>
               <TextField
-                autoFocus
                 margin="dense"
-                id="respondentName"
-                label="Customer Name"
-                type="text"
+                id="giveawayUnits"
+                label="Giveaway Quantity"
+                type="number"
                 fullWidth
                 variant="outlined"
-                required={surveySalesGiveaway?.requireRespondentName}
-                value={respondentName}
-                onChange={(e) => setRespondentName(e.target.value === '' ? undefined : e.target.value)}
+                value={inputSalesGiveaway.quantityGiven || ''}
+                onChange={(e) =>
+                  setInputSalesGiveaway({
+                    ...inputSalesGiveaway,
+                    quantityGiven: parseInt(e.target.value, 10),
+                  })
+                }
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
-              <PhoneNumberInput
-                phonekey="respondentPhone"
-                required={surveySalesGiveaway?.requireRespondentPhone}
-                input={{ respondentPhone }}
-                onChange={(value) => setRespondentPhone(value)}
-              />
-              <TextField
-                margin="dense"
-                id="respondentEmail"
-                label="Customer Email"
-                type="email"
-                fullWidth
-                variant="outlined"
-                required={surveySalesGiveaway?.requireRespondentEmail}
-                value={respondentEmail}
-                onChange={(e) => setRespondentEmail(e.target.value === '' ? undefined : e.target.value)}
-              />
-            </>
-          )}
-          <TextField
-            margin="dense"
-            id="giveawayQuantity"
-            label="Giveaway Quantity"
-            type="number"
-            fullWidth
-            variant="outlined"
-            value={giveawayQuantity}
-            onChange={(e) => setGiveawayQuantity(parseInt(e.target.value, 10))}
-          />
+            </Grid>
+          </Grid>
+
           <QuestionnaireForm
             questionnaireFields={questionnaireFields}
             setQuestionnaireFields={setQuestionnaireFields}
