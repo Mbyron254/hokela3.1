@@ -19,7 +19,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { GQLMutation } from 'src/lib/client';
+import { GQLMutation, GQLQuery } from 'src/lib/client';
 import { USER_LOGIN } from 'src/lib/mutations/user.mutation';
 
 // import { SESSION_COOKIE } from 'src/lib/constant';
@@ -28,6 +28,7 @@ import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from '../../hooks';
 import { FormHead } from '../../components/form-head';
+import { Q_SESSION_SELF } from 'src/lib/queries/session.query';
 
 // ----------------------------------------------------------------------
 
@@ -80,6 +81,23 @@ export function JwtSignInView() {
   const { checkUserSession } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState<string>('');
   const password = useBoolean();
+
+  const { data: session } = GQLQuery({
+    query: Q_SESSION_SELF,
+    queryAction: 'sessionSelf',
+  });
+
+  useEffect(() => {
+    if (session) {
+      if(session.user?.role?.name === 'ADMIN') {
+        router.push(paths.v2.admin.root);
+      } else if(session.user?.role?.name === 'AGENT') {
+        router.push(paths.v2.agent.root);
+      } else if(session.user?.role?.name === 'CLIENT') {
+        router.push(paths.v2.marketing.root);
+      } 
+    }
+  },[session, router])
 
   const { action: signin, loading } = GQLMutation({
     mutation: USER_LOGIN,

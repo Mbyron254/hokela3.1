@@ -157,20 +157,21 @@ export const RunSalesGiveawayConfig: FC<{
       restoreConfig({ variables: { input: { ids: selectedRecycled } } });
     }
   };
-  const loadConfigsActive = (page?: number, pageSize?: number) => {
-    if (runId) {
-      getConfigsActive({ variables: { input: { runId, page, pageSize } } });
-    }
-  };
-  const loadConfigsRecycled = (page?: number, pageSize?: number) => {
-    if (runId) {
-      getConfigsRecycled({ variables: { input: { runId, page, pageSize } } });
-    }
-  };
+
   const loadConfig = (id: string) => {
     getConfig({ variables: { input: { id } } });
   };
 
+  useEffect(() => {
+    if (runId) {
+      getConfigsActive({ variables: { input: { runId } } });
+    }
+  },[getConfigsActive, runId])
+  useEffect(() => {
+    if (runId) {
+      getConfigsRecycled({ variables: { input: { runId } } });
+    }
+  },[getConfigsRecycled, runId])
   useEffect(() => {
     getProductsTarget({ variables: { input: { clientTier2Id } } });
   }, [getProductsTarget, clientTier2Id]);
