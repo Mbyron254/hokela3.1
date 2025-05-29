@@ -89,7 +89,7 @@ const EnterpriseListView = () => {
   };
 
   const handleClientClick = (clientId: string) => {
-    router.push(`/admin/clients-t1/${clientId}`);
+    router.push(`/v2/admin/dashboard/clients/enterprise/${clientId}`);
   };
 
   return (
